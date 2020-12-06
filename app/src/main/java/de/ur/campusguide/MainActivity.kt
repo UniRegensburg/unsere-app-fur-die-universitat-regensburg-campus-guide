@@ -6,6 +6,11 @@ import androidx.navigation.findNavController
 import de.ur.campusguide.viewmodel.MainViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
+/**
+ * Main activity of the single activity CampusGuide
+ *
+ */
+
 class MainActivity : AppCompatActivity() {
 
     private val viewModel: MainViewModel by viewModel()

@@ -7,6 +7,11 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import de.ur.campusguide.R
 
+/**
+ * Home fragment used as start view of the application
+ *
+ */
+
 class HomeFragment : Fragment() {
 
     override fun onCreateView(
