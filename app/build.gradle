@@ -52,4 +52,7 @@ dependencies {
     //Logging
     implementation 'com.jakewharton.timber:timber:4.7.1'
 
+    //Memory Leak Detection
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.5'
+
 }
