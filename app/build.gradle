@@ -55,4 +55,7 @@ dependencies {
     //Memory Leak Detection
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.5'
 
+    //Firebase
+    implementation platform('com.google.firebase:firebase-bom:26.2.0')
+
 }
