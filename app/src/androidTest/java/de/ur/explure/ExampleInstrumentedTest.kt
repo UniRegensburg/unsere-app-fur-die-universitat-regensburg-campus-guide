@@ -1,4 +1,4 @@
-package de.ur.campusguide
+package de.ur.explure
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4
