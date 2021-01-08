@@ -7,8 +7,7 @@ import de.ur.explure.viewmodel.MainViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 /**
- * Main activity of the single activity CampusGuide
- *
+ * Main activity of the single activity application.
  */
 
 class MainActivity : AppCompatActivity() {

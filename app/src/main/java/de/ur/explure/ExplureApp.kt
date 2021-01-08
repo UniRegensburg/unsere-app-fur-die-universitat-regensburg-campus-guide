@@ -11,14 +11,14 @@ import timber.log.Timber
  *
  */
 
-class CampusGuideApp : Application() {
+class ExplureApp : Application() {
     override fun onCreate() {
         super.onCreate()
         if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
         }
         startKoin {
-            androidContext(this@CampusGuideApp)
+            androidContext(this@ExplureApp)
             modules(mainModule)
         }
     }
