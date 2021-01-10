@@ -1,11 +1,11 @@
-package de.ur.campusguide.views
+package de.ur.explure.views
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import de.ur.campusguide.R
+import de.ur.explure.R
 
 /**
  * Home fragment used as start view of the application

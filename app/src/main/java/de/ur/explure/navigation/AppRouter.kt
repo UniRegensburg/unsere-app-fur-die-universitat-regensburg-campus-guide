@@ -1,7 +1,7 @@
-package de.ur.campusguide.navigation
+package de.ur.explure.navigation
 
 import androidx.navigation.NavController
-import de.ur.campusguide.R
+import de.ur.explure.R
 
 /**
  * Router class used for navigation operations

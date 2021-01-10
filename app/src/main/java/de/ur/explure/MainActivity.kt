@@ -1,14 +1,13 @@
-package de.ur.campusguide
+package de.ur.explure
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.navigation.findNavController
-import de.ur.campusguide.viewmodel.MainViewModel
+import de.ur.explure.viewmodel.MainViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 /**
- * Main activity of the single activity CampusGuide
- *
+ * Main activity of the single activity application.
  */
 
 class MainActivity : AppCompatActivity() {

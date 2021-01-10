@@ -1,4 +1,4 @@
-package de.ur.campusguide
+package de.ur.explure
 
 import org.junit.Test
 

@@ -1,7 +1,7 @@
-package de.ur.campusguide
+package de.ur.explure
 
 import android.app.Application
-import de.ur.campusguide.di.mainModule
+import de.ur.explure.di.mainModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 import timber.log.Timber
@@ -11,14 +11,14 @@ import timber.log.Timber
  *
  */
 
-class CampusGuideApp : Application() {
+class ExplureApp : Application() {
     override fun onCreate() {
         super.onCreate()
         if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
         }
         startKoin {
-            androidContext(this@CampusGuideApp)
+            androidContext(this@ExplureApp)
             modules(mainModule)
         }
     }

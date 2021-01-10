@@ -1,8 +1,8 @@
-package de.ur.campusguide.viewmodel
+package de.ur.explure.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
-import de.ur.campusguide.navigation.AppRouter
+import de.ur.explure.navigation.AppRouter
 
 /**
  * Main Viewmodel used to handle initializing operations for main app

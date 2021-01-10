@@ -1,13 +1,14 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
+apply plugin: 'com.google.gms.google-services'
 
 android {
     compileSdkVersion 30
     buildToolsVersion "29.0.3"
 
     defaultConfig {
-        applicationId "de.ur.campusguide"
+        applicationId "de.ur.explure"
         minSdkVersion 23
         targetSdkVersion 30
         versionCode 1
@@ -54,5 +55,8 @@ dependencies {
 
     //Memory Leak Detection
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.5'
+
+    //Firebase
+    implementation platform('com.google.firebase:firebase-bom:26.2.0')
 
 }
