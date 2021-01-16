@@ -21,6 +21,7 @@ jobs:
       - name: Unit tests
         run: bash ./gradlew test --stacktrace
       - name : Instrumented tests
-        run: bash .gradlew test connectedAndroidTest --stacktrace
+        run: bash ./gradlew test connectedAndroidTest --stacktrace
+        
 
 
