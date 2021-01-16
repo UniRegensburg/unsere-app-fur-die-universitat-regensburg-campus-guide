@@ -2,9 +2,9 @@ name: Instrumented-Tests
 
 on:
   push:
-    branches: [ feature/#NO_ISSUE-CI-instrumented-tests ]
+    branches: [ develop ]
   pull_request:
-    branches: [ feature/#NO_ISSUE-CI-instrumented-tests ]
+    branches: [ develop ]
 
 jobs:
   test-job:
