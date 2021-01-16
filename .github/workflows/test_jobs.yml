@@ -11,6 +11,10 @@ jobs:
     name: Run Tests
     runs-on: macos-latest
 
+    strategy:
+      matrix:
+        api-level: [23, 29]
+
     steps:
       - uses: actions/checkout@v2
       - uses: gradle/wrapper-validation-action@v1
@@ -23,14 +27,11 @@ jobs:
       - name: Unit tests
         run: bash ./gradlew test --stacktrace
 
-      - name: set up android emulator
+      - name: Instrumented tests
         uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 29
-          script: ./gradlew connectedCheck
-
-      - name: Instrumented tests
-        run: bash ./gradlew test connectedAndroidTest --stacktrace
+          api-level: ${{matrix.api-level}}
+          script: ./gradlew connectedCheck --stacktrace
 
 
 
