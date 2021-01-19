@@ -23,5 +23,4 @@ class MainActivity : AppCompatActivity() {
     private fun initNavigation() {
         viewModel.setNavigationGraph(findNavController(R.id.main_fragment_container))
     }
-
 }
