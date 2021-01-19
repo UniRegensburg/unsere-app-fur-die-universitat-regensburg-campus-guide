@@ -1,7 +1,7 @@
 #!/bin/sh
 #################################
 # To enable this hook, enter in the root project:
-# git config core.hookspath githooks
+# git config --local core.hookspath githooks
 #################################
 
 #unset GIT_DIR

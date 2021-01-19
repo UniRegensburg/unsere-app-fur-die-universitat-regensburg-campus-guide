@@ -86,18 +86,6 @@ dependencies {
 
 }
 
-// Custom Gradle Task, see https://github.com/detekt/detekt/issues/2259
-//tasks.register("detektAutoFormat", io.gitlab.arturbosch.detekt.Detekt.class) { detektTask ->
-//    description 'Autocorrect Kotlin Style Violations.'
-//    detektTask.source = detekt.input
-//    detektTask.config.from(detekt.config)
-//    detektTask.autoCorrect = true
-//    detektTask.parallel = true
-//    // for type resolution:
-//    //detektTask.classpath.setFrom(project.configurations.getByName("detekt"))
-//    //detektTask.jvmTarget = "1.8"
-//}
-
 task detektAutoFormat(type: io.gitlab.arturbosch.detekt.Detekt) {
     description = "Autocorrect Kotlin Style Violations."
     setSource(detekt.input)
