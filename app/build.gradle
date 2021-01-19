@@ -1,7 +1,12 @@
-apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
+plugins {
+    id 'com.android.application'
+    id 'kotlin-android'
+    id "io.gitlab.arturbosch.detekt" version "$detekt_version"
+}
+
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'com.google.gms.google-services'
+
 
 android {
     compileSdkVersion 30
@@ -25,11 +30,27 @@ android {
     }
 }
 
+configurations {
+    detekt
+}
+
+detekt {
+    toolVersion = "$detekt_version"
+    input = files("$projectDir/src/")
+    config = files("$rootDir/config/detekt/detekt.yml")
+    //autoCorrect = true
+    parallel = true
+    reports {
+        html.enabled = true
+        xml.enabled = false
+    }
+}
+
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
-    //Koin
+    //Koin (Dependency Injection)
     implementation "org.koin:koin-core:$koin_version"
     implementation "org.koin:koin-android-scope:$koin_version"
     implementation "org.koin:koin-androidx-viewmodel:$koin_version"
@@ -59,4 +80,34 @@ dependencies {
     //Firebase
     implementation platform('com.google.firebase:firebase-bom:26.2.0')
 
+    //Detekt CLI and Formatter
+    detektPlugins "io.gitlab.arturbosch.detekt:detekt-formatting:1.15.0"
+    detekt "io.gitlab.arturbosch.detekt:detekt-cli:1.15.0"
+
+}
+
+// Custom Gradle Task, see https://github.com/detekt/detekt/issues/2259
+//tasks.register("detektAutoFormat", io.gitlab.arturbosch.detekt.Detekt.class) { detektTask ->
+//    description 'Autocorrect Kotlin Style Violations.'
+//    detektTask.source = detekt.input
+//    detektTask.config.from(detekt.config)
+//    detektTask.autoCorrect = true
+//    detektTask.parallel = true
+//    // for type resolution:
+//    //detektTask.classpath.setFrom(project.configurations.getByName("detekt"))
+//    //detektTask.jvmTarget = "1.8"
+//}
+
+task detektAutoFormat(type: io.gitlab.arturbosch.detekt.Detekt) {
+    description = "Autocorrect Kotlin Style Violations."
+    setSource(detekt.input)
+    config.setFrom(detekt.config)
+    include("**/*.kt")
+    include("**/*.kts")
+    exclude("**/resources/**")
+    exclude("**/build/**")
+    parallel = true
+    autoCorrect = true
+    //classpath.setFrom(configurations.detekt)
+    //jvmTarget = "1.8"
 }
