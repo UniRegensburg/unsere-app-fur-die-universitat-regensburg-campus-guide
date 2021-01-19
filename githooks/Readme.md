@@ -7,5 +7,5 @@ git config --local core.hookspath githooks
 ausgeführt werden. Danach werden alle hier (korrekt benannten) Hooks beim Commit ausgeführt (egal ob über Kommandozeile, Android Studio oder eine Git GUI wie Github Desktop).
 
 ### Sonstiges
-Github Desktop scheint manchmal Probleme mit den Githooks zu haben, vermutlich wäre es besser für Commits die Kommandozeile oder die IDE (z.B. Android Studio) zu verwenden. Für Desktop muss in Windows 10 auf jeden Fall die JAVA_HOME gesetzt sein.
+Für Github Desktop muss in Windows 10 die JAVA_HOME - Umgebungsvariable gesetzt sein.
 
