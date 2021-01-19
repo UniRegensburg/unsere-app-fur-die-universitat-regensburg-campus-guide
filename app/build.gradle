@@ -1,10 +1,10 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
+    id 'kotlin-android-extensions'
     id "io.gitlab.arturbosch.detekt" version "$detekt_version"
 }
 
-apply plugin: 'kotlin-android-extensions'
 apply plugin: 'com.google.gms.google-services'
 
 
@@ -38,7 +38,7 @@ detekt {
     toolVersion = "$detekt_version"
     input = files("$projectDir/src/")
     config = files("$rootDir/config/detekt/detekt.yml")
-    //autoCorrect = true
+    autoCorrect = false
     parallel = true
     reports {
         html.enabled = true

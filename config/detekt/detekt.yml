@@ -309,7 +309,7 @@ formatting:
     active: true
     autoCorrect: true
   NoWildcardImports:
-    active: false
+    active: true
   PackageName:
     active: true
     autoCorrect: true
