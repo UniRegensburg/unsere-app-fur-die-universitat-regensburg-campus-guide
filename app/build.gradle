@@ -1,11 +1,16 @@
-apply plugin: 'com.android.application'
-apply plugin: 'kotlin-android'
-apply plugin: 'kotlin-android-extensions'
+plugins {
+    id 'com.android.application'
+    id 'kotlin-android'
+    id 'kotlin-android-extensions'
+    id "io.gitlab.arturbosch.detekt" version "$detekt_version"
+}
+
 apply plugin: 'com.google.gms.google-services'
+
 
 android {
     compileSdkVersion 30
-    buildToolsVersion "29.0.3"
+    buildToolsVersion "30.0.3"
 
     defaultConfig {
         applicationId "de.ur.explure"
@@ -25,11 +30,27 @@ android {
     }
 }
 
+configurations {
+    detekt
+}
+
+detekt {
+    toolVersion = "$detekt_version"
+    input = files("$projectDir/src/")
+    config = files("$rootDir/config/detekt/detekt.yml")
+    autoCorrect = false
+    parallel = true
+    reports {
+        html.enabled = true
+        xml.enabled = false
+    }
+}
+
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
-    //Koin
+    //Koin (Dependency Injection)
     implementation "org.koin:koin-core:$koin_version"
     implementation "org.koin:koin-android-scope:$koin_version"
     implementation "org.koin:koin-androidx-viewmodel:$koin_version"
@@ -46,7 +67,7 @@ dependencies {
     implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
 
     //Testing
-    testImplementation 'junit:junit:4.13'
+    testImplementation 'junit:junit:4.13.1'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 
@@ -59,4 +80,22 @@ dependencies {
     //Firebase
     implementation platform('com.google.firebase:firebase-bom:26.2.0')
 
+    //Detekt CLI and Formatter
+    detektPlugins "io.gitlab.arturbosch.detekt:detekt-formatting:1.15.0"
+    detekt "io.gitlab.arturbosch.detekt:detekt-cli:1.15.0"
+
+}
+
+task detektAutoFormat(type: io.gitlab.arturbosch.detekt.Detekt) {
+    description = "Autocorrect Kotlin Style Violations."
+    setSource(detekt.input)
+    config.setFrom(detekt.config)
+    include("**/*.kt")
+    include("**/*.kts")
+    exclude("**/resources/**")
+    exclude("**/build/**")
+    parallel = true
+    autoCorrect = true
+    //classpath.setFrom(configurations.detekt)
+    //jvmTarget = "1.8"
 }
