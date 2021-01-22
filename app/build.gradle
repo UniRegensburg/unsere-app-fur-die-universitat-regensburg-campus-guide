@@ -87,6 +87,10 @@ dependencies {
     detektPlugins "io.gitlab.arturbosch.detekt:detekt-formatting:1.15.0"
     detekt "io.gitlab.arturbosch.detekt:detekt-cli:1.15.0"
 
+    //Mapbox
+    implementation 'com.mapbox.mapboxsdk:mapbox-android-sdk:9.5.0'
+    //implementation 'com.mapbox.mapboxsdk:mapbox-android-core:3.1.0'
+
 }
 
 task detektAutoFormat(type: io.gitlab.arturbosch.detekt.Detekt) {

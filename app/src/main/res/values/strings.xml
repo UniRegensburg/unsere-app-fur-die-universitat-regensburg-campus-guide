@@ -1,3 +1,5 @@
 <resources>
-    <string name="app_name">ExplURe</string>
+    <string name="app_name" translatable="false">ExplURe</string>
+    <string name="mapbox_access_token" translatable="false">pk.eyJ1IjoibWljaGFlbG1lY2tsIiwiYSI6ImNrazhwbDd0NjBxMW8ydm54Z2ZwZDVkOHYifQ.Mk089Qw9dW8_MY_tmnXqrQ</string>
+
 </resources>
