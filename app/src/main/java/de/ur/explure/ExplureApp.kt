@@ -18,7 +18,7 @@ class ExplureApp : Application() {
         super.onCreate()
 
         // Setup mapbox instance
-        Mapbox.getInstance(this, getString(R.string.mapbox_access_token))
+        Mapbox.getInstance(this, getString(R.string.access_token))
 
         if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
