@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import de.ur.explure.databinding.FragmentHomeBinding
+import de.ur.explure.utils.viewLifecycle
 
 /**
  * Home fragment used as start view of the application
@@ -14,23 +15,15 @@ import de.ur.explure.databinding.FragmentHomeBinding
 
 class HomeFragment : Fragment() {
 
-    private var _binding: FragmentHomeBinding? = null
-
     // This property is only valid between onCreateView and onDestroyView.
-    private val binding get() = _binding!!
+    private var binding: FragmentHomeBinding by viewLifecycle()
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        _binding = FragmentHomeBinding.inflate(inflater)
+    ): View {
+        binding = FragmentHomeBinding.inflate(inflater)
         return binding.root
-    }
-
-    override fun onDestroyView() {
-        // remove view binding to prevent memory leaks
-        _binding = null
-        super.onDestroyView()
     }
 }

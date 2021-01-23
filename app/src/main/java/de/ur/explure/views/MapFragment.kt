@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.Style
 import de.ur.explure.databinding.FragmentMapBinding
+import de.ur.explure.utils.viewLifecycle
 import de.ur.explure.viewmodel.MapViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -15,8 +16,7 @@ class MapFragment : Fragment() {
 
     private val mapViewModel: MapViewModel by viewModel()
 
-    private var _binding: FragmentMapBinding? = null
-    private val binding get() = _binding!!
+    private var binding: FragmentMapBinding by viewLifecycle()
 
     private var mapView: MapView? = null
 
@@ -25,7 +25,7 @@ class MapFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        _binding = FragmentMapBinding.inflate(inflater)
+        binding = FragmentMapBinding.inflate(inflater)
         return binding.root
     }
 
@@ -77,8 +77,6 @@ class MapFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        _binding = null
-
         // map.removeOnMapClickListener(this)
         mapView?.onDestroy()
     }
