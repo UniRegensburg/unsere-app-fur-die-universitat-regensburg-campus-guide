@@ -1,0 +1,21 @@
+#!/usr/bin/env python
+import sys, os, re
+#from subprocess import check_output
+
+# Figure out which branch we're on
+#branch = check_output(['git', 'symbolic-ref', '--short', 'HEAD']).strip()
+#print("commit-msg: On branch '%s'" % branch)
+
+message_filepath = sys.argv[1]
+
+with open(message_filepath, "r") as file:
+    message = file.read()
+
+    all_characters = re.findall("\S", message)  # find everything that is not a whitespace character
+    number_characters = len(all_characters)
+    print(f"Commit Message Length: {number_characters}")  # takes body into account as well unfortunately :(
+
+    # only checks if the commit message starts with an upper case letter at the moment
+    if not message[0].isupper():
+            print("Error! The commit message must start with an upper case letter!")
+            sys.exit(1)

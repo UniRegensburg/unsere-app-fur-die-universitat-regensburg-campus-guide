@@ -12,11 +12,14 @@ import timber.log.Timber
  */
 
 class ExplureApp : Application() {
+
     override fun onCreate() {
         super.onCreate()
+
         if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
         }
+
         startKoin {
             androidContext(this@ExplureApp)
             modules(mainModule)

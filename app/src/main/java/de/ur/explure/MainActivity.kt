@@ -79,5 +79,4 @@ class MainActivity : AppCompatActivity() {
             R.navigation.nav_graph_profile
         )
     }
-
 }
