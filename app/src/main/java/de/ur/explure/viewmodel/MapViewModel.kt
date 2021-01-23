@@ -1,5 +1,6 @@
 package de.ur.explure.viewmodel
 
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
 /**
@@ -7,5 +8,5 @@ import androidx.lifecycle.ViewModel
  */
 
 class MapViewModel : ViewModel() {
-    // TODO
+    val mapReady = MutableLiveData(false)
 }
