@@ -100,7 +100,6 @@ dependencies {
 
     //Mapbox
     implementation 'com.mapbox.mapboxsdk:mapbox-android-sdk:9.5.0'
-    //implementation 'com.mapbox.mapboxsdk:mapbox-android-core:3.1.0'
 
 }
 

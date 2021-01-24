@@ -19,6 +19,7 @@ import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
 import com.mapbox.mapboxsdk.maps.Style
 import de.ur.explure.databinding.FragmentMapBinding
+import de.ur.explure.utils.observeOnce
 import de.ur.explure.utils.viewLifecycle
 import de.ur.explure.viewmodel.MapViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -27,14 +28,16 @@ import timber.log.Timber
 class MapFragment : Fragment(), OnMapReadyCallback, MapboxMap.OnMapClickListener,
     PermissionsListener {
 
-    private val mapViewModel: MapViewModel by viewModel()
-
     private var binding: FragmentMapBinding by viewLifecycle()
 
+    private val mapViewModel: MapViewModel by viewModel()
     private var mapView: MapView? = null
     private lateinit var map: MapboxMap
 
     private var permissionsManager: PermissionsManager = PermissionsManager(this)
+
+    private var styleIndex = 0
+    private var currentMapStyle: Style? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -48,19 +51,20 @@ class MapFragment : Fragment(), OnMapReadyCallback, MapboxMap.OnMapClickListener
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // disable the button until the map has finished loading
+        // disable the buttons until the map has finished loading
         binding.ownLocationButton.isEnabled = false
+        binding.changeStyleButton.isEnabled = false
 
         setupViewModelObservers()
 
+        // init mapbox map
         mapView = binding.mapView
         mapView?.onCreate(savedInstanceState)
         mapView?.getMapAsync(this)
     }
 
     private fun setupViewModelObservers() {
-        // TODO use observeOnce maybe?
-        mapViewModel.mapReady.observe(viewLifecycleOwner, {
+        mapViewModel.mapReady.observeOnce(viewLifecycleOwner, {
             Toast.makeText(
                 requireContext(),
                 "Map has finished loading and can be used now!",
@@ -68,6 +72,22 @@ class MapFragment : Fragment(), OnMapReadyCallback, MapboxMap.OnMapClickListener
             ).show()
 
             binding.ownLocationButton.isEnabled = true
+            binding.changeStyleButton.isEnabled = true
+
+            binding.changeStyleButton.setOnClickListener {
+                styleIndex++
+                if (styleIndex == All_STYLES.size) {
+                    // reset to the first style
+                    styleIndex = 0
+                }
+                map.setStyle(All_STYLES[styleIndex]) { mapStyle ->
+                    currentMapStyle = mapStyle
+                }
+            }
+
+            binding.ownLocationButton.setOnClickListener {
+                currentMapStyle?.let { style -> enableLocationComponent(style) }
+            }
         })
     }
 
@@ -76,19 +96,16 @@ class MapFragment : Fragment(), OnMapReadyCallback, MapboxMap.OnMapClickListener
 
         mapboxMap.addOnMapClickListener(this)
 
-        // TODO setup a separate mapbox map object/singleton to handle an encapsulate map stuff?
-        mapboxMap.setStyle(Style.MAPBOX_STREETS) { mapStyle ->
+        // TODO setup a separate mapbox map object/singleton to handle and encapsulate map stuff?
+        mapboxMap.setStyle(Style.MAPBOX_STREETS) {
             // Map is set up and the style has loaded.
+            currentMapStyle = it
             mapViewModel.mapReady.value = true
 
             // print out all layers of current style
-            for (singleLayer in mapStyle.layers) {
-                Timber.d("onMapReady: layer id = %s", singleLayer.id)
-            }
-
-            binding.ownLocationButton.setOnClickListener {
-                enableLocationComponent(mapStyle)
-            }
+            // for (singleLayer in mapStyle.layers) {
+            //     Timber.d("onMapReady: layer id = %s", singleLayer.id)
+            // }
         }
     }
 
@@ -112,6 +129,7 @@ class MapFragment : Fragment(), OnMapReadyCallback, MapboxMap.OnMapClickListener
 
             // Create and customize the LocationComponent's options
             val customLocationComponentOptions = LocationComponentOptions.builder(activity)
+                .layerBelow("waterway-label")
                 .trackingGesturesManagement(true)
                 .pulseEnabled(true)
                 .pulseFadeEnabled(true)
@@ -208,7 +226,19 @@ class MapFragment : Fragment(), OnMapReadyCallback, MapboxMap.OnMapClickListener
 
     override fun onDestroyView() {
         super.onDestroyView()
-        map.removeOnMapClickListener(this)
         mapView?.onDestroy()
+    }
+
+    companion object {
+        private val All_STYLES = arrayOf(
+            Style.MAPBOX_STREETS,
+            Style.OUTDOORS,
+            Style.LIGHT,
+            Style.DARK,
+            Style.SATELLITE,
+            Style.SATELLITE_STREETS,
+            Style.TRAFFIC_DAY,
+            Style.TRAFFIC_NIGHT
+        )
     }
 }
