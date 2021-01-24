@@ -19,7 +19,7 @@ import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
 import com.mapbox.mapboxsdk.maps.Style
 import de.ur.explure.databinding.FragmentMapBinding
-import de.ur.explure.utils.observeOnce
+import de.ur.explure.utils.EventObserver
 import de.ur.explure.utils.viewLifecycle
 import de.ur.explure.viewmodel.MapViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -64,7 +64,8 @@ class MapFragment : Fragment(), OnMapReadyCallback, MapboxMap.OnMapClickListener
     }
 
     private fun setupViewModelObservers() {
-        mapViewModel.mapReady.observeOnce(viewLifecycleOwner, {
+        mapViewModel.mapReady.observe(viewLifecycleOwner, EventObserver {
+            // this only gets called if the event has never been handled thanks to the EventObserver
             Toast.makeText(
                 requireContext(),
                 "Map has finished loading and can be used now!",
@@ -100,7 +101,7 @@ class MapFragment : Fragment(), OnMapReadyCallback, MapboxMap.OnMapClickListener
         mapboxMap.setStyle(Style.MAPBOX_STREETS) {
             // Map is set up and the style has loaded.
             currentMapStyle = it
-            mapViewModel.mapReady.value = true
+            mapViewModel.setMapReadyStatus(true)
 
             // print out all layers of current style
             // for (singleLayer in mapStyle.layers) {
@@ -129,7 +130,7 @@ class MapFragment : Fragment(), OnMapReadyCallback, MapboxMap.OnMapClickListener
 
             // Create and customize the LocationComponent's options
             val customLocationComponentOptions = LocationComponentOptions.builder(activity)
-                .layerBelow("waterway-label")
+                .layerBelow(FIRST_SYMBOL_LAYER_ID)
                 .trackingGesturesManagement(true)
                 .pulseEnabled(true)
                 .pulseFadeEnabled(true)
@@ -240,5 +241,7 @@ class MapFragment : Fragment(), OnMapReadyCallback, MapboxMap.OnMapClickListener
             Style.TRAFFIC_DAY,
             Style.TRAFFIC_NIGHT
         )
+
+        private const val FIRST_SYMBOL_LAYER_ID = "waterway-label"
     }
 }
