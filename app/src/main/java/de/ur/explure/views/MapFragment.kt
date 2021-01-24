@@ -36,9 +36,6 @@ class MapFragment : Fragment(), OnMapReadyCallback, MapboxMap.OnMapClickListener
 
     private var permissionsManager: PermissionsManager = PermissionsManager(this)
 
-    private var styleIndex = 0
-    private var currentMapStyle: Style? = null
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -57,10 +54,15 @@ class MapFragment : Fragment(), OnMapReadyCallback, MapboxMap.OnMapClickListener
 
         setupViewModelObservers()
 
-        // init mapbox map
-        mapView = binding.mapView
-        mapView?.onCreate(savedInstanceState)
-        mapView?.getMapAsync(this)
+        // TODO to prevent recreation of the mapView on ui changes (like rotating the device) the
+        // manifest was modified to allow the activity to handle config changes itself
+        //  -> This should instead be fixed by saving the necessary state in onSavedInstanceState!
+        if (savedInstanceState === null) {
+            // init mapbox map
+            mapView = binding.mapView
+            mapView?.onCreate(savedInstanceState)
+            mapView?.getMapAsync(this)
+        }
     }
 
     private fun setupViewModelObservers() {
@@ -76,18 +78,14 @@ class MapFragment : Fragment(), OnMapReadyCallback, MapboxMap.OnMapClickListener
             binding.changeStyleButton.isEnabled = true
 
             binding.changeStyleButton.setOnClickListener {
-                styleIndex++
-                if (styleIndex == All_STYLES.size) {
-                    // reset to the first style
-                    styleIndex = 0
-                }
-                map.setStyle(All_STYLES[styleIndex]) { mapStyle ->
-                    currentMapStyle = mapStyle
+                val style = mapViewModel.getNextMapStyleId()
+                map.setStyle(style) { mapStyle ->
+                    mapViewModel.setMapStyle(mapStyle)
                 }
             }
 
             binding.ownLocationButton.setOnClickListener {
-                currentMapStyle?.let { style -> enableLocationComponent(style) }
+                mapViewModel.getMapStyle()?.let { style -> enableLocationComponent(style) }
             }
         })
     }
@@ -98,9 +96,10 @@ class MapFragment : Fragment(), OnMapReadyCallback, MapboxMap.OnMapClickListener
         mapboxMap.addOnMapClickListener(this)
 
         // TODO setup a separate mapbox map object/singleton to handle and encapsulate map stuff?
-        mapboxMap.setStyle(Style.MAPBOX_STREETS) {
+        val style = mapViewModel.getActiveMapStyleId()
+        mapboxMap.setStyle(style) {
             // Map is set up and the style has loaded.
-            currentMapStyle = it
+            mapViewModel.setMapStyle(it)
             mapViewModel.setMapReadyStatus(true)
 
             // print out all layers of current style
@@ -231,17 +230,6 @@ class MapFragment : Fragment(), OnMapReadyCallback, MapboxMap.OnMapClickListener
     }
 
     companion object {
-        private val All_STYLES = arrayOf(
-            Style.MAPBOX_STREETS,
-            Style.OUTDOORS,
-            Style.LIGHT,
-            Style.DARK,
-            Style.SATELLITE,
-            Style.SATELLITE_STREETS,
-            Style.TRAFFIC_DAY,
-            Style.TRAFFIC_NIGHT
-        )
-
         private const val FIRST_SYMBOL_LAYER_ID = "waterway-label"
     }
 }
