@@ -19,6 +19,7 @@ import de.ur.explure.R
  * https://github.com/android/architecture-components-samples/blob/master/NavigationAdvancedSample
  * /app/src/main/java/com/example/android/navigationadvancedsample/NavigationExtensions.kt
  */
+@Suppress("LongMethod")
 fun BottomNavigationView.setupWithNavController(
     navGraphIds: List<Int>,
     fragmentManager: FragmentManager,
@@ -221,8 +222,8 @@ private fun BottomNavigationView.setupDeepLinks(
             containerId
         )
         // Handle Intent
-        if (navHostFragment.navController.handleDeepLink(intent)
-            && selectedItemId != navHostFragment.navController.graph.id
+        if (navHostFragment.navController.handleDeepLink(intent) &&
+            selectedItemId != navHostFragment.navController.graph.id
         ) {
             this.selectedItemId = navHostFragment.navController.graph.id
         }

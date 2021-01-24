@@ -49,5 +49,4 @@ class MainViewModel(private val appRouter: AppRouter) : ViewModel() {
             false
         }
     }
-
 }
