@@ -24,7 +24,6 @@ import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
 import com.mapbox.mapboxsdk.maps.Style
-import de.ur.explure.MainActivity
 import de.ur.explure.databinding.FragmentMapBinding
 import de.ur.explure.utils.EventObserver
 import de.ur.explure.utils.isGPSEnabled
@@ -192,7 +191,7 @@ class MapFragment : Fragment(), OnMapReadyCallback, MapboxMap.OnMapClickListener
         val activityCtx = activity ?: return
 
         locationEngine = LocationEngineProvider.getBestLocationEngine(activityCtx)
-        callback = (activityCtx as? MainActivity)?.let { LocationListeningCallback(it) }
+        callback = LocationListeningCallback(this)
 
         val request = LocationEngineRequest.Builder(DEFAULT_INTERVAL_IN_MILLISECONDS)
             .setPriority(LocationEngineRequest.PRIORITY_BALANCED_POWER_ACCURACY)
@@ -294,23 +293,22 @@ class MapFragment : Fragment(), OnMapReadyCallback, MapboxMap.OnMapClickListener
      * possible if the activity/fragment directly implements the LocationEngineCallback<LocationEngineResult>.
      * The WeakReference setup avoids the leak. See https://docs.mapbox.com/android/core/guides/
      */
-    // TODO should not be inner as this could leak memory!
-    private inner class LocationListeningCallback constructor(activity: MainActivity) :
+    private class LocationListeningCallback constructor(fragment: MapFragment) :
         LocationEngineCallback<LocationEngineResult> {
 
-        private val activityWeakReference: WeakReference<MainActivity> = WeakReference(activity)
+        private val fragmentWeakReference: WeakReference<MapFragment> = WeakReference(fragment)
 
         /**
          * The LocationEngineCallback interface's method which fires when the device's location has changed.
          */
         override fun onSuccess(result: LocationEngineResult) {
-            val activity: MainActivity? = activityWeakReference.get()
-            if (activity != null) {
+            val fragment: MapFragment? = fragmentWeakReference.get()
+            if (fragment != null) {
                 val location = result.lastLocation ?: return
 
-                // TODO use a separate map object class to access here!
+                // TODO use a separate map object class to access here to avoid the need of a WeakReference!
                 // Pass the new location to the Maps SDK's LocationComponent
-                map.locationComponent.forceLocationUpdate(location)
+                fragment.map.locationComponent.forceLocationUpdate(location)
             }
         }
 
@@ -320,10 +318,10 @@ class MapFragment : Fragment(), OnMapReadyCallback, MapboxMap.OnMapClickListener
          * @param exception the exception message
          */
         override fun onFailure(exception: Exception) {
-            val activity: MainActivity? = activityWeakReference.get()
-            if (activity != null) {
+            val fragment: MapFragment? = fragmentWeakReference.get()
+            if (fragment != null) {
                 Toast.makeText(
-                    activity,
+                    fragment.activity,
                     exception.localizedMessage,
                     Toast.LENGTH_SHORT
                 ).show()
