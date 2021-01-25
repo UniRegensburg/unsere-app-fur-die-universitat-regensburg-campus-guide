@@ -164,6 +164,8 @@ class MapFragment : Fragment(), OnMapReadyCallback, MapboxMap.OnMapClickListener
             val locationComponentActivationOptions =
                 LocationComponentActivationOptions.builder(activity, loadedMapStyle)
                     .locationComponentOptions(customLocationComponentOptions)
+                    // use our custom location engine below instead of the built-in location engine
+                    // to track user location updates
                     .useDefaultLocationEngine(false)
                     .build()
 
@@ -181,7 +183,6 @@ class MapFragment : Fragment(), OnMapReadyCallback, MapboxMap.OnMapClickListener
             // init custom location engine
             initLocationEngine()
         } else {
-            permissionsManager = PermissionsManager(this)
             permissionsManager.requestLocationPermissions(activity)
         }
     }
@@ -277,6 +278,8 @@ class MapFragment : Fragment(), OnMapReadyCallback, MapboxMap.OnMapClickListener
         super.onDestroyView()
         // TODO oder erst hier statt schon in onStop?
         // callback?.let { locationEngine?.removeLocationUpdates(it) }
+        callback = null
+        locationEngine = null
         mapView?.onDestroy()
     }
 
