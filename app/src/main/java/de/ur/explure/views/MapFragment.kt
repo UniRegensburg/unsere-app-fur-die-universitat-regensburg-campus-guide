@@ -30,6 +30,7 @@ import com.mapbox.mapboxsdk.maps.Style
 import de.ur.explure.R
 import de.ur.explure.databinding.FragmentMapBinding
 import de.ur.explure.utils.EventObserver
+import de.ur.explure.utils.SharedPreferencesManager
 import de.ur.explure.utils.isGPSEnabled
 import de.ur.explure.utils.measureContentWidth
 import de.ur.explure.utils.viewLifecycle
@@ -42,6 +43,8 @@ class MapFragment : Fragment(), OnMapReadyCallback, MapboxMap.OnMapClickListener
     PermissionsListener {
 
     private var binding: FragmentMapBinding by viewLifecycle()
+
+    private lateinit var preferencesManager: SharedPreferencesManager
 
     private val mapViewModel: MapViewModel by viewModel()
     private var mapView: MapView? = null
@@ -65,6 +68,8 @@ class MapFragment : Fragment(), OnMapReadyCallback, MapboxMap.OnMapClickListener
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        preferencesManager = SharedPreferencesManager(requireActivity())
 
         // disable the buttons until the map has finished loading
         binding.ownLocationButton.isEnabled = false
@@ -134,9 +139,10 @@ class MapFragment : Fragment(), OnMapReadyCallback, MapboxMap.OnMapClickListener
 
         listPopup.setOnItemClickListener { parent, _, position, _ ->
             val selectedItem = parent.getItemAtPosition(position)
-            val selectedMapStyle = MapViewModel.All_MAP_STYLES[selectedItem]
+            val selectedMapStyle = MapViewModel.All_MAP_STYLES[selectedItem] ?: return@setOnItemClickListener
             map.setStyle(selectedMapStyle) { mapStyle ->
                 mapViewModel.setMapStyle(mapStyle)
+                preferencesManager.setCurrentMapStyle(selectedMapStyle)
             }
 
             listPopup.dismiss()
@@ -154,7 +160,7 @@ class MapFragment : Fragment(), OnMapReadyCallback, MapboxMap.OnMapClickListener
         mapboxMap.addOnMapClickListener(this)
 
         // TODO setup a separate mapbox map object/singleton to handle and encapsulate map stuff?
-        val style = Style.MAPBOX_STREETS
+        val style = preferencesManager.getCurrentMapStyle()
         mapboxMap.setStyle(style) {
             // Map is set up and the style has loaded.
             mapViewModel.setMapStyle(it)
