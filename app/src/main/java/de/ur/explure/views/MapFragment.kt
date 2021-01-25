@@ -1,6 +1,7 @@
 package de.ur.explure.views
 
 import android.annotation.SuppressLint
+import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.os.Looper
 import android.view.LayoutInflater
@@ -34,7 +35,6 @@ import de.ur.explure.R
 import de.ur.explure.databinding.FragmentMapBinding
 import de.ur.explure.utils.EventObserver
 import de.ur.explure.utils.SharedPreferencesManager
-import de.ur.explure.utils.generateBitmap
 import de.ur.explure.utils.isGPSEnabled
 import de.ur.explure.utils.measureContentWidth
 import de.ur.explure.utils.viewLifecycle
@@ -172,9 +172,9 @@ class MapFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
     private fun setMapStyle(styleUrl: String?, isFirstTime: Boolean = false) {
         styleUrl ?: return
 
-        map.setStyle(getStyleBuilder(styleUrl)) {
+        map.setStyle(styleUrl) { mapStyle ->
             // Map is set up and the style has loaded.
-            mapViewModel.setMapStyle(it)
+            mapViewModel.setMapStyle(mapStyle)
 
             if (isFirstTime) {
                 mapViewModel.setMapReadyStatus(true)
@@ -183,8 +183,13 @@ class MapFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
             // save the current style in the shared preferences
             preferencesManager.setCurrentMapStyle(styleUrl)
 
+            // add a marker icon to the style
+            BitmapFactory.decodeResource(resources, R.drawable.mapbox_marker_icon_default)?.let {
+                mapStyle.addImage(ID_ICON, it)
+            }
+
             val view = mapView ?: return@setStyle
-            symbolManager = SymbolManager(view, map, it)
+            symbolManager = SymbolManager(view, map, mapStyle)
             symbolManager?.iconAllowOverlap = true
             symbolManager?.textAllowOverlap = true
 
@@ -200,7 +205,7 @@ class MapFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
 
             /*
             // print out all layers of current style
-            for (singleLayer in it.layers) {
+            for (singleLayer in mapStyle.layers) {
                 Timber.d("onMapReady: layer id = %s", singleLayer.id)
             }
             */
@@ -229,15 +234,6 @@ class MapFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
         )
 
         return true
-    }
-
-    private fun getStyleBuilder(styleUrl: String): Style.Builder {
-        val icon = generateBitmap(requireActivity(), R.drawable.mapbox_marker_icon_default)
-        return if (icon != null) {
-            Style.Builder().fromUri(styleUrl).withImage(ID_ICON, icon)
-        } else {
-            Style.Builder().fromUri(styleUrl)
-        }
     }
 
     /**
