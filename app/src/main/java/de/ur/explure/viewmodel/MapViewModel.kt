@@ -11,7 +11,6 @@ import de.ur.explure.utils.Event
  */
 
 class MapViewModel : ViewModel() {
-    private var styleIndex: Int = 0
     private var currentMapStyle: Style? = null
 
     private val _mapReady = MutableLiveData<Event<Boolean>>()
@@ -23,20 +22,6 @@ class MapViewModel : ViewModel() {
         _mapReady.value = Event(status) // Trigger the event by setting a new Event as a new value
     }
 
-    fun getNextMapStyleId(): String {
-        styleIndex++
-        if (styleIndex == All_MAP_STYLES.size) {
-            // reset to the first style
-            styleIndex = 0
-        }
-
-        return All_MAP_STYLES[styleIndex]
-    }
-
-    fun getActiveMapStyleId(): String {
-        return All_MAP_STYLES[styleIndex]
-    }
-
     fun setMapStyle(style: Style) {
         this.currentMapStyle = style
     }
@@ -46,15 +31,12 @@ class MapViewModel : ViewModel() {
     }
 
     companion object {
-        private val All_MAP_STYLES = arrayOf(
-            Style.MAPBOX_STREETS,
-            Style.OUTDOORS,
-            Style.LIGHT,
-            Style.DARK,
-            Style.SATELLITE,
-            Style.SATELLITE_STREETS,
-            Style.TRAFFIC_DAY,
-            Style.TRAFFIC_NIGHT
+        val All_MAP_STYLES = mapOf(
+            "Streets" to Style.MAPBOX_STREETS,
+            "Outdoors" to Style.OUTDOORS,
+            "Satellite" to Style.SATELLITE_STREETS,
+            "Night" to Style.TRAFFIC_NIGHT,
+            "Dark" to Style.DARK,
         )
     }
 }

@@ -6,7 +6,10 @@ import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import android.widget.Toast
+import androidx.appcompat.widget.ListPopupWindow
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.mapbox.android.core.location.LocationEngine
 import com.mapbox.android.core.location.LocationEngineCallback
@@ -24,9 +27,11 @@ import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
 import com.mapbox.mapboxsdk.maps.Style
+import de.ur.explure.R
 import de.ur.explure.databinding.FragmentMapBinding
 import de.ur.explure.utils.EventObserver
 import de.ur.explure.utils.isGPSEnabled
+import de.ur.explure.utils.measureContentWidth
 import de.ur.explure.utils.viewLifecycle
 import de.ur.explure.viewmodel.MapViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -87,16 +92,56 @@ class MapFragment : Fragment(), OnMapReadyCallback, MapboxMap.OnMapClickListener
             binding.changeStyleButton.isEnabled = true
 
             binding.changeStyleButton.setOnClickListener {
-                val style = mapViewModel.getNextMapStyleId()
-                map.setStyle(style) { mapStyle ->
-                    mapViewModel.setMapStyle(mapStyle)
-                }
+                showMapStyleOptions(layoutResource = R.layout.popup_list_item)
             }
 
             binding.ownLocationButton.setOnClickListener {
                 mapViewModel.getMapStyle()?.let { style -> enableLocationComponent(style) }
             }
         })
+    }
+
+    /**
+     * Show a popup window to let the user choose a map style.
+     */
+    private fun showMapStyleOptions(
+        layoutResource: Int = android.R.layout.simple_list_item_1,
+        horizontalOffsetValue: Int = 0,
+        verticalOffsetValue: Int = 0
+    ) {
+        val context = activity ?: return
+
+        val styleList = MapViewModel.All_MAP_STYLES.keys.toList()
+        val styleAdapter: ArrayAdapter<String> = ArrayAdapter<String>(
+            context,
+            layoutResource,
+            styleList
+        )
+        val listPopup = ListPopupWindow(context)
+
+        listPopup.apply {
+            setAdapter(styleAdapter)
+            width = measureContentWidth(context, styleAdapter)
+            height = ListPopupWindow.WRAP_CONTENT
+            isModal = true
+            anchorView = binding.changeStyleButton
+            horizontalOffset = horizontalOffsetValue
+            verticalOffset = verticalOffsetValue
+        }
+
+        val drawable = ContextCompat.getDrawable(context, R.drawable.popup_list_background)
+        listPopup.setBackgroundDrawable(drawable)
+
+        listPopup.setOnItemClickListener { parent, _, position, _ ->
+            val selectedItem = parent.getItemAtPosition(position)
+            val selectedMapStyle = MapViewModel.All_MAP_STYLES[selectedItem]
+            map.setStyle(selectedMapStyle) { mapStyle ->
+                mapViewModel.setMapStyle(mapStyle)
+            }
+
+            listPopup.dismiss()
+        }
+        listPopup.show()
     }
 
     /**
@@ -109,7 +154,7 @@ class MapFragment : Fragment(), OnMapReadyCallback, MapboxMap.OnMapClickListener
         mapboxMap.addOnMapClickListener(this)
 
         // TODO setup a separate mapbox map object/singleton to handle and encapsulate map stuff?
-        val style = mapViewModel.getActiveMapStyleId()
+        val style = Style.MAPBOX_STREETS
         mapboxMap.setStyle(style) {
             // Map is set up and the style has loaded.
             mapViewModel.setMapStyle(it)
