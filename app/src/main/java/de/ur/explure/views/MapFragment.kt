@@ -27,10 +27,14 @@ import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
 import com.mapbox.mapboxsdk.maps.Style
+import com.mapbox.mapboxsdk.plugins.annotation.SymbolManager
+import com.mapbox.mapboxsdk.plugins.annotation.SymbolOptions
+import com.mapbox.mapboxsdk.style.layers.Property.ICON_ANCHOR_BOTTOM
 import de.ur.explure.R
 import de.ur.explure.databinding.FragmentMapBinding
 import de.ur.explure.utils.EventObserver
 import de.ur.explure.utils.SharedPreferencesManager
+import de.ur.explure.utils.generateBitmap
 import de.ur.explure.utils.isGPSEnabled
 import de.ur.explure.utils.measureContentWidth
 import de.ur.explure.utils.viewLifecycle
@@ -39,8 +43,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
 import java.lang.ref.WeakReference
 
-class MapFragment : Fragment(), OnMapReadyCallback, MapboxMap.OnMapClickListener,
-    PermissionsListener {
+class MapFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
 
     private var binding: FragmentMapBinding by viewLifecycle()
 
@@ -53,6 +56,9 @@ class MapFragment : Fragment(), OnMapReadyCallback, MapboxMap.OnMapClickListener
     // for location tracking
     private var locationEngine: LocationEngine? = null
     private var callback: LocationListeningCallback? = null
+
+    // map symbols
+    private var symbolManager: SymbolManager? = null
 
     // permission handling
     private var permissionsManager: PermissionsManager = PermissionsManager(this)
@@ -138,12 +144,10 @@ class MapFragment : Fragment(), OnMapReadyCallback, MapboxMap.OnMapClickListener
         listPopup.setBackgroundDrawable(drawable)
 
         listPopup.setOnItemClickListener { parent, _, position, _ ->
-            val selectedItem = parent.getItemAtPosition(position)
-            val selectedMapStyle = MapViewModel.All_MAP_STYLES[selectedItem] ?: return@setOnItemClickListener
-            map.setStyle(selectedMapStyle) { mapStyle ->
-                mapViewModel.setMapStyle(mapStyle)
-                preferencesManager.setCurrentMapStyle(selectedMapStyle)
-            }
+            val selectedItem =
+                parent.getItemAtPosition(position) as? String ?: return@setOnItemClickListener
+            val selectedMapStyle = MapViewModel.All_MAP_STYLES[selectedItem]
+            setMapStyle(selectedMapStyle)
 
             listPopup.dismiss()
         }
@@ -157,27 +161,83 @@ class MapFragment : Fragment(), OnMapReadyCallback, MapboxMap.OnMapClickListener
     override fun onMapReady(mapboxMap: MapboxMap) {
         this.map = mapboxMap
 
-        mapboxMap.addOnMapClickListener(this)
+        mapboxMap.addOnMapClickListener(this::onMapClicked)
+        mapboxMap.addOnMapLongClickListener(this::onMapLongClicked)
 
         // TODO setup a separate mapbox map object/singleton to handle and encapsulate map stuff?
         val style = preferencesManager.getCurrentMapStyle()
-        mapboxMap.setStyle(style) {
+        setMapStyle(style, isFirstTime = true)
+    }
+
+    private fun setMapStyle(styleUrl: String?, isFirstTime: Boolean = false) {
+        styleUrl ?: return
+
+        map.setStyle(getStyleBuilder(styleUrl)) {
             // Map is set up and the style has loaded.
             mapViewModel.setMapStyle(it)
-            mapViewModel.setMapReadyStatus(true)
+
+            if (isFirstTime) {
+                mapViewModel.setMapReadyStatus(true)
+            }
+
+            // save the current style in the shared preferences
+            preferencesManager.setCurrentMapStyle(styleUrl)
+
+            val view = mapView ?: return@setStyle
+            symbolManager = SymbolManager(view, map, it)
+            symbolManager?.iconAllowOverlap = true
+            symbolManager?.textAllowOverlap = true
+
+            // symbolManager?.addDragListener(this::onSymbolDragged)
+            symbolManager?.addClickListener { symbol ->
+                Toast.makeText(
+                    requireActivity(),
+                    "Clicked on marker ${symbol.id}",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return@addClickListener true
+            }
 
             /*
             // print out all layers of current style
-            for (singleLayer in mapStyle.layers) {
+            for (singleLayer in it.layers) {
                 Timber.d("onMapReady: layer id = %s", singleLayer.id)
-            }*/
+            }
+            */
         }
     }
 
-    override fun onMapClick(point: LatLng): Boolean {
+    private fun onMapClicked(point: LatLng): Boolean {
         Timber.d("Clicked on map point with coordinates: $point")
-        // return true if this click should be consumed and not passed to other listeners registered afterwards
+        // ! This method to return false as otherwise symbol clicks won't be fired.
+        // If true this click is consumed and not passed to other listeners registered afterwards!
+        return false
+    }
+
+    private fun onMapLongClicked(point: LatLng): Boolean {
+        symbolManager ?: return false
+
+        // add a symbol to the long-clicked point
+        symbolManager?.create(
+            SymbolOptions()
+                .withLatLng(point)
+                // .withIconImage("cafe-15") // use maki icon set
+                .withIconImage(ID_ICON)
+                .withIconAnchor(ICON_ANCHOR_BOTTOM)
+                .withIconSize(1.0f)
+                .withDraggable(false) // TODO right now true spawns a new marker for some reason...
+        )
+
         return true
+    }
+
+    private fun getStyleBuilder(styleUrl: String): Style.Builder {
+        val icon = generateBitmap(requireActivity(), R.drawable.mapbox_marker_icon_default)
+        return if (icon != null) {
+            Style.Builder().fromUri(styleUrl).withImage(ID_ICON, icon)
+        } else {
+            Style.Builder().fromUri(styleUrl)
+        }
     }
 
     /**
@@ -329,8 +389,17 @@ class MapFragment : Fragment(), OnMapReadyCallback, MapboxMap.OnMapClickListener
         super.onDestroyView()
         // TODO oder erst hier statt schon in onStop?
         // callback?.let { locationEngine?.removeLocationUpdates(it) }
+
         callback = null
         locationEngine = null
+
+        if (this::map.isInitialized) {
+            map.removeOnMapClickListener(this::onMapClicked)
+            map.removeOnMapLongClickListener(this::onMapLongClicked)
+        }
+
+        symbolManager?.onDestroy()
+
         mapView?.onDestroy()
     }
 
@@ -340,6 +409,8 @@ class MapFragment : Fragment(), OnMapReadyCallback, MapboxMap.OnMapClickListener
 
         private const val DEFAULT_INTERVAL_IN_MILLISECONDS = 1000L
         private const val DEFAULT_MAX_WAIT_TIME = DEFAULT_INTERVAL_IN_MILLISECONDS * 5
+
+        private const val ID_ICON = "id-icon"
     }
 
     /**

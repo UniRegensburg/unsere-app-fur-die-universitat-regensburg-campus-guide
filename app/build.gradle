@@ -99,7 +99,9 @@ dependencies {
     detekt "io.gitlab.arturbosch.detekt:detekt-cli:1.15.0"
 
     //Mapbox
-    implementation 'com.mapbox.mapboxsdk:mapbox-android-sdk:9.5.0'
+    //implementation 'com.mapbox.mapboxsdk:mapbox-android-sdk:9.5.0'
+    // the corresponding sdk version is bundled with the plugin
+    implementation 'com.mapbox.mapboxsdk:mapbox-android-plugin-annotation-v9:0.9.0'
 
 }
 
