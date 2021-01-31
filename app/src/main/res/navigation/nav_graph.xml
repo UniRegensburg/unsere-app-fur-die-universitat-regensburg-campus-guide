@@ -7,8 +7,8 @@
 
     <fragment
         android:id="@+id/mainFragment"
-        android:name="de.ur.explure.views.MainFragment"
+        android:name="de.ur.explure.views.HostFragment"
         android:label="MainFragment"
-        tools:layout="@layout/fragment_main"/>
+        tools:layout="@layout/fragment_host"/>
 
 </navigation>

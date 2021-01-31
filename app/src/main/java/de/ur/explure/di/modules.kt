@@ -1,6 +1,7 @@
 package de.ur.explure.di
 
 import de.ur.explure.navigation.AppRouter
+import de.ur.explure.viewmodel.HostViewModel
 import de.ur.explure.viewmodel.MainViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
@@ -13,4 +14,5 @@ import org.koin.dsl.module
 val mainModule = module {
     single { AppRouter() }
     viewModel { MainViewModel(get()) }
+    viewModel { HostViewModel(get()) }
 }
