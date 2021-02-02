@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.LiveData
 import androidx.navigation.NavController
 import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.setupWithNavController
 import de.ur.explure.extensions.setupWithNavController
 import de.ur.explure.viewmodel.MainViewModel
 import kotlinx.android.synthetic.main.activity_main.*
@@ -62,6 +63,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
      */
     private fun observeController(controller: LiveData<NavController>) {
         controller.observe(this, { navController ->
+            toolbar.setupWithNavController(navController, appBarConfiguration)
             viewModel.initializeNavController(navController)
         })
     }
