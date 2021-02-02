@@ -2,6 +2,7 @@ package de.ur.explure
 
 import android.os.Bundle
 import android.view.MenuItem
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.LiveData
 import androidx.navigation.NavController
@@ -22,6 +23,8 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
 
     private val appBarConfiguration by lazy { AppBarConfiguration(navGraphDestinations) }
 
+    private var destinationChangeListener: NavController.OnDestinationChangedListener? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -37,6 +40,12 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         // restore the old state
         setupBottomNavigation()
         setupToolbar()
+        setUpNavDestinationChangeListener()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        setUpNavDestinationChangeListener()
     }
 
     private fun setupToolbar() {
@@ -68,6 +77,35 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
             viewModel.initializeNavController(navController)
         })
         viewModel.setCurrentNavController(controller)
+    }
+
+    private fun setUpNavDestinationChangeListener() {
+        destinationChangeListener =
+            NavController.OnDestinationChangedListener { _, destination, _ ->
+                // hide the bottom navigation bar in all views except the top level ones
+                if (destination.id in navGraphDestinations) {
+                    bottom_nav.visibility = View.VISIBLE
+                } else {
+                    bottom_nav.visibility = View.GONE
+                }
+            }
+
+        viewModel.getCurrentNavController()?.observe(this) {
+            val changeListener = destinationChangeListener ?: return@observe
+            it.addOnDestinationChangedListener(changeListener)
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+
+        // remove the destinationChangeListener of the current nav controller to prevent memory leaks
+        destinationChangeListener?.let {
+            viewModel.getCurrentNavController()?.value?.removeOnDestinationChangedListener(it)
+        }
+        // also remove viewmodel observer and reset current nav controller
+        viewModel.getCurrentNavController()?.removeObservers(this)
+        viewModel.resetCurrentNavController()
     }
 
     /**
