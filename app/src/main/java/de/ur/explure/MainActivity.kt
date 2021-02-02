@@ -7,7 +7,7 @@ import androidx.navigation.NavController
 import androidx.navigation.ui.AppBarConfiguration
 import de.ur.explure.extensions.setupWithNavController
 import de.ur.explure.viewmodel.MainViewModel
-import kotlinx.android.synthetic.main.activity_main.bottom_nav
+import kotlinx.android.synthetic.main.activity_main.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 /**
@@ -26,6 +26,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         // only setup bottom navigation and toolbar if the activity is created from scratch
         if (savedInstanceState == null) {
             setupBottomNavigation()
+            setupToolbar()
         }
     }
 
@@ -33,6 +34,12 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
         super.onRestoreInstanceState(savedInstanceState)
         // restore the old state
         setupBottomNavigation()
+        setupToolbar()
+    }
+
+    private fun setupToolbar() {
+        setSupportActionBar(toolbar)
+        supportActionBar?.setLogo(R.drawable.ic_home)
     }
 
     /**
