@@ -1,10 +1,12 @@
 package de.ur.explure
 
 import android.os.Bundle
+import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.LiveData
 import androidx.navigation.NavController
 import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.onNavDestinationSelected
 import androidx.navigation.ui.setupWithNavController
 import de.ur.explure.extensions.setupWithNavController
 import de.ur.explure.viewmodel.MainViewModel
@@ -14,7 +16,6 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 /**
  * Main activity of the single activity application.
  */
-
 class MainActivity : AppCompatActivity(R.layout.activity_main) {
 
     private val viewModel: MainViewModel by viewModel()
@@ -66,10 +67,23 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
             toolbar.setupWithNavController(navController, appBarConfiguration)
             viewModel.initializeNavController(navController)
         })
+        viewModel.setCurrentNavController(controller)
     }
 
+    /**
+     * Handle clicks on the Up-Buttons.
+     */
     override fun onSupportNavigateUp(): Boolean {
-        return viewModel.navigateUp()
+        return viewModel.navigateUp() || return super.onSupportNavigateUp()
+    }
+
+    /**
+     * Handle clicks on the menu items.
+     */
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        val controller =
+            viewModel.getCurrentNavController()?.value ?: return super.onOptionsItemSelected(item)
+        return item.onNavDestinationSelected(controller)
     }
 
     companion object {
