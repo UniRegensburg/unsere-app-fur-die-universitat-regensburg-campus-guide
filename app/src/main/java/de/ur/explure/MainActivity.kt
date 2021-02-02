@@ -10,13 +10,12 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
  * Main activity of the single activity application.
  */
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(R.layout.activity_main) {
 
     private val viewModel: MainViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
         initNavigation()
     }
 
