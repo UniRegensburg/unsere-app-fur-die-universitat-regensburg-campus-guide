@@ -37,4 +37,5 @@ Um eine hohe Code-Qualität im Team zu gewährleisten, werden [Detekt](https://d
 Allgemeine Regelungen und Guidelines bei der Entwicklung sowie eine Anleitung zum Erstellen eines APK-Releases befinden sich im [Wiki des Repositories](https://github.com/UniRegensburg/unsere-app-fur-die-universitat-regensburg-campus-guide/wiki). 
 Dort ist ebenfalls ein [Template](https://github.com/UniRegensburg/unsere-app-fur-die-universitat-regensburg-campus-guide/wiki/Checkliste---Pull-Request-Review) für die Erstellung einheitlicher Reviews zu finden. 
 Die Verwendung der Git-Hooks ist im [githooks-Unterordner](./githooks) genauer beschrieben.
+Hinweise zur Vewendung von Detekt und Troubleshooting dazu, befinden sich in der [Hinweise_zu_Detekt - Datei](./Hinweise_zu_Detekt.md).
 
