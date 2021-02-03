@@ -36,18 +36,15 @@ und danach
 ```sh
 ./gradlew detekt
 ```
-ausgeführt (oder nur gradlew je nach Betriebssystem, s. oben)
-
-    * der erste Befehl versucht Formatierungsfehler automatisch zu beheben, da dieser aber selbst bei erfolgreichem Korrigieren nur die (vorher) gefundenen Fehler zurückgibt, ist der zweite Aufruf nötig, um zu überprüfen, ob es noch Probleme gibt, die manuell behoben werden müssen
+ausgeführt (oder nur gradlew je nach Betriebssystem, s. oben) - der erste Befehl versucht Formatierungsfehler automatisch zu beheben, da dieser aber selbst bei erfolgreichem Korrigieren nur die (vorher) gefundenen Fehler zurückgibt, ist der zweite Aufruf nötig, um zu überprüfen, ob es noch Probleme gibt, die manuell behoben werden müssen
 - Falls Fehler aufgetreten sind, die nicht automatisch behoben werden konnten, müssen diese manuell verbessert werden, danach kann committed werden.
 
-Zur Sicherheit wird im pre-commit-hook dieser Workflow ebenfalls nochmal durchgeführt, falls vorher etwas vergessen wurde ;) Im gitHook werden allerdings nur die zu committenden Dateien überprüft.
-Code, der committed wurde, enthält also keinerlei Verstöße gegen die Detekt-Regeln mehr.
+Zur Sicherheit wird im pre-commit-hook dieser Workflow ebenfalls nochmal durchgeführt, falls vorher etwas vergessen wurde (Im gitHook werden allerdings nur die zu committenden Dateien überprüft). Code, der committed wurde, enthält also keinerlei Verstöße gegen die Detekt-Regeln mehr.
 
 # Troubleshooting
 
 ## Ich habe 12 Methoden in meiner Klasse, detekt erlaubt aber nur 11 ...
-Wenn nötig, können mit ```@Suppress("TooManyFunctions")``` bestimmte Stellen oder auch ganze Klassen/Dateien von den Regeln befreit werden, siehe ["Suppressing Issues"](https://detekt.github.io/detekt/suppressing-rules.html) (vielleicht ist die 12. Methode aber auch gar nicht wirklich nötig).
+Wenn nötig, können mit ```@Suppress("...")``` bestimmte Stellen oder auch ganze Klassen/Dateien von den Regeln befreit werden, siehe ["Suppressing Issues"](https://detekt.github.io/detekt/suppressing-rules.html) (vielleicht ist die 12. Methode aber auch gar nicht wirklich nötig).
 Regeln können auch (falls wirklich nötig und sinnvoll), direkt in der detekt.yml - Datei angepasst werden. Das sollte aber immer der letzte Ausweg bleiben!
 
 ## java.lang.IndexOutOfBoundsException: Wrong offset: ... Should be in range: ...
