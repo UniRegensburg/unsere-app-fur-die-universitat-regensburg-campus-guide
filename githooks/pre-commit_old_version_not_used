@@ -1,0 +1,77 @@
+#!/bin/sh
+
+# necessary for MacOs?
+#export PATH=/usr/local/bin:$PATH
+
+# necessary if Java_Home is not in the environment variables:
+#export JAVA_HOME="C:\Program Files\Java\jdk1.8.0_144"
+
+# unset GIT_DIR
+
+REPO_ROOT_DIR="$(git rev-parse --show-toplevel)"
+
+# set some variables to make it look a little better
+red=$(tput setaf 1)
+green=$(tput setaf 2)
+yellow=$(tput setaf 3)
+reset=$(tput sgr0)
+
+echo "${yellow}Running static code analysis ...${reset}" # reset necessary to clear the color for the next lines!
+
+# keep track of which files to commit,
+# see https://stackoverflow.com/questions/53322440/retain-committed-files-through-failed-pre-commit-hook
+committedFiles=$(git diff --name-only --cached)
+printf "Committing files: \n%s" "$committedFiles"
+files=$(echo "$committedFiles" | tr ";" "\\n")
+
+OUTPUT="/tmp/detekt-$(date +%s)"
+
+#Validate Kotlin Code
+#./gradlew check --stacktrace
+#./gradlew check
+#./gradlew formatKotlin && ./gradlew detekt
+"$REPO_ROOT_DIR"/gradlew -q detekt
+
+status=$?
+if [ "$status" = 0 ]; then
+  echo "${green}No problems found. Committing ...${reset}"
+  exit 0
+else
+  echo 1>&2 "${yellow}Problems found that need to be fixed! Running autoCorrection ...${reset}"
+
+  "$REPO_ROOT_DIR"/gradlew formatKotlin
+
+  status=$?
+  if [ "$status" = 0 ]; then
+    #after ktlintFormat runs
+    echo "${yellow}Tried to fix issues automatically. Checking again... ${reset}"
+
+    "$REPO_ROOT_DIR"/gradlew -q detekt >"$OUTPUT"
+
+    status=$?
+    if [ "$status" -ne 0 ]; then
+      echo "${red}There are still some problems that require a manual correction!${reset}"
+      cat "$OUTPUT"
+      rm "$OUTPUT"
+
+      echo "*****************************************************"
+      echo "${red}          Static Code Analysis failed!         "
+      echo "${red} Please fix the issues above before committing ${reset}"
+      echo "*****************************************************"
+      exit $status
+    else
+      echo "${green}All issues have been fixed automagically! ${reset}"
+
+      #replay items in the commits array and add only those files
+      for file in $files; do
+        git add "$file"
+      done
+      git commit -m "new commit" --no-verify
+      exit 0
+    fi
+  else
+    echo "${red}AutoCorrection failed for some reason!${reset}"
+    exit $status
+  fi
+fi
+rm "$OUTPUT"

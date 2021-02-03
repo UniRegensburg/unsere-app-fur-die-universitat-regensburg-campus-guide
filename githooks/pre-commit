@@ -1,0 +1,63 @@
+#!/bin/sh
+#################################
+# To enable this hook, enter in the root project:
+# git config --local core.hookspath githooks
+#################################
+
+#unset GIT_DIR
+REPO_ROOT_DIR="$(git rev-parse --show-toplevel)"
+
+# set some variables to make it look a little better on the command line
+red=$(tput setaf 1)
+green=$(tput setaf 2)
+yellow=$(tput setaf 3)
+reset=$(tput sgr0)
+
+echo "${yellow}Running static code analysis with detekt ...${reset}" # reset necessary to clear the color for the next lines!
+
+# keep track of which files to commit,
+# see https://stackoverflow.com/questions/53322440/retain-committed-files-through-failed-pre-commit-hook
+committedFiles=$(git diff --name-only --cached)
+printf "Committing files: \n%s" "$committedFiles"
+#files=$(echo "$committedFiles" | tr ";" "\\n")
+
+OUTPUT="/tmp/detekt-$(date +%s)"
+
+# Validate Kotlin Code and try to fix violations automatically
+"$REPO_ROOT_DIR"/gradlew -q detektAutoFormat
+
+status=$?
+if [ "$status" = 0 ]; then
+  echo "${green}No problems found. Committing ...${reset}"
+  exit 0
+else
+  # Test if any violations are left that couldn't be auto-corrected
+  echo 1>&2 "${yellow}Issues found! Trying to auto-correct all style violations ...${reset}"
+
+  "$REPO_ROOT_DIR"/gradlew -q detekt >"$OUTPUT"
+  #"$REPO_ROOT_DIR"/gradlew -q detektMain >"$OUTPUT"    // use (experimental) type resolution as well
+
+  status=$?
+  if [ "$status" -ne 0 ]; then
+    echo "${red}There are still some problems that require a manual correction!${reset}"
+    cat "$OUTPUT"
+    rm "$OUTPUT"
+
+    echo "*****************************************************"
+    echo "${red}          Static Code Analysis failed!         "
+    echo "${red} Please fix the issues above before committing ${reset}"
+    echo "*****************************************************"
+    exit $status
+  else
+    echo "${green}All issues have been fixed automagically! ${reset}"
+    rm "$OUTPUT"
+
+    echo "*****************************************************"
+    echo "${green} You can commit the code again now.  ${reset}"
+    echo "*****************************************************"
+
+    # adding the auto-corrections to the current commit does not work really well in the pre-commit hook unfortunately
+    # exit with error code to prevent the old version from being commited
+    exit 1
+  fi
+fi
