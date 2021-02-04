@@ -18,6 +18,10 @@ buildscript {
     }
 }
 
+plugins {
+    id "io.gitlab.arturbosch.detekt" version "$detekt_version"
+}
+
 allprojects {
     repositories {
         google()
@@ -25,6 +29,49 @@ allprojects {
     }
 }
 
+configurations {
+    detekt
+}
+
+detekt {
+    toolVersion = "$detekt_version"
+    input = files("$rootDir")
+    config = files("$rootDir/config/detekt/detekt.yml")
+    autoCorrect = false
+    parallel = true
+    reports {
+        html.enabled = true
+        xml.enabled = false
+    }
+}
+
+dependencies {
+    //Detekt CLI and Formatter
+    detektPlugins "io.gitlab.arturbosch.detekt:detekt-formatting:1.15.0"
+    detekt "io.gitlab.arturbosch.detekt:detekt-cli:1.15.0"
+}
+
 task clean(type: Delete) {
     delete rootProject.buildDir
+}
+
+task detektAutoFormat(type: io.gitlab.arturbosch.detekt.Detekt) {
+    description = "Autocorrect Kotlin Style Violations."
+    config.setFrom(detekt.config)
+    setSource(detekt.input)
+    if (project.hasProperty("inputFiles")) {
+        // split at newline or carriage return to separate commit input files
+        def inputArgs = (project.getProperty("inputFiles")).split(/\r?\n/)
+        println("####\nInputFiles:\n$inputArgs\n####")
+        // use the given cli arguments as input instead of the default input
+        setSource(inputArgs)
+    }
+    include("**/*.kt")
+    include("**/*.kts")
+    exclude("**/resources/**")
+    exclude("**/build/**")
+    parallel = true
+    autoCorrect = true
+    //classpath.setFrom(configurations.detekt)
+    //jvmTarget = "1.8"
 }
