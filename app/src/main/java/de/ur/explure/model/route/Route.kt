@@ -4,7 +4,7 @@ import android.os.Parcelable
 import de.ur.explure.model.comment.Comment
 import de.ur.explure.model.landmark.Landmark
 import kotlinx.android.parcel.Parcelize
-import java.util.*
+import java.util.Date
 import kotlin.collections.ArrayList
 
 @Parcelize

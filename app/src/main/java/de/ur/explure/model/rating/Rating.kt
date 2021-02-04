@@ -5,7 +5,7 @@ import kotlinx.android.parcel.Parcelize
 
 @Parcelize
 data class Rating(
-    val id : String,
+    val id: String,
     val ratingValue: Int,
     val text: String,
     val routeId: String,
