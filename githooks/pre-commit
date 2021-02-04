@@ -19,12 +19,11 @@ echo "${yellow}Running static code analysis with detekt ...${reset}" # reset nec
 # see https://stackoverflow.com/questions/53322440/retain-committed-files-through-failed-pre-commit-hook
 committedFiles=$(git diff --name-only --cached)
 printf "Committing files: \n%s" "$committedFiles"
-#files=$(echo "$committedFiles" | tr ";" "\\n")
 
 OUTPUT="/tmp/detekt-$(date +%s)"
 
 # Validate Kotlin Code and try to fix violations automatically
-"$REPO_ROOT_DIR"/gradlew -q detektAutoFormat
+"$REPO_ROOT_DIR"/gradlew -q detektAutoFormat -PinputFiles="$committedFiles"
 
 status=$?
 if [ "$status" = 0 ]; then
@@ -34,7 +33,7 @@ else
   # Test if any violations are left that couldn't be auto-corrected
   echo 1>&2 "${yellow}Issues found! Trying to auto-correct all style violations ...${reset}"
 
-  "$REPO_ROOT_DIR"/gradlew -q detekt >"$OUTPUT"
+  "$REPO_ROOT_DIR"/gradlew -q detektAutoFormat -PinputFiles="$committedFiles" >"$OUTPUT"
   #"$REPO_ROOT_DIR"/gradlew -q detektMain >"$OUTPUT"    // use (experimental) type resolution as well
 
   status=$?
