@@ -2,8 +2,10 @@ package de.ur.explure.views
 
 import android.annotation.SuppressLint
 import android.graphics.BitmapFactory
+import android.graphics.Rect
 import android.os.Bundle
 import android.os.Looper
+import android.util.DisplayMetrics
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,6 +14,8 @@ import android.widget.Toast
 import androidx.appcompat.widget.ListPopupWindow
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import com.getkeepsafe.taptargetview.TapTarget
+import com.getkeepsafe.taptargetview.TapTargetSequence
 import com.mapbox.android.core.location.LocationEngine
 import com.mapbox.android.core.location.LocationEngineCallback
 import com.mapbox.android.core.location.LocationEngineProvider
@@ -107,7 +111,7 @@ class MapFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
             }
 
             binding.ownLocationButton.setOnClickListener {
-                mapViewModel.getMapStyle()?.let { style -> enableLocationComponent(style) }
+                mapViewModel.getCurrentMapStyle()?.let { style -> enableLocationComponent(style) }
             }
         })
     }
@@ -165,20 +169,71 @@ class MapFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
         mapboxMap.addOnMapLongClickListener(this::onMapLongClicked)
 
         // TODO setup a separate mapbox map object/singleton to handle and encapsulate map stuff?
+        // -> use android jetpack lifecycle to access lifecycle hooks in that component
         val style = preferencesManager.getCurrentMapStyle()
-        setMapStyle(style, isFirstTime = true)
+
+        setMapStyle(style)
+
+        if (preferencesManager.isFirstRun()) {
+            showTutorial()
+        }
     }
 
-    private fun setMapStyle(styleUrl: String?, isFirstTime: Boolean = false) {
+    private fun showTutorial() {
+        val activity = activity ?: return
+
+        val targetOne = TapTarget.forView(
+            binding.changeStyleButton,
+            "Verschiedene Kartenstile sind verfügbar!",
+            "Hier kannst du den aktuellen Kartenstil anpassen."
+        )
+            .id(1)
+            .cancelable(true)
+            .transparentTarget(true)
+            // .targetCircleColor(R.color.design_default_color_error)
+            .targetRadius(targetOneRadius) // in dp
+            // .dimColor(R.color.colorPrimaryDark)
+            // .outerCircleColor(android.R.color.black)
+            .outerCircleAlpha(outerCircleAlpha)
+
+        // setup a custom tap target at the university
+        val displayMetrics = DisplayMetrics()
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
+            activity.display?.getRealMetrics(displayMetrics)
+        } else {
+            activity.windowManager.defaultDisplay.getRealMetrics(displayMetrics)
+        }
+        val screenWidth = displayMetrics.widthPixels
+        val screenHeight = displayMetrics.heightPixels
+        val markerIcon =
+            ContextCompat.getDrawable(activity, R.drawable.mapbox_marker_icon_default) ?: return
+        val markerTarget = Rect(0, 0, markerIcon.intrinsicWidth, markerIcon.intrinsicHeight)
+        markerTarget.offset(screenWidth / 2, screenHeight / 2) // center the target
+
+        val targetTwo = TapTarget.forBounds(markerTarget, "Hier ist die Universität :)")
+            .id(2)
+            .cancelable(true)
+            .transparentTarget(true)
+            .targetRadius(targetTwoRadius)
+            .outerCircleAlpha(outerCircleAlpha)
+            .icon(markerIcon)
+
+        TapTargetSequence(activity)
+            .targets(targetOne, targetTwo)
+            .start()
+
+        // mark first launch as completed so this tutorial won't be shown on further app starts
+        preferencesManager.completedFirstRun()
+    }
+
+    private fun setMapStyle(styleUrl: String?) {
         styleUrl ?: return
 
         map.setStyle(styleUrl) { mapStyle ->
             // Map is set up and the style has loaded.
-            mapViewModel.setMapStyle(mapStyle)
+            mapViewModel.setCurrentMapStyle(mapStyle)
 
-            if (isFirstTime) {
-                mapViewModel.setMapReadyStatus(true)
-            }
+            mapViewModel.setMapReadyStatus(true)
 
             // save the current style in the shared preferences
             preferencesManager.setCurrentMapStyle(styleUrl)
@@ -405,6 +460,10 @@ class MapFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
 
         private const val DEFAULT_INTERVAL_IN_MILLISECONDS = 1000L
         private const val DEFAULT_MAX_WAIT_TIME = DEFAULT_INTERVAL_IN_MILLISECONDS * 5
+
+        private const val outerCircleAlpha = 0.8f
+        private const val targetOneRadius = 60
+        private const val targetTwoRadius = 100
 
         private const val ID_ICON = "id-icon"
     }

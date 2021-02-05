@@ -23,7 +23,7 @@ class SharedPreferencesManager constructor(context: Context) {
      */
     fun isFirstRun() = sharedPreferences.getBoolean(FIRST_LAUNCH, true)
 
-    fun setFirstRun() {
+    fun completedFirstRun() {
         editor.putBoolean(FIRST_LAUNCH, false)
         editor.apply()
     }

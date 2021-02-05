@@ -9,24 +9,21 @@ import de.ur.explure.utils.Event
 /**
  * Map Viewmodel to handle and preserve map state.
  */
-
 class MapViewModel : ViewModel() {
     private var currentMapStyle: Style? = null
 
     private val _mapReady = MutableLiveData<Event<Boolean>>()
-
-    val mapReady: LiveData<Event<Boolean>>
-        get() = _mapReady
+    val mapReady: LiveData<Event<Boolean>> = _mapReady
 
     fun setMapReadyStatus(status: Boolean) {
         _mapReady.value = Event(status) // Trigger the event by setting a new Event as a new value
     }
 
-    fun setMapStyle(style: Style) {
+    fun setCurrentMapStyle(style: Style) {
         this.currentMapStyle = style
     }
 
-    fun getMapStyle(): Style? {
+    fun getCurrentMapStyle(): Style? {
         return this.currentMapStyle
     }
 
