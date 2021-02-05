@@ -8,7 +8,7 @@ import java.util.Date
 data class Comment(
     val id: String,
     val message: String,
-    val date: Date,
+    val createdAt: Date,
     val authorId: String,
-    val answers: List<String>
+    val answers: List<Comment>
 ) : Parcelable

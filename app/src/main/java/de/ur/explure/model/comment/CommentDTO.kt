@@ -1,12 +1,14 @@
 package de.ur.explure.model.comment
 
 import android.os.Parcelable
-import kotlinx.android.parcel.Parcelize
+import com.google.firebase.firestore.ServerTimestamp
 import java.util.Date
+import kotlinx.android.parcel.Parcelize
 
 @Parcelize
 data class CommentDTO(
     var message: String,
-    var date: Date,
-    var authorId: String
+    var authorId: String,
+    @ServerTimestamp
+    val createdAt: Date? = null,
 ) : Parcelable
