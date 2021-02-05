@@ -1,10 +1,10 @@
-package de.ur.explure.model.landmark
+package de.ur.explure.model.waypoint
 
 import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
-data class LandmarkDTO(
+data class WayPointDTO(
     var title: String,
     var coordinates: String,
     var description: String = "",

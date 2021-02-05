@@ -1,10 +1,10 @@
-package de.ur.explure.model.landmark
+package de.ur.explure.model.waypoint
 
 import android.os.Parcel
 import android.os.Parcelable
 import com.google.firebase.firestore.GeoPoint
 
-data class Landmark(
+data class WayPoint(
     val id: String,
     val title: String,
     val description: String,
@@ -33,12 +33,12 @@ data class Landmark(
         return 0
     }
 
-    companion object CREATOR : Parcelable.Creator<Landmark> {
-        override fun createFromParcel(parcel: Parcel): Landmark {
-            return Landmark(parcel)
+    companion object CREATOR : Parcelable.Creator<WayPoint> {
+        override fun createFromParcel(parcel: Parcel): WayPoint {
+            return WayPoint(parcel)
         }
 
-        override fun newArray(size: Int): Array<Landmark?> {
+        override fun newArray(size: Int): Array<WayPoint?> {
             return arrayOfNulls(size)
         }
     }

@@ -2,7 +2,7 @@ package de.ur.explure.model.route
 
 import android.os.Parcelable
 import com.google.firebase.firestore.ServerTimestamp
-import de.ur.explure.model.landmark.LandmarkDTO
+import de.ur.explure.model.waypoint.WayPointDTO
 import kotlinx.android.parcel.Parcelize
 import java.util.Date
 
@@ -15,12 +15,12 @@ data class RouteDTO(
     var distance: Double,
     var duration: Double,
     var thumbnail: String?,
-    var landMarks: MutableList<LandmarkDTO> = mutableListOf(),
+    var landMarks: MutableList<WayPointDTO> = mutableListOf(),
     @ServerTimestamp
     var createdAt: Date? = null,
 ) : Parcelable {
 
-    fun addLandMark(landMark: LandmarkDTO) {
+    fun addLandMark(landMark: WayPointDTO) {
         landMarks.add(landMark)
     }
 }

@@ -2,7 +2,7 @@ package de.ur.explure.model.route
 
 import android.os.Parcelable
 import de.ur.explure.model.comment.Comment
-import de.ur.explure.model.landmark.Landmark
+import de.ur.explure.model.waypoint.WayPoint
 import kotlinx.android.parcel.Parcelize
 import java.util.Date
 
@@ -17,7 +17,7 @@ data class Route(
     val distance: Double,
     val duration: Double,
     val thumbnailUrl: String? = null,
-    val landMarks: List<Landmark>,
+    val landMarks: List<WayPoint>,
     val comments: List<Comment> = emptyList(),
     val rating: List<String> = emptyList()
 ) : Parcelable
