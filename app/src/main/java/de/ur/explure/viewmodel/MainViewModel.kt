@@ -12,6 +12,8 @@ import de.ur.explure.navigation.AppRouter
 
 class MainViewModel(private val appRouter: AppRouter) : ViewModel() {
 
+
+
     fun setNavigationGraph(navController: NavController) {
         appRouter.setGraph(navController)
     }

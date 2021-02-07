@@ -65,6 +65,7 @@ dependencies {
     //Navigation
     implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
     implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
+    implementation "com.google.android.gms:play-services-maps:17.0.0"
 
     //Testing
     testImplementation 'junit:junit:4.13.1'
@@ -79,6 +80,8 @@ dependencies {
 
     //Firebase
     implementation platform('com.google.firebase:firebase-bom:26.2.0')
+    implementation 'com.google.firebase:firebase-auth-ktx'
+    implementation 'com.google.android.gms:play-services-auth:19.0.0'
 
     //Detekt CLI and Formatter
     detektPlugins "io.gitlab.arturbosch.detekt:detekt-formatting:1.15.0"
