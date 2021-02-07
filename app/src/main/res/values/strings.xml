@@ -1,3 +1,15 @@
 <resources>
     <string name="app_name">ExplURe</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+
+    <string name="search_button">Suche</string>
+    <string name="kategorie_text">Übersicht Kategorien</string>
+    <string name="arbeitsButton">Arbeiten</string>
+    <string name="freizeitButton">Sport</string>
+    <string name="cafetenButton">Cafeten</string>
+    <string name="chillenButton">Chillen</string>
+    <string name="organisationButton">Verwaltung</string>
+    <string name="bibliothekenButton">Bibliotheken</string>
 </resources>
