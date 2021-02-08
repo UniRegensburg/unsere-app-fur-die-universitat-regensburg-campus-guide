@@ -2,7 +2,6 @@ plugins {
     id 'com.android.application'
     id 'kotlin-android'
     id 'kotlin-android-extensions'
-    id "io.gitlab.arturbosch.detekt" version "$detekt_version"
 }
 
 apply plugin: 'com.google.gms.google-services'
