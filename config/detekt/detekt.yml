@@ -1,6 +1,6 @@
 build:
   maxIssues: 0
-  excludeCorrectable: true # the 'detekt'-Task will still show all issues, but the 'detektAutoFormat'-Task will only show the ones that couldn't be fixed automatically with this option
+  excludeCorrectable: false # the 'detekt'-Task will still show all issues, but the 'detektAutoFormat'-Task will only show the ones that couldn't be fixed automatically when true; Unfortunately, this doesn't work well with the git pre-commit hook
   weights:
   # complexity: 2
   # LongParameterList: 1
