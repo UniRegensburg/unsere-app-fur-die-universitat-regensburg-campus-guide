@@ -12,4 +12,5 @@
     <string name="chillenButton">Chillen</string>
     <string name="organisationButton">Verwaltung</string>
     <string name="bibliothekenButton">Bibliotheken</string>
+    <string name="searchMapButton">Zur Karten-Suche</string>
 </resources>
