@@ -1,6 +1,7 @@
 package de.ur.explure.di
 
 import de.ur.explure.navigation.AppRouter
+import de.ur.explure.viewmodel.DiscoverViewModel
 import de.ur.explure.viewmodel.MainViewModel
 import de.ur.explure.viewmodel.MapViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -15,4 +16,5 @@ val mainModule = module {
     single { AppRouter() }
     viewModel { MainViewModel(get()) }
     viewModel { MapViewModel() }
+    viewModel { DiscoverViewModel(get()) }
 }
