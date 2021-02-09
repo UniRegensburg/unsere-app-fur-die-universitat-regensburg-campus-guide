@@ -23,6 +23,6 @@ val mainModule = module {
     factory { FireStoreInstance(get()) }
     single { FirebaseAuthService(get()) }
     single { UserRepositoryImpl(get(), get()) }
-    viewModel { TestViewModel(get(), get()) }
+    viewModel { TestViewModel(get(), get(), get()) }
     viewModel { MainViewModel(get()) }
 }
