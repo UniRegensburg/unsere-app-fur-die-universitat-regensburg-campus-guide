@@ -22,7 +22,7 @@ printf "Committing files: \n%s" "$committedFiles"
 
 OUTPUT="/tmp/detekt-$(date +%s)"
 
-# Validate Kotlin Code and try to fix violations automatically
+# Validate Kotlin Code and try to fix violations automatically in the committed files
 "$REPO_ROOT_DIR"/gradlew -q detektAutoFormat -PinputFiles="$committedFiles"
 
 status=$?
