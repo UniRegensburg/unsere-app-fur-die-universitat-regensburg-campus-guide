@@ -12,6 +12,7 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.widget.ListPopupWindow
+import androidx.collection.forEach
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.getkeepsafe.taptargetview.TapTarget
@@ -35,6 +36,7 @@ import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.mapboxsdk.plugins.annotation.SymbolManager
 import com.mapbox.mapboxsdk.plugins.annotation.SymbolOptions
 import com.mapbox.mapboxsdk.style.layers.Property.ICON_ANCHOR_BOTTOM
+import com.mapbox.mapboxsdk.style.layers.Property.ICON_ROTATION_ALIGNMENT_VIEWPORT
 import de.ur.explure.R
 import de.ur.explure.databinding.FragmentMapBinding
 import de.ur.explure.utils.EventObserver
@@ -47,6 +49,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
 import java.lang.ref.WeakReference
 
+@Suppress("TooManyFunctions")
 class MapFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
 
     private var binding: FragmentMapBinding by viewLifecycle()
@@ -72,12 +75,14 @@ class MapFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentMapBinding.inflate(inflater)
+        binding = FragmentMapBinding.inflate(inflater, container, false)
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        Timber.d("in MapFragment onViewCreated")
 
         preferencesManager = SharedPreferencesManager(requireActivity())
 
@@ -87,15 +92,25 @@ class MapFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
 
         setupViewModelObservers()
 
-        // TODO to prevent recreation of the mapView on ui changes (like rotating the device) the
-        // manifest was modified to allow the activity to handle config changes itself
-        //  -> This should instead be fixed by saving the necessary state in onSavedInstanceState!
-        if (savedInstanceState === null) {
-            // init mapbox map
-            mapView = binding.mapView
-            mapView?.onCreate(savedInstanceState)
-            mapView?.getMapAsync(this)
+        if (savedInstanceState != null) {
+            // fragment got re-created; get the saved state
+            mapViewModel.lastKnownUserLocation = savedInstanceState.getParcelable(KEY_LOCATION)
+            mapViewModel.lastKnownCameraPosition =
+                savedInstanceState.getParcelable(KEY_CAMERA_POSITION)
+
+            /*
+            val bundle = savedInstanceState.getBundle("markers")
+            val markers = bundle?.get("symbolAnnotations")
+            Timber.d("in onViewCreated restore symbol annotations: $markers")
+            */
+
+            Timber.d("in onSavedInstance State restore")
         }
+
+        // init mapbox map
+        mapView = binding.mapView
+        mapView?.onCreate(savedInstanceState)
+        mapView?.getMapAsync(this)
     }
 
     private fun setupViewModelObservers() {
@@ -165,20 +180,36 @@ class MapFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
     override fun onMapReady(mapboxMap: MapboxMap) {
         this.map = mapboxMap
 
-        mapboxMap.addOnMapClickListener(this::onMapClicked)
-        mapboxMap.addOnMapLongClickListener(this::onMapLongClicked)
-
-        // TODO setup a separate mapbox map object/singleton to handle and encapsulate map stuff?
-        // -> use android jetpack lifecycle to access lifecycle hooks in that component
-        val style = preferencesManager.getCurrentMapStyle()
-
-        setMapStyle(style)
+        Timber.d("in onMapReady")
 
         if (preferencesManager.isFirstRun()) {
             showTutorial()
         }
+
+        setupMapListeners()
+
+        // TODO setup a separate mapbox map object/singleton to handle and encapsulate map stuff?
+        // -> use android jetpack lifecycle to access lifecycle hooks in that component
+        val style = preferencesManager.getCurrentMapStyle()
+        setMapStyle(style)
+
+        // init the camera at the saved cameraPosition if it is not null
+        mapViewModel.lastKnownCameraPosition?.let {
+            map.cameraPosition = it
+        }
+        /*
+        map.cameraPosition = mapViewModel.currentCameraPosition ?: CameraPosition.Builder()
+            .target(LatLng(48.997040, 12.094922)).zoom(14.0)
+            .build()
+        map.moveCamera {
+            map.cameraPosition
+        }
+        */
     }
 
+    /**
+     * Show interesting spots on the screen the first time the fragment is launched on this device.
+     */
     private fun showTutorial() {
         val activity = activity ?: return
 
@@ -238,25 +269,7 @@ class MapFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
             // save the current style in the shared preferences
             preferencesManager.setCurrentMapStyle(styleUrl)
 
-            // add a marker icon to the style
-            BitmapFactory.decodeResource(resources, R.drawable.mapbox_marker_icon_default)?.let {
-                mapStyle.addImage(ID_ICON, it)
-            }
-
-            val view = mapView ?: return@setStyle
-            symbolManager = SymbolManager(view, map, mapStyle)
-            symbolManager?.iconAllowOverlap = true
-            symbolManager?.textAllowOverlap = true
-
-            // symbolManager?.addDragListener(this::onSymbolDragged)
-            symbolManager?.addClickListener { symbol ->
-                Toast.makeText(
-                    requireActivity(),
-                    "Clicked on marker ${symbol.id}",
-                    Toast.LENGTH_SHORT
-                ).show()
-                return@addClickListener true
-            }
+            setupMarkerManager(mapStyle)
 
             /*
             // print out all layers of current style
@@ -265,6 +278,65 @@ class MapFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
             }
             */
         }
+    }
+
+    private fun setupMarkerManager(mapStyle: Style) {
+        val mView = mapView ?: return
+
+        // add a marker icon to the style
+        BitmapFactory.decodeResource(resources, R.drawable.mapbox_marker_icon_default)?.let {
+            mapStyle.addImage(ID_ICON, it)
+        }
+
+        symbolManager = SymbolManager(mView, map, mapStyle)
+        symbolManager?.iconAllowOverlap = true
+        symbolManager?.textAllowOverlap = true
+        symbolManager?.iconRotationAlignment = ICON_ROTATION_ALIGNMENT_VIEWPORT
+
+        // TODO only works on config change, after process death the markers are not recreated
+        //  because SparseLongArray doesn't work with savedInstanceState
+        // recreate all markers that were on the map before the config change
+        mapViewModel.activeMarkers?.forEach { _, value ->
+            symbolManager?.create(
+                SymbolOptions()
+                    .withLatLng(value.latLng)
+                    .withIconImage(ID_ICON)
+                    .withIconAnchor(ICON_ANCHOR_BOTTOM)
+                    .withIconSize(1.0f)
+            )
+        }
+
+        // symbolManager?.addDragListener(this::onSymbolDragged)
+        symbolManager?.addClickListener { symbol ->
+            Toast.makeText(
+                requireActivity(),
+                "Clicked on marker ${symbol.id}",
+                Toast.LENGTH_SHORT
+            ).show()
+            return@addClickListener true
+        }
+    }
+
+    /**
+     * * Map Listeners
+     */
+
+    private fun setupMapListeners() {
+        map.addOnCameraIdleListener(this::onCameraMoved)
+        map.addOnMapClickListener(this::onMapClicked)
+        map.addOnMapLongClickListener(this::onMapLongClicked)
+    }
+
+    private fun removeMapListeners() {
+        if (this::map.isInitialized) {
+            map.removeOnCameraIdleListener(this::onCameraMoved)
+            map.removeOnMapClickListener(this::onMapClicked)
+            map.removeOnMapLongClickListener(this::onMapLongClicked)
+        }
+    }
+
+    private fun onCameraMoved() {
+        mapViewModel.lastKnownCameraPosition = map.cameraPosition
     }
 
     private fun onMapClicked(point: LatLng): Boolean {
@@ -278,15 +350,24 @@ class MapFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
         symbolManager ?: return false
 
         // add a symbol to the long-clicked point
-        symbolManager?.create(
+        val marker = symbolManager?.create(
             SymbolOptions()
                 .withLatLng(point)
                 // .withIconImage("cafe-15") // use maki icon set
                 .withIconImage(ID_ICON)
                 .withIconAnchor(ICON_ANCHOR_BOTTOM)
                 .withIconSize(1.0f)
+                // .withTextField("This is a Marker")
+                // .withTextHaloColor("rgba(255, 255, 255, 100)")
+                // .withTextHaloWidth(5.0f)
+                // .withTextAnchor("bottom")
                 .withDraggable(false) // TODO right now true spawns a new marker for some reason...
         )
+
+        if (marker != null) {
+            // save the marker in the viewmodel
+            mapViewModel.activeMarkers?.put(marker.id, marker)
+        }
 
         return true
     }
@@ -406,29 +487,48 @@ class MapFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
 
     override fun onStart() {
         super.onStart()
+        Timber.d("in MapFragment onStart")
         mapView?.onStart()
     }
 
     override fun onResume() {
         super.onResume()
+        Timber.d("in MapFragment onResume")
         mapView?.onResume()
     }
 
     override fun onPause() {
         super.onPause()
+        Timber.d("in MapFragment onPause")
         mapView?.onPause()
     }
 
     override fun onStop() {
         super.onStop()
+        Timber.d("in MapFragment onStop")
         // remove location updates to prevent leaks
         callback?.let { locationEngine?.removeLocationUpdates(it) }
         mapView?.onStop()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
         mapView?.onSaveInstanceState(outState)
+
+        if (::map.isInitialized && map.locationComponent.isLocationComponentActivated) {
+            outState.putParcelable(KEY_CAMERA_POSITION, mapViewModel.lastKnownCameraPosition)
+            outState.putParcelable(KEY_LOCATION, mapViewModel.lastKnownUserLocation)
+
+            /*
+            Timber.d("in onSaveInstance symbol annotations: ${symbolManager?.annotations}")
+            val markers = listOf(symbolManager?.annotations)
+
+            // TODO does not work :(
+            val bundle = bundleOf("symbolAnnotations" to markers)
+            outState.putBundle("markers", bundle)
+            */
+        }
+
+        super.onSaveInstanceState(outState)
     }
 
     override fun onLowMemory() {
@@ -438,20 +538,19 @@ class MapFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
 
     override fun onDestroyView() {
         super.onDestroyView()
-        // TODO oder erst hier statt schon in onStop?
-        // callback?.let { locationEngine?.removeLocationUpdates(it) }
-
+        Timber.d("in MapFragment onDestroyView")
         callback = null
         locationEngine = null
 
-        if (this::map.isInitialized) {
-            map.removeOnMapClickListener(this::onMapClicked)
-            map.removeOnMapLongClickListener(this::onMapLongClicked)
-        }
-
+        removeMapListeners()
         symbolManager?.onDestroy()
-
         mapView?.onDestroy()
+        // TODO check if binding in ext is called here after onDestroy from mapView
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Timber.d("in MapFragment onDestroy")
     }
 
     companion object {
@@ -464,6 +563,9 @@ class MapFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
         private const val outerCircleAlpha = 0.8f
         private const val targetOneRadius = 60
         private const val targetTwoRadius = 100
+
+        private const val KEY_CAMERA_POSITION = "camera_position"
+        private const val KEY_LOCATION = "location"
 
         private const val ID_ICON = "id-icon"
     }
@@ -489,6 +591,8 @@ class MapFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
                 // TODO use a separate map object class to access here to avoid the need of a WeakReference!
                 // Pass the new location to the Maps SDK's LocationComponent
                 fragment.map.locationComponent.forceLocationUpdate(location)
+                // save the new location
+                fragment.mapViewModel.lastKnownUserLocation = location
             }
         }
 

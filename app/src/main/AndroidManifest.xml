@@ -15,9 +15,10 @@
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup">
 
+        <!-- prevent automatic recreation onConfigChanges with:
+        android:configChanges="orientation|screenSize|screenLayout|keyboardHidden" -->
         <activity
-            android:name="de.ur.explure.MainActivity"
-            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden">
+            android:name="de.ur.explure.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
