@@ -1,5 +1,9 @@
 package de.ur.explure.config
 
+/**
+ *
+ */
+
 object UserDocumentConfig {
     const val EMAIL_KEY = "email"
     const val NAME_KEY = "name"

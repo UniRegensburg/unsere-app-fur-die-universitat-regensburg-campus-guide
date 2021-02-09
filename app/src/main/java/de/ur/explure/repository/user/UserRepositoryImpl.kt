@@ -22,6 +22,16 @@ class UserRepositoryImpl(
     private val fireStore: FireStoreInstance
 ) : UserRepository {
 
+    /**
+     * Creates a new user document in FireStore for the currently logged in user.
+     *
+     * @param user [UserDTO] object containing the user's email and name.
+     * @return On Success: Returns [FirebaseResult.Success] with empty return\
+     * On Failure: Returns [FirebaseResult.Error] with exception\
+     * On Cancellation: Returns [FirebaseResult.Canceled] with exception
+     *
+     */
+
     override suspend fun createUserInFirestore(user: UserDTO): FirebaseResult<Void> {
         return try {
             val userId = firebaseAuth.getCurrentUserId() ?: return NO_USER_RESULT
@@ -30,6 +40,14 @@ class UserRepositoryImpl(
             FirebaseResult.Error(exception)
         }
     }
+
+    /**
+     * Retrieves the user's information from the FireStore database.
+     *
+     * @return On Success: Returns [FirebaseResult.Success] with an [User] object as data\
+     * On Failure: Returns [FirebaseResult.Error] with exception\
+     * On Cancellation: Returns [FirebaseResult.Canceled] with exception
+     */
 
     @Suppress("ReturnCount")
     override suspend fun getUserInfo(): FirebaseResult<User> {
@@ -50,6 +68,16 @@ class UserRepositoryImpl(
         }
     }
 
+    /**
+     * Updates the user's name in the firestore db.
+     *
+     * @param name [String] object with the new name of the user.
+     * @return On Success: Returns [FirebaseResult.Success] with empty return\
+     * On Failure: Returns [FirebaseResult.Error] with exception\
+     * On Cancellation: Returns [FirebaseResult.Canceled] with exception
+     *
+     */
+
     override suspend fun updateUserName(name: String): FirebaseResult<Void> {
         return try {
             val userId = firebaseAuth.getCurrentUserId() ?: return NO_USER_RESULT
@@ -58,6 +86,16 @@ class UserRepositoryImpl(
             FirebaseResult.Error(exception)
         }
     }
+
+    /**
+     * Adds the given route id to the user's finished route list.
+     *
+     * @param routeId [String] object containing the route's id which should be added.
+     * @return On Success: Returns [FirebaseResult.Success] with empty return\
+     * On Failure: Returns [FirebaseResult.Error] with exception\
+     * On Cancellation: Returns [FirebaseResult.Canceled] with exception
+     *
+     */
 
     override suspend fun addRouteToFinishedRoutes(routeId: String): FirebaseResult<Void> {
         return try {
@@ -69,6 +107,16 @@ class UserRepositoryImpl(
         }
     }
 
+    /**
+     * Adds the given route id to the user's favourite route list.
+     *
+     * @param routeId [String] object containing the route's id which should be added.
+     * @return On Success: Returns [FirebaseResult.Success] with empty return\
+     * On Failure: Returns [FirebaseResult.Error] with exception\
+     * On Cancellation: Returns [FirebaseResult.Canceled] with exception
+     *
+     */
+
     override suspend fun addRouteToFavouriteRoutes(routeId: String): FirebaseResult<Void> {
         return try {
             val userId = firebaseAuth.getCurrentUserId() ?: return NO_USER_RESULT
@@ -78,6 +126,16 @@ class UserRepositoryImpl(
             FirebaseResult.Error(exception)
         }
     }
+
+    /**
+     * Adds the given route id to the user's created route list.
+     *
+     * @param routeId [String] object containing the route's id which should be added.
+     * @return On Success: Returns [FirebaseResult.Success] with empty return\
+     * On Failure: Returns [FirebaseResult.Error] with exception\
+     * On Cancellation: Returns [FirebaseResult.Canceled] with exception
+     *
+     */
 
     override suspend fun addRouteToCreatedRoutes(routeId: String): FirebaseResult<Void> {
         return try {
@@ -89,6 +147,16 @@ class UserRepositoryImpl(
         }
     }
 
+    /**
+     * Adds the given route id to the user's active route list.
+     *
+     * @param routeId [String] object containing the route's id which should be added.
+     * @return On Success: Returns [FirebaseResult.Success] with empty return\
+     * On Failure: Returns [FirebaseResult.Error] with exception\
+     * On Cancellation: Returns [FirebaseResult.Canceled] with exception
+     *
+     */
+
     override suspend fun addRouteToActiveRoutes(routeId: String): FirebaseResult<Void> {
         return try {
             val userId = firebaseAuth.getCurrentUserId() ?: return NO_USER_RESULT
@@ -98,6 +166,16 @@ class UserRepositoryImpl(
             FirebaseResult.Error(exception)
         }
     }
+
+    /**
+     * Removes the given route id from the user's finished route list.
+     *
+     * @param routeId [String] object containing the route's id which should be removed.
+     * @return On Success: Returns [FirebaseResult.Success] with empty return\
+     * On Failure: Returns [FirebaseResult.Error] with exception\
+     * On Cancellation: Returns [FirebaseResult.Canceled] with exception
+     *
+     */
 
     override suspend fun removeRouteFromFinishedRoutes(routeId: String): FirebaseResult<Void> {
         return try {
@@ -109,6 +187,16 @@ class UserRepositoryImpl(
         }
     }
 
+    /**
+     * Removes the given route id from the user's favourite route list.
+     *
+     * @param routeId [String] object containing the route's id which should be removed.
+     * @return On Success: Returns [FirebaseResult.Success] with empty return\
+     * On Failure: Returns [FirebaseResult.Error] with exception\
+     * On Cancellation: Returns [FirebaseResult.Canceled] with exception
+     *
+     */
+
     override suspend fun removeRouteFromFavouriteRoutes(routeId: String): FirebaseResult<Void> {
         return try {
             val userId = firebaseAuth.getCurrentUserId() ?: return NO_USER_RESULT
@@ -119,6 +207,16 @@ class UserRepositoryImpl(
         }
     }
 
+    /**
+     * Removes the given route id from the user's created route list.
+     *
+     * @param routeId [String] object containing the route's id which should be removed.
+     * @return On Success: Returns [FirebaseResult.Success] with empty return\
+     * On Failure: Returns [FirebaseResult.Error] with exception\
+     * On Cancellation: Returns [FirebaseResult.Canceled] with exception
+     *
+     */
+
     override suspend fun removeRouteFromCreatedRoutes(routeId: String): FirebaseResult<Void> {
         return try {
             val userId = firebaseAuth.getCurrentUserId() ?: return NO_USER_RESULT
@@ -128,6 +226,16 @@ class UserRepositoryImpl(
             FirebaseResult.Error(exception)
         }
     }
+
+    /**
+     * Removes the given route id from the user's active route list.
+     *
+     * @param routeId [String] object containing the route's id which should be removed.
+     * @return On Success: Returns [FirebaseResult.Success] with empty return\
+     * On Failure: Returns [FirebaseResult.Error] with exception\
+     * On Cancellation: Returns [FirebaseResult.Canceled] with exception
+     *
+     */
 
     override suspend fun removeRouteFromActiveRoutes(routeId: String): FirebaseResult<Void> {
         return try {
