@@ -16,7 +16,7 @@ import de.ur.explure.services.FireStoreInstance
 import de.ur.explure.services.FirebaseAuthService
 import de.ur.explure.utils.FirebaseResult
 
-@Suppress("TooGenericExceptionCaught")
+@Suppress("TooGenericExceptionCaught", "UnnecessaryParentheses")
 class UserRepositoryImpl(
     private val firebaseAuth: FirebaseAuthService,
     private val fireStore: FireStoreInstance
@@ -31,6 +31,7 @@ class UserRepositoryImpl(
         }
     }
 
+    @Suppress("ReturnCount")
     override suspend fun getUserInfo(): FirebaseResult<User> {
         return try {
             val userId = firebaseAuth.getCurrentUserId() ?: return NO_USER_RESULT
