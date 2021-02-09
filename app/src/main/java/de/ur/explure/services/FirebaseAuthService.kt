@@ -6,7 +6,7 @@ import de.ur.explure.extensions.await
 import de.ur.explure.utils.FirebaseResult
 
 // Just for testing
-
+@Suppress("TooGenericExceptionCaught")
 class FirebaseAuthService(private val firebaseAuth: FirebaseAuth) {
 
     suspend fun logInUserWithEmail(

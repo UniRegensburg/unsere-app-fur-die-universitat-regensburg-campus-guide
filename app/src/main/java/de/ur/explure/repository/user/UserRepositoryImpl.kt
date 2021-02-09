@@ -1,6 +1,7 @@
 package de.ur.explure.repository.user
 
-import com.google.firebase.firestore.FieldValue
+import com.google.firebase.firestore.FieldValue.arrayRemove
+import com.google.firebase.firestore.FieldValue.arrayUnion
 import de.ur.explure.config.ErrorConfig.DESERIALIZATION_FAILED_RESULT
 import de.ur.explure.config.ErrorConfig.NO_USER_RESULT
 import de.ur.explure.config.UserDocumentConfig.ACTIVE_ROUTES_KEY
@@ -15,6 +16,7 @@ import de.ur.explure.services.FireStoreInstance
 import de.ur.explure.services.FirebaseAuthService
 import de.ur.explure.utils.FirebaseResult
 
+@Suppress("TooGenericExceptionCaught")
 class UserRepositoryImpl(
     private val firebaseAuth: FirebaseAuthService,
     private val fireStore: FireStoreInstance
@@ -60,7 +62,7 @@ class UserRepositoryImpl(
         return try {
             val userId = firebaseAuth.getCurrentUserId() ?: return NO_USER_RESULT
             fireStore.userCollection.document(userId)
-                .update(FINISHED_ROUTES_KEY, (FieldValue.arrayUnion(routeId))).await()
+                .update(FINISHED_ROUTES_KEY, (arrayUnion(routeId))).await()
         } catch (exception: Exception) {
             FirebaseResult.Error(exception)
         }
@@ -70,7 +72,7 @@ class UserRepositoryImpl(
         return try {
             val userId = firebaseAuth.getCurrentUserId() ?: return NO_USER_RESULT
             fireStore.userCollection.document(userId)
-                .update(FAVOURITE_ROUTES_KEY, (FieldValue.arrayUnion(routeId))).await()
+                .update(FAVOURITE_ROUTES_KEY, (arrayUnion(routeId))).await()
         } catch (exception: Exception) {
             FirebaseResult.Error(exception)
         }
@@ -80,7 +82,7 @@ class UserRepositoryImpl(
         return try {
             val userId = firebaseAuth.getCurrentUserId() ?: return NO_USER_RESULT
             fireStore.userCollection.document(userId)
-                .update(CREATED_ROUTES_KEY, (FieldValue.arrayUnion(routeId))).await()
+                .update(CREATED_ROUTES_KEY, (arrayUnion(routeId))).await()
         } catch (exception: Exception) {
             FirebaseResult.Error(exception)
         }
@@ -90,7 +92,7 @@ class UserRepositoryImpl(
         return try {
             val userId = firebaseAuth.getCurrentUserId() ?: return NO_USER_RESULT
             fireStore.userCollection.document(userId)
-                .update(ACTIVE_ROUTES_KEY, (FieldValue.arrayUnion(routeId))).await()
+                .update(ACTIVE_ROUTES_KEY, (arrayUnion(routeId))).await()
         } catch (exception: Exception) {
             FirebaseResult.Error(exception)
         }
@@ -100,7 +102,7 @@ class UserRepositoryImpl(
         return try {
             val userId = firebaseAuth.getCurrentUserId() ?: return NO_USER_RESULT
             fireStore.userCollection.document(userId)
-                .update(ACTIVE_ROUTES_KEY, (FieldValue.arrayRemove(routeId))).await()
+                .update(ACTIVE_ROUTES_KEY, (arrayRemove(routeId))).await()
         } catch (exception: Exception) {
             FirebaseResult.Error(exception)
         }
@@ -110,7 +112,7 @@ class UserRepositoryImpl(
         return try {
             val userId = firebaseAuth.getCurrentUserId() ?: return NO_USER_RESULT
             fireStore.userCollection.document(userId)
-                .update(ACTIVE_ROUTES_KEY, (FieldValue.arrayRemove(routeId))).await()
+                .update(ACTIVE_ROUTES_KEY, (arrayRemove(routeId))).await()
         } catch (exception: Exception) {
             FirebaseResult.Error(exception)
         }
@@ -120,7 +122,7 @@ class UserRepositoryImpl(
         return try {
             val userId = firebaseAuth.getCurrentUserId() ?: return NO_USER_RESULT
             fireStore.userCollection.document(userId)
-                .update(ACTIVE_ROUTES_KEY, (FieldValue.arrayRemove(routeId))).await()
+                .update(ACTIVE_ROUTES_KEY, (arrayRemove(routeId))).await()
         } catch (exception: Exception) {
             FirebaseResult.Error(exception)
         }
@@ -130,7 +132,7 @@ class UserRepositoryImpl(
         return try {
             val userId = firebaseAuth.getCurrentUserId() ?: return NO_USER_RESULT
             fireStore.userCollection.document(userId)
-                .update(ACTIVE_ROUTES_KEY, (FieldValue.arrayRemove(routeId))).await()
+                .update(ACTIVE_ROUTES_KEY, (arrayRemove(routeId))).await()
         } catch (exception: Exception) {
             FirebaseResult.Error(exception)
         }
