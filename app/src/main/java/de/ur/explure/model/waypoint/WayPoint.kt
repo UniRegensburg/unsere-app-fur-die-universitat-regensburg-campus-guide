@@ -14,11 +14,6 @@ data class WayPoint(
     val videoURL: String?
 ) : Parcelable {
 
-    override fun writeToParcel(parcel: Parcel, i: Int) {
-        parcel.writeDouble(geoPoint.latitude)
-        parcel.writeDouble(geoPoint.longitude)
-    }
-
     constructor(parcel: Parcel) : this(
         id = parcel.readString() ?: "",
         title = parcel.readString() ?: "",
@@ -28,6 +23,11 @@ data class WayPoint(
         imageURL = parcel.readString(),
         videoURL = parcel.readString(),
     )
+
+    override fun writeToParcel(parcel: Parcel, i: Int) {
+        parcel.writeDouble(geoPoint.latitude)
+        parcel.writeDouble(geoPoint.longitude)
+    }
 
     override fun describeContents(): Int {
         return 0
