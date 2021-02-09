@@ -1,5 +1,10 @@
 <resources>
     <string name="app_name">ExplURe</string>
+
+    <string name="menu_profile_title">Profil</string>
+    <string name="menu_discover_title">Entdecken</string>
+    <string name="menu_search_title">Suche</string>
+
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
