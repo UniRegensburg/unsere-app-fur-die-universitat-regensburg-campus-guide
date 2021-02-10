@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">ExplURe</string>
 
+    <string name="user_name">Max Mustermann</string>
+
     <string name="menu_profile_title">Profil</string>
     <string name="menu_discover_title">Entdecken</string>
     <string name="menu_search_title">Suche</string>
