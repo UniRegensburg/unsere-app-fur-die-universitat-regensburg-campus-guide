@@ -10,6 +10,7 @@ import androidx.navigation.NavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.onNavDestinationSelected
 import androidx.navigation.ui.setupWithNavController
+import com.crazylegend.viewbinding.viewBinder
 import de.ur.explure.databinding.ActivityMainBinding
 import de.ur.explure.extensions.setupWithNavController
 import de.ur.explure.viewmodel.MainViewModel
@@ -19,10 +20,12 @@ import timber.log.Timber
 /**
  * Main activity of the single activity application.
  */
-class MainActivity : AppCompatActivity(R.layout.activity_main) {
+class MainActivity : AppCompatActivity() {
+
+    // Uses this library to reduce viewbinding boilerplate code: https://github.com/FunkyMuse/KAHelpers/tree/master/viewbinding
+    private val activityMainBinding by viewBinder(ActivityMainBinding::inflate)
 
     private val viewModel: MainViewModel by viewModel()
-    private lateinit var binding: ActivityMainBinding
 
     private val appBarConfiguration by lazy { AppBarConfiguration(navGraphDestinations) }
 
@@ -30,9 +33,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        val view = binding.root
-        setContentView(view)
+        setContentView(activityMainBinding.root)
 
         // only setup bottom navigation and toolbar if the activity is created from scratch
         if (savedInstanceState == null) {
@@ -55,7 +56,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
     }
 
     private fun setupToolbar() {
-        setSupportActionBar(binding.toolbar)
+        setSupportActionBar(activityMainBinding.toolbar)
         supportActionBar?.setLogo(R.drawable.ic_home)
     }
 
@@ -64,7 +65,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
      * Called on first creation and when restoring state.
      */
     private fun setupBottomNavigation() {
-        val controller = binding.bottomNav.setupWithNavController(
+        val controller = activityMainBinding.bottomNav.setupWithNavController(
             navGraphIds = navGraphIds,
             fragmentManager = supportFragmentManager,
             containerId = R.id.nav_host_container,
@@ -79,7 +80,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
      */
     private fun observeController(controller: LiveData<NavController>) {
         controller.observe(this, { navController ->
-            binding.toolbar.setupWithNavController(navController, appBarConfiguration)
+            activityMainBinding.toolbar.setupWithNavController(navController, appBarConfiguration)
             viewModel.initializeNavController(navController)
         })
         viewModel.setCurrentNavController(controller)
@@ -90,9 +91,9 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
             NavController.OnDestinationChangedListener { _, destination, _ ->
                 // hide the bottom navigation bar in all views except the top level ones
                 if (destination.id in navGraphDestinations) {
-                    binding.bottomNav.visibility = View.VISIBLE
+                    activityMainBinding.bottomNav.visibility = View.VISIBLE
                 } else {
-                    binding.bottomNav.visibility = View.GONE
+                    activityMainBinding.bottomNav.visibility = View.GONE
                 }
             }
 

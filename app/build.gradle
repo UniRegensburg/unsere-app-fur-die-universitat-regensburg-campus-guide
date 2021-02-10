@@ -88,4 +88,6 @@ dependencies {
     // TapTargetView Library to highlight screen parts
     implementation "com.getkeepsafe.taptargetview:taptargetview:$tap_target_view_version"
 
+    // Kotlin Viewbinding - Helpers
+    implementation "com.github.FunkyMuse.KAHelpers:viewbinding:2.2.7"
 }

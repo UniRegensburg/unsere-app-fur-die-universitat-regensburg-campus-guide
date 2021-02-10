@@ -6,14 +6,13 @@ import android.graphics.Rect
 import android.os.Bundle
 import android.os.Looper
 import android.util.DisplayMetrics
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.widget.ListPopupWindow
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import com.crazylegend.viewbinding.viewBinding
 import com.getkeepsafe.taptargetview.TapTarget
 import com.getkeepsafe.taptargetview.TapTargetSequence
 import com.mapbox.android.core.location.LocationEngine
@@ -42,7 +41,6 @@ import de.ur.explure.utils.EventObserver
 import de.ur.explure.utils.SharedPreferencesManager
 import de.ur.explure.utils.isGPSEnabled
 import de.ur.explure.utils.measureContentWidth
-import de.ur.explure.utils.viewLifecycle
 import de.ur.explure.viewmodel.MapViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.androidx.viewmodel.scope.emptyState
@@ -50,9 +48,9 @@ import timber.log.Timber
 import java.lang.ref.WeakReference
 
 @Suppress("TooManyFunctions")
-class MapFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
+class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, PermissionsListener {
 
-    private var binding: FragmentMapBinding by viewLifecycle()
+    private val binding by viewBinding(FragmentMapBinding::bind)
 
     private lateinit var preferencesManager: SharedPreferencesManager
 
@@ -71,15 +69,6 @@ class MapFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
 
     // permission handling
     private var permissionsManager: PermissionsManager = PermissionsManager(this)
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-        binding = FragmentMapBinding.inflate(inflater, container, false)
-        return binding.root
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -529,7 +518,6 @@ class MapFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
         removeMapListeners()
         symbolManager?.onDestroy()
         mapView?.onDestroy()
-        // TODO check if binding in ext is called here after onDestroy from mapView
     }
 
     override fun onDestroy() {
