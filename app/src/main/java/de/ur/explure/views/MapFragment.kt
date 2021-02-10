@@ -12,7 +12,6 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.appcompat.widget.ListPopupWindow
-import androidx.collection.forEach
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.getkeepsafe.taptargetview.TapTarget
@@ -274,13 +273,14 @@ class MapFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
         symbolManager?.textIgnorePlacement = false
         symbolManager?.iconRotationAlignment = ICON_ROTATION_ALIGNMENT_VIEWPORT
 
-        // TODO only works on config change, after process death the markers are not recreated
-        //  because SparseLongArray doesn't work with savedInstanceState
-        // recreate all markers that were on the map before the config change
-        mapViewModel.activeMarkers?.forEach { _, value ->
+        val allMarker = mapViewModel.getAllActiveMarkers()
+        Timber.d("AllMarkers: $allMarker")
+
+        // recreate all markers that were on the map before the config change or process death
+        mapViewModel.getAllActiveMarkers()?.forEach { coordinate ->
             symbolManager?.create(
                 SymbolOptions()
-                    .withLatLng(value.latLng)
+                    .withLatLng(coordinate)
                     .withIconImage(ID_ICON)
                     .withIconAnchor(ICON_ANCHOR_BOTTOM)
             )
@@ -362,7 +362,8 @@ class MapFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
 
         if (marker != null) {
             // save the marker in the viewmodel
-            mapViewModel.activeMarkers?.put(marker.id, marker)
+            // mapViewModel.activeMarkers?.put(marker.id, marker)
+            mapViewModel.saveMarker(marker)
         }
 
         return false
@@ -505,6 +506,8 @@ class MapFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
         // remove location updates to prevent leaks
         callback?.let { locationEngine?.removeLocationUpdates(it) }
         mapView?.onStop()
+
+        mapViewModel.saveActiveMarkers()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -532,11 +535,13 @@ class MapFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
     override fun onDestroy() {
         super.onDestroy()
         Timber.d("in MapFragment onDestroy")
+
+        // mapViewModel.resetActiveMarkers()
     }
 
     companion object {
         // Note: this layer is not in all map styles available (e.g. the satellite style)!
-        private const val FIRST_SYMBOL_LAYER_ID = "waterway-label"
+        // private const val FIRST_SYMBOL_LAYER_ID = "waterway-label"
 
         private const val DEFAULT_INTERVAL_IN_MILLISECONDS = 1000L
         private const val DEFAULT_MAX_WAIT_TIME = DEFAULT_INTERVAL_IN_MILLISECONDS * 5

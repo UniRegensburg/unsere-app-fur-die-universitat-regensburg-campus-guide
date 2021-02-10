@@ -1,12 +1,12 @@
 package de.ur.explure.viewmodel
 
 import android.location.Location
-import androidx.collection.LongSparseArray
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import com.mapbox.mapboxsdk.camera.CameraPosition
+import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.mapboxsdk.plugins.annotation.Symbol
 import de.ur.explure.utils.Event
@@ -21,9 +21,27 @@ class MapViewModel(private val state: SavedStateHandle) : ViewModel() {
 
     private var currentMapStyle: Style? = null
 
-    // TODO this should be saved as well but bundle doesn't accept a LongSparseArray as type
-    // -> but the latLng Coordinates themselves could be saved!
-    var activeMarkers: LongSparseArray<Symbol>? = LongSparseArray()
+    // var activeMarkers: LongSparseArray<Symbol>? = LongSparseArray()
+    // TODO only saving the latlng coords will probably not be enough later but symbol cannot be parcelized
+    private val markers: MutableList<LatLng> = state[ACTIVE_MARKERS_KEY] ?: mutableListOf()
+
+    fun saveMarker(marker: Symbol) {
+        // activeMarkers?.put(marker.id, marker)
+        markers.add(marker.latLng)
+    }
+
+    fun saveActiveMarkers() {
+        state[ACTIVE_MARKERS_KEY] = markers
+    }
+
+    fun getAllActiveMarkers(): List<LatLng>? {
+        return state[ACTIVE_MARKERS_KEY]
+    }
+
+    /*
+    fun resetActiveMarkers() {
+        markers.clear()
+    }*/
 
     fun setMapReadyStatus(status: Boolean) {
         _mapReady.value = Event(status) // Trigger the event by setting a new Event as a new value
@@ -53,15 +71,6 @@ class MapViewModel(private val state: SavedStateHandle) : ViewModel() {
         return state[CAMERA_POSITION_KEY]
     }
 
-    /*
-    fun <T> SavedStateHandle.getOrNull(key: String): T? {
-        return if (contains(key)) {
-            get(key)
-        } else {
-            null
-        }
-    }*/
-
     companion object {
         val All_MAP_STYLES = mapOf(
             "Streets" to Style.MAPBOX_STREETS,
@@ -74,5 +83,6 @@ class MapViewModel(private val state: SavedStateHandle) : ViewModel() {
         // saved state keys
         private const val USER_LOCATION_KEY = "userLocation"
         private const val CAMERA_POSITION_KEY = "cameraPosition"
+        private const val ACTIVE_MARKERS_KEY = "activeMarkers"
     }
 }
