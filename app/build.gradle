@@ -31,6 +31,10 @@ android {
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            resValue("string", "access_token", "${project.properties['MAPBOX_ACCESS_TOKEN']}")
+        }
+        debug {
+            resValue("string", "access_token", "${project.properties['MAPBOX_ACCESS_TOKEN']}")
         }
     }
 
