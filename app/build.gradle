@@ -46,7 +46,6 @@ android {
 
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
     //Koin (Dependency Injection)
     implementation "org.koin:koin-core:$koin_version"
