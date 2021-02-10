@@ -46,6 +46,7 @@ import de.ur.explure.utils.measureContentWidth
 import de.ur.explure.utils.viewLifecycle
 import de.ur.explure.viewmodel.MapViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.androidx.viewmodel.scope.emptyState
 import timber.log.Timber
 import java.lang.ref.WeakReference
 
@@ -56,11 +57,13 @@ class MapFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
 
     private lateinit var preferencesManager: SharedPreferencesManager
 
-    private val mapViewModel: MapViewModel by viewModel()
+    // Setting the state as emptyState as a workaround for this issue: https://github.com/InsertKoinIO/koin/issues/963
+    private val mapViewModel: MapViewModel by viewModel(state = emptyState())
+
     private var mapView: MapView? = null
     private lateinit var map: MapboxMap
 
-    // for location tracking
+    // location tracking
     private var locationEngine: LocationEngine? = null
     private var callback: LocationListeningCallback? = null
 
@@ -92,21 +95,6 @@ class MapFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
 
         setupViewModelObservers()
 
-        if (savedInstanceState != null) {
-            // fragment got re-created; get the saved state
-            mapViewModel.lastKnownUserLocation = savedInstanceState.getParcelable(KEY_LOCATION)
-            mapViewModel.lastKnownCameraPosition =
-                savedInstanceState.getParcelable(KEY_CAMERA_POSITION)
-
-            /*
-            val bundle = savedInstanceState.getBundle("markers")
-            val markers = bundle?.get("symbolAnnotations")
-            Timber.d("in onViewCreated restore symbol annotations: $markers")
-            */
-
-            Timber.d("in onSavedInstance State restore")
-        }
-
         // init mapbox map
         mapView = binding.mapView
         mapView?.onCreate(savedInstanceState)
@@ -115,9 +103,10 @@ class MapFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
 
     private fun setupViewModelObservers() {
         mapViewModel.mapReady.observe(viewLifecycleOwner, EventObserver {
-            // this only gets called if the event has never been handled thanks to the EventObserver
+            // this only gets called if the event has never been handled before because of the EventObserver
             Timber.d("Map has finished loading and can be used now!")
 
+            // enable the buttons now that the map is ready
             binding.ownLocationButton.isEnabled = true
             binding.changeStyleButton.isEnabled = true
 
@@ -194,17 +183,9 @@ class MapFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
         setMapStyle(style)
 
         // init the camera at the saved cameraPosition if it is not null
-        mapViewModel.lastKnownCameraPosition?.let {
+        mapViewModel.getLastKnownCameraPosition()?.let {
             map.cameraPosition = it
         }
-        /*
-        map.cameraPosition = mapViewModel.currentCameraPosition ?: CameraPosition.Builder()
-            .target(LatLng(48.997040, 12.094922)).zoom(14.0)
-            .build()
-        map.moveCamera {
-            map.cameraPosition
-        }
-        */
     }
 
     /**
@@ -221,10 +202,7 @@ class MapFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
             .id(1)
             .cancelable(true)
             .transparentTarget(true)
-            // .targetCircleColor(R.color.design_default_color_error)
             .targetRadius(targetOneRadius) // in dp
-            // .dimColor(R.color.colorPrimaryDark)
-            // .outerCircleColor(android.R.color.black)
             .outerCircleAlpha(outerCircleAlpha)
 
         // setup a custom tap target at the university
@@ -232,6 +210,7 @@ class MapFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
             activity.display?.getRealMetrics(displayMetrics)
         } else {
+            @Suppress("DEPRECATION")
             activity.windowManager.defaultDisplay.getRealMetrics(displayMetrics)
         }
         val screenWidth = displayMetrics.widthPixels
@@ -290,7 +269,9 @@ class MapFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
 
         symbolManager = SymbolManager(mView, map, mapStyle)
         symbolManager?.iconAllowOverlap = true
-        symbolManager?.textAllowOverlap = true
+        symbolManager?.iconIgnorePlacement = true
+        symbolManager?.textAllowOverlap = false
+        symbolManager?.textIgnorePlacement = false
         symbolManager?.iconRotationAlignment = ICON_ROTATION_ALIGNMENT_VIEWPORT
 
         // TODO only works on config change, after process death the markers are not recreated
@@ -302,18 +283,27 @@ class MapFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
                     .withLatLng(value.latLng)
                     .withIconImage(ID_ICON)
                     .withIconAnchor(ICON_ANCHOR_BOTTOM)
-                    .withIconSize(1.0f)
             )
         }
 
         // symbolManager?.addDragListener(this::onSymbolDragged)
+
         symbolManager?.addClickListener { symbol ->
             Toast.makeText(
                 requireActivity(),
                 "Clicked on marker ${symbol.id}",
                 Toast.LENGTH_SHORT
             ).show()
-            return@addClickListener true
+            return@addClickListener false
+        }
+
+        // TODO this also calls the onMapLongClick and therefore spawns a new marker as well
+        // -> deleting a marker should happen via its info window (e.g. a small 'delete this marker'-
+        // button at the bottom)
+        symbolManager?.addLongClickListener { symbol ->
+            // remove a marker on long click
+            symbolManager?.delete(symbol)
+            return@addLongClickListener true
         }
     }
 
@@ -336,7 +326,7 @@ class MapFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
     }
 
     private fun onCameraMoved() {
-        mapViewModel.lastKnownCameraPosition = map.cameraPosition
+        mapViewModel.setCurrentCameraPosition(map.cameraPosition)
     }
 
     private fun onMapClicked(point: LatLng): Boolean {
@@ -361,7 +351,13 @@ class MapFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
                 // .withTextHaloColor("rgba(255, 255, 255, 100)")
                 // .withTextHaloWidth(5.0f)
                 // .withTextAnchor("bottom")
-                .withDraggable(false) // TODO right now true spawns a new marker for some reason...
+
+                // An offset is added so that the bottom of the red marker icon gets fixed to the
+                // coordinate, rather than the middle of the icon being fixed to the coordinate point.
+                // The offset depends on the icon that is used!
+                .withIconOffset(ICON_OFFSET)
+                // TODO right now draggable=true spawns a new marker; this seems to be an open issue
+                .withDraggable(false)
         )
 
         if (marker != null) {
@@ -369,7 +365,7 @@ class MapFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
             mapViewModel.activeMarkers?.put(marker.id, marker)
         }
 
-        return true
+        return false
     }
 
     /**
@@ -513,21 +509,6 @@ class MapFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
 
     override fun onSaveInstanceState(outState: Bundle) {
         mapView?.onSaveInstanceState(outState)
-
-        if (::map.isInitialized && map.locationComponent.isLocationComponentActivated) {
-            outState.putParcelable(KEY_CAMERA_POSITION, mapViewModel.lastKnownCameraPosition)
-            outState.putParcelable(KEY_LOCATION, mapViewModel.lastKnownUserLocation)
-
-            /*
-            Timber.d("in onSaveInstance symbol annotations: ${symbolManager?.annotations}")
-            val markers = listOf(symbolManager?.annotations)
-
-            // TODO does not work :(
-            val bundle = bundleOf("symbolAnnotations" to markers)
-            outState.putBundle("markers", bundle)
-            */
-        }
-
         super.onSaveInstanceState(outState)
     }
 
@@ -564,8 +545,7 @@ class MapFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
         private const val targetOneRadius = 60
         private const val targetTwoRadius = 100
 
-        private const val KEY_CAMERA_POSITION = "camera_position"
-        private const val KEY_LOCATION = "location"
+        private val ICON_OFFSET = arrayOf(0f, -9f)
 
         private const val ID_ICON = "id-icon"
     }
@@ -592,7 +572,7 @@ class MapFragment : Fragment(), OnMapReadyCallback, PermissionsListener {
                 // Pass the new location to the Maps SDK's LocationComponent
                 fragment.map.locationComponent.forceLocationUpdate(location)
                 // save the new location
-                fragment.mapViewModel.lastKnownUserLocation = location
+                fragment.mapViewModel.setCurrentUserPosition(location)
             }
         }
 

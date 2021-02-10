@@ -15,6 +15,6 @@ import org.koin.dsl.module
 val mainModule = module {
     single { AppRouter() }
     viewModel { MainViewModel(get()) }
-    viewModel { MapViewModel() }
+    viewModel { MapViewModel(get()) }
     viewModel { DiscoverViewModel(get()) }
 }
