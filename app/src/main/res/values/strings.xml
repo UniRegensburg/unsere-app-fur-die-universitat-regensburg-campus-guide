@@ -3,10 +3,14 @@
     <string name="loginEmail">Email</string>
     <string name="loginPassword">Passwort</string>
     <string name="loginButton">Anmelden</string>
+    <string name="loginText">Anmelden</string>
     <string name="tvRegister">Register ?</string>
+    <string name="resetPassword">Passwort vergessen?</string>
+    <string name="orText">oder</string>
+    <string name="withoutAccount">Weiter ohne Account?</string>
+    <string name="enterEmail">Bitte Emailadresse eingeben</string>
     <string name="NoAccount">Noch kein Account?</string>
     <string name="signUpButton">Registrieren?</string>
-    <string name="loginText">Anmelden</string>
     <string name="registerText">Registrieren</string>
     <string name="newEmail">Email</string>
     <string name="newPassword">Passwort</string>
@@ -14,8 +18,12 @@
     <string name="registerButton">Registrieren</string>
     <string name="alreadyAccount">Sie haben bereits ein Konto?</string>
     <string name="backToLoginButton">Anmelden</string>
-    <string name="resetPassword">Passwort vergessen?</string>
-    <string name="orText">oder</string>
-    <string name="withoutAccount">Weiter ohne Account?</string>
-    <string name="enterEmail">Bitte Emailadresse eingeben</string>
+    <string name="loginFailed">Anmeldung fehlgeschlagen</string>
+    <string name="builderText">Passwort vergessen</string>
+    <string name="positiveButton">Zurücksetzen</string>
+    <string name="negativeButton">Schließen</string>
+    <string name="emptyEmail">Bitte Emailadresse eingeben</string>
+    <string name="wrongEmail">Emailadresse ist falsch</string>
+    <string name="emailSent">Email wurde gesendet</string>
+    <string name="registrationFailed">Registrierung fehlgeschlagen</string>
 </resources>

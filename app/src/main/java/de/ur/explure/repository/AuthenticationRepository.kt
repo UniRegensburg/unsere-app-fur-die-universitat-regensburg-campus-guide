@@ -1,23 +1,18 @@
 package de.ur.explure.repository
 
-
-import android.util.Patterns
-import android.widget.EditText
-import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import org.koin.core.KoinComponent
 
-class AuthenticationRepository {
+class AuthenticationRepository(val firebaseAuth: FirebaseAuth) : KoinComponent {
 
-    //private var firebaseData: FirebaseData = FirebaseData()
-    private var user: MutableLiveData<FirebaseUser> = MutableLiveData<FirebaseUser>()
-    private var userLoggedOut: MutableLiveData<Boolean> = MutableLiveData<Boolean>()
-    private var firebaseAuth: FirebaseAuth = FirebaseAuth.getInstance()
+    private val user: MutableLiveData<FirebaseUser> = MutableLiveData<FirebaseUser>()
+    val currentUser: MutableLiveData<FirebaseUser> = user
 
     init {
 
-        //checks if user is already logged in
+        // checks if user is already logged in
        /* if(firebaseAuth.currentUser != null) {
             user.postValue(firebaseAuth.currentUser)
             userLoggedOut.postValue(false)
@@ -29,61 +24,39 @@ class AuthenticationRepository {
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                             user.postValue(firebaseAuth.currentUser)
-                    } else {
-                        //Toast.makeText(this, "Registrierung fehlgeschlagen", Toast.LENGTH_SHORT).show()
                     }
                 }
     }
 
-    fun signIn(email : String, password : String) {
+    fun signIn(email: String, password: String) {
         firebaseAuth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         user.postValue(firebaseAuth.currentUser)
-                    } else {
-                       //Toast.makeText(this, "Anmeldung fehlgeschlagen", Toast.LENGTH_SHORT).show()
                     }
                 }
     }
 
-    fun resetPassword(email: EditText) {
-        if(email.text.toString().isEmpty()) {
-            return
-        }
-        if(!Patterns.EMAIL_ADDRESS.matcher(email.text.toString()).matches()){
-            return
-        }
-        firebaseAuth.sendPasswordResetEmail(email.text.toString())
+    fun resetPassword(email: String) {
+        firebaseAuth.sendPasswordResetEmail(email)
                 .addOnCompleteListener {
-                    task->
-                    if(task.isSuccessful) {
-                    //Toast.makeText(this, "Email gesendet", Toast.LENGTH_SHORT).show()
+                    task ->
+                    if (task.isSuccessful) {
+                    // Toast.makeText(this, "Email gesendet", Toast.LENGTH_SHORT).show()
                     }
                 }
         }
 
     fun signInAnonymously() {
         firebaseAuth.signInAnonymously()
-                .addOnCompleteListener{ task ->
+                .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
                         user.postValue(firebaseAuth.currentUser)
-                    } else {
-                        //Toast.makeText(..., "Anmeldung fehlgeschlagen", Toast.LENGTH_SHORT).show()
                     }
                 }
     }
 
     fun logout() {
         firebaseAuth.signOut()
-        userLoggedOut.postValue(true)
     }
-
-    fun getLiveData() : MutableLiveData<FirebaseUser> {
-        return user
-    }
-
-    fun getLoggedOutLiveData() : MutableLiveData<Boolean> {
-        return userLoggedOut
-    }
-
 }

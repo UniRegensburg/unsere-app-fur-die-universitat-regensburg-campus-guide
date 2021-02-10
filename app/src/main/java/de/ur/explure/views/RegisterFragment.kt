@@ -6,27 +6,26 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import de.ur.explure.R
 import de.ur.explure.viewmodel.AuthenticationViewModel
 import kotlinx.android.synthetic.main.fragment_register.*
-
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class RegisterFragment : Fragment() {
-    private lateinit var authenticationViewModel: AuthenticationViewModel
+
+    private val authenticationViewModel: AuthenticationViewModel by viewModel()
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
         val root = inflater.inflate(R.layout.fragment_register, container, false)
-        //init viewmodel with data
-        authenticationViewModel = ViewModelProvider(this).get(AuthenticationViewModel::class.java)
-        authenticationViewModel.getLiveData().observe(viewLifecycleOwner, {
-            if(it != null) {
+        authenticationViewModel.user.observe(viewLifecycleOwner, {
+            if (it != null) {
                 NavHostFragment.findNavController(this).navigate(R.id.action_registerFragment_to_mainFragment)
             }
         })
@@ -35,7 +34,11 @@ class RegisterFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        backToLoginButton.setOnClickListener { view : View ->
+        setOnClickListener()
+    }
+
+    private fun setOnClickListener() {
+        backToLoginButton.setOnClickListener { view: View ->
             view.findNavController().navigate(R.id.action_registerFragment_to_loginFragment)
         }
         registerButton.setOnClickListener {
@@ -50,7 +53,7 @@ class RegisterFragment : Fragment() {
         if (email.isNotEmpty() && password.isNotEmpty() && password.equals(confPassword)) {
             authenticationViewModel.register(email, password)
         } else {
-            Toast.makeText(context, "Registrirung fehlgeschlagen", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, R.string.registrationFailed, Toast.LENGTH_SHORT).show()
         }
     }
 }

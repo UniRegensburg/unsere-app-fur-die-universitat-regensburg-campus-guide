@@ -1,6 +1,9 @@
 package de.ur.explure.di
 
+import com.google.firebase.auth.FirebaseAuth
 import de.ur.explure.navigation.AppRouter
+import de.ur.explure.repository.AuthenticationRepository
+import de.ur.explure.viewmodel.AuthenticationViewModel
 import de.ur.explure.viewmodel.MainViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
@@ -12,5 +15,8 @@ import org.koin.dsl.module
 
 val mainModule = module {
     single { AppRouter() }
+    single { FirebaseAuth.getInstance() }
+    single { AuthenticationRepository(get()) }
+    viewModel { AuthenticationViewModel(get()) }
     viewModel { MainViewModel(get()) }
 }

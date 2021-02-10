@@ -1,33 +1,23 @@
 package de.ur.explure.viewmodel
 
-import android.widget.EditText
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.FirebaseUser
 import de.ur.explure.repository.AuthenticationRepository
 
+class AuthenticationViewModel(val authenticationRepository: AuthenticationRepository) : ViewModel() {
 
-class AuthenticationViewModel : ViewModel() {
+    val user: MutableLiveData<FirebaseUser> = authenticationRepository.currentUser
 
-    private var authenticationRepository: AuthenticationRepository = AuthenticationRepository()
-    private var user: MutableLiveData<FirebaseUser>
-    private var userLoggedOut: MutableLiveData<Boolean>
-
-    init {
-        user = authenticationRepository.getLiveData()
-        userLoggedOut = authenticationRepository.getLoggedOutLiveData()
-
-    }
-
-    fun signIn(email: String, password : String) {
+    fun signIn(email: String, password: String) {
         authenticationRepository.signIn(email, password)
     }
 
-    fun register (email: String, password : String) {
+    fun register(email: String, password: String) {
         authenticationRepository.registerUser(email, password)
     }
 
-    fun resetPassword(email : EditText) {
+    fun resetPassword(email: String) {
         authenticationRepository.resetPassword(email)
     }
 
@@ -38,9 +28,4 @@ class AuthenticationViewModel : ViewModel() {
     fun logout() {
         authenticationRepository.logout()
     }
-
-    fun getLiveData() : MutableLiveData<FirebaseUser> {
-        return user
-    }
-
 }
