@@ -11,4 +11,5 @@ import de.ur.explure.config.FirebaseCollections
 
 class FireStoreInstance(fireStore: FirebaseFirestore) {
     val userCollection = fireStore.collection(FirebaseCollections.USER_COLLECTION_NAME)
+    val ratingCollection = fireStore.collection(FirebaseCollections.RATING_COLLECTION_NAME)
 }
