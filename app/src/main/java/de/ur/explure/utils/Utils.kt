@@ -13,8 +13,11 @@ import androidx.appcompat.content.res.AppCompatResources
 
 /**
  * Returns the width of the longest item in a list.
- * * Taken from https://medium.com/bugless/stylised-listpopupwindow-in-android-9cb453d42b
+ * Useful for dynamically adjusting the min width of a dropdown list, for example.
+ *
+ * Taken from https://medium.com/bugless/stylised-listpopupwindow-in-android-9cb453d42b
  */
+
 fun measureContentWidth(context: Context, adapter: ListAdapter): Int {
     val measureParentViewGroup = FrameLayout(context)
     var itemView: View? = null
@@ -41,6 +44,12 @@ fun measureContentWidth(context: Context, adapter: ListAdapter): Int {
     return maxWidth
 }
 
+/**
+ * Generates a bitmap from the given drawable resource identifier.
+ *
+ * @return The drawable specified with [drawableRes] as a Bitmap.
+ */
+
 fun generateBitmap(context: Context, @DrawableRes drawableRes: Int): Bitmap? {
     val drawable: Drawable? = AppCompatResources.getDrawable(context, drawableRes)
     return getBitmapFromDrawable(drawable)
@@ -58,8 +67,9 @@ private fun getBitmapFromDrawable(drawable: Drawable?): Bitmap? {
             drawable.intrinsicHeight, Bitmap.Config.ARGB_8888
         )
         val canvas = Canvas(bitmap)
-        drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight())
+        drawable.setBounds(0, 0, canvas.width, canvas.height)
         drawable.draw(canvas)
         bitmap
+        // return IconFactory.getInstance(context).fromBitmap(bitmap)
     }
 }
