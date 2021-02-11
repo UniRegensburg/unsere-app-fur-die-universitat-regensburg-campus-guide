@@ -5,18 +5,14 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.ImageButton
 import android.widget.Toast
 import de.ur.explure.R
 
 class ProfileFragment : Fragment() {
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        var rootView = inflater.inflate(R.layout.fragment_profile, container, false)
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+        val rootView = inflater.inflate(R.layout.fragment_profile, container, false)
 
         val ownRoutes = rootView.findViewById<ImageButton>(R.id.ownRoutesButton)
         val favoriteRoutes = rootView.findViewById<ImageButton>(R.id.favoriteRoutesButton)
@@ -42,11 +38,10 @@ class ProfileFragment : Fragment() {
         return rootView
     }
 
-    fun defineProfileButtonBehavior(fragment: Fragment){
+    fun defineProfileButtonBehavior(fragment: Fragment) {
         val transaction = fragmentManager?.beginTransaction()
         transaction?.replace(R.id.nav_host_container, fragment)
         transaction?.addToBackStack(null)
         transaction?.commit()
     }
-
 }
