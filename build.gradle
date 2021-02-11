@@ -7,6 +7,7 @@ buildscript {
     ext.google_services_version = "4.3.4"
     ext.detekt_version = "1.15.0"
     ext.tap_target_view_version = "1.13.0"
+    ext.mapbox_navigation_version = "1.4.0"
 
     repositories {
         google()
