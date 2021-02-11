@@ -18,7 +18,7 @@ class ExplureApp : Application() {
         super.onCreate()
 
         // Setup mapbox instance
-        Mapbox.getInstance(this, getString(R.string.access_token))
+        initMapbox()
 
         if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
@@ -28,5 +28,17 @@ class ExplureApp : Application() {
             androidContext(this@ExplureApp)
             modules(mainModule)
         }
+    }
+
+    private fun initMapbox() {
+        Mapbox.getInstance(this, getString(R.string.access_token))
+
+        /*
+        MapboxNavigationProvider.create(
+            MapboxNavigation.defaultNavigationOptionsBuilder(
+                this,
+                getString(R.string.access_token)
+            ).build()
+        )*/
     }
 }

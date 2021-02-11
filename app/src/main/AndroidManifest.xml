@@ -3,8 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="de.ur.explure">
 
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-
     <application
         android:name="de.ur.explure.ExplureApp"
         android:allowBackup="true"

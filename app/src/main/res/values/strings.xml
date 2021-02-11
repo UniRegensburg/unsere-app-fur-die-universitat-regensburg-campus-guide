@@ -5,4 +5,8 @@
     <string name="menu_discover_title">Entdecken</string>
     <string name="menu_search_title">Suche</string>
 
+    <string name="no_routes">No available routes to that destination</string>
+    <string name="steps_in_route">There are %1$d steps in the route</string>
+    <string name="route_request_failed">The route request failed</string>
+
 </resources>

@@ -14,10 +14,13 @@ import de.ur.explure.utils.Event
 /**
  * Map Viewmodel to handle and preserve map state.
  */
+@Suppress("TooManyFunctions")
 class MapViewModel(private val state: SavedStateHandle) : ViewModel() {
 
     private val _mapReady = MutableLiveData<Event<Boolean>>()
     val mapReady: LiveData<Event<Boolean>> = _mapReady
+
+    private var locationTrackingActivated = false
 
     private var currentMapStyle: Style? = null
 
@@ -53,6 +56,14 @@ class MapViewModel(private val state: SavedStateHandle) : ViewModel() {
 
     fun getCurrentMapStyle(): Style? {
         return this.currentMapStyle
+    }
+
+    fun isLocationTrackingActivated(): Boolean {
+        return this.locationTrackingActivated
+    }
+
+    fun setLocationTrackingStatus(isActivated: Boolean) {
+        locationTrackingActivated = isActivated
     }
 
     fun setCurrentUserPosition(userPosition: Location) {

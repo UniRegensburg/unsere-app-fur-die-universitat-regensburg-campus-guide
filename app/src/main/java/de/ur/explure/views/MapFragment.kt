@@ -2,6 +2,7 @@ package de.ur.explure.views
 
 import android.annotation.SuppressLint
 import android.graphics.BitmapFactory
+import android.graphics.Color.parseColor
 import android.graphics.Rect
 import android.os.Bundle
 import android.os.Looper
@@ -15,6 +16,7 @@ import androidx.fragment.app.Fragment
 import com.crazylegend.viewbinding.viewBinding
 import com.getkeepsafe.taptargetview.TapTarget
 import com.getkeepsafe.taptargetview.TapTargetSequence
+import com.google.android.material.snackbar.Snackbar
 import com.mapbox.android.core.location.LocationEngine
 import com.mapbox.android.core.location.LocationEngineCallback
 import com.mapbox.android.core.location.LocationEngineProvider
@@ -22,6 +24,11 @@ import com.mapbox.android.core.location.LocationEngineRequest
 import com.mapbox.android.core.location.LocationEngineResult
 import com.mapbox.android.core.permissions.PermissionsListener
 import com.mapbox.android.core.permissions.PermissionsManager
+import com.mapbox.api.directions.v5.DirectionsCriteria
+import com.mapbox.api.directions.v5.models.DirectionsRoute
+import com.mapbox.api.directions.v5.models.RouteOptions
+import com.mapbox.geojson.LineString
+import com.mapbox.geojson.Point
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.location.LocationComponentActivationOptions
 import com.mapbox.mapboxsdk.location.LocationComponentOptions
@@ -33,14 +40,36 @@ import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
 import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.mapboxsdk.plugins.annotation.SymbolManager
 import com.mapbox.mapboxsdk.plugins.annotation.SymbolOptions
-import com.mapbox.mapboxsdk.style.layers.Property.ICON_ANCHOR_BOTTOM
+import com.mapbox.mapboxsdk.style.expressions.Expression.color
+import com.mapbox.mapboxsdk.style.expressions.Expression.interpolate
+import com.mapbox.mapboxsdk.style.expressions.Expression.lineProgress
+import com.mapbox.mapboxsdk.style.expressions.Expression.linear
+import com.mapbox.mapboxsdk.style.expressions.Expression.stop
+import com.mapbox.mapboxsdk.style.layers.LineLayer
 import com.mapbox.mapboxsdk.style.layers.Property.ICON_ROTATION_ALIGNMENT_VIEWPORT
+import com.mapbox.mapboxsdk.style.layers.Property.LINE_CAP_ROUND
+import com.mapbox.mapboxsdk.style.layers.Property.LINE_JOIN_ROUND
+import com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconImage
+import com.mapbox.mapboxsdk.style.layers.PropertyFactory.lineCap
+import com.mapbox.mapboxsdk.style.layers.PropertyFactory.lineGradient
+import com.mapbox.mapboxsdk.style.layers.PropertyFactory.lineJoin
+import com.mapbox.mapboxsdk.style.layers.PropertyFactory.lineWidth
+import com.mapbox.mapboxsdk.style.layers.SymbolLayer
+import com.mapbox.mapboxsdk.style.sources.GeoJsonOptions
+import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
+import com.mapbox.navigation.base.internal.extensions.applyDefaultParams
+import com.mapbox.navigation.base.internal.extensions.coordinates
+import com.mapbox.navigation.core.MapboxNavigation
+import com.mapbox.navigation.core.MapboxNavigationProvider
+import com.mapbox.navigation.core.directions.session.RoutesRequestCallback
 import de.ur.explure.R
 import de.ur.explure.databinding.FragmentMapBinding
 import de.ur.explure.utils.EventObserver
 import de.ur.explure.utils.SharedPreferencesManager
+import de.ur.explure.utils.getMapboxAccessToken
 import de.ur.explure.utils.isGPSEnabled
 import de.ur.explure.utils.measureContentWidth
+import de.ur.explure.extensions.toPoint
 import de.ur.explure.viewmodel.MapViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.androidx.viewmodel.scope.emptyState
@@ -60,6 +89,8 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
     private var mapView: MapView? = null
     private lateinit var map: MapboxMap
 
+    private var mapboxNavigation: MapboxNavigation? = null
+
     // location tracking
     private var locationEngine: LocationEngine? = null
     private var callback: LocationListeningCallback? = null
@@ -69,6 +100,49 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
 
     // permission handling
     private var permissionsManager: PermissionsManager = PermissionsManager(this)
+
+    private val routesReqCallback = object : RoutesRequestCallback {
+        override fun onRoutesReady(routes: List<DirectionsRoute>) {
+            if (routes.isNotEmpty()) {
+                Snackbar.make(
+                    binding.mapContainer,
+                    String.format(
+                        getString(R.string.steps_in_route),
+                        routes[0].legs()?.get(0)?.steps()?.size
+                    ),
+                    Snackbar.LENGTH_SHORT
+                ).show()
+
+                // Update a gradient route LineLayer's source with the Maps SDK. This will
+                // visually add/update the line on the map. All of this is being done
+                // directly with Maps SDK code and NOT the Navigation UI SDK.
+                map.getStyle {
+                    val routeLineSource = it.getSourceAs<GeoJsonSource>(ROUTE_LINE_SOURCE_ID)
+                    val routeLineString = routes[0].geometry()?.let { geometry ->
+                        LineString.fromPolyline(geometry, ROUTE_LINE_PRECISION)
+                    }
+                    routeLineSource?.setGeoJson(routeLineString)
+                }
+                binding.routeRetrievalProgressSpinner.visibility = View.INVISIBLE
+            } else {
+                Snackbar.make(binding.mapContainer, R.string.no_routes, Snackbar.LENGTH_SHORT)
+                    .show()
+            }
+        }
+
+        override fun onRoutesRequestFailure(throwable: Throwable, routeOptions: RouteOptions) {
+            Timber.e("route request failure %s", throwable.toString())
+            Snackbar.make(
+                binding.mapContainer,
+                R.string.route_request_failed,
+                Snackbar.LENGTH_SHORT
+            ).show()
+        }
+
+        override fun onRoutesRequestCanceled(routeOptions: RouteOptions) {
+            Timber.d("route request canceled")
+        }
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -87,6 +161,8 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
         mapView = binding.mapView
         mapView?.onCreate(savedInstanceState)
         mapView?.getMapAsync(this)
+
+        setupMapboxNavigation()
     }
 
     private fun setupViewModelObservers() {
@@ -103,9 +179,31 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
             }
 
             binding.ownLocationButton.setOnClickListener {
+                mapViewModel.getCurrentMapStyle()?.let { style ->
+                    mapViewModel.setLocationTrackingStatus(true)
+                    enableLocationComponent(style)
+                }
+            }
+
+            if (mapViewModel.isLocationTrackingActivated()) {
+                // enable the locationcomponent again if it was activated before a config change
                 mapViewModel.getCurrentMapStyle()?.let { style -> enableLocationComponent(style) }
             }
         })
+    }
+
+    private fun setupMapboxNavigation() {
+        val context = context ?: return
+
+        val navigationOptions = MapboxNavigation
+            .defaultNavigationOptionsBuilder(
+                context,
+                getMapboxAccessToken(context.applicationContext)
+            )
+            // .locationEngine(locationEngine)
+            .build()
+        mapboxNavigation = MapboxNavigationProvider.create(navigationOptions)
+        // mapboxNavigation = MapboxNavigationProvider.retrieve()
     }
 
     /**
@@ -190,8 +288,8 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
             .id(1)
             .cancelable(true)
             .transparentTarget(true)
-            .targetRadius(targetOneRadius) // in dp
-            .outerCircleAlpha(outerCircleAlpha)
+            .targetRadius(TARGET_ONE_RADIUS) // in dp
+            .outerCircleAlpha(OUTER_CIRCLE_ALPHA)
 
         // setup a custom tap target at the university
         val displayMetrics = DisplayMetrics()
@@ -212,8 +310,8 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
             .id(2)
             .cancelable(true)
             .transparentTarget(true)
-            .targetRadius(targetTwoRadius)
-            .outerCircleAlpha(outerCircleAlpha)
+            .targetRadius(TARGET_TWO_RADIUS)
+            .outerCircleAlpha(OUTER_CIRCLE_ALPHA)
             .icon(markerIcon)
 
         TapTargetSequence(activity)
@@ -229,22 +327,62 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
 
         map.setStyle(styleUrl) { mapStyle ->
             // Map is set up and the style has loaded.
+            // save the current style in the shared preferences and the viewmodel
             mapViewModel.setCurrentMapStyle(mapStyle)
-
-            mapViewModel.setMapReadyStatus(true)
-
-            // save the current style in the shared preferences
             preferencesManager.setCurrentMapStyle(styleUrl)
 
             setupMarkerManager(mapStyle)
 
-            /*
-            // print out all layers of current style
-            for (singleLayer in mapStyle.layers) {
-                Timber.d("onMapReady: layer id = %s", singleLayer.id)
-            }
-            */
+            setupNavigationLayers(mapStyle)
+
+            mapViewModel.setMapReadyStatus(true)
         }
+    }
+
+    // TODO: this is the old approach using sources and layers with data-driven styling!
+    private fun setupNavigationLayers(mapStyle: Style) {
+        // Add the destination marker image
+        BitmapFactory.decodeResource(resources, R.drawable.ic_sharp_flag_24)?.let {
+            mapStyle.addImage(GOAL_ICON_ID, it)
+        }
+
+        // Add the LineLayer below the LocationComponent's bottom layer, which is the
+        // circular accuracy layer. The LineLayer will display the directions route.
+        mapStyle.addSource(
+            GeoJsonSource(
+                ROUTE_LINE_SOURCE_ID,
+                GeoJsonOptions().withLineMetrics(true)
+            )
+        )
+
+        mapStyle.addLayerBelow(
+            LineLayer(ROUTE_LINE_LAYER_ID, ROUTE_LINE_SOURCE_ID)
+                .withProperties(
+                    lineCap(LINE_CAP_ROUND),
+                    lineJoin(LINE_JOIN_ROUND),
+                    lineWidth(ROUTE_LINE_WIDTH),
+                    lineGradient(
+                        interpolate(
+                            linear(),
+                            lineProgress(),
+                            stop(0f, color(parseColor(ORIGIN_COLOR))),
+                            stop(1f, color(parseColor(DESTINATION_COLOR)))
+                        )
+                    )
+                ),
+            // show below the layer on which the user location puck is shown
+            "mapbox-location-shadow-layer"
+        )
+
+        // Add the SymbolLayer to show the destination marker
+        mapStyle.addSource(GeoJsonSource(ROUTE_MARKER_SOURCE_ID))
+        mapStyle.addLayerAbove(
+            SymbolLayer(ROUTE_MARKER_LAYER_ID, ROUTE_MARKER_SOURCE_ID)
+                .withProperties(
+                    iconImage(GOAL_ICON_ID)
+                ),
+            ROUTE_LINE_LAYER_ID
+        )
     }
 
     private fun setupMarkerManager(mapStyle: Style) {
@@ -252,7 +390,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
 
         // add a marker icon to the style
         BitmapFactory.decodeResource(resources, R.drawable.mapbox_marker_icon_default)?.let {
-            mapStyle.addImage(ID_ICON, it)
+            mapStyle.addImage(MARKER_ICON_ID, it)
         }
 
         symbolManager = SymbolManager(mView, map, mapStyle)
@@ -270,8 +408,8 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
             symbolManager?.create(
                 SymbolOptions()
                     .withLatLng(coordinate)
-                    .withIconImage(ID_ICON)
-                    .withIconAnchor(ICON_ANCHOR_BOTTOM)
+                    .withIconImage(MARKER_ICON_ID)
+                // .withIconAnchor(ICON_ANCHOR_BOTTOM)
             )
         }
 
@@ -292,7 +430,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
         symbolManager?.addLongClickListener { symbol ->
             // remove a marker on long click
             symbolManager?.delete(symbol)
-            return@addLongClickListener true
+            return@addLongClickListener false
         }
     }
 
@@ -320,34 +458,25 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
 
     private fun onMapClicked(point: LatLng): Boolean {
         Timber.d("Clicked on map point with coordinates: $point")
-        // ! This method to return false as otherwise symbol clicks won't be fired.
+        // ! This has method to return false as otherwise symbol clicks won't be fired.
         // If true this click is consumed and not passed to other listeners registered afterwards!
         return false
     }
 
-    private fun onMapLongClicked(point: LatLng): Boolean {
+    private fun onMapLongClicked(clickedPoint: LatLng): Boolean {
         symbolManager ?: return false
 
         // add a symbol to the long-clicked point
-        val marker = symbolManager?.create(
-            SymbolOptions()
-                .withLatLng(point)
-                // .withIconImage("cafe-15") // use maki icon set
-                .withIconImage(ID_ICON)
-                .withIconAnchor(ICON_ANCHOR_BOTTOM)
-                .withIconSize(1.0f)
-                // .withTextField("This is a Marker")
-                // .withTextHaloColor("rgba(255, 255, 255, 100)")
-                // .withTextHaloWidth(5.0f)
-                // .withTextAnchor("bottom")
+        val symbolOptions = SymbolOptions()
+            .withLatLng(clickedPoint)
+            // .withIconImage("cafe-15") // use maki icon set
+            .withIconImage(MARKER_ICON_ID)
+            // .withIconAnchor(ICON_ANCHOR_BOTTOM)
+            .withIconSize(1.0f)
+            // TODO right now draggable=true spawns a new marker; this seems to be an open issue
+            .withDraggable(false)
 
-                // An offset is added so that the bottom of the red marker icon gets fixed to the
-                // coordinate, rather than the middle of the icon being fixed to the coordinate point.
-                // The offset depends on the icon that is used!
-                .withIconOffset(ICON_OFFSET)
-                // TODO right now draggable=true spawns a new marker; this seems to be an open issue
-                .withDraggable(false)
-        )
+        val marker = symbolManager?.create(symbolOptions)
 
         if (marker != null) {
             // save the marker in the viewmodel
@@ -355,7 +484,45 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
             mapViewModel.saveMarker(marker)
         }
 
+        binding.routeRetrievalProgressSpinner.visibility = View.VISIBLE
+        // Place the destination marker at the map long click location
+        map.getStyle {
+            val clickPointSource = it.getSourceAs<GeoJsonSource>("CLICK_SOURCE")
+            clickPointSource?.setGeoJson(
+                Point.fromLngLat(
+                    clickedPoint.longitude,
+                    clickedPoint.latitude
+                )
+            )
+        }
+
+        generateRoute(clickedPoint)
+
         return false
+    }
+
+    private fun generateRoute(clickedPoint: LatLng) {
+        if (!map.locationComponent.isLocationComponentActivated) {
+            mapViewModel.getCurrentMapStyle()?.let {
+                enableLocationComponent(it)
+            }
+        } else {
+            map.locationComponent.lastKnownLocation?.let { originLocation ->
+                val token = getMapboxAccessToken(requireActivity().applicationContext)
+                mapboxNavigation?.requestRoutes(
+                    RouteOptions.builder().applyDefaultParams()
+                        .accessToken(token)
+                        .coordinates(originLocation.toPoint(), null, clickedPoint.toPoint())
+                        .alternatives(true)
+                        .steps(true)
+                        .bannerInstructions(true)
+                        .voiceInstructions(false)
+                        .profile(DirectionsCriteria.PROFILE_WALKING)
+                        .build(),
+                    routesReqCallback
+                )
+            }
+        }
     }
 
     /**
@@ -493,7 +660,11 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
         super.onStop()
         Timber.d("in MapFragment onStop")
         // remove location updates to prevent leaks
-        callback?.let { locationEngine?.removeLocationUpdates(it) }
+        callback?.let {
+            locationEngine?.removeLocationUpdates(it)
+            // TODO
+            // mapViewModel.setLocationTrackingStatus(isActivated = false)
+        }
         mapView?.onStop()
 
         mapViewModel.saveActiveMarkers()
@@ -517,6 +688,8 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
 
         removeMapListeners()
         symbolManager?.onDestroy()
+
+        mapboxNavigation?.onDestroy()
         mapView?.onDestroy()
     }
 
@@ -530,17 +703,28 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
     companion object {
         // Note: this layer is not in all map styles available (e.g. the satellite style)!
         // private const val FIRST_SYMBOL_LAYER_ID = "waterway-label"
+        // private val ICON_OFFSET = arrayOf(0f, -9f)
 
         private const val DEFAULT_INTERVAL_IN_MILLISECONDS = 1000L
         private const val DEFAULT_MAX_WAIT_TIME = DEFAULT_INTERVAL_IN_MILLISECONDS * 5
 
-        private const val outerCircleAlpha = 0.8f
-        private const val targetOneRadius = 60
-        private const val targetTwoRadius = 100
+        private const val OUTER_CIRCLE_ALPHA = 0.8f
+        private const val TARGET_ONE_RADIUS = 60
+        private const val TARGET_TWO_RADIUS = 100
 
-        private val ICON_OFFSET = arrayOf(0f, -9f)
+        private const val ROUTE_LINE_WIDTH = 6f
+        private const val ROUTE_LINE_PRECISION = 6
 
-        private const val ID_ICON = "id-icon"
+        private const val ROUTE_LINE_SOURCE_ID = "ROUTE_LINE_SOURCE_ID"
+        private const val ROUTE_LINE_LAYER_ID = "ROUTE_LINE_LAYER_ID"
+        private const val ROUTE_MARKER_SOURCE_ID = "ROUTE_MARKER_SOURCE_ID"
+        private const val ROUTE_MARKER_LAYER_ID = "ROUTE_MARKER_LAYER_ID"
+
+        private const val ORIGIN_COLOR = "#32a852" // Green
+        private const val DESTINATION_COLOR = "#F84D4D" // Red
+
+        private const val MARKER_ICON_ID = "marker-icon-id"
+        private const val GOAL_ICON_ID = "goal-icon-id"
     }
 
     /**

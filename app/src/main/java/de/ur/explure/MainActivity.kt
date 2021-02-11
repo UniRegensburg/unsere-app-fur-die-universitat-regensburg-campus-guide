@@ -136,6 +136,11 @@ class MainActivity : AppCompatActivity() {
         Timber.w("Unhandled Configuration Change occured!")
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        // MapboxNavigationProvider.destroy()
+    }
+
     companion object {
 
         // List of navigation graphs used in the bottom navigation of the app
