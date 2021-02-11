@@ -2,35 +2,16 @@ package de.ur.explure.views
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.Toast
-import androidx.navigation.findNavController
-import androidx.navigation.fragment.NavHostFragment
 import de.ur.explure.R
 import de.ur.explure.viewmodel.AuthenticationViewModel
 import kotlinx.android.synthetic.main.fragment_register.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class RegisterFragment : Fragment() {
+class RegisterFragment : Fragment(R.layout.fragment_register) {
 
     private val authenticationViewModel: AuthenticationViewModel by viewModel()
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        val root = inflater.inflate(R.layout.fragment_register, container, false)
-        authenticationViewModel.user.observe(viewLifecycleOwner, {
-            if (it != null) {
-                NavHostFragment.findNavController(this).navigate(R.id.action_registerFragment_to_mainFragment)
-            }
-        })
-        return root
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -38,8 +19,8 @@ class RegisterFragment : Fragment() {
     }
 
     private fun setOnClickListener() {
-        backToLoginButton.setOnClickListener { view: View ->
-            view.findNavController().navigate(R.id.action_registerFragment_to_loginFragment)
+        backToLoginButton.setOnClickListener {
+            authenticationViewModel.goBackToLogin()
         }
         registerButton.setOnClickListener {
             register()
@@ -50,7 +31,7 @@ class RegisterFragment : Fragment() {
         val email = edRegisterEmail.text.toString()
         val password = edRegisterPassword.text.toString()
         val confPassword = editCPassword.text.toString()
-        if (email.isNotEmpty() && password.isNotEmpty() && password.equals(confPassword)) {
+        if (email.isNotEmpty() && password.isNotEmpty() && password == confPassword) {
             authenticationViewModel.register(email, password)
         } else {
             Toast.makeText(context, R.string.registrationFailed, Toast.LENGTH_SHORT).show()
