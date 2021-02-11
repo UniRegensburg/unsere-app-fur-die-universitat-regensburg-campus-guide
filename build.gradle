@@ -8,6 +8,7 @@ buildscript {
     ext.detekt_version = "1.15.0"
     ext.tap_target_view_version = "1.13.0"
     ext.mapbox_navigation_version = "1.4.0"
+    ext.mapbox_java_sdk_version = "5.8.0"
 
     repositories {
         google()

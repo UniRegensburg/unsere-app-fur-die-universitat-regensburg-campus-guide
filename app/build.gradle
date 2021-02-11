@@ -96,10 +96,15 @@ dependencies {
     implementation "com.mapbox.mapboxsdk:mapbox-android-plugin-annotation-v9:0.9.0"
     implementation "com.mapbox.navigation:core:$mapbox_navigation_version"
     // implementation "com.mapbox.navigation:ui:$mapbox_navigation_version" // already contains maps-sdk and navigation-core
+    // implementation "com.mapbox.mapboxsdk:mapbox-sdk-core:$mapbox_java_sdk_version" // Core Mapbox Java SDK
+    implementation "com.mapbox.mapboxsdk:mapbox-sdk-services:$mapbox_java_sdk_version" // for Map Matching API
 
     // TapTargetView Library to highlight screen parts
     implementation "com.getkeepsafe.taptargetview:taptargetview:$tap_target_view_version"
 
     // Kotlin Viewbinding - Helpers
     implementation "com.github.FunkyMuse.KAHelpers:viewbinding:2.2.7"
+
+    // Networking
+    // implementation "com.squareup.retrofit2:retrofit:2.9.0"
 }
