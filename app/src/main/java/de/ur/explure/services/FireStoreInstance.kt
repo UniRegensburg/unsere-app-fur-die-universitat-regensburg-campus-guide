@@ -11,4 +11,5 @@ import de.ur.explure.config.FirebaseCollections
 
 class FireStoreInstance(fireStore: FirebaseFirestore) {
     val userCollection = fireStore.collection(FirebaseCollections.USER_COLLECTION_NAME)
+    val routeCollection = fireStore.collection(FirebaseCollections.ROUTE_COLLECTION_NAME)
 }
