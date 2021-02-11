@@ -1,31 +1,47 @@
 package de.ur.explure.viewmodel
 
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.google.firebase.auth.FirebaseUser
-import de.ur.explure.repository.AuthenticationRepository
+import androidx.lifecycle.viewModelScope
+import de.ur.explure.navigation.StateAppRouter
+import de.ur.explure.services.FirebaseAuthService
+import de.ur.explure.utils.FirebaseResult
+import kotlinx.coroutines.launch
 
-class AuthenticationViewModel(val authenticationRepository: AuthenticationRepository) : ViewModel() {
-
-    val user: MutableLiveData<FirebaseUser> = authenticationRepository.currentUser
+class AuthenticationViewModel(
+    private val authService: FirebaseAuthService,
+    private val stateAppRouter: StateAppRouter
+) : ViewModel() {
 
     fun signIn(email: String, password: String) {
-        authenticationRepository.signIn(email, password)
+        authService.signIn(email, password)
     }
 
     fun register(email: String, password: String) {
-        authenticationRepository.registerUser(email, password)
+        viewModelScope.launch {
+            when (val registerTask = authService.registerUser(email, password)) {
+                is FirebaseResult.Success -> {
+                } // Do task
+                is FirebaseResult.Error -> {
+                } // Do task
+                is FirebaseResult.Canceled -> {
+                } // Do task
+            }
+        }
     }
 
     fun resetPassword(email: String) {
-        authenticationRepository.resetPassword(email)
+        authService.resetPassword(email)
     }
 
     fun signInAnonymously() {
-        authenticationRepository.signInAnonymously()
+        authService.signInAnonymously()
     }
 
-    fun logout() {
-        authenticationRepository.logout()
+    fun goBackToLogin() {
+        stateAppRouter.navigateUp()
+    }
+
+    fun navigateToRegister() {
+        stateAppRouter.navigateToRegister()
     }
 }
