@@ -4,7 +4,6 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
-import com.google.firebase.auth.FirebaseUser
 import de.ur.explure.navigation.StateAppRouter
 import de.ur.explure.services.FirebaseAuthService
 import org.koin.core.KoinComponent
@@ -53,9 +52,5 @@ class StateViewModel : ViewModel(), KoinComponent {
      */
     fun navigateUp(): Boolean {
         return stateAppRouter.navigateUp()
-    }
-
-    fun stopObservingAuthState(activity: LifecycleOwner) {
-        authRepo.currentUser.removeObservers(activity)
     }
 }
