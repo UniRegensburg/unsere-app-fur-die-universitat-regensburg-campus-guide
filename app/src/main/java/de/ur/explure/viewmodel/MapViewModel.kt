@@ -14,6 +14,7 @@ import de.ur.explure.utils.Event
 /**
  * Map Viewmodel to handle and preserve map state.
  */
+@Suppress("TooManyFunctions")
 class MapViewModel(private val state: SavedStateHandle) : ViewModel() {
 
     private val _mapReady = MutableLiveData<Event<Boolean>>()
@@ -71,6 +72,14 @@ class MapViewModel(private val state: SavedStateHandle) : ViewModel() {
         return state[CAMERA_POSITION_KEY]
     }
 
+    fun setLocationTrackingStatus(isEnabled: Boolean) {
+        state[LOCATION_TRACKING_KEY] = isEnabled
+    }
+
+    fun getLocationTrackingEnabled(): Boolean? {
+        return state[LOCATION_TRACKING_KEY]
+    }
+
     companion object {
         val All_MAP_STYLES = mapOf(
             "Streets" to Style.MAPBOX_STREETS,
@@ -84,5 +93,6 @@ class MapViewModel(private val state: SavedStateHandle) : ViewModel() {
         private const val USER_LOCATION_KEY = "userLocation"
         private const val CAMERA_POSITION_KEY = "cameraPosition"
         private const val ACTIVE_MARKERS_KEY = "activeMarkers"
+        private const val LOCATION_TRACKING_KEY = "locationTracking"
     }
 }

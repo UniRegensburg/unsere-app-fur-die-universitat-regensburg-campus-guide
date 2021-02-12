@@ -94,6 +94,12 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
             binding.ownLocationButton.setOnClickListener {
                 mapViewModel.getCurrentMapStyle()?.let { style -> startLocationTracking(style) }
             }
+
+            // if location tracking was enabled before, start it again without forcing the user to
+            // press the button again
+            if (mapViewModel.getLocationTrackingEnabled() == true) {
+                mapViewModel.getCurrentMapStyle()?.let { startLocationTracking(it) }
+            }
         })
     }
 
@@ -312,6 +318,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
 
             // enable location tracking with custom loaction engine
             if (::locationManager.isInitialized) {
+                mapViewModel.setLocationTrackingStatus(isEnabled = true)
                 locationManager.activateLocationComponent(
                     map.locationComponent, loadedMapStyle, useDefaultEngine = false
                 )
