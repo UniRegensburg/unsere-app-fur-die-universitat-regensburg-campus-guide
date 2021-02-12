@@ -1,7 +1,6 @@
 package de.ur.explure.views
 
 import android.annotation.SuppressLint
-import android.graphics.BitmapFactory
 import android.graphics.Rect
 import android.os.Bundle
 import android.os.Looper
@@ -31,10 +30,7 @@ import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
 import com.mapbox.mapboxsdk.maps.Style
-import com.mapbox.mapboxsdk.plugins.annotation.SymbolManager
-import com.mapbox.mapboxsdk.plugins.annotation.SymbolOptions
-import com.mapbox.mapboxsdk.style.layers.Property.ICON_ANCHOR_BOTTOM
-import com.mapbox.mapboxsdk.style.layers.Property.ICON_ROTATION_ALIGNMENT_VIEWPORT
+import de.ur.explure.MarkerManager
 import de.ur.explure.R
 import de.ur.explure.databinding.FragmentMapBinding
 import de.ur.explure.utils.EventObserver
@@ -42,8 +38,10 @@ import de.ur.explure.utils.SharedPreferencesManager
 import de.ur.explure.utils.isGPSEnabled
 import de.ur.explure.utils.measureContentWidth
 import de.ur.explure.viewmodel.MapViewModel
+import org.koin.android.ext.android.get
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.androidx.viewmodel.scope.emptyState
+import org.koin.core.parameter.parametersOf
 import timber.log.Timber
 import java.lang.ref.WeakReference
 
@@ -60,12 +58,14 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
     private var mapView: MapView? = null
     private lateinit var map: MapboxMap
 
+    private lateinit var markerManager: MarkerManager
+
     // location tracking
     private var locationEngine: LocationEngine? = null
     private var callback: LocationListeningCallback? = null
 
     // map symbols
-    private var symbolManager: SymbolManager? = null
+    // private var symbolManager: SymbolManager? = null
 
     // permission handling
     private var permissionsManager: PermissionsManager = PermissionsManager(this)
@@ -176,6 +176,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
         }
     }
 
+    // TODO auslagern!
     /**
      * Show interesting spots on the screen the first time the fragment is launched on this device.
      */
@@ -237,6 +238,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
             preferencesManager.setCurrentMapStyle(styleUrl)
 
             setupMarkerManager(mapStyle)
+            recreateMarkers()
 
             /*
             // print out all layers of current style
@@ -248,52 +250,16 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
     }
 
     private fun setupMarkerManager(mapStyle: Style) {
-        val mView = mapView ?: return
+        val context = activity ?: return
+        markerManager = get { parametersOf(context, mapView, map, mapStyle) }
+        // let the marker manager observe the fragment lifecycle so it can clean itself up on destroy
+        viewLifecycleOwner.lifecycle.addObserver(markerManager)
+    }
 
-        // add a marker icon to the style
-        BitmapFactory.decodeResource(resources, R.drawable.mapbox_marker_icon_default)?.let {
-            mapStyle.addImage(ID_ICON, it)
-        }
-
-        symbolManager = SymbolManager(mView, map, mapStyle)
-        symbolManager?.iconAllowOverlap = true
-        symbolManager?.iconIgnorePlacement = true
-        symbolManager?.textAllowOverlap = false
-        symbolManager?.textIgnorePlacement = false
-        symbolManager?.iconRotationAlignment = ICON_ROTATION_ALIGNMENT_VIEWPORT
-
-        val allMarker = mapViewModel.getAllActiveMarkers()
-        Timber.d("AllMarkers: $allMarker")
-
+    private fun recreateMarkers() {
         // recreate all markers that were on the map before the config change or process death
-        mapViewModel.getAllActiveMarkers()?.forEach { coordinate ->
-            symbolManager?.create(
-                SymbolOptions()
-                    .withLatLng(coordinate)
-                    .withIconImage(ID_ICON)
-                    .withIconAnchor(ICON_ANCHOR_BOTTOM)
-            )
-        }
-
-        // symbolManager?.addDragListener(this::onSymbolDragged)
-
-        symbolManager?.addClickListener { symbol ->
-            Toast.makeText(
-                requireActivity(),
-                "Clicked on marker ${symbol.id}",
-                Toast.LENGTH_SHORT
-            ).show()
-            return@addClickListener false
-        }
-
-        // TODO this also calls the onMapLongClick and therefore spawns a new marker as well
-        // -> deleting a marker should happen via its info window (e.g. a small 'delete this marker'-
-        // button at the bottom)
-        symbolManager?.addLongClickListener { symbol ->
-            // remove a marker on long click
-            symbolManager?.delete(symbol)
-            return@addLongClickListener true
-        }
+        val allActiveMarkers = mapViewModel.getAllActiveMarkers()
+        markerManager.addMarkers(allActiveMarkers)
     }
 
     /**
@@ -326,35 +292,14 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
     }
 
     private fun onMapLongClicked(point: LatLng): Boolean {
-        symbolManager ?: return false
-
         // add a symbol to the long-clicked point
-        val marker = symbolManager?.create(
-            SymbolOptions()
-                .withLatLng(point)
-                // .withIconImage("cafe-15") // use maki icon set
-                .withIconImage(ID_ICON)
-                .withIconAnchor(ICON_ANCHOR_BOTTOM)
-                .withIconSize(1.0f)
-                // .withTextField("This is a Marker")
-                // .withTextHaloColor("rgba(255, 255, 255, 100)")
-                // .withTextHaloWidth(5.0f)
-                // .withTextAnchor("bottom")
-
-                // An offset is added so that the bottom of the red marker icon gets fixed to the
-                // coordinate, rather than the middle of the icon being fixed to the coordinate point.
-                // The offset depends on the icon that is used!
-                .withIconOffset(ICON_OFFSET)
-                // TODO right now draggable=true spawns a new marker; this seems to be an open issue
-                .withDraggable(false)
-        )
+        val marker = markerManager.addMarker(point)
 
         if (marker != null) {
             // save the marker in the viewmodel
             // mapViewModel.activeMarkers?.put(marker.id, marker)
             mapViewModel.saveMarker(marker)
         }
-
         return false
     }
 
@@ -516,7 +461,6 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
         locationEngine = null
 
         removeMapListeners()
-        symbolManager?.onDestroy()
         mapView?.onDestroy()
     }
 
@@ -537,10 +481,6 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
         private const val outerCircleAlpha = 0.8f
         private const val targetOneRadius = 60
         private const val targetTwoRadius = 100
-
-        private val ICON_OFFSET = arrayOf(0f, -9f)
-
-        private const val ID_ICON = "id-icon"
     }
 
     /**
