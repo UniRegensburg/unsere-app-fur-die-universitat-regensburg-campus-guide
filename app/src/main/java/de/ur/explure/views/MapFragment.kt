@@ -1,9 +1,8 @@
 package de.ur.explure.views
 
-import android.annotation.SuppressLint
 import android.graphics.Rect
+import android.location.Location
 import android.os.Bundle
-import android.os.Looper
 import android.util.DisplayMetrics
 import android.view.View
 import android.widget.ArrayAdapter
@@ -14,22 +13,14 @@ import androidx.fragment.app.Fragment
 import com.crazylegend.viewbinding.viewBinding
 import com.getkeepsafe.taptargetview.TapTarget
 import com.getkeepsafe.taptargetview.TapTargetSequence
-import com.mapbox.android.core.location.LocationEngine
-import com.mapbox.android.core.location.LocationEngineCallback
-import com.mapbox.android.core.location.LocationEngineProvider
-import com.mapbox.android.core.location.LocationEngineRequest
-import com.mapbox.android.core.location.LocationEngineResult
 import com.mapbox.android.core.permissions.PermissionsListener
 import com.mapbox.android.core.permissions.PermissionsManager
 import com.mapbox.mapboxsdk.geometry.LatLng
-import com.mapbox.mapboxsdk.location.LocationComponentActivationOptions
-import com.mapbox.mapboxsdk.location.LocationComponentOptions
-import com.mapbox.mapboxsdk.location.modes.CameraMode
-import com.mapbox.mapboxsdk.location.modes.RenderMode
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
 import com.mapbox.mapboxsdk.maps.Style
+import de.ur.explure.LocationManager
 import de.ur.explure.MarkerManager
 import de.ur.explure.R
 import de.ur.explure.databinding.FragmentMapBinding
@@ -43,7 +34,6 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.androidx.viewmodel.scope.emptyState
 import org.koin.core.parameter.parametersOf
 import timber.log.Timber
-import java.lang.ref.WeakReference
 
 @Suppress("TooManyFunctions")
 class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, PermissionsListener {
@@ -61,11 +51,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
     private lateinit var markerManager: MarkerManager
 
     // location tracking
-    private var locationEngine: LocationEngine? = null
-    private var callback: LocationListeningCallback? = null
-
-    // map symbols
-    // private var symbolManager: SymbolManager? = null
+    private lateinit var locationManager: LocationManager
 
     // permission handling
     private var permissionsManager: PermissionsManager = PermissionsManager(this)
@@ -80,6 +66,9 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
         // disable the buttons until the map has finished loading
         binding.ownLocationButton.isEnabled = false
         binding.changeStyleButton.isEnabled = false
+
+        locationManager = get { parametersOf(this::onNewLocationReceived) }
+        viewLifecycleOwner.lifecycle.addObserver(locationManager)
 
         setupViewModelObservers()
 
@@ -103,7 +92,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
             }
 
             binding.ownLocationButton.setOnClickListener {
-                mapViewModel.getCurrentMapStyle()?.let { style -> enableLocationComponent(style) }
+                mapViewModel.getCurrentMapStyle()?.let { style -> startLocationTracking(style) }
             }
         })
     }
@@ -307,8 +296,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
      * * Location Tracking Code
      */
 
-    @SuppressLint("MissingPermission")
-    private fun enableLocationComponent(loadedMapStyle: Style) {
+    private fun startLocationTracking(loadedMapStyle: Style) {
         val activity = activity ?: return
 
         // Check if permissions are enabled and if not request
@@ -323,59 +311,22 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
                 return
             }
 
-            val customLocationComponentOptions = LocationComponentOptions.builder(activity)
-                // overwrite custom gestures detection to adjust the camera's focal point and increase
-                // thresholds without breaking tracking
-                .trackingGesturesManagement(true)
-                // show a pulsing circle around the user position
-                .pulseEnabled(true)
-                .pulseFadeEnabled(true)
-                // disable animations to decrease battery and cpu usage
-                .compassAnimationEnabled(false)
-                .accuracyAnimationEnabled(false)
-                .build()
-
-            val locationComponentActivationOptions =
-                LocationComponentActivationOptions.builder(activity, loadedMapStyle)
-                    .locationComponentOptions(customLocationComponentOptions)
-                    // use our custom location engine below instead of the built-in location engine
-                    // to track user location updates
-                    .useDefaultLocationEngine(false)
-                    .build()
-
-            map.locationComponent.apply {
-                // Activate the LocationComponent with options
-                activateLocationComponent(locationComponentActivationOptions)
-                // Enable to make the LocationComponent visible
-                isLocationComponentEnabled = true
-                // Set the LocationComponent's camera mode
-                cameraMode = CameraMode.TRACKING
-                // Set the LocationComponent's render mode
-                renderMode = RenderMode.COMPASS
+            // enable location tracking with custom loaction engine
+            if (::locationManager.isInitialized) {
+                locationManager.activateLocationComponent(
+                    map.locationComponent, loadedMapStyle, useDefaultEngine = false
+                )
             }
-
-            // init custom location engine
-            initLocationEngine()
         } else {
             permissionsManager.requestLocationPermissions(activity)
         }
     }
 
-    @SuppressLint("MissingPermission")
-    private fun initLocationEngine() {
-        val activityCtx = activity ?: return
-
-        locationEngine = LocationEngineProvider.getBestLocationEngine(activityCtx)
-        callback = LocationListeningCallback(this)
-
-        val request = LocationEngineRequest.Builder(DEFAULT_INTERVAL_IN_MILLISECONDS)
-            .setPriority(LocationEngineRequest.PRIORITY_BALANCED_POWER_ACCURACY)
-            .setMaxWaitTime(DEFAULT_MAX_WAIT_TIME)
-            .build()
-
-        val locationCallback = callback ?: return
-        locationEngine?.requestLocationUpdates(request, locationCallback, Looper.getMainLooper())
-        locationEngine?.getLastLocation(locationCallback)
+    private fun onNewLocationReceived(location: Location) {
+        // Pass the new location to the Maps SDK's LocationComponent
+        map.locationComponent.forceLocationUpdate(location)
+        // save the new location
+        mapViewModel.setCurrentUserPosition(location)
     }
 
     /**
@@ -401,7 +352,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
     override fun onPermissionResult(granted: Boolean) {
         if (granted) {
             // try to find the device location and enable location tracking
-            map.style?.let { enableLocationComponent(it) }
+            map.style?.let { startLocationTracking(it) }
         } else {
             Toast.makeText(
                 requireActivity(),
@@ -437,10 +388,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
     override fun onStop() {
         super.onStop()
         Timber.d("in MapFragment onStop")
-        // remove location updates to prevent leaks
-        callback?.let { locationEngine?.removeLocationUpdates(it) }
         mapView?.onStop()
-
         mapViewModel.saveActiveMarkers()
     }
 
@@ -457,72 +405,17 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
     override fun onDestroyView() {
         super.onDestroyView()
         Timber.d("in MapFragment onDestroyView")
-        callback = null
-        locationEngine = null
 
         removeMapListeners()
         mapView?.onDestroy()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        Timber.d("in MapFragment onDestroy")
-
-        // mapViewModel.resetActiveMarkers()
     }
 
     companion object {
         // Note: this layer is not in all map styles available (e.g. the satellite style)!
         // private const val FIRST_SYMBOL_LAYER_ID = "waterway-label"
 
-        private const val DEFAULT_INTERVAL_IN_MILLISECONDS = 1000L
-        private const val DEFAULT_MAX_WAIT_TIME = DEFAULT_INTERVAL_IN_MILLISECONDS * 5
-
         private const val outerCircleAlpha = 0.8f
         private const val targetOneRadius = 60
         private const val targetTwoRadius = 100
-    }
-
-    /**
-     * This class serves as a "callback" and is needed because a LocationEngine memory leak is
-     * possible if the activity/fragment directly implements the LocationEngineCallback<LocationEngineResult>.
-     * The WeakReference setup avoids the leak. See https://docs.mapbox.com/android/core/guides/
-     */
-    private class LocationListeningCallback constructor(fragment: MapFragment) :
-        LocationEngineCallback<LocationEngineResult> {
-
-        private val fragmentWeakReference: WeakReference<MapFragment> = WeakReference(fragment)
-
-        /**
-         * The LocationEngineCallback interface's method which fires when the device's location has changed.
-         */
-        override fun onSuccess(result: LocationEngineResult) {
-            val fragment: MapFragment? = fragmentWeakReference.get()
-            if (fragment != null) {
-                val location = result.lastLocation ?: return
-
-                // TODO use a separate map object class to access here to avoid the need of a WeakReference!
-                // Pass the new location to the Maps SDK's LocationComponent
-                fragment.map.locationComponent.forceLocationUpdate(location)
-                // save the new location
-                fragment.mapViewModel.setCurrentUserPosition(location)
-            }
-        }
-
-        /**
-         * The LocationEngineCallback interface's method which fires when the device's location can not be captured
-         *
-         * @param exception the exception message
-         */
-        override fun onFailure(exception: Exception) {
-            val fragment: MapFragment? = fragmentWeakReference.get()
-            if (fragment != null) {
-                Toast.makeText(
-                    fragment.activity,
-                    exception.localizedMessage,
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-        }
     }
 }

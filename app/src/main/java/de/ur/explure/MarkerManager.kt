@@ -95,7 +95,7 @@ class MarkerManager(
         return false
     }
 
-    // TODO this also calls the onMapLongClick and therefore spawns a new marker as well
+    // TODO this also calls the onMapLongClick and therefore spawns a new marker as well when dragging enabled
     // -> deleting a marker should happen via its info window (e.g. a small 'delete this marker'-
     // button at the bottom)
     private fun onMarkerLongClickListener(marker: Symbol): Boolean {
@@ -106,7 +106,7 @@ class MarkerManager(
 
     override fun onDestroy(owner: LifecycleOwner) {
         super.onDestroy(owner)
-        symbolManager.onDestroy()
+        symbolManager.onDestroy() // cleanup to prevent leaks
     }
 
     companion object {
