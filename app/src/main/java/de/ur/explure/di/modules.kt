@@ -1,6 +1,5 @@
 package de.ur.explure.di
 
-import android.content.Context
 import android.location.Location
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -32,8 +31,8 @@ val mainModule = module {
 
     single { MapController() }
     // use factory for MarkerManager to always return a new one, in case the mapStyle changes or a config change occurs
-    factory { (context: Context, mapView: MapView, map: MapboxMap, mapStyle: Style) ->
-        MarkerManager(context, mapView, map, mapStyle)
+    factory { (mapView: MapView, map: MapboxMap, mapStyle: Style) ->
+        MarkerManager(androidApplication(), mapView, map, mapStyle)
     }
     factory { (callback: (Location) -> Unit) ->
         LocationManager(androidApplication(), callback)

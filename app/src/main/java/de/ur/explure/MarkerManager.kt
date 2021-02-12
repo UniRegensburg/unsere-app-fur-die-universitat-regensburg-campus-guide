@@ -1,6 +1,6 @@
 package de.ur.explure
 
-import android.content.Context
+import android.app.Application
 import android.graphics.BitmapFactory
 import android.widget.Toast
 import androidx.lifecycle.DefaultLifecycleObserver
@@ -15,7 +15,7 @@ import com.mapbox.mapboxsdk.plugins.annotation.SymbolOptions
 import com.mapbox.mapboxsdk.style.layers.Property
 
 class MarkerManager(
-    private val context: Context,
+    private val context: Application,
     mapView: MapView,
     map: MapboxMap,
     private var mapStyle: Style
@@ -34,14 +34,15 @@ class MarkerManager(
         initListeners()
     }
 
+    /*
     fun changeMapStyle(style: Style) {
         mapStyle = style
-    }
+    }*/
 
     private fun initMapSymbols() {
         // use the application context instead of the activity context to make sure it doesn't leak memory,
         // see https://proandroiddev.com/everything-you-need-to-know-about-memory-leaks-in-android-d7a59faaf46a
-        BitmapFactory.decodeResource(context.applicationContext.resources, R.drawable.mapbox_marker_icon_default)
+        BitmapFactory.decodeResource(context.resources, R.drawable.mapbox_marker_icon_default)
             ?.let {
                 // add a marker icon to the style
                 mapStyle.addImage(ID_ICON, it)
@@ -88,7 +89,7 @@ class MarkerManager(
 
     private fun onMarkerClickListener(marker: Symbol): Boolean {
         Toast.makeText(
-            context.applicationContext,
+            context,
             "Clicked on marker ${marker.id}",
             Toast.LENGTH_SHORT
         ).show()

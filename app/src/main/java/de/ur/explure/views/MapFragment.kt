@@ -239,8 +239,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
     }
 
     private fun setupMarkerManager(mapStyle: Style) {
-        val context = activity ?: return
-        markerManager = get { parametersOf(context, mapView, map, mapStyle) }
+        markerManager = get { parametersOf(mapView, map, mapStyle) }
         // let the marker manager observe the fragment lifecycle so it can clean itself up on destroy
         viewLifecycleOwner.lifecycle.addObserver(markerManager)
     }
