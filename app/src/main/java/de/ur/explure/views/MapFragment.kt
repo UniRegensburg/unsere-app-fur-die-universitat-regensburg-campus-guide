@@ -16,8 +16,8 @@ import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
 import com.mapbox.mapboxsdk.maps.Style
-import de.ur.explure.LocationManager
-import de.ur.explure.MarkerManager
+import de.ur.explure.map.LocationManager
+import de.ur.explure.map.MarkerManager
 import de.ur.explure.R
 import de.ur.explure.databinding.FragmentMapBinding
 import de.ur.explure.utils.EventObserver

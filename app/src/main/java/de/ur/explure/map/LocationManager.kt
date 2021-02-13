@@ -1,4 +1,4 @@
-package de.ur.explure
+package de.ur.explure.map
 
 import android.annotation.SuppressLint
 import android.app.Application
@@ -36,6 +36,8 @@ import com.mapbox.mapboxsdk.maps.Style
  *
  * ```locationManagerInstance.activateLocationComponent(locationComponent, mapStyle)```
  */
+
+// TODO permission wenn dann hier injecten oder gleich ganz hier mit rein (einfach nur die aufruf methode auch gleich)
 
 internal class LocationManager(
     private val context: Application,

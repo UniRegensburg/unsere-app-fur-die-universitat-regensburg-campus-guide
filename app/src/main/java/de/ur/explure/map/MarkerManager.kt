@@ -1,4 +1,4 @@
-package de.ur.explure
+package de.ur.explure.map
 
 import android.app.Application
 import android.graphics.BitmapFactory
@@ -13,6 +13,7 @@ import com.mapbox.mapboxsdk.plugins.annotation.Symbol
 import com.mapbox.mapboxsdk.plugins.annotation.SymbolManager
 import com.mapbox.mapboxsdk.plugins.annotation.SymbolOptions
 import com.mapbox.mapboxsdk.style.layers.Property
+import de.ur.explure.R
 
 class MarkerManager(
     private val context: Application,

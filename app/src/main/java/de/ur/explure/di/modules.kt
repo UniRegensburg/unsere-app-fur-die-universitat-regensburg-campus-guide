@@ -6,9 +6,9 @@ import com.google.firebase.firestore.FirebaseFirestore
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.Style
-import de.ur.explure.LocationManager
-import de.ur.explure.MapController
-import de.ur.explure.MarkerManager
+import de.ur.explure.map.LocationManager
+import de.ur.explure.map.MapController
+import de.ur.explure.map.MarkerManager
 import de.ur.explure.navigation.AppRouter
 import de.ur.explure.repository.user.UserRepositoryImpl
 import de.ur.explure.services.FireStoreInstance
