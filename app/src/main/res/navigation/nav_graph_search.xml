@@ -9,6 +9,23 @@
         android:id="@+id/searchFragment"
         android:name="de.ur.explure.views.SearchFragment"
         android:label="SearchFragment"
-        tools:layout="@layout/fragment_search" />
+        tools:layout="@layout/fragment_search"
+        app:startDestination="@id/action_searchFragment_to_profileFragment2">
+        <action
+            android:id="@+id/action_searchFragment_to_profileFragment2"
+            app:destination="@id/profileFragment2" />
+        <action
+            android:id="@+id/action_searchFragment_to_categorieOneFragment"
+            app:destination="@id/categorieOneFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/profileFragment2"
+        android:name="de.ur.explure.views.ProfileFragment"
+        android:label="ProfileFragment" />
+    <fragment
+        android:id="@+id/categorieOneFragment"
+        android:name="de.ur.explure.views.CategorieOneFragment"
+        android:label="fragment_categorie_one"
+        tools:layout="@layout/fragment_categorie_one" />
 
 </navigation>
