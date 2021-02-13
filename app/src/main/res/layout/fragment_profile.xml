@@ -1,55 +1,69 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
     tools:context=".views.ProfileFragment">
 
-    <LinearLayout
+    <RelativeLayout
+        android:id="@+id/userRepresentationLayout"
         android:layout_width="match_parent"
-        android:layout_height="240dp"
-        android:orientation="vertical"
-        android:gravity="center|center_vertical"
-        android:adjustViewBounds="true"
+        android:layout_height="280dp"
+        android:gravity="center"
         android:background="@color/colorLightGreen">
 
         <ImageView
             android:id="@+id/profilePicture"
-            android:layout_width="160dp"
-            android:layout_height="160dp"
-            android:adjustViewBounds="true"
-            android:scaleType="fitXY"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentLeft="true"
+            android:layout_marginTop="20dp"
+            android:layout_marginLeft="80dp"
+            android:layout_marginRight="80dp"
+            android:layout_marginBottom="60dp"
             app:srcCompat="@drawable/user_profile_picture" />
 
         <TextView
             android:id="@+id/userNameTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/profilePicture"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentLeft="true"
+            android:layout_marginBottom="20dp"
             android:text="@string/user_name"
+            android:textAlignment="center"
             android:textColor="#636363"
             android:textSize="24sp" />
 
-    </LinearLayout>
+    </RelativeLayout>
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
+    <RelativeLayout
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_below="@+id/userRepresentationLayout"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentLeft="true"
         android:gravity="center">
 
-        <LinearLayout
+        <RelativeLayout
+            android:id="@+id/firstButtonRow"
             android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:orientation="horizontal"
-            android:gravity="center|center_vertical">
+            android:layout_height="185dp"
+            android:gravity="center">
 
                 <ImageButton
                     android:id="@+id/ownRoutesButton"
                     android:layout_width="150dp"
                     android:layout_height="150dp"
-                    android:layout_margin="20dp"
+                    android:layout_alignParentLeft="true"
+                    android:layout_marginLeft="30dp"
                     android:scaleType="fitXY"
                     android:src="@drawable/created_routes_button"
                     android:background="@android:color/white"/>
@@ -58,24 +72,27 @@
                     android:id="@+id/favoriteRoutesButton"
                     android:layout_width="150dp"
                     android:layout_height="150dp"
-                    android:layout_margin="20dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="30dp"
                     android:scaleType="fitXY"
                     android:src="@drawable/favorite_routes_button"
                     android:background="@android:color/white"/>
 
-            </LinearLayout>
+            </RelativeLayout>
 
-            <LinearLayout
+            <RelativeLayout
+                android:id="@+id/secondButtonRow"
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:orientation="horizontal"
-                android:gravity="center|center_vertical">
+                android:layout_height="185dp"
+                android:layout_below="@+id/firstButtonRow"
+                android:gravity="center">
 
                 <ImageButton
                     android:id="@+id/statisticsButton"
                     android:layout_width="150dp"
                     android:layout_height="150dp"
-                    android:layout_margin="20dp"
+                    android:layout_alignParentLeft="true"
+                    android:layout_marginLeft="30dp"
                     android:scaleType="fitXY"
                     android:src="@drawable/statistics_button"
                     android:background="@android:color/white"/>
@@ -84,12 +101,13 @@
                     android:id="@+id/logOutButton"
                     android:layout_width="150dp"
                     android:layout_height="150dp"
-                    android:layout_margin="20dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="30dp"
                     android:scaleType="fitXY"
                     android:src="@drawable/log_out_button"
                     android:background="@android:color/white"/>
 
-            </LinearLayout>
-    </LinearLayout>
+            </RelativeLayout>
+    </RelativeLayout>
 
-</LinearLayout>
+</RelativeLayout>
