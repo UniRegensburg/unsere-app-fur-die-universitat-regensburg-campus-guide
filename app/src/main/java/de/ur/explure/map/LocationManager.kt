@@ -48,19 +48,12 @@ internal class LocationManager(
     private var locationEngine: LocationEngine? = null
     private var locationUpdatesCallback: LocationEngineCallback<LocationEngineResult>? = null
 
-    // private var callbackWeakReference = WeakReference(newLocationCallback)
-
     init {
         locationUpdatesCallback = object : LocationEngineCallback<LocationEngineResult> {
             override fun onSuccess(result: LocationEngineResult?) {
                 val location = result?.lastLocation ?: return
                 // invoke callback with new location
                 newLocationCallback?.invoke(location)
-                /*
-                val callback = callbackWeakReference.get()
-                if (callback != null) {
-                    callback(location)
-                }*/
             }
 
             override fun onFailure(exception: Exception) {
@@ -72,27 +65,6 @@ internal class LocationManager(
             }
         }
     }
-
-    /*
-    fun enable(
-        locationComponent: LocationComponent,
-        mapStyle: Style,
-        useDefaultEngine: Boolean = true
-    ) {
-        // connect  to location updates  only if we are at least in the onStarted Lifecycle State
-        if (lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) {
-            // check if already enabled
-            if (!enabled) {
-                activateLocationComponent(locationComponent, mapStyle, useDefaultEngine)
-            } else {
-                Toast.makeText(
-                    context.applicationContext,
-                    "The LocationManager is already enabled!",
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-        }
-    }*/
 
     @SuppressLint("MissingPermission")
     fun activateLocationComponent(

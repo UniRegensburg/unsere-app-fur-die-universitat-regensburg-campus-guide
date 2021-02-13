@@ -15,6 +15,8 @@ import com.mapbox.mapboxsdk.plugins.annotation.SymbolOptions
 import com.mapbox.mapboxsdk.style.layers.Property
 import de.ur.explure.R
 
+// use the application context instead of the activity context to make sure it doesn't leak memory,
+// see https://proandroiddev.com/everything-you-need-to-know-about-memory-leaks-in-android-d7a59faaf46a
 class MarkerManager(
     private val context: Application,
     mapView: MapView,
@@ -35,14 +37,7 @@ class MarkerManager(
         initListeners()
     }
 
-    /*
-    fun changeMapStyle(style: Style) {
-        mapStyle = style
-    }*/
-
     private fun initMapSymbols() {
-        // use the application context instead of the activity context to make sure it doesn't leak memory,
-        // see https://proandroiddev.com/everything-you-need-to-know-about-memory-leaks-in-android-d7a59faaf46a
         BitmapFactory.decodeResource(context.resources, R.drawable.mapbox_marker_icon_default)
             ?.let {
                 // add a marker icon to the style
@@ -70,25 +65,16 @@ class MarkerManager(
         return symbolManager.create(
             SymbolOptions()
                 .withLatLng(coordinate)
-                // .withIconImage("cafe-15") // use maki icon set
                 .withIconImage(ID_ICON)
                 .withIconAnchor(Property.ICON_ANCHOR_BOTTOM)
                 .withIconSize(1.0f)
-                // .withTextField("This is a Marker")
-                // .withTextHaloColor("rgba(255, 255, 255, 100)")
-                // .withTextHaloWidth(5.0f)
-                // .withTextAnchor("bottom")
-
-                // An offset is added so that the bottom of the red marker icon gets fixed to the
-                // coordinate, rather than the middle of the icon being fixed to the coordinate point.
-                // The offset depends on the icon that is used!
-                // .withIconOffset(ICON_OFFSET)
                 // TODO right now draggable=true spawns a new marker; this seems to be an open issue
                 .withDraggable(false)
         )
     }
 
     private fun onMarkerClickListener(marker: Symbol): Boolean {
+        // TODO replace
         Toast.makeText(
             context,
             "Clicked on marker ${marker.id}",
@@ -97,9 +83,8 @@ class MarkerManager(
         return false
     }
 
-    // TODO this also calls the onMapLongClick and therefore spawns a new marker as well when dragging enabled
-    // -> deleting a marker should happen via its info window (e.g. a small 'delete this marker'-
-    // button at the bottom)
+    // TODO deleting a marker should probably happen via its info window (e.g. a small
+    //  'delete this marker'- button at the bottom)
     private fun onMarkerLongClickListener(marker: Symbol): Boolean {
         // remove a marker on long click
         symbolManager.delete(marker)
@@ -113,6 +98,5 @@ class MarkerManager(
 
     companion object {
         private const val ID_ICON = "id-icon"
-        // private val ICON_OFFSET = arrayOf(0f, -9f)
     }
 }
