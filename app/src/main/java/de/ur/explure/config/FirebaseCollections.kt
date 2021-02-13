@@ -6,4 +6,5 @@ package de.ur.explure.config
 
 object FirebaseCollections {
     const val USER_COLLECTION_NAME = "users"
+    const val RATING_COLLECTION_NAME = "ratings"
 }

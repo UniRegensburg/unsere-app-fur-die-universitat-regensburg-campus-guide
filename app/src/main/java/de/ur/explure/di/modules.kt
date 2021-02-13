@@ -9,6 +9,7 @@ import com.mapbox.mapboxsdk.maps.Style
 import de.ur.explure.map.LocationManager
 import de.ur.explure.map.MarkerManager
 import de.ur.explure.navigation.AppRouter
+import de.ur.explure.repository.rating.RatingRepositoryImpl
 import de.ur.explure.repository.user.UserRepositoryImpl
 import de.ur.explure.services.FireStoreInstance
 import de.ur.explure.services.FirebaseAuthService
@@ -43,6 +44,7 @@ val mainModule = module {
     factory { FireStoreInstance(get()) }
     single { FirebaseAuthService(get()) }
     single { UserRepositoryImpl(get(), get()) }
+    single { RatingRepositoryImpl(get(), get()) }
 
     viewModel { TestViewModel(get(), get(), get()) }
     viewModel { MainViewModel(get()) }
