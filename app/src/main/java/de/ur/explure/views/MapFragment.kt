@@ -29,6 +29,7 @@ import de.ur.explure.utils.measureContentWidth
 import de.ur.explure.viewmodel.MapViewModel
 import de.ur.explure.viewmodel.MapViewModel.Companion.All_MAP_STYLES
 import org.koin.android.ext.android.get
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.androidx.viewmodel.scope.emptyState
 import org.koin.core.parameter.parametersOf
@@ -39,14 +40,15 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
 
     private val binding by viewBinding(FragmentMapBinding::bind)
 
-    private lateinit var preferencesManager: SharedPreferencesManager
-
     // Setting the state as emptyState as a workaround for this issue: https://github.com/InsertKoinIO/koin/issues/963
     private val mapViewModel: MapViewModel by viewModel(state = emptyState())
 
+    // SharedPrefs
+    private val preferencesManager: SharedPreferencesManager by inject()
+
+    // map
     private var mapView: MapView? = null
     private lateinit var map: MapboxMap
-
     private lateinit var markerManager: MarkerManager
 
     // location tracking
@@ -60,12 +62,11 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
 
         Timber.d("in MapFragment onViewCreated")
 
-        preferencesManager = SharedPreferencesManager(requireActivity())
-
         // disable the buttons until the map has finished loading
         binding.ownLocationButton.isEnabled = false
         binding.changeStyleButton.isEnabled = false
 
+        // init locationManager and sync with fragment lifecycle
         locationManager = get { parametersOf(this::onNewLocationReceived) }
         viewLifecycleOwner.lifecycle.addObserver(locationManager)
 
@@ -79,7 +80,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
 
     private fun setupViewModelObservers() {
         mapViewModel.mapReady.observe(viewLifecycleOwner, EventObserver {
-            // this only gets called if the event has never been handled before because of the EventObserver
+            // this should only get called if the event has never been handled before because of the EventObserver
             Timber.d("Map has finished loading and can be used now!")
 
             // enable the buttons now that the map is ready
@@ -199,13 +200,6 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
 
             setupMarkerManager(mapStyle)
             recreateMarkers()
-
-            /*
-            // print out all layers of current style
-            for (singleLayer in mapStyle.layers) {
-                Timber.d("onMapReady: layer id = %s", singleLayer.id)
-            }
-            */
         }
     }
 
@@ -245,8 +239,8 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
 
     private fun onMapClicked(point: LatLng): Boolean {
         Timber.d("Clicked on map point with coordinates: $point")
-        // ! This method to return false as otherwise symbol clicks won't be fired.
         // If true this click is consumed and not passed to other listeners registered afterwards!
+        // ! This method has to return false as otherwise symbol clicks won't be fired.
         return false
     }
 
@@ -256,7 +250,6 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
 
         if (marker != null) {
             // save the marker in the viewmodel
-            // mapViewModel.activeMarkers?.put(marker.id, marker)
             mapViewModel.saveMarker(marker)
         }
         return false
@@ -273,6 +266,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
         if (PermissionsManager.areLocationPermissionsGranted(activity)) {
             // Check if GPS is enabled in the device settings
             if (!isGPSEnabled(activity)) {
+                // TODO replace toast with snackbar
                 Toast.makeText(
                     activity,
                     getString(R.string.gps_not_activated),
@@ -313,6 +307,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
     }
 
     override fun onExplanationNeeded(permissionsToExplain: MutableList<String>?) {
+        // TODO replace toast with snackbar
         Toast.makeText(
             requireActivity(),
             getString(R.string.location_permission_explanation),
@@ -325,6 +320,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
             // try to find the device location and enable location tracking
             map.style?.let { startLocationTracking(it) }
         } else {
+            // TODO replace toast with snackbar
             Toast.makeText(
                 requireActivity(),
                 getString(R.string.location_permission_not_given),
@@ -339,6 +335,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
      * To handle Mapbox state correctly, the corresponding mapView hooks need to be called here.
      */
 
+    // TODO delete debug logging
     override fun onStart() {
         super.onStart()
         Timber.d("in MapFragment onStart")

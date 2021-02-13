@@ -13,6 +13,7 @@ import de.ur.explure.repository.rating.RatingRepositoryImpl
 import de.ur.explure.repository.user.UserRepositoryImpl
 import de.ur.explure.services.FireStoreInstance
 import de.ur.explure.services.FirebaseAuthService
+import de.ur.explure.utils.SharedPreferencesManager
 import de.ur.explure.viewmodel.DiscoverViewModel
 import de.ur.explure.viewmodel.MainViewModel
 import de.ur.explure.viewmodel.MapViewModel
@@ -29,6 +30,7 @@ import org.koin.dsl.module
 val mainModule = module {
     single { AppRouter() }
 
+    single { SharedPreferencesManager(androidApplication()) }
     // use factory for MarkerManager to always return a new one, in case the mapStyle changes or a config change occurs
     factory { (mapView: MapView, map: MapboxMap, mapStyle: Style) ->
         MarkerManager(androidApplication(), mapView, map, mapStyle)

@@ -1,22 +1,18 @@
 package de.ur.explure.utils
 
 import android.annotation.SuppressLint
+import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
 import com.mapbox.mapboxsdk.maps.Style
 
-// TODO use object instead?
 @SuppressLint("CommitPrefEdits")
-class SharedPreferencesManager constructor(context: Context) {
+class SharedPreferencesManager constructor(context: Application) {
 
-    private val sharedPreferences: SharedPreferences
-    private val editor: SharedPreferences.Editor
+    private val sharedPreferences: SharedPreferences =
+        context.getSharedPreferences(PREFERENCE_CONFIGURATION_NAME, Context.MODE_PRIVATE)
 
-    init {
-        sharedPreferences =
-            context.getSharedPreferences(PREFERENCE_CONFIGURATION_NAME, Context.MODE_PRIVATE)
-        editor = sharedPreferences.edit()
-    }
+    private val editor: SharedPreferences.Editor = sharedPreferences.edit()
 
     /**
      * Check if this is the first time the user launches the app.
