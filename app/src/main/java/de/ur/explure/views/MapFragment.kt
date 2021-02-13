@@ -27,6 +27,7 @@ import de.ur.explure.utils.TutorialBuilder
 import de.ur.explure.utils.isGPSEnabled
 import de.ur.explure.utils.measureContentWidth
 import de.ur.explure.viewmodel.MapViewModel
+import de.ur.explure.viewmodel.MapViewModel.Companion.All_MAP_STYLES
 import org.koin.android.ext.android.get
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.androidx.viewmodel.scope.emptyState
@@ -111,7 +112,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
     ) {
         val context = activity ?: return
 
-        val styleList = MapViewModel.All_MAP_STYLES.keys.toList()
+        val styleList = All_MAP_STYLES.keys.toList()
         val styleAdapter: ArrayAdapter<String> = ArrayAdapter<String>(
             context,
             layoutResource,
@@ -135,7 +136,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
         listPopup.setOnItemClickListener { parent, _, position, _ ->
             val selectedItem =
                 parent.getItemAtPosition(position) as? String ?: return@setOnItemClickListener
-            val selectedMapStyle = MapViewModel.All_MAP_STYLES[selectedItem]
+            val selectedMapStyle = All_MAP_STYLES[selectedItem]
             setMapStyle(selectedMapStyle)
 
             listPopup.dismiss()
@@ -175,7 +176,6 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
         setupMapListeners()
 
         // TODO setup a separate mapbox map object/singleton to handle and encapsulate map stuff?
-        // -> use android jetpack lifecycle to access lifecycle hooks in that component
         val style = preferencesManager.getCurrentMapStyle()
         setMapStyle(style)
 
@@ -335,6 +335,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
 
     /**
      * * Lifecycle Hooks
+     *
      * To handle Mapbox state correctly, the corresponding mapView hooks need to be called here.
      */
 
