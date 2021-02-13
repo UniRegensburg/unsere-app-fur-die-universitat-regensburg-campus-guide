@@ -39,7 +39,6 @@ val mainModule = module {
         LocationManager(androidApplication(), callback)
     }
     // single { (context: Activity) -> PermissionHelper(context) }
-    // single { MapController() }
 
     single { FirebaseAuth.getInstance() }
     factory { FirebaseFirestore.getInstance() }

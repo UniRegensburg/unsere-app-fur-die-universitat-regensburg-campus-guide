@@ -175,7 +175,6 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
 
         setupMapListeners()
 
-        // TODO setup a separate mapbox map object/singleton to handle and encapsulate map stuff?
         val style = preferencesManager.getCurrentMapStyle()
         setMapStyle(style)
 
