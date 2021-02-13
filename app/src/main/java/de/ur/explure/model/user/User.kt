@@ -1,16 +1,18 @@
 package de.ur.explure.model.user
 
 import android.os.Parcelable
+import com.google.firebase.firestore.DocumentId
 import kotlinx.android.parcel.Parcelize
 
 @Parcelize
 data class User(
-    val id: String,
-    val email: String,
-    val name: String,
-    val profilePictureUrl: String?,
-    val activeRoutes: List<String> = emptyList(),
-    val createdRotes: List<String> = emptyList(),
-    val favouriteRoutes: List<String> = emptyList(),
-    val finishedRoutes: List<String> = emptyList()
+    @DocumentId
+    val id: String = "",
+    var email: String = "",
+    var name: String = "",
+    var profilePictureUrl: String = "",
+    var activeRoutes: List<String> = emptyList(),
+    var createdRoutes: List<String> = emptyList(),
+    var favouriteRoutes: List<String> = emptyList(),
+    var finishedRoutes: List<String> = emptyList()
 ) : Parcelable
