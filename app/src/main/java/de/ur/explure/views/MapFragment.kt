@@ -1,9 +1,7 @@
 package de.ur.explure.views
 
-import android.graphics.Rect
 import android.location.Location
 import android.os.Bundle
-import android.util.DisplayMetrics
 import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.Toast
@@ -11,8 +9,6 @@ import androidx.appcompat.widget.ListPopupWindow
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.crazylegend.viewbinding.viewBinding
-import com.getkeepsafe.taptargetview.TapTarget
-import com.getkeepsafe.taptargetview.TapTargetSequence
 import com.mapbox.android.core.permissions.PermissionsListener
 import com.mapbox.android.core.permissions.PermissionsManager
 import com.mapbox.mapboxsdk.geometry.LatLng
@@ -25,7 +21,9 @@ import de.ur.explure.MarkerManager
 import de.ur.explure.R
 import de.ur.explure.databinding.FragmentMapBinding
 import de.ur.explure.utils.EventObserver
+import de.ur.explure.utils.Highlight
 import de.ur.explure.utils.SharedPreferencesManager
+import de.ur.explure.utils.TutorialBuilder
 import de.ur.explure.utils.isGPSEnabled
 import de.ur.explure.utils.measureContentWidth
 import de.ur.explure.viewmodel.MapViewModel
@@ -155,7 +153,23 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
         Timber.d("in onMapReady")
 
         if (preferencesManager.isFirstRun()) {
-            showTutorial()
+            // highlight interesting spots the first time the fragment is launched on this device
+            TutorialBuilder.showTutorialFor(
+                requireActivity(),
+                Highlight(
+                    binding.changeStyleButton,
+                    title = getString(R.string.map_style_button_title),
+                    description = getString(R.string.map_style_button_description)
+                ), Highlight(
+                    binding.ownLocationButton,
+                    title = getString(R.string.location_tracking_button_title),
+                    description = getString(R.string.location_tracking_button_description)
+                )
+            )
+
+            // mark first launch as completed so this tutorial won't be shown on further app starts
+            // or configuration changes
+            preferencesManager.completedFirstRun()
         }
 
         setupMapListeners()
@@ -169,55 +183,6 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
         mapViewModel.getLastKnownCameraPosition()?.let {
             map.cameraPosition = it
         }
-    }
-
-    // TODO auslagern!
-    /**
-     * Show interesting spots on the screen the first time the fragment is launched on this device.
-     */
-    private fun showTutorial() {
-        val activity = activity ?: return
-
-        val targetOne = TapTarget.forView(
-            binding.changeStyleButton,
-            "Verschiedene Kartenstile sind verfügbar!",
-            "Hier kannst du den aktuellen Kartenstil anpassen."
-        )
-            .id(1)
-            .cancelable(true)
-            .transparentTarget(true)
-            .targetRadius(targetOneRadius) // in dp
-            .outerCircleAlpha(outerCircleAlpha)
-
-        // setup a custom tap target at the university
-        val displayMetrics = DisplayMetrics()
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
-            activity.display?.getRealMetrics(displayMetrics)
-        } else {
-            @Suppress("DEPRECATION")
-            activity.windowManager.defaultDisplay.getRealMetrics(displayMetrics)
-        }
-        val screenWidth = displayMetrics.widthPixels
-        val screenHeight = displayMetrics.heightPixels
-        val markerIcon =
-            ContextCompat.getDrawable(activity, R.drawable.mapbox_marker_icon_default) ?: return
-        val markerTarget = Rect(0, 0, markerIcon.intrinsicWidth, markerIcon.intrinsicHeight)
-        markerTarget.offset(screenWidth / 2, screenHeight / 2) // center the target
-
-        val targetTwo = TapTarget.forBounds(markerTarget, "Hier ist die Universität :)")
-            .id(2)
-            .cancelable(true)
-            .transparentTarget(true)
-            .targetRadius(targetTwoRadius)
-            .outerCircleAlpha(outerCircleAlpha)
-            .icon(markerIcon)
-
-        TapTargetSequence(activity)
-            .targets(targetOne, targetTwo)
-            .start()
-
-        // mark first launch as completed so this tutorial won't be shown on further app starts
-        preferencesManager.completedFirstRun()
     }
 
     private fun setMapStyle(styleUrl: String?) {
@@ -310,7 +275,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
             if (!isGPSEnabled(activity)) {
                 Toast.makeText(
                     activity,
-                    "GPS doesn't seem to be enabled! Please enable it in the device settings to continue!",
+                    getString(R.string.gps_not_activated),
                     Toast.LENGTH_LONG
                 ).show()
                 return
@@ -350,7 +315,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
     override fun onExplanationNeeded(permissionsToExplain: MutableList<String>?) {
         Toast.makeText(
             requireActivity(),
-            "Der Standortzugriff wird benötigt, um deine aktuelle Position auf der Karte anzuzeigen!",
+            getString(R.string.location_permission_explanation),
             Toast.LENGTH_LONG
         ).show()
     }
@@ -362,7 +327,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
         } else {
             Toast.makeText(
                 requireActivity(),
-                "Ohne die Berechtigung kann dein aktueller Standort nicht angezeigt werden!",
+                getString(R.string.location_permission_not_given),
                 Toast.LENGTH_LONG
             ).show()
         }
@@ -419,9 +384,5 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
     companion object {
         // Note: this layer is not in all map styles available (e.g. the satellite style)!
         // private const val FIRST_SYMBOL_LAYER_ID = "waterway-label"
-
-        private const val outerCircleAlpha = 0.8f
-        private const val targetOneRadius = 60
-        private const val targetTwoRadius = 100
     }
 }

@@ -24,6 +24,7 @@ class MapViewModel(private val state: SavedStateHandle) : ViewModel() {
 
     // var activeMarkers: LongSparseArray<Symbol>? = LongSparseArray()
     // TODO only saving the latlng coords will probably not be enough later but symbol cannot be parcelized
+    // -> probably create an own mapPin parcelize data class ? (e.g. https://github.com/amohnacs15/MeshMap/blob/master/app/src/main/java/com/zhudapps/meshmap/model/MapPin.kt)
     private val markers: MutableList<LatLng> = state[ACTIVE_MARKERS_KEY] ?: mutableListOf()
 
     fun saveMarker(marker: Symbol) {
