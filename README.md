@@ -22,16 +22,23 @@ Um eine hohe Code-Qualität im Team zu gewährleisten, werden [Detekt](https://d
     - ViewBinding
     - Navigation
     - RecyclerView
-    - Viewmodel
+    - ViewModel
     - LiveData
+    - Lifecycle
 
 ##### Third Party - Bibliotheken:
 * [Firebase Android SDK](https://firebase.google.com/docs/android/setup?hl=en)
-* [Mapbox Android SDK](https://docs.mapbox.com/android/maps/guides/)
+* [Mapbox Android Core SDK](https://docs.mapbox.com/android/core/guides/)
+* [Mapbox Android Maps SDK](https://docs.mapbox.com/android/maps/guides/)
+* [Mapbox Android Navigation SDK](https://docs.mapbox.com/android/navigation/guides/)
+* [Mapbox Java SDK](https://docs.mapbox.com/android/java/guides/)
+* [Mapbox Android Annotation Plugin](https://docs.mapbox.com/android/plugins/guides/annotation/)
 * [Detekt](https://github.com/detekt/detekt)
 * [Timber](https://github.com/JakeWharton/timber)
 * [LeakCanary](https://square.github.io/leakcanary/)
 * [Koin](https://insert-koin.io/)
+* [TapTargetView](https://github.com/KeepSafe/TapTargetView)
+* [ViewBinding-Helpers](https://github.com/FunkyMuse/KAHelpers/tree/master/viewbinding)
 
 ## Hinweise zur Dokumentation
 

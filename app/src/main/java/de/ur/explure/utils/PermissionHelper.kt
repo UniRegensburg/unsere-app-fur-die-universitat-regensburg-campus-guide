@@ -6,6 +6,8 @@ import com.mapbox.android.core.permissions.PermissionsListener
 import com.mapbox.android.core.permissions.PermissionsManager
 import de.ur.explure.R
 
+// TODO PermissionHelper is not used at the moment, delete if not needed later!
+
 interface LocationPermissionListener {
 
     fun onLocationPermissionGranted()
