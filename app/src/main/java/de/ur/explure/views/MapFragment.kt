@@ -4,11 +4,11 @@ import android.location.Location
 import android.os.Bundle
 import android.view.View
 import android.widget.ArrayAdapter
-import android.widget.Toast
 import androidx.appcompat.widget.ListPopupWindow
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.crazylegend.viewbinding.viewBinding
+import com.google.android.material.snackbar.Snackbar
 import com.mapbox.android.core.permissions.PermissionsListener
 import com.mapbox.android.core.permissions.PermissionsManager
 import com.mapbox.mapboxsdk.geometry.LatLng
@@ -16,16 +16,17 @@ import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
 import com.mapbox.mapboxsdk.maps.Style
-import de.ur.explure.map.LocationManager
-import de.ur.explure.map.MarkerManager
 import de.ur.explure.R
 import de.ur.explure.databinding.FragmentMapBinding
+import de.ur.explure.map.LocationManager
+import de.ur.explure.map.MarkerManager
 import de.ur.explure.utils.EventObserver
 import de.ur.explure.utils.Highlight
 import de.ur.explure.utils.SharedPreferencesManager
 import de.ur.explure.utils.TutorialBuilder
 import de.ur.explure.utils.isGPSEnabled
 import de.ur.explure.utils.measureContentWidth
+import de.ur.explure.utils.showSnackbar
 import de.ur.explure.viewmodel.MapViewModel
 import de.ur.explure.viewmodel.MapViewModel.Companion.All_MAP_STYLES
 import org.koin.android.ext.android.get
@@ -152,8 +153,6 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
     override fun onMapReady(mapboxMap: MapboxMap) {
         this.map = mapboxMap
 
-        Timber.d("in onMapReady")
-
         if (preferencesManager.isFirstRun()) {
             // highlight interesting spots the first time the fragment is launched on this device
             TutorialBuilder.showTutorialFor(
@@ -266,12 +265,13 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
         if (PermissionsManager.areLocationPermissionsGranted(activity)) {
             // Check if GPS is enabled in the device settings
             if (!isGPSEnabled(activity)) {
-                // TODO replace toast with snackbar
-                Toast.makeText(
+                showSnackbar(
                     activity,
-                    getString(R.string.gps_not_activated),
-                    Toast.LENGTH_LONG
-                ).show()
+                    R.string.gps_not_activated,
+                    R.id.mapContainer,
+                    Snackbar.LENGTH_LONG,
+                    colorRes = R.color.color_warning
+                )
                 return
             }
 
@@ -307,12 +307,13 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
     }
 
     override fun onExplanationNeeded(permissionsToExplain: MutableList<String>?) {
-        // TODO replace toast with snackbar
-        Toast.makeText(
+        showSnackbar(
             requireActivity(),
-            getString(R.string.location_permission_explanation),
-            Toast.LENGTH_LONG
-        ).show()
+            R.string.location_permission_explanation,
+            R.id.mapContainer,
+            Snackbar.LENGTH_LONG,
+            colorRes = R.color.color_info
+        )
     }
 
     override fun onPermissionResult(granted: Boolean) {
@@ -320,12 +321,13 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
             // try to find the device location and enable location tracking
             map.style?.let { startLocationTracking(it) }
         } else {
-            // TODO replace toast with snackbar
-            Toast.makeText(
+            showSnackbar(
                 requireActivity(),
-                getString(R.string.location_permission_not_given),
-                Toast.LENGTH_LONG
-            ).show()
+                R.string.location_permission_not_given,
+                R.id.mapContainer,
+                Snackbar.LENGTH_LONG,
+                colorRes = R.color.color_warning
+            )
         }
     }
 
@@ -335,7 +337,6 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
      * To handle Mapbox state correctly, the corresponding mapView hooks need to be called here.
      */
 
-    // TODO delete debug logging
     override fun onStart() {
         super.onStart()
         Timber.d("in MapFragment onStart")

@@ -19,6 +19,7 @@ import com.mapbox.mapboxsdk.location.LocationComponentOptions
 import com.mapbox.mapboxsdk.location.modes.CameraMode
 import com.mapbox.mapboxsdk.location.modes.RenderMode
 import com.mapbox.mapboxsdk.maps.Style
+import timber.log.Timber
 
 /**
  * Usage:
@@ -57,6 +58,7 @@ internal class LocationManager(
             }
 
             override fun onFailure(exception: Exception) {
+                Timber.e(exception.localizedMessage)
                 Toast.makeText(
                     context,
                     exception.localizedMessage,

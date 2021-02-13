@@ -74,7 +74,6 @@ class MarkerManager(
     }
 
     private fun onMarkerClickListener(marker: Symbol): Boolean {
-        // TODO replace
         Toast.makeText(
             context,
             "Clicked on marker ${marker.id}",
