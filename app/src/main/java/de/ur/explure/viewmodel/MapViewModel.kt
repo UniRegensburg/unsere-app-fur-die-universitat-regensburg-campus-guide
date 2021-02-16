@@ -24,12 +24,11 @@ class MapViewModel(private val state: SavedStateHandle) : ViewModel() {
 
     private var currentMapStyle: Style? = null
 
-    // var activeMarkers: LongSparseArray<Symbol>? = LongSparseArray()
     // TODO only saving the latlng coords will probably not be enough later but symbol cannot be parcelized
+    // -> probably create an own mapPin parcelize data class ? (e.g. https://github.com/amohnacs15/MeshMap/blob/master/app/src/main/java/com/zhudapps/meshmap/model/MapPin.kt)
     private val markers: MutableList<LatLng> = state[ACTIVE_MARKERS_KEY] ?: mutableListOf()
 
     fun saveMarker(marker: Symbol) {
-        // activeMarkers?.put(marker.id, marker)
         markers.add(marker.latLng)
     }
 
@@ -40,11 +39,6 @@ class MapViewModel(private val state: SavedStateHandle) : ViewModel() {
     fun getAllActiveMarkers(): List<LatLng>? {
         return state[ACTIVE_MARKERS_KEY]
     }
-
-    /*
-    fun resetActiveMarkers() {
-        markers.clear()
-    }*/
 
     fun setMapReadyStatus(status: Boolean) {
         _mapReady.value = Event(status) // Trigger the event by setting a new Event as a new value
@@ -82,6 +76,14 @@ class MapViewModel(private val state: SavedStateHandle) : ViewModel() {
         return state[CAMERA_POSITION_KEY]
     }
 
+    fun setLocationTrackingStatus(isEnabled: Boolean) {
+        state[LOCATION_TRACKING_KEY] = isEnabled
+    }
+
+    fun getLocationTrackingEnabled(): Boolean? {
+        return state[LOCATION_TRACKING_KEY]
+    }
+
     companion object {
         val All_MAP_STYLES = mapOf(
             "Streets" to Style.MAPBOX_STREETS,
@@ -95,5 +97,6 @@ class MapViewModel(private val state: SavedStateHandle) : ViewModel() {
         private const val USER_LOCATION_KEY = "userLocation"
         private const val CAMERA_POSITION_KEY = "cameraPosition"
         private const val ACTIVE_MARKERS_KEY = "activeMarkers"
+        private const val LOCATION_TRACKING_KEY = "locationTracking"
     }
 }
