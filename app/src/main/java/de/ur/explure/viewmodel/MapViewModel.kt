@@ -20,8 +20,6 @@ class MapViewModel(private val state: SavedStateHandle) : ViewModel() {
     private val _mapReady = MutableLiveData<Event<Boolean>>()
     val mapReady: LiveData<Event<Boolean>> = _mapReady
 
-    private var locationTrackingActivated = false
-
     private var currentMapStyle: Style? = null
 
     // TODO only saving the latlng coords will probably not be enough later but symbol cannot be parcelized
@@ -52,14 +50,6 @@ class MapViewModel(private val state: SavedStateHandle) : ViewModel() {
         return this.currentMapStyle
     }
 
-    fun isLocationTrackingActivated(): Boolean {
-        return this.locationTrackingActivated
-    }
-
-    fun setLocationTrackingStatus(isActivated: Boolean) {
-        locationTrackingActivated = isActivated
-    }
-
     fun setCurrentUserPosition(userPosition: Location) {
         state[USER_LOCATION_KEY] = userPosition
     }
@@ -76,12 +66,12 @@ class MapViewModel(private val state: SavedStateHandle) : ViewModel() {
         return state[CAMERA_POSITION_KEY]
     }
 
-    fun setLocationTrackingStatus(isEnabled: Boolean) {
-        state[LOCATION_TRACKING_KEY] = isEnabled
+    fun isLocationTrackingActivated(): Boolean? {
+        return state[LOCATION_TRACKING_KEY]
     }
 
-    fun getLocationTrackingEnabled(): Boolean? {
-        return state[LOCATION_TRACKING_KEY]
+    fun setLocationTrackingStatus(isEnabled: Boolean) {
+        state[LOCATION_TRACKING_KEY] = isEnabled
     }
 
     companion object {

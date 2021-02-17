@@ -1,9 +1,7 @@
 package de.ur.explure.views
 
-import android.annotation.SuppressLint
 import android.graphics.BitmapFactory
 import android.graphics.Color.parseColor
-import android.graphics.Rect
 import android.location.Location
 import android.os.Bundle
 import android.view.View
@@ -12,20 +10,13 @@ import androidx.appcompat.widget.ListPopupWindow
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.crazylegend.viewbinding.viewBinding
-import com.getkeepsafe.taptargetview.TapTarget
-import com.getkeepsafe.taptargetview.TapTargetSequence
-import com.google.android.material.snackbar.Snackbar
-import com.mapbox.android.core.location.LocationEngine
-import com.mapbox.android.core.location.LocationEngineCallback
-import com.mapbox.android.core.location.LocationEngineProvider
-import com.mapbox.android.core.location.LocationEngineRequest
-import com.mapbox.android.core.location.LocationEngineResult
 import com.google.android.material.snackbar.Snackbar
 import com.mapbox.android.core.permissions.PermissionsListener
 import com.mapbox.android.core.permissions.PermissionsManager
 import com.mapbox.api.directions.v5.DirectionsCriteria
 import com.mapbox.api.directions.v5.models.DirectionsRoute
 import com.mapbox.api.directions.v5.models.RouteOptions
+import com.mapbox.core.constants.Constants.PRECISION_6
 import com.mapbox.geojson.LineString
 import com.mapbox.geojson.Point
 import com.mapbox.mapboxsdk.geometry.LatLng
@@ -33,15 +24,12 @@ import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
 import com.mapbox.mapboxsdk.maps.Style
-import com.mapbox.mapboxsdk.plugins.annotation.SymbolManager
-import com.mapbox.mapboxsdk.plugins.annotation.SymbolOptions
 import com.mapbox.mapboxsdk.style.expressions.Expression.color
 import com.mapbox.mapboxsdk.style.expressions.Expression.interpolate
 import com.mapbox.mapboxsdk.style.expressions.Expression.lineProgress
 import com.mapbox.mapboxsdk.style.expressions.Expression.linear
 import com.mapbox.mapboxsdk.style.expressions.Expression.stop
 import com.mapbox.mapboxsdk.style.layers.LineLayer
-import com.mapbox.mapboxsdk.style.layers.Property.ICON_ROTATION_ALIGNMENT_VIEWPORT
 import com.mapbox.mapboxsdk.style.layers.Property.LINE_CAP_ROUND
 import com.mapbox.mapboxsdk.style.layers.Property.LINE_JOIN_ROUND
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconImage
@@ -59,6 +47,7 @@ import com.mapbox.navigation.core.MapboxNavigationProvider
 import com.mapbox.navigation.core.directions.session.RoutesRequestCallback
 import de.ur.explure.R
 import de.ur.explure.databinding.FragmentMapBinding
+import de.ur.explure.extensions.toPoint
 import de.ur.explure.map.LocationManager
 import de.ur.explure.map.MarkerManager
 import de.ur.explure.utils.EventObserver
@@ -68,7 +57,6 @@ import de.ur.explure.utils.TutorialBuilder
 import de.ur.explure.utils.getMapboxAccessToken
 import de.ur.explure.utils.isGPSEnabled
 import de.ur.explure.utils.measureContentWidth
-import de.ur.explure.extensions.toPoint
 import de.ur.explure.utils.showSnackbar
 import de.ur.explure.viewmodel.MapViewModel
 import de.ur.explure.viewmodel.MapViewModel.Companion.All_MAP_STYLES
@@ -95,13 +83,14 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
     private lateinit var map: MapboxMap
     private lateinit var markerManager: MarkerManager
 
-    private var mapboxNavigation: MapboxNavigation? = null
-
     // location tracking
     private lateinit var locationManager: LocationManager
 
     // permission handling
     private var permissionsManager: PermissionsManager = PermissionsManager(this)
+
+    // navigation
+    private var mapboxNavigation: MapboxNavigation? = null
 
     private val routesReqCallback = object : RoutesRequestCallback {
         override fun onRoutesReady(routes: List<DirectionsRoute>) {
@@ -121,7 +110,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
                 map.getStyle {
                     val routeLineSource = it.getSourceAs<GeoJsonSource>(ROUTE_LINE_SOURCE_ID)
                     val routeLineString = routes[0].geometry()?.let { geometry ->
-                        LineString.fromPolyline(geometry, ROUTE_LINE_PRECISION)
+                        LineString.fromPolyline(geometry, PRECISION_6)
                     }
                     routeLineSource?.setGeoJson(routeLineString)
                 }
@@ -188,18 +177,10 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
 
             // if location tracking was enabled before, start it again without forcing the user to
             // press the button again
-            if (mapViewModel.getLocationTrackingEnabled() == true) {
-                mapViewModel.getCurrentMapStyle()?.let { startLocationTracking(it) }
-                /*
-                mapViewModel.getCurrentMapStyle()?.let { style ->
-                    mapViewModel.setLocationTrackingStatus(true)
-                    enableLocationComponent(style)
-                }*/
-            }
-
-            if (mapViewModel.isLocationTrackingActivated()) {
-                // enable the locationcomponent again if it was activated before a config change
-                mapViewModel.getCurrentMapStyle()?.let { style -> enableLocationComponent(style) }
+            if (mapViewModel.isLocationTrackingActivated() == true) {
+                mapViewModel.getCurrentMapStyle()?.let {
+                    startLocationTracking(it)
+                }
             }
         })
     }
@@ -420,13 +401,13 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
             val clickPointSource = it.getSourceAs<GeoJsonSource>("CLICK_SOURCE")
             clickPointSource?.setGeoJson(
                 Point.fromLngLat(
-                    clickedPoint.longitude,
-                    clickedPoint.latitude
+                    point.longitude,
+                    point.latitude
                 )
             )
         }
 
-        generateRoute(clickedPoint)
+        generateRoute(point)
 
         return false
     }
@@ -434,7 +415,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
     private fun generateRoute(clickedPoint: LatLng) {
         if (!map.locationComponent.isLocationComponentActivated) {
             mapViewModel.getCurrentMapStyle()?.let {
-                enableLocationComponent(it)
+                startLocationTracking(it)
             }
         } else {
             map.locationComponent.lastKnownLocation?.let { originLocation ->
@@ -578,7 +559,6 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
         Timber.d("in MapFragment onDestroyView")
 
         removeMapListeners()
-        symbolManager?.onDestroy()
 
         mapboxNavigation?.onDestroy()
         mapView?.onDestroy()
@@ -588,7 +568,6 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
         // Note: this layer is not in all map styles available (e.g. the satellite style)!
         // private const val FIRST_SYMBOL_LAYER_ID = "waterway-label"
         private const val ROUTE_LINE_WIDTH = 6f
-        private const val ROUTE_LINE_PRECISION = 6
 
         private const val ROUTE_LINE_SOURCE_ID = "ROUTE_LINE_SOURCE_ID"
         private const val ROUTE_LINE_LAYER_ID = "ROUTE_LINE_LAYER_ID"
@@ -600,48 +579,5 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
 
         private const val MARKER_ICON_ID = "marker-icon-id"
         private const val GOAL_ICON_ID = "goal-icon-id"
-    }
-
-    /**
-     * This class serves as a "callback" and is needed because a LocationEngine memory leak is
-     * possible if the activity/fragment directly implements the LocationEngineCallback<LocationEngineResult>.
-     * The WeakReference setup avoids the leak. See https://docs.mapbox.com/android/core/guides/
-     */
-    private class LocationListeningCallback constructor(fragment: MapFragment) :
-        LocationEngineCallback<LocationEngineResult> {
-
-        private val fragmentWeakReference: WeakReference<MapFragment> = WeakReference(fragment)
-
-        /**
-         * The LocationEngineCallback interface's method which fires when the device's location has changed.
-         */
-        override fun onSuccess(result: LocationEngineResult) {
-            val fragment: MapFragment? = fragmentWeakReference.get()
-            if (fragment != null) {
-                val location = result.lastLocation ?: return
-
-                // TODO use a separate map object class to access here to avoid the need of a WeakReference!
-                // Pass the new location to the Maps SDK's LocationComponent
-                fragment.map.locationComponent.forceLocationUpdate(location)
-                // save the new location
-                fragment.mapViewModel.setCurrentUserPosition(location)
-            }
-        }
-
-        /**
-         * The LocationEngineCallback interface's method which fires when the device's location can not be captured
-         *
-         * @param exception the exception message
-         */
-        override fun onFailure(exception: Exception) {
-            val fragment: MapFragment? = fragmentWeakReference.get()
-            if (fragment != null) {
-                Toast.makeText(
-                    fragment.activity,
-                    exception.localizedMessage,
-                    Toast.LENGTH_SHORT
-                ).show()
-            }
-        }
     }
 }
