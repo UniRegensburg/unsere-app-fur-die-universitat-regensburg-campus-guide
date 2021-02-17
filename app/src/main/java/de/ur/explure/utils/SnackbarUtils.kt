@@ -1,6 +1,7 @@
 package de.ur.explure.utils
 
 import android.app.Activity
+import android.content.Context
 import android.view.View
 import android.widget.TextView
 import androidx.annotation.ColorRes
@@ -11,14 +12,14 @@ import de.ur.explure.R
 const val SNACKBAR_MAX_LINES = 4
 
 inline fun showSnackbar(
-    context: Activity,
+    context: Context,
     message: String,
-    anchorViewId: Int = android.R.id.content,
+    anchorView: View,
     length: Int = Snackbar.LENGTH_SHORT,
     @ColorRes colorRes: Int? = null,
     f: Snackbar.() -> Unit = {}
-) {
-    val snackbar = Snackbar.make(context.findViewById(anchorViewId), message, length)
+): Snackbar {
+    val snackbar = Snackbar.make(anchorView, message, length)
     if (colorRes != null) {
         snackbar.view.setBackgroundColor(context.resources.getColor(colorRes, null))
     }
@@ -29,6 +30,32 @@ inline fun showSnackbar(
     // invoke callback if any
     snackbar.f()
     snackbar.show()
+
+    return snackbar
+}
+
+inline fun showSnackbar(
+    context: Context,
+    @StringRes messageRes: Int,
+    anchorView: View,
+    length: Int = Snackbar.LENGTH_SHORT,
+    @ColorRes colorRes: Int? = null,
+    f: Snackbar.() -> Unit = {}
+): Snackbar {
+    val message = context.resources.getString(messageRes)
+    return showSnackbar(context, message, anchorView, length, colorRes, f)
+}
+
+inline fun showSnackbar(
+    context: Activity,
+    message: String,
+    anchorViewId: Int = android.R.id.content,
+    length: Int = Snackbar.LENGTH_SHORT,
+    @ColorRes colorRes: Int? = null,
+    f: Snackbar.() -> Unit = {}
+): Snackbar? {
+    val view = context.findViewById<View>(anchorViewId) ?: return null
+    return showSnackbar(context, message, view, length, colorRes, f)
 }
 
 inline fun showSnackbar(
@@ -38,17 +65,17 @@ inline fun showSnackbar(
     length: Int = Snackbar.LENGTH_SHORT,
     @ColorRes colorRes: Int? = null,
     f: Snackbar.() -> Unit = {}
-) {
-    val message = context.resources.getString(messageRes)
-    showSnackbar(context, message, anchorViewId, length, colorRes, f)
+): Snackbar? {
+    val message = context.getString(messageRes)
+    return showSnackbar(context, message, anchorViewId, length, colorRes, f)
 }
 
 /**
  * Can be used like this:
  *
  * ```
- * showSnackbar(...) {
- *      withAction("Ok") { // do something if Ok button clicked }
+ * showSnackbar(...).withAction("Ok") {
+ *      // do something if Ok button clicked }
  * }
  * ```
  */

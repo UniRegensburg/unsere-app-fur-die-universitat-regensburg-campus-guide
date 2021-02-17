@@ -450,7 +450,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
                 showSnackbar(
                     activity,
                     R.string.gps_not_activated,
-                    R.id.mapContainer,
+                    binding.mapContainer,
                     Snackbar.LENGTH_LONG,
                     colorRes = R.color.color_warning
                 )
@@ -492,7 +492,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
         showSnackbar(
             requireActivity(),
             R.string.location_permission_explanation,
-            R.id.mapContainer,
+            binding.mapContainer,
             Snackbar.LENGTH_LONG,
             colorRes = R.color.color_info
         )
@@ -506,7 +506,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
             showSnackbar(
                 requireActivity(),
                 R.string.location_permission_not_given,
-                R.id.mapContainer,
+                binding.mapContainer,
                 Snackbar.LENGTH_LONG,
                 colorRes = R.color.color_warning
             )
@@ -577,7 +577,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
         private const val ORIGIN_COLOR = "#32a852" // Green
         private const val DESTINATION_COLOR = "#F84D4D" // Red
 
-        private const val MARKER_ICON_ID = "marker-icon-id"
+        // private const val MARKER_ICON_ID = "marker-icon-id"
         private const val GOAL_ICON_ID = "goal-icon-id"
     }
 }
