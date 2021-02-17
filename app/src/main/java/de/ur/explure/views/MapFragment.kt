@@ -16,7 +16,7 @@ import com.mapbox.android.core.permissions.PermissionsManager
 import com.mapbox.api.directions.v5.DirectionsCriteria
 import com.mapbox.api.directions.v5.models.DirectionsRoute
 import com.mapbox.api.directions.v5.models.RouteOptions
-import com.mapbox.core.constants.Constants.PRECISION_6
+import com.mapbox.core.constants.Constants
 import com.mapbox.geojson.LineString
 import com.mapbox.geojson.Point
 import com.mapbox.mapboxsdk.geometry.LatLng
@@ -91,49 +91,6 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
 
     // navigation
     private var mapboxNavigation: MapboxNavigation? = null
-
-    private val routesReqCallback = object : RoutesRequestCallback {
-        override fun onRoutesReady(routes: List<DirectionsRoute>) {
-            if (routes.isNotEmpty()) {
-                Snackbar.make(
-                    binding.mapContainer,
-                    String.format(
-                        getString(R.string.steps_in_route),
-                        routes[0].legs()?.get(0)?.steps()?.size
-                    ),
-                    Snackbar.LENGTH_SHORT
-                ).show()
-
-                // Update a gradient route LineLayer's source with the Maps SDK. This will
-                // visually add/update the line on the map. All of this is being done
-                // directly with Maps SDK code and NOT the Navigation UI SDK.
-                map.getStyle {
-                    val routeLineSource = it.getSourceAs<GeoJsonSource>(ROUTE_LINE_SOURCE_ID)
-                    val routeLineString = routes[0].geometry()?.let { geometry ->
-                        LineString.fromPolyline(geometry, PRECISION_6)
-                    }
-                    routeLineSource?.setGeoJson(routeLineString)
-                }
-                binding.routeRetrievalProgressSpinner.visibility = View.INVISIBLE
-            } else {
-                Snackbar.make(binding.mapContainer, R.string.no_routes, Snackbar.LENGTH_SHORT)
-                    .show()
-            }
-        }
-
-        override fun onRoutesRequestFailure(throwable: Throwable, routeOptions: RouteOptions) {
-            Timber.e("route request failure %s", throwable.toString())
-            Snackbar.make(
-                binding.mapContainer,
-                R.string.route_request_failed,
-                Snackbar.LENGTH_SHORT
-            ).show()
-        }
-
-        override fun onRoutesRequestCanceled(routeOptions: RouteOptions) {
-            Timber.d("route request canceled")
-        }
-    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -249,20 +206,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
         this.map = mapboxMap
 
         if (preferencesManager.isFirstRun()) {
-            // highlight interesting spots the first time the fragment is launched on this device
-            TutorialBuilder.showTutorialFor(
-                requireActivity(),
-                Highlight(
-                    binding.changeStyleButton,
-                    title = getString(R.string.map_style_button_title),
-                    description = getString(R.string.map_style_button_description)
-                ), Highlight(
-                    binding.ownLocationButton,
-                    title = getString(R.string.location_tracking_button_title),
-                    description = getString(R.string.location_tracking_button_description)
-                )
-            )
-
+            showFirstRunTutorial()
             // mark first launch as completed so this tutorial won't be shown on further app starts
             // or configuration changes
             preferencesManager.completedFirstRun()
@@ -277,6 +221,22 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
         mapViewModel.getLastKnownCameraPosition()?.let {
             map.cameraPosition = it
         }
+    }
+
+    private fun showFirstRunTutorial() {
+        // highlight interesting spots the first time the fragment is launched on this device
+        TutorialBuilder.showTutorialFor(
+            requireActivity(),
+            Highlight(
+                binding.changeStyleButton,
+                title = getString(R.string.map_style_button_title),
+                description = getString(R.string.map_style_button_description)
+            ), Highlight(
+                binding.ownLocationButton,
+                title = getString(R.string.location_tracking_button_title),
+                description = getString(R.string.location_tracking_button_description)
+            )
+        )
     }
 
     private fun setMapStyle(styleUrl: String?) {
@@ -398,7 +358,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
         binding.routeRetrievalProgressSpinner.visibility = View.VISIBLE
         // Place the destination marker at the map long click location
         map.getStyle {
-            val clickPointSource = it.getSourceAs<GeoJsonSource>("CLICK_SOURCE")
+            val clickPointSource = it.getSourceAs<GeoJsonSource>(ROUTE_MARKER_SOURCE_ID)
             clickPointSource?.setGeoJson(
                 Point.fromLngLat(
                     point.longitude,
@@ -420,19 +380,71 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
         } else {
             map.locationComponent.lastKnownLocation?.let { originLocation ->
                 val token = getMapboxAccessToken(requireActivity().applicationContext)
+                val routeOptions = RouteOptions.builder().applyDefaultParams()
+                    .accessToken(token)
+                    .coordinates(originLocation.toPoint(), null, clickedPoint.toPoint())
+                    .alternatives(true)
+                    .steps(true)
+                    .bannerInstructions(true)
+                    .voiceInstructions(false)
+                    .profile(DirectionsCriteria.PROFILE_WALKING)
+                    .overview(DirectionsCriteria.OVERVIEW_FULL)
+                    .build()
+
                 mapboxNavigation?.requestRoutes(
-                    RouteOptions.builder().applyDefaultParams()
-                        .accessToken(token)
-                        .coordinates(originLocation.toPoint(), null, clickedPoint.toPoint())
-                        .alternatives(true)
-                        .steps(true)
-                        .bannerInstructions(true)
-                        .voiceInstructions(false)
-                        .profile(DirectionsCriteria.PROFILE_WALKING)
-                        .build(),
-                    routesReqCallback
+                    routeOptions,
+                    object : RoutesRequestCallback {
+                        override fun onRoutesReady(routes: List<DirectionsRoute>) {
+                            onNewRouteAvailable(routes)
+                        }
+
+                        override fun onRoutesRequestFailure(
+                            throwable: Throwable,
+                            routeOptions: RouteOptions
+                        ) {
+                            Timber.e("route request failure %s", throwable.toString())
+                            showSnackbar(
+                                requireActivity(),
+                                R.string.route_request_failed,
+                                binding.mapContainer,
+                                colorRes = R.color.color_error
+                            )
+                        }
+
+                        override fun onRoutesRequestCanceled(routeOptions: RouteOptions) {
+                            Timber.d("route request canceled")
+                        }
+                    }
                 )
             }
+        }
+    }
+
+    private fun onNewRouteAvailable(routes: List<DirectionsRoute>) {
+        if (routes.isNotEmpty()) {
+            showSnackbar(
+                requireActivity(),
+                String.format(
+                    getString(R.string.steps_in_route),
+                    routes[0].legs()?.get(0)?.steps()?.size
+                ),
+                binding.mapContainer,
+                colorRes = R.color.colorPrimary
+            )
+
+            // Update a gradient route LineLayer's source with the Maps SDK. This will
+            // visually add/update the line on the map. All of this is being done
+            // directly with Maps SDK code and NOT the Navigation UI SDK.
+            map.getStyle {
+                val routeLineSource = it.getSourceAs<GeoJsonSource>(ROUTE_LINE_SOURCE_ID)
+                val routeLineString = routes[0].geometry()?.let { geometry ->
+                    LineString.fromPolyline(geometry, Constants.PRECISION_6)
+                }
+                routeLineSource?.setGeoJson(routeLineString)
+            }
+            binding.routeRetrievalProgressSpinner.visibility = View.INVISIBLE
+        } else {
+            showSnackbar(requireActivity(), R.string.no_routes, binding.mapContainer)
         }
     }
 
