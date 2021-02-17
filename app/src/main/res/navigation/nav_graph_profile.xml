@@ -10,5 +10,20 @@
         android:name="de.ur.explure.views.ProfileFragment"
         android:label="ProfileFragment"
         tools:layout="@layout/fragment_profile" />
+    <fragment
+        android:id="@+id/createdRoutesFragment"
+        android:name="de.ur.explure.views.CreatedRoutesFragment"
+        android:label="fragment_created_routes"
+        tools:layout="@layout/fragment_created_routes" />
+    <fragment
+        android:id="@+id/favoriteRoutesFragment"
+        android:name="de.ur.explure.views.FavoriteRoutesFragment"
+        android:label="fragment_favorite_routes"
+        tools:layout="@layout/fragment_favorite_routes" />
+    <fragment
+        android:id="@+id/statisticsFragment"
+        android:name="de.ur.explure.views.StatisticsFragment"
+        android:label="fragment_statistics"
+        tools:layout="@layout/fragment_statistics" />
 
 </navigation>

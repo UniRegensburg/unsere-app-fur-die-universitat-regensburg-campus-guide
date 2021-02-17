@@ -7,6 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.Toast
+import androidx.navigation.Navigation
+import androidx.navigation.fragment.findNavController
 import de.ur.explure.R
 
 class ProfileFragment : Fragment() {
@@ -20,15 +22,15 @@ class ProfileFragment : Fragment() {
         val logOutButton = rootView.findViewById<ImageButton>(R.id.logOutButton)
 
         ownRoutes.setOnClickListener {
-            defineProfileButtonBehavior(CreatedRoutesFragment())
+            Navigation.findNavController(it).navigate(R.id.createdRoutesFragment)
         }
 
         favoriteRoutes.setOnClickListener {
-            defineProfileButtonBehavior(FavoriteRoutesFragment())
+            Navigation.findNavController(it).navigate(R.id.favoriteRoutesFragment)
         }
 
         userStatistics.setOnClickListener {
-            defineProfileButtonBehavior(StatisticsFragment())
+            Navigation.findNavController(it).navigate(R.id.statisticsFragment)
         }
 
         logOutButton.setOnClickListener {
@@ -36,12 +38,5 @@ class ProfileFragment : Fragment() {
         }
 
         return rootView
-    }
-
-    fun defineProfileButtonBehavior(fragment: Fragment) {
-        val transaction = fragmentManager?.beginTransaction()
-        transaction?.replace(R.id.nav_host_container, fragment)
-        transaction?.addToBackStack(null)
-        transaction?.commit()
     }
 }
