@@ -18,5 +18,4 @@ data class Comment(
     fun fillAnswers(answerList: List<Comment>) {
         answers.addAll(answerList)
     }
-
 }
