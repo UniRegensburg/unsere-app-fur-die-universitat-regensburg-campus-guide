@@ -14,7 +14,6 @@ class DiscoverFragment : Fragment(R.layout.fragment_discover) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.loginUser()
         setOnClickListeners()
     }
 

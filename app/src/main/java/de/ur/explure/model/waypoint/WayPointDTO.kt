@@ -1,14 +1,43 @@
 package de.ur.explure.model.waypoint
 
+import android.os.Parcel
 import android.os.Parcelable
-import kotlinx.android.parcel.Parcelize
+import com.google.firebase.firestore.GeoPoint
 
-@Parcelize
 data class WayPointDTO(
     var title: String,
-    var coordinates: String,
+    var coordinates: GeoPoint,
     var description: String = "",
     var audioURL: String? = null,
     var imageURL: String? = null,
     var videoURL: String? = null
-) : Parcelable
+) : Parcelable {
+
+    constructor(parcel: Parcel) : this(
+        title = parcel.readString() ?: "",
+        description = parcel.readString() ?: "",
+        coordinates = GeoPoint(parcel.readDouble(), parcel.readDouble()),
+        audioURL = parcel.readString(),
+        imageURL = parcel.readString(),
+        videoURL = parcel.readString(),
+    )
+
+    override fun writeToParcel(parcel: Parcel, i: Int) {
+        parcel.writeDouble(coordinates.latitude)
+        parcel.writeDouble(coordinates.longitude)
+    }
+
+    override fun describeContents(): Int {
+        return 0
+    }
+
+    companion object CREATOR : Parcelable.Creator<WayPoint> {
+        override fun createFromParcel(parcel: Parcel): WayPoint {
+            return WayPoint(parcel)
+        }
+
+        override fun newArray(size: Int): Array<WayPoint?> {
+            return arrayOfNulls(size)
+        }
+    }
+}

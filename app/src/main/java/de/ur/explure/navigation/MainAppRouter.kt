@@ -3,11 +3,11 @@ package de.ur.explure.navigation
 import androidx.navigation.NavController
 
 /**
- * Router class used for navigation operations
+ * Router class used for navigation operations in the main app
  *
  */
 
-class AppRouter {
+class MainAppRouter {
 
     private lateinit var navController: NavController
 
@@ -19,18 +19,6 @@ class AppRouter {
 
     fun initializeNavController(navController: NavController) {
         this.navController = navController
-    }
-
-    /**
-     * Returns the current navigation controller or throws an Exception if none is found.
-     * Used in the child fragments to access the current Navigation Graph.
-     */
-    fun getNavController(): NavController {
-        if (this::navController.isInitialized) {
-            return navController
-        } else {
-            throw UninitializedPropertyAccessException("No Navigation Controller is initialized in the AppRouter!")
-        }
     }
 
     fun navigateUp(): Boolean {
