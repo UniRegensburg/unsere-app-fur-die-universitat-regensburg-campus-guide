@@ -1,35 +1,38 @@
 package de.ur.explure.views
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import android.widget.ImageButton
 import android.widget.Toast
+import androidx.fragment.app.Fragment
 import androidx.navigation.Navigation
-import androidx.navigation.fragment.findNavController
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import de.ur.explure.R
+import de.ur.explure.repository.user.UserRepositoryImpl
+import de.ur.explure.services.FireStoreInstance
+import de.ur.explure.services.FirebaseAuthService
+import de.ur.explure.viewmodel.ProfileFragmentViewModel
+import kotlinx.android.synthetic.main.fragment_profile.*
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class ProfileFragment : Fragment() {
+class ProfileFragment : Fragment(R.layout.fragment_profile) {
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        val rootView = inflater.inflate(R.layout.fragment_profile, container, false)
+    private val viewModel =
+        ProfileFragmentViewModel(UserRepositoryImpl(FirebaseAuthService(FirebaseAuth.getInstance()),
+        FireStoreInstance(FirebaseFirestore.getInstance())))
 
-        val ownRoutes = rootView.findViewById<ImageButton>(R.id.ownRoutesButton)
-        val favoriteRoutes = rootView.findViewById<ImageButton>(R.id.favoriteRoutesButton)
-        val userStatistics = rootView.findViewById<ImageButton>(R.id.statisticsButton)
-        val logOutButton = rootView.findViewById<ImageButton>(R.id.logOutButton)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
-        ownRoutes.setOnClickListener {
+        ownRoutesButton.setOnClickListener {
             Navigation.findNavController(it).navigate(R.id.createdRoutesFragment)
         }
 
-        favoriteRoutes.setOnClickListener {
+        favoriteRoutesButton.setOnClickListener {
             Navigation.findNavController(it).navigate(R.id.favoriteRoutesFragment)
         }
 
-        userStatistics.setOnClickListener {
+        statisticsButton.setOnClickListener {
             Navigation.findNavController(it).navigate(R.id.statisticsFragment)
         }
 
@@ -37,6 +40,7 @@ class ProfileFragment : Fragment() {
             Toast.makeText(activity, "Still to come!", Toast.LENGTH_SHORT).show()
         }
 
-        return rootView
+        viewModel.setUserName(userNameTextView)
+        viewModel.setProfilePicture(profilePicture)
     }
 }
