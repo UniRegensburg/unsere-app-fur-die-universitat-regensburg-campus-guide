@@ -7,14 +7,12 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import de.ur.explure.repository.rating.RatingRepositoryImpl
 import de.ur.explure.repository.user.UserRepositoryImpl
 import de.ur.explure.utils.FirebaseResult
 import kotlinx.coroutines.launch
 
-class StatisticsFragmentViewModel(
-    private val userRepo: UserRepositoryImpl,
-    private val ratingRepo: RatingRepositoryImpl
+class CreatedRoutesFragmentViewModel(
+    private val userRepo: UserRepositoryImpl
 ) : ViewModel() {
 
     fun setUserName(textView: TextView) {
@@ -41,39 +39,6 @@ class StatisticsFragmentViewModel(
                     } catch (exception: NetworkOnMainThreadException) {
                         Log.e("TAG", "" + exception)
                     }
-                }
-            }
-        }
-    }
-
-    fun setDistanceStatistics(distance: TextView, startedRoutes: TextView, endedRoutes: TextView) {
-        viewModelScope.launch {
-            val userInfo = userRepo.getUserInfo()
-            when (userInfo) {
-                is FirebaseResult.Success -> {
-                    endedRoutes.text = userInfo.data.finishedRoutes.size.toString()
-                }
-            }
-        }
-    }
-
-    fun setContentStatistics(createdRoutes: TextView, createdLandmarks: TextView) {
-        viewModelScope.launch {
-            val userInfo = userRepo.getUserInfo()
-            when (userInfo) {
-                is FirebaseResult.Success -> {
-                    createdRoutes.text = userInfo.data.createdRoutes.size.toString()
-                }
-            }
-        }
-    }
-
-    fun setInteractionStatistics(comments: TextView, ratings: TextView) {
-        viewModelScope.launch {
-            val userInfo = userRepo.getUserInfo()
-            when (userInfo) {
-                is FirebaseResult.Success -> {
-                    // set statistics
                 }
             }
         }

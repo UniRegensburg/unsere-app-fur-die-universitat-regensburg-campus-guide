@@ -1,6 +1,7 @@
 package de.ur.explure.viewmodel
 
 import android.graphics.BitmapFactory
+import android.os.NetworkOnMainThreadException
 import android.util.Log
 import android.widget.ImageView
 import android.widget.TextView
@@ -15,6 +16,7 @@ class ProfileFragmentViewModel(
 ) : ViewModel() {
 
     fun setUserName(textView: TextView) {
+        textView.text = ""
         viewModelScope.launch() {
             val userInfo = userRepo.getUserInfo()
             when (userInfo) {
@@ -34,7 +36,7 @@ class ProfileFragmentViewModel(
                         val inp = java.net.URL(userInfo.data.profilePictureUrl).openStream()
                         val image = BitmapFactory.decodeStream(inp)
                         imageView.setImageBitmap(image)
-                    } catch (exception: AccessDeniedException) {
+                    } catch (exception: NetworkOnMainThreadException) {
                         Log.e("TAG", "" + exception)
                     }
                 }

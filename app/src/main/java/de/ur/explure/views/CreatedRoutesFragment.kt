@@ -2,14 +2,30 @@ package de.ur.explure.views
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
 import de.ur.explure.R
+import de.ur.explure.repository.user.UserRepositoryImpl
+import de.ur.explure.services.FireStoreInstance
+import de.ur.explure.services.FirebaseAuthService
+import de.ur.explure.viewmodel.CreatedRoutesFragmentViewModel
+import kotlinx.android.synthetic.main.fragment_created_routes.*
 
-class CreatedRoutesFragment : Fragment() {
+class CreatedRoutesFragment : Fragment(R.layout.fragment_created_routes) {
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_created_routes, container, false)
+    private val viewModel =
+        CreatedRoutesFragmentViewModel(
+            UserRepositoryImpl(
+                FirebaseAuthService(FirebaseAuth.getInstance()),
+                FireStoreInstance(FirebaseFirestore.getInstance())
+            )
+        )
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        viewModel.setUserName(userNameTextView)
+        viewModel.setProfilePicture(profilePicture)
     }
 }
