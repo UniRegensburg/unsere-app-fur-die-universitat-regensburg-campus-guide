@@ -55,7 +55,7 @@ class AuthenticationViewModel(
         viewModelScope.launch {
             when (val resetTask = authService.resetPassword(email)) {
                 is FirebaseResult.Success -> {
-                    //Error: returns String email_sent and then int
+                    // Error: returns String email_sent and then int
                     _toast.value = R.string.email_sent.toString()
                 }
                 is FirebaseResult.Error -> {
