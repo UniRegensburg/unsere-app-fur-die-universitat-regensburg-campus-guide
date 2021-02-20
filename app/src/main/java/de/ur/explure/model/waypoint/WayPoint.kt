@@ -2,16 +2,18 @@ package de.ur.explure.model.waypoint
 
 import android.os.Parcel
 import android.os.Parcelable
+import com.google.firebase.firestore.DocumentId
 import com.google.firebase.firestore.GeoPoint
 
 data class WayPoint(
-    val id: String,
-    val title: String,
-    val description: String,
-    val geoPoint: GeoPoint,
-    val audioURL: String?,
-    val imageURL: String?,
-    val videoURL: String?
+    @DocumentId
+    val id: String = "",
+    val title: String = "",
+    val description: String = "",
+    val geoPoint: GeoPoint = GeoPoint(0.0, 0.0),
+    val audioURL: String? = null,
+    val imageURL: String? = null,
+    val videoURL: String? = null
 ) : Parcelable {
 
     constructor(parcel: Parcel) : this(
