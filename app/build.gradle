@@ -45,6 +45,9 @@ android {
 
     kotlinOptions {
         jvmTarget = "1.8"
+        // remove some koin warnings when defining KoinComponents, see
+        // https://github.com/InsertKoinIO/koin/issues/934
+        freeCompilerArgs += "-Xopt-in=org.koin.core.component.KoinApiExtension"
     }
 }
 
