@@ -2,10 +2,10 @@ package de.ur.explure.views
 
 import android.os.Bundle
 import android.util.Patterns
-import androidx.fragment.app.Fragment
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.fragment.app.Fragment
 import de.ur.explure.R
 import de.ur.explure.viewmodel.AuthenticationViewModel
 import kotlinx.android.synthetic.main.fragment_login.*
@@ -14,7 +14,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class LoginFragment : Fragment(R.layout.fragment_login) {
 
-   private val authenticationViewModel: AuthenticationViewModel by viewModel()
+    private val authenticationViewModel: AuthenticationViewModel by viewModel()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -60,7 +60,7 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
         builder.setTitle(R.string.builder_text)
         val view = layoutInflater.inflate(R.layout.reset_password, null)
         builder.setView(view)
-        builder.setPositiveButton(R.string.positive_button) { dialog, which ->
+        builder.setPositiveButton(R.string.positive_button) { _, _ ->
             val email = view.edResetEmail.text.toString()
             if (email.isEmpty()) {
                 Toast.makeText(context, R.string.empty_email, Toast.LENGTH_LONG).show()
@@ -72,7 +72,7 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
                 Toast.makeText(context, R.string.email_sent, Toast.LENGTH_LONG).show()
             }
         }
-        builder.setNegativeButton(R.string.negative_button) { dialog, which -> }
+        builder.setNegativeButton(R.string.negative_button) { _, _ -> }
         builder.show()
     }
 

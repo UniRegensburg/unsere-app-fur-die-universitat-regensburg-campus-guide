@@ -1,20 +1,15 @@
 package de.ur.explure
 
-import android.content.res.Configuration
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.onNavDestinationSelected
-import de.ur.explure.viewmodel.BottomNavViewModel
-import de.ur.explure.viewmodel.StateViewModel
-import androidx.navigation.ui.setupWithNavController
 import com.crazylegend.viewbinding.viewBinder
 import de.ur.explure.databinding.ActivityMainBinding
-import de.ur.explure.extensions.setupWithNavController
-import de.ur.explure.viewmodel.MainViewModel
+import de.ur.explure.viewmodel.BottomNavViewModel
+import de.ur.explure.viewmodel.StateViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import timber.log.Timber
 
 /**
  * Main activity of the single activity application.

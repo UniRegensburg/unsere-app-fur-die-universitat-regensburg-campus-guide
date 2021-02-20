@@ -10,17 +10,15 @@ import de.ur.explure.map.LocationManager
 import de.ur.explure.map.MarkerManager
 import de.ur.explure.navigation.MainAppRouter
 import de.ur.explure.navigation.StateAppRouter
-import de.ur.explure.viewmodel.AuthenticationViewModel
 import de.ur.explure.repository.rating.RatingRepositoryImpl
 import de.ur.explure.repository.route.RouteRepositoryImpl
 import de.ur.explure.repository.user.UserRepositoryImpl
 import de.ur.explure.services.FireStoreInstance
 import de.ur.explure.services.FirebaseAuthService
 import de.ur.explure.utils.SharedPreferencesManager
-import de.ur.explure.viewmodel.DiscoverViewModel
-import de.ur.explure.viewmodel.MainViewModel
-import de.ur.explure.viewmodel.MapViewModel
+import de.ur.explure.viewmodel.AuthenticationViewModel
 import de.ur.explure.viewmodel.BottomNavViewModel
+import de.ur.explure.viewmodel.MapViewModel
 import de.ur.explure.viewmodel.StateViewModel
 import de.ur.explure.viewmodel.TestViewModel
 import org.koin.android.ext.koin.androidApplication
@@ -58,5 +56,4 @@ val mainModule = module {
     viewModel { StateViewModel() }
     viewModel { BottomNavViewModel() }
     viewModel { MapViewModel(get()) }
-    viewModel { DiscoverViewModel(get()) }
 }
