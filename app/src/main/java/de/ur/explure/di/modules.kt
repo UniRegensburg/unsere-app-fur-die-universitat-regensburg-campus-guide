@@ -40,7 +40,7 @@ val mainModule = module {
     viewModel { StateViewModel() }
     viewModel { BottomNavViewModel() }
     viewModel { ProfileFragmentViewModel(get(), get()) }
-    viewModel { CreatedRoutesFragmentViewModel(get(), get()) }
-    viewModel { FavoriteRoutesFragmentViewModel(get(), get()) }
+    viewModel { CreatedRoutesFragmentViewModel(get(), get(), get()) }
+    viewModel { FavoriteRoutesFragmentViewModel(get(), get(), get()) }
     viewModel { StatisticsFragmentViewModel(get(), get(), get(), get()) }
 }

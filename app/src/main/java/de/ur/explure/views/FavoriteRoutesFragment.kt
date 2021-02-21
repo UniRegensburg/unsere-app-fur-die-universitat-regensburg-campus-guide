@@ -18,13 +18,23 @@ class FavoriteRoutesFragment : Fragment(R.layout.fragment_favorite_routes) {
         super.onViewCreated(view, savedInstanceState)
 
         observeUserModel()
+        observeRouteModel()
         viewModel.getUserInfo()
+        viewModel.getFavoriteRoutes()
     }
 
     private fun observeUserModel() {
         viewModel.user.observe(viewLifecycleOwner, { user ->
             if (user != null) {
                 userNameTextView.text = user.name
+            }
+        })
+    }
+
+    private fun observeRouteModel() {
+        viewModel.favoriteRoutes.observe(viewLifecycleOwner, { routes ->
+            if (routes != null) {
+                // do stuff
             }
         })
     }

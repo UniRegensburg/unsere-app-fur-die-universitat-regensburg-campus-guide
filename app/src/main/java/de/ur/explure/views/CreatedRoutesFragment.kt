@@ -16,13 +16,23 @@ class CreatedRoutesFragment : Fragment(R.layout.fragment_created_routes) {
         super.onViewCreated(view, savedInstanceState)
 
         observeUserModel()
+        observeRouteModel()
         viewModel.getUserInfo()
+        viewModel.getCreatedRoutes()
     }
 
     private fun observeUserModel() {
         viewModel.user.observe(viewLifecycleOwner, { user ->
             if (user != null) {
                 userNameTextView.text = user.name
+            }
+        })
+    }
+
+    private fun observeRouteModel() {
+        viewModel.createdRoutes.observe(viewLifecycleOwner, { routes ->
+            if (routes != null) {
+                // do stuff
             }
         })
     }
