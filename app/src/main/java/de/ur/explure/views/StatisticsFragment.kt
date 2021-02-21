@@ -18,7 +18,10 @@ class StatisticsFragment : Fragment(R.layout.fragment_statistics) {
         super.onViewCreated(view, savedInstanceState)
 
         observeUserModel()
+        observeRouteModel()
         viewModel.getUserInfo()
+        viewModel.getTraveledDistance()
+        viewModel.getCreatedWaypoints()
     }
 
     private fun observeUserModel() {
@@ -27,6 +30,19 @@ class StatisticsFragment : Fragment(R.layout.fragment_statistics) {
                 userNameTextView.text = user.name
                 endedRoutesTextView.text = user.finishedRoutes.size.toString()
                 createdRoutesTextView.text = user.createdRoutes.size.toString()
+            }
+        })
+    }
+
+    private fun observeRouteModel() {
+        viewModel.traveledDistance.observe(viewLifecycleOwner, { distance ->
+            if (distance != null) {
+                traveledDistanceTextView.text = distance
+            }
+        })
+        viewModel.createdWaypoints.observe(viewLifecycleOwner, { waypoints ->
+            if (waypoints != null) {
+                createdLandmarksTextView.text = waypoints
             }
         })
     }

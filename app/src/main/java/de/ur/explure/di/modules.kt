@@ -42,5 +42,5 @@ val mainModule = module {
     viewModel { ProfileFragmentViewModel(get(), get()) }
     viewModel { CreatedRoutesFragmentViewModel(get(), get()) }
     viewModel { FavoriteRoutesFragmentViewModel(get(), get()) }
-    viewModel { StatisticsFragmentViewModel(get(), get()) }
+    viewModel { StatisticsFragmentViewModel(get(), get(), get(), get()) }
 }
