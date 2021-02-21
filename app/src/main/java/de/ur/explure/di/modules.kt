@@ -13,6 +13,10 @@ import de.ur.explure.services.FirebaseAuthService
 import de.ur.explure.viewmodel.BottomNavViewModel
 import de.ur.explure.viewmodel.StateViewModel
 import de.ur.explure.viewmodel.TestViewModel
+import de.ur.explure.viewmodel.ProfileFragmentViewModel
+import de.ur.explure.viewmodel.CreatedRoutesFragmentViewModel
+import de.ur.explure.viewmodel.FavoriteRoutesFragmentViewModel
+import de.ur.explure.viewmodel.StatisticsFragmentViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
@@ -35,4 +39,8 @@ val mainModule = module {
     viewModel { TestViewModel(get(), get(), get()) }
     viewModel { StateViewModel() }
     viewModel { BottomNavViewModel() }
+    viewModel { ProfileFragmentViewModel(get(), get()) }
+    viewModel { CreatedRoutesFragmentViewModel(get(), get()) }
+    viewModel { FavoriteRoutesFragmentViewModel(get(), get()) }
+    viewModel { StatisticsFragmentViewModel(get(), get()) }
 }

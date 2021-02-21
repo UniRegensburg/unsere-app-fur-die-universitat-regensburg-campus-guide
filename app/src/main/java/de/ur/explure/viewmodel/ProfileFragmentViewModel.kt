@@ -1,44 +1,27 @@
 package de.ur.explure.viewmodel
 
-import android.graphics.BitmapFactory
-import android.os.NetworkOnMainThreadException
-import android.util.Log
-import android.widget.ImageView
-import android.widget.TextView
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import de.ur.explure.model.user.User
+import de.ur.explure.navigation.MainAppRouter
 import de.ur.explure.repository.user.UserRepositoryImpl
 import de.ur.explure.utils.FirebaseResult
 import kotlinx.coroutines.launch
 
 class ProfileFragmentViewModel(
-    private val userRepo: UserRepositoryImpl
+    private val userRepo: UserRepositoryImpl,
+    private val appRouter: MainAppRouter
 ) : ViewModel() {
 
-    fun setUserName(textView: TextView) {
-        textView.text = ""
-        viewModelScope.launch() {
-            val userInfo = userRepo.getUserInfo()
-            when (userInfo) {
-                is FirebaseResult.Success -> {
-                    textView.text = userInfo.data.name
-                }
-            }
-        }
-    }
+    var user: MutableLiveData<User> = MutableLiveData()
 
-    fun setProfilePicture(imageView: ImageView) {
+    fun getUserInfo() {
         viewModelScope.launch() {
             val userInfo = userRepo.getUserInfo()
             when (userInfo) {
                 is FirebaseResult.Success -> {
-                    try {
-                        val inp = java.net.URL(userInfo.data.profilePictureUrl).openStream()
-                        val image = BitmapFactory.decodeStream(inp)
-                        imageView.setImageBitmap(image)
-                    } catch (exception: NetworkOnMainThreadException) {
-                        Log.e("TAG", "" + exception)
-                    }
+                    user.postValue(userInfo.data)
                 }
             }
         }
