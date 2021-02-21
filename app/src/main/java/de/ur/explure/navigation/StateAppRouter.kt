@@ -1,5 +1,6 @@
 package de.ur.explure.navigation
 
+import android.util.Log
 import androidx.navigation.NavController
 import de.ur.explure.R
 
@@ -52,5 +53,22 @@ class StateAppRouter {
         } else {
             false
         }
+    }
+
+    /**
+     * Navigation for the SearchFragment
+     */
+    fun navigateFromSearch() {
+        navController.setGraph(R.navigation.nav_graph_search)
+    }
+
+    fun navigateToCategoryWork(){
+        navController.setGraph(R.navigation.nav_graph_search)
+        navController.navigate(R.id.navigateToCategoryWork)
+    }
+
+    fun navigateToSearchResult(){
+        navController.setGraph(R.navigation.nav_graph_search)
+        navController.navigate(R.id.navigateToSearchResult)
     }
 }

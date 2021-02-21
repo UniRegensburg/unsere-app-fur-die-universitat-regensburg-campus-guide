@@ -1,54 +1,56 @@
 package de.ur.explure.views
 
+import android.util.Log
 import android.os.Bundle
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import androidx.navigation.findNavController
 import de.ur.explure.R
+import de.ur.explure.viewmodel.SearchViewModel
 import kotlinx.android.synthetic.main.fragment_search.*
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class SearchFragment : Fragment() {
+class SearchFragment : Fragment(R.layout.fragment_search) {
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_search, container, false)
-    }
+    private val viewModel: SearchViewModel by viewModel()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setOnClickListeners()
+    }
 
-        chillenButton.setOnClickListener { view ->
-            view.findNavController().navigate(R.id.action_searchFragment_to_categorieOneFragment)
+
+    private fun setOnClickListeners(){
+        searchButton.setOnClickListener{
+            Log.d("ABCD","Vor viewModel.navigateToSearchResult")
+            viewModel.navigateToSearchResult()
         }
 
-        lernenButton.setOnClickListener { view ->
-            view.findNavController().navigate(R.id.action_searchFragment_to_categorieOneFragment)
+        chillenButton.setOnClickListener {
+            viewModel.navigateToCategoryWork()
         }
 
-        freizeitButton.setOnClickListener { view ->
-            view.findNavController().navigate(R.id.action_searchFragment_to_categorieOneFragment)
+        lernenButton.setOnClickListener {
+            viewModel.navigateToCategoryWork()
         }
 
-        cafeteButton.setOnClickListener { view ->
-            view.findNavController().navigate(R.id.action_searchFragment_to_categorieOneFragment)
+        freizeitButton.setOnClickListener {
+            viewModel.navigateToCategoryWork()
         }
 
-        organisationButton.setOnClickListener { view ->
-            view.findNavController().navigate(R.id.action_searchFragment_to_categorieOneFragment)
+        cafeteButton.setOnClickListener {
+            viewModel.navigateToCategoryWork()
         }
 
-        bibliothekenButton.setOnClickListener { view ->
-            view.findNavController().navigate(R.id.action_searchFragment_to_categorieOneFragment)
+        organisationButton.setOnClickListener {
+            viewModel.navigateToCategoryWork()
         }
 
-        searchMapButton.setOnClickListener { view ->
-            view.findNavController().navigate(R.id.action_searchFragment_to_profileFragment2)
+        bibliothekenButton.setOnClickListener {
+            viewModel.navigateToCategoryWork()
+        }
+//insert navigateToMap
+        searchMapButton.setOnClickListener {
+            viewModel.navigateToCategoryWork()
         }
     }
 }

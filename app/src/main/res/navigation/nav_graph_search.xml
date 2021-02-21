@@ -15,17 +15,25 @@
             android:id="@+id/action_searchFragment_to_profileFragment2"
             app:destination="@id/profileFragment2" />
         <action
-            android:id="@+id/action_searchFragment_to_categorieOneFragment"
-            app:destination="@id/categorieOneFragment" />
+            android:id="@+id/action_searchFragment_to_wordSearchFragment"
+            app:destination="@id/navigateToSearchResult" />
+        <action
+            android:id="@+id/navigateToCategoryWork"
+            app:destination="@id/categoryWorkFragment" />
     </fragment>
     <fragment
         android:id="@+id/profileFragment2"
         android:name="de.ur.explure.views.ProfileFragment"
         android:label="ProfileFragment" />
     <fragment
-        android:id="@+id/categorieOneFragment"
-        android:name="de.ur.explure.views.CategorieOneFragment"
-        android:label="fragment_categorie_one"
-        tools:layout="@layout/fragment_categorie_one" />
+        android:id="@+id/navigateToSearchResult"
+        android:name="de.ur.explure.views.WordSearchFragment"
+        android:label="fragment_word_search"
+        tools:layout="@layout/fragment_word_search" />
+    <fragment
+        android:id="@+id/categoryWorkFragment"
+        android:name="de.ur.explure.views.CategoryWorkFragment"
+        android:label="fragment_categorie_work"
+        tools:layout="@layout/fragment_categorie_work" />
 
 </navigation>
