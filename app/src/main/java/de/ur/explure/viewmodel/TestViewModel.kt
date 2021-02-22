@@ -1,15 +1,16 @@
 package de.ur.explure.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import de.ur.explure.navigation.MainAppRouter
 import com.google.firebase.firestore.GeoPoint
 import de.ur.explure.model.route.RouteDTO
 import de.ur.explure.model.waypoint.WayPointDTO
+import de.ur.explure.navigation.MainAppRouter
 import de.ur.explure.repository.route.RouteRepositoryImpl
 import de.ur.explure.services.FirebaseAuthService
+import de.ur.explure.views.DiscoverFragmentDirections
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 @Suppress("MagicNumber")
 class TestViewModel(
@@ -24,6 +25,11 @@ class TestViewModel(
         viewModelScope.launch {
             authService.signIn("testUser@test.de", "Password1")
         }
+    }
+
+    fun showMap() {
+        val mapAction = DiscoverFragmentDirections.actionDiscoverFragmentToMapFragment()
+        mainAppRouter.getNavController().navigate(mapAction)
     }
 
     fun testAction() {
@@ -44,7 +50,8 @@ class TestViewModel(
                 "TAG", fullRoute.toString()
             )
             Log.d("TAG", previewRoute.toString())
-            authService.logout()
+            Timber.d(fullRoute.toString())
+            Timber.d(previewRoute.toString())
         }
     }
 }

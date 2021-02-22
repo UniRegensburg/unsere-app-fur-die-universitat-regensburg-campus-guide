@@ -1,7 +1,6 @@
 package de.ur.explure.viewmodel
 
 import androidx.lifecycle.LifecycleOwner
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
 import de.ur.explure.navigation.StateAppRouter
 import de.ur.explure.services.FirebaseAuthService
@@ -27,7 +26,7 @@ class StateViewModel : ViewModel(), KoinComponent {
      */
 
     fun observeAuthState(activity: LifecycleOwner) {
-        authRepo.currentUser.observe(activity, Observer { user ->
+        authRepo.currentUser.observe(activity, { user ->
             if (user != null) {
                 stateAppRouter.navigateToMainApp()
             } else {

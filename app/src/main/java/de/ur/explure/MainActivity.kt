@@ -5,6 +5,9 @@ import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.onNavDestinationSelected
+import com.crazylegend.viewbinding.viewBinder
+import de.ur.explure.databinding.ActivityMainBinding
+import de.ur.explure.viewmodel.BottomNavViewModel
 import de.ur.explure.navigation.MainAppRouter
 import de.ur.explure.navigation.StateAppRouter
 import de.ur.explure.viewmodel.StateViewModel
@@ -14,7 +17,10 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 /**
  * Main activity of the single activity application.
  */
-class MainActivity : AppCompatActivity(R.layout.activity_main) {
+class MainActivity : AppCompatActivity() {
+
+    // Uses this library to reduce viewbinding boilerplate code: https://github.com/FunkyMuse/KAHelpers/tree/master/viewbinding
+    private val activityMainBinding by viewBinder(ActivityMainBinding::inflate)
 
     private val stateViewModel: StateViewModel by viewModel()
     private val mainAppRouter: MainAppRouter by inject()
@@ -22,6 +28,8 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        setContentView(activityMainBinding.root)
+
         setupNavController()
         startObservingAuthState()
     }
