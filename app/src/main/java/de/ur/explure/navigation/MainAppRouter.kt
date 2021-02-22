@@ -29,6 +29,14 @@ class MainAppRouter {
         }
     }
 
+    fun getNullableNavController(): NavController? {
+        return if (this::navController.isInitialized) {
+            navController
+        } else {
+            null
+        }
+    }
+
     /**
      * Returns the current navigation controller or throws an Exception if none is found.
      * Used in the child fragments to access the current Navigation Graph.

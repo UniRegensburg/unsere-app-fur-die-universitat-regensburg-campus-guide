@@ -1,14 +1,15 @@
 package de.ur.explure.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.GeoPoint
+import de.ur.explure.R
 import de.ur.explure.model.route.RouteDTO
 import de.ur.explure.model.waypoint.WayPointDTO
 import de.ur.explure.navigation.MainAppRouter
 import de.ur.explure.repository.route.RouteRepositoryImpl
 import de.ur.explure.services.FirebaseAuthService
-import de.ur.explure.views.DiscoverFragmentDirections
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -28,8 +29,7 @@ class TestViewModel(
     }
 
     fun showMap() {
-        val mapAction = DiscoverFragmentDirections.actionDiscoverFragmentToMapFragment()
-        mainAppRouter.getNavController().navigate(mapAction)
+        mainAppRouter.getNavController().navigate(R.id.mapFragment)
     }
 
     fun testAction() {
@@ -46,6 +46,10 @@ class TestViewModel(
             )
             val fullRoute = userRepo.getRoute("83bAuunZzXwaPIJ0Xc3a")
             val previewRoute = userRepo.getRoute("83bAuunZzXwaPIJ0Xc3a", true)
+            Log.d(
+                "TAG", fullRoute.toString()
+            )
+            Log.d("TAG", previewRoute.toString())
             Timber.d(fullRoute.toString())
             Timber.d(previewRoute.toString())
         }
