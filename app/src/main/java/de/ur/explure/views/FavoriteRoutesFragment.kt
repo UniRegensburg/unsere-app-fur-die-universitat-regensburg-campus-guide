@@ -1,5 +1,7 @@
 package de.ur.explure.views
 
+import android.app.AlertDialog
+import android.content.DialogInterface
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.View
@@ -13,9 +15,10 @@ import kotlinx.android.synthetic.main.fragment_favorite_routes.*
 import kotlinx.android.synthetic.main.fragment_favorite_routes.userNameTextView
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class FavoriteRoutesFragment : Fragment(R.layout.fragment_favorite_routes) {
+class FavoriteRoutesFragment : Fragment(R.layout.fragment_favorite_routes), RouteAdapter.OnItemClickListener {
 
     private val viewModel: FavoriteRoutesFragmentViewModel by viewModel()
+    private var routeList: ArrayList<RouteItem> = ArrayList()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -42,10 +45,40 @@ class FavoriteRoutesFragment : Fragment(R.layout.fragment_favorite_routes) {
                     val item = RouteItem(R.drawable.ic_home, route.description, route.createdAt.toString())
                     list += item
                 }
-                favoriteRoutesRecyclerView.adapter = RouteAdapter(list)
+                routeList = list
+                favoriteRoutesRecyclerView.adapter = RouteAdapter(list, this)
                 favoriteRoutesRecyclerView.layoutManager = LinearLayoutManager(this.context)
                 favoriteRoutesRecyclerView.setHasFixedSize(true)
             }
         })
+    }
+
+    override fun onItemClick(position: Int) {
+        showDialog(routeList[position].routeName)
+    }
+
+    private fun showDialog(routeName: String) {
+        lateinit var dialog: AlertDialog
+        val builder = AlertDialog.Builder(this.context)
+
+        builder.setTitle(routeName)
+        builder.setMessage("Sind Sie sicher, dass Sie die Route starten möchten?")
+
+        val dialogClickListener = DialogInterface.OnClickListener { _, which ->
+            when (which) {
+                DialogInterface.BUTTON_POSITIVE -> {
+                    // start navigation
+                }
+                DialogInterface.BUTTON_NEGATIVE -> {
+                    // disable dialog
+                }
+            }
+        }
+
+        builder.setPositiveButton("JA", dialogClickListener)
+        builder.setNegativeButton("NEIN", dialogClickListener)
+
+        dialog = builder.create()
+        dialog.show()
     }
 }
