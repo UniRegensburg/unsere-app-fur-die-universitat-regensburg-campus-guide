@@ -14,8 +14,7 @@
 
         <ImageView
             android:id="@+id/profilePicture"
-            android:layout_alignParentLeft="true"
-            android:layout_marginLeft="10dp"
+            android:layout_marginStart="10dp"
             android:layout_width="80dp"
             android:layout_height="80dp"
             app:srcCompat="@drawable/user_profile_picture" />
@@ -24,8 +23,8 @@
             android:id="@+id/userNameTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_toRightOf="@id/profilePicture"
-            android:layout_marginLeft="40dp"
+            android:layout_toEndOf="@id/profilePicture"
+            android:layout_marginStart="40dp"
             android:text="@string/user_name"
             android:layout_centerVertical="true"
             android:textSize="26sp" />
