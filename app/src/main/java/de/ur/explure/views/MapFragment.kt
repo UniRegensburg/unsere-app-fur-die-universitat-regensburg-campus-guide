@@ -306,7 +306,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
                 showSnackbar(
                     activity,
                     R.string.gps_not_activated,
-                    binding.mapContainer,
+                    binding.mapButtonContainer, // ! needs to be a coordinatorLayout to work correctly
                     Snackbar.LENGTH_LONG,
                     colorRes = R.color.color_warning
                 )
@@ -348,7 +348,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
         showSnackbar(
             requireActivity(),
             R.string.location_permission_explanation,
-            binding.mapContainer,
+            binding.mapButtonContainer,
             Snackbar.LENGTH_LONG,
             colorRes = R.color.color_info
         )
@@ -362,7 +362,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
             showSnackbar(
                 requireActivity(),
                 R.string.location_permission_not_given,
-                binding.mapContainer,
+                binding.mapButtonContainer,
                 Snackbar.LENGTH_LONG,
                 colorRes = R.color.color_warning
             )
