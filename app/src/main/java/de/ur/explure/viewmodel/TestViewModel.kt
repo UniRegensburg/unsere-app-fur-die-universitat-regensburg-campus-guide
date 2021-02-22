@@ -44,6 +44,7 @@ class TestViewModel(
                 "TAG", fullRoute.toString()
             )
             Log.d("TAG", previewRoute.toString())
+            authService.logout()
         }
     }
 }
