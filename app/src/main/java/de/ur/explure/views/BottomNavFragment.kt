@@ -85,7 +85,7 @@ class BottomNavFragment : Fragment(R.layout.bottom_nav_fragment) {
                 }
             }
 
-        bottomNavViewModel.currentNavController?.observe(this) {
+        bottomNavViewModel.currentNavController?.observe(viewLifecycleOwner) {
             val changeListener = destinationChangeListener ?: return@observe
             it.addOnDestinationChangedListener(changeListener)
         }

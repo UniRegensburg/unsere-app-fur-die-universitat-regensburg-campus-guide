@@ -1,16 +1,238 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    tools:context=".views.SearchFragment">
+
+
+    <Button
+        android:id="@+id/searchMapButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:layout_marginTop="16dp"
+        android:backgroundTint="@color/PrimaryColor"
+        android:text="@string/searchMapButton"
+        android:textColor="@color/colorLightGrey"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/bibliothekenButton"
+        app:layout_constraintTop_toBottomOf="@+id/textBibliothekenButton"
+        app:layout_constraintVertical_bias="0.003" />
+
+    <EditText
+        android:id="@+id/editTextTextPersonName"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="5dp"
+        android:autofillHints="@string/search_button"
+        android:backgroundTint="@color/PrimaryColor"
+        android:ems="10"
+        android:hint="@string/search_button"
+        android:inputType="textPersonName"
+        android:text="@string/search_button"
+        app:layout_constraintBottom_toTopOf="@+id/textView"
+        app:layout_constraintEnd_toStartOf="@+id/searchButton"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <ImageButton
+        android:id="@+id/lernenButton"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:contentDescription="@string/arbeitsButton"
+        android:scaleType="fitCenter"
+        android:src="@drawable/buch"
+        app:layout_constraintBottom_toTopOf="@+id/textArbeitenButton"
+        app:layout_constraintEnd_toStartOf="@+id/freizeitButton"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="@+id/textView"
+        app:layout_constraintTop_toBottomOf="@+id/textView"
+        app:layout_constraintVertical_chainStyle="spread" />
+
+    <ImageButton
+        android:id="@+id/freizeitButton"
+        style="@android:style/Widget.DeviceDefault.Light.ImageButton"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginStart="24dp"
+        android:contentDescription="@string/freizeitButton"
+        android:scaleType="fitCenter"
+        android:src="@drawable/fussball"
+        app:layout_constraintBottom_toBottomOf="@+id/lernenButton"
+        app:layout_constraintEnd_toStartOf="@+id/cafeteButton"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/lernenButton"
+        app:layout_constraintTop_toTopOf="@+id/lernenButton" />
+
+    <ImageButton
+        android:id="@+id/cafeteButton"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:contentDescription="@string/cafetenButton"
+        android:scaleType="fitCenter"
+        android:src="@drawable/kaffeetasse"
+        app:layout_constraintBottom_toBottomOf="@+id/freizeitButton"
+        app:layout_constraintEnd_toEndOf="@+id/searchButton"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/freizeitButton"
+        app:layout_constraintTop_toTopOf="@+id/freizeitButton" />
+
+    <ImageButton
+        android:id="@+id/searchButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="5dp"
+        android:backgroundTint="@color/PrimaryColor"
+        android:contentDescription="@string/search_button"
+        android:src="@android:drawable/ic_menu_search"
+        app:layout_constraintBottom_toBottomOf="@+id/editTextTextPersonName"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/editTextTextPersonName"
+        app:layout_constraintVertical_bias="0.578" />
+
+
+    <ImageButton
+        android:id="@+id/bibliothekenButton"
+        style="@android:style/Widget.DeviceDefault.Light.ImageButton"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="32dp"
+        android:contentDescription="@string/bibliothekenButton"
+        android:scaleType="fitCenter"
+        android:src="@drawable/bibliothek"
+        app:layout_constraintBottom_toTopOf="@+id/textBibliothekenButton"
+        app:layout_constraintEnd_toEndOf="@+id/lernenButton"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/lernenButton"
+        app:layout_constraintTop_toBottomOf="@+id/textArbeitenButton" />
+
+    <ImageButton
+        android:id="@+id/organisationButton"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:contentDescription="@string/organisationButton"
+        android:scaleType="fitCenter"
+        android:src="@drawable/organisation"
+        app:layout_constraintBottom_toBottomOf="@+id/bibliothekenButton"
+        app:layout_constraintEnd_toEndOf="@+id/freizeitButton"
+        app:layout_constraintStart_toStartOf="@+id/freizeitButton"
+        app:layout_constraintTop_toTopOf="@+id/bibliothekenButton" />
+
+    <ImageButton
+        android:id="@+id/chillenButton"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:contentDescription="@string/chillenButton"
+        android:scaleType="fitCenter"
+        android:src="@drawable/chillen"
+        app:layout_constraintBottom_toBottomOf="@+id/organisationButton"
+        app:layout_constraintEnd_toEndOf="@+id/cafeteButton"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="@+id/cafeteButton"
+        app:layout_constraintTop_toTopOf="@+id/organisationButton" />
+
+    <TextView
+        android:id="@+id/textBibliothekenButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:text="@string/bibliothekenButton"
+        app:layout_constraintBottom_toTopOf="@+id/searchMapButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/bibliothekenButton"
+        app:layout_constraintTop_toBottomOf="@+id/bibliothekenButton"
+        app:layout_constraintVertical_bias="0.005" />
+
+
     <TextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Search"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="25dp"
+        android:background="#CFC7C7"
+        android:backgroundTint="#00CDDC39"
+        android:text="@string/kategorie_text"
+        android:textAlignment="viewStart"
+        android:textColor="@color/PrimaryColor"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toTopOf="@+id/lernenButton"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/editTextTextPersonName"
+        app:layout_constraintTop_toBottomOf="@+id/editTextTextPersonName"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <TextView
+        android:id="@+id/textArbeitenButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:text="@string/arbeitsButton"
+        app:layout_constraintBottom_toTopOf="@+id/bibliothekenButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/lernenButton"
+        app:layout_constraintTop_toBottomOf="@+id/lernenButton"
+        app:layout_constraintVertical_bias="0.0" />
+
+
+    <TextView
+        android:id="@+id/textFreizeitButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:text="@string/freizeitButton"
+        app:layout_constraintBottom_toBottomOf="@+id/textArbeitenButton"
+        app:layout_constraintStart_toStartOf="@+id/freizeitButton"
+        app:layout_constraintTop_toTopOf="@+id/textArbeitenButton"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <TextView
+        android:id="@+id/textCafetenButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="5dp"
+        android:text="@string/cafetenButton"
+        app:layout_constraintBottom_toBottomOf="@+id/textArbeitenButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/cafeteButton"
+        app:layout_constraintTop_toTopOf="@+id/textArbeitenButton"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <TextView
+        android:id="@+id/textOrganisationButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/organisationButton"
+        app:layout_constraintBottom_toBottomOf="@+id/textBibliothekenButton"
+        app:layout_constraintEnd_toEndOf="@+id/organisationButton"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/organisationButton"
+        app:layout_constraintTop_toTopOf="@+id/textBibliothekenButton"
+        app:layout_constraintVertical_bias="0.0" />
+
+    <TextView
+        android:id="@+id/textChillenButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="74dp"
+        android:text="@string/chillenButton"
+        app:layout_constraintBottom_toBottomOf="@+id/textBibliothekenButton"
+        app:layout_constraintEnd_toEndOf="@+id/chillenButton"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/chillenButton"
+        app:layout_constraintTop_toTopOf="@+id/textBibliothekenButton"
+        app:layout_constraintVertical_bias="0.0" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

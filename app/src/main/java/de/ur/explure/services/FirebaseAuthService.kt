@@ -24,36 +24,58 @@ class FirebaseAuthService(private val firebaseAuth: FirebaseAuth) {
         }
     }
 
-    suspend fun registerUser(email: String, password: String): FirebaseResult<AuthResult> {
-        return firebaseAuth.createUserWithEmailAndPassword(email, password).await()
-    }
-
-    fun signIn(email: String, password: String) {
-        firebaseAuth.signInWithEmailAndPassword(email, password)
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    user.postValue(firebaseAuth.currentUser)
+    suspend fun registerUser(email: String, password: String): FirebaseResult<FirebaseUser?> {
+        try {
+            return when (val registerTask = firebaseAuth.createUserWithEmailAndPassword(email, password).await()) {
+                is FirebaseResult.Success -> {
+                    val user = registerTask.data.user
+                    FirebaseResult.Success(user)
+                }
+                is FirebaseResult.Error -> {
+                    FirebaseResult.Error(registerTask.exception)
+                }
+                is FirebaseResult.Canceled -> {
+                    FirebaseResult.Canceled(registerTask.exception)
                 }
             }
+        } catch (exception: Exception) {
+            return FirebaseResult.Error(exception)
+        }
     }
 
-    fun resetPassword(email: String) {
-        firebaseAuth.sendPasswordResetEmail(email)
-            .addOnCompleteListener {
-                    task ->
-                if (task.isSuccessful) {
-                    // Toast.makeText(this, "Email gesendet", Toast.LENGTH_SHORT).show()
+    suspend fun signIn(email: String, password: String): FirebaseResult<FirebaseUser?> {
+        try {
+            return when (val loginTask = firebaseAuth.signInWithEmailAndPassword(email, password).await()) {
+                is FirebaseResult.Success -> {
+                    val user = loginTask.data.user
+                    FirebaseResult.Success(user)
+                }
+                is FirebaseResult.Error -> {
+                    FirebaseResult.Error(loginTask.exception)
+                }
+                is FirebaseResult.Canceled -> {
+                    FirebaseResult.Canceled(loginTask.exception)
                 }
             }
+        } catch (exception: java.lang.Exception) {
+            return FirebaseResult.Error(exception)
+        }
     }
 
-    fun signInAnonymously() {
-        firebaseAuth.signInAnonymously()
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    user.postValue(firebaseAuth.currentUser)
-                }
-            }
+    suspend fun resetPassword(email: String): FirebaseResult<Void> {
+        return try {
+            firebaseAuth.sendPasswordResetEmail(email).await()
+        } catch (exception: Exception) {
+            FirebaseResult.Error(exception)
+        }
+    }
+
+    suspend fun signInAnonymously(): FirebaseResult<AuthResult> {
+        return try {
+            firebaseAuth.signInAnonymously().await()
+        } catch (exception: Exception) {
+            FirebaseResult.Error(exception)
+        }
     }
 
     fun logout() {

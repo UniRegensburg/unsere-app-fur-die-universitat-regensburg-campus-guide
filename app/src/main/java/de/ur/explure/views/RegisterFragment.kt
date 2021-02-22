@@ -8,6 +8,7 @@ import de.ur.explure.R
 import de.ur.explure.viewmodel.AuthenticationViewModel
 import kotlinx.android.synthetic.main.fragment_register.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import java.util.*
 
 class RegisterFragment : Fragment(R.layout.fragment_register) {
 
@@ -15,7 +16,16 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        observe()
         setOnClickListener()
+    }
+
+    private fun observe() {
+        authenticationViewModel.toast.observe(viewLifecycleOwner, {
+            it?.let {
+                Toast.makeText(context, it, Toast.LENGTH_LONG).show()
+            }
+        })
     }
 
     private fun setOnClickListener() {
@@ -34,7 +44,7 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
         if (email.isNotEmpty() && password.isNotEmpty() && password == confPassword) {
             authenticationViewModel.register(email, password)
         } else {
-            Toast.makeText(context, R.string.registrationFailed, Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, R.string.registration_failed, Toast.LENGTH_SHORT).show()
         }
     }
 }

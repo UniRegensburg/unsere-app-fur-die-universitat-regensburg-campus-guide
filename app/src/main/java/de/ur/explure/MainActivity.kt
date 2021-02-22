@@ -3,10 +3,8 @@ package de.ur.explure
 import android.os.Bundle
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.onNavDestinationSelected
-import com.google.firebase.auth.FirebaseUser
 import de.ur.explure.viewmodel.BottomNavViewModel
 import de.ur.explure.viewmodel.StateViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -54,10 +52,5 @@ class MainActivity : AppCompatActivity(R.layout.activity_main) {
             bottomNavViewModel.currentNavController?.value
                 ?: return super.onOptionsItemSelected(item)
         return item.onNavDestinationSelected(controller)
-    }
-
-    override fun onStop() {
-        super.onStop()
-        stateViewModel.stopObservingAuthState(this )
     }
 }
