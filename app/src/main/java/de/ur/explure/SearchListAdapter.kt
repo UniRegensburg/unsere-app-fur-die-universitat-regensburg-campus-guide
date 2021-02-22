@@ -23,7 +23,7 @@ class SearchListAdapter(private val onClick: (Route) -> Unit) :
     }
 
 
-    /* ViewHolder for Routes, takes in the inflated view. */
+    /* ViewHolder for Routes, takes in the inflated view and the onClick behavior. */
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RouteViewHolder {
         return RouteViewHolder.from(parent)
     }

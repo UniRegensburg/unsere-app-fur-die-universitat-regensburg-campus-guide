@@ -1,28 +1,34 @@
 package de.ur.explure.viewmodel
 
 import android.util.Log
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.google.firebase.firestore.GeoPoint
-import de.ur.explure.SearchListAdapter
-import de.ur.explure.SearchListItem
-import de.ur.explure.model.route.RouteDTO
-import de.ur.explure.model.waypoint.WayPointDTO
-import de.ur.explure.navigation.StateAppRouter
+import de.ur.explure.model.route.Route
 import de.ur.explure.repository.route.RouteRepositoryImpl
-import de.ur.explure.services.FireStoreInstance
-import de.ur.explure.services.FirebaseAuthService
-import de.ur.explure.views.WordSearchFragment
+import de.ur.explure.utils.FirebaseResult
 import kotlinx.coroutines.launch
 
 class WordSearchViewModel(
         private val routeRepo: RouteRepositoryImpl
 ) : ViewModel() {
 
-    var routelist: ArrayList<SearchListItem?> = ArrayList(mutableListOf())
-    //val adapter: SearchListAdapter = SearchListAdapter(WordSearchFragment, routelist)
+    var searchedRoutes: MutableLiveData<List<Route>> = MutableLiveData()
+
+    fun getSearchedRoutes() {
+        viewModelScope.launch {
+
+            val routeList = listOf("kXvvpB6ukGQtiafDTMxq", "QZLgj7nsSAWFHg54dqzG", "83bAuunZzXwaPIJ0Xc3a")
+            val routeLists = routeRepo.getRoutes(routeList, true)
+            when (routeLists) {
+                is FirebaseResult.Success -> {
+                    searchedRoutes.postValue(routeLists.data)
+                }
+            }
+            Log.d("Koller1", searchedRoutes.toString())
+        }
+
+    }
 
 
 }

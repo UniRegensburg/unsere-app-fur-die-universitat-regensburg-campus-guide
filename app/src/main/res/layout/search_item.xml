@@ -7,22 +7,27 @@
     android:padding="10dp">
 
 
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:srcCompat="@android:drawable/ic_menu_mapmode" />
+
     <TextView
         android:id="@+id/search_route_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
+        android:layout_toEndOf="@id/imageView2"
         android:text="Item Text"
-        android:textColor="#000000"
-        android:textSize="20sp" />
+        android:textColor="@color/colorPrimaryDark" />
 
     <TextView
         android:id="@+id/search_route_description"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/search_route_title"
         android:layout_alignParentEnd="true"
         android:layout_alignParentTop="true"
         android:layout_toEndOf="@+id/search_route_title"
+        android:layout_marginStart="16dp"
         android:text="TextView" />
 </RelativeLayout>
