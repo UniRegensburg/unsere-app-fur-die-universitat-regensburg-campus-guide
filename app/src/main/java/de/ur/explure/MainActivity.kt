@@ -7,7 +7,6 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.onNavDestinationSelected
 import com.crazylegend.viewbinding.viewBinder
 import de.ur.explure.databinding.ActivityMainBinding
-import de.ur.explure.viewmodel.BottomNavViewModel
 import de.ur.explure.navigation.MainAppRouter
 import de.ur.explure.navigation.StateAppRouter
 import de.ur.explure.viewmodel.StateViewModel

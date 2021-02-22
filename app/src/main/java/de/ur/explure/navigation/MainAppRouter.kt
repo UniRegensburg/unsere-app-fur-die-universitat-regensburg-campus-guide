@@ -29,7 +29,7 @@ class MainAppRouter {
         }
     }
 
-    fun getNullableNavController() : NavController? {
+    fun getNullableNavController(): NavController? {
         return if (this::navController.isInitialized) {
             navController
         } else {
