@@ -14,6 +14,10 @@ import de.ur.explure.viewmodel.BottomNavViewModel
 import de.ur.explure.viewmodel.SearchViewModel
 import de.ur.explure.viewmodel.StateViewModel
 import de.ur.explure.viewmodel.TestViewModel
+import de.ur.explure.viewmodel.ProfileFragmentViewModel
+import de.ur.explure.viewmodel.CreatedRoutesFragmentViewModel
+import de.ur.explure.viewmodel.FavoriteRoutesFragmentViewModel
+import de.ur.explure.viewmodel.StatisticsFragmentViewModel
 import de.ur.explure.viewmodel.SingleRouteViewModel
 import de.ur.explure.viewmodel.WordSearchViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
@@ -40,5 +44,9 @@ val mainModule = module {
     viewModel { WordSearchViewModel(get()) }
     viewModel { StateViewModel() }
     viewModel { BottomNavViewModel() }
+    viewModel { ProfileFragmentViewModel(get(), get()) }
+    viewModel { CreatedRoutesFragmentViewModel(get(), get(), get()) }
+    viewModel { FavoriteRoutesFragmentViewModel(get(), get(), get()) }
+    viewModel { StatisticsFragmentViewModel(get(), get(), get(), get()) }
     viewModel { SingleRouteViewModel(get()) }
 }
