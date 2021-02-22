@@ -79,15 +79,18 @@ class MarkerManager(
             "Clicked on marker ${marker.id}",
             Toast.LENGTH_SHORT
         ).show()
-        return false
+        return true
     }
 
-    // TODO deleting a marker should probably happen via its info window (e.g. a small
-    //  'delete this marker'- button at the bottom)
+    /**
+     * Remove a marker on long click.
+     * TODO deleting a marker should probably happen via its info window (e.g. a small
+     * 'delete this marker'- button at the bottom)
+     */
     private fun onMarkerLongClickListener(marker: Symbol): Boolean {
-        // remove a marker on long click
         symbolManager.delete(marker)
-        return false
+        // true to consume the click so the map onLongClick - Listener won't be called!
+        return true
     }
 
     override fun onDestroy(owner: LifecycleOwner) {

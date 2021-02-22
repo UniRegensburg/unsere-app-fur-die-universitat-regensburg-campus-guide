@@ -182,8 +182,6 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
             preferencesManager.completedFirstRun()
         }
 
-        setupMapListeners()
-
         val style = preferencesManager.getCurrentMapStyle()
         setMapStyle(style)
 
@@ -222,6 +220,10 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
 
             setupMarkerManager(mapStyle)
             recreateMarkers()
+
+            // ! This needs to be called AFTER the MarkerManager is set up because this way clicks
+            // ! on the markers will be handled before clicks on the map itself!
+            setupMapListeners()
 
             mapViewModel.setMapReadyStatus(true)
         }
@@ -264,11 +266,12 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
     private fun onMapClicked(point: LatLng): Boolean {
         Timber.d("Clicked on map point with coordinates: $point")
         // If true this click is consumed and not passed to other listeners registered afterwards!
-        // ! This method has to return false as otherwise symbol clicks won't be fired.
         return false
     }
 
     private fun onMapLongClicked(point: LatLng): Boolean {
+        Timber.d("in on Long click on map")
+
         // add a symbol to the long-clicked point
         val marker = markerManager.addMarker(point)
 
