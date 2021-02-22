@@ -15,5 +15,5 @@ class BottomNavViewModel : ViewModel(), KoinComponent {
     }
 
     fun getCurrentNavController(): NavController? =
-        mainAppRouter.getNavigationController()
+        mainAppRouter.getNullableNavController()
 }

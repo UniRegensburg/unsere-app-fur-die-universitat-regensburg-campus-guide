@@ -13,6 +13,9 @@
         <action
             android:id="@+id/action_discoverFragment_to_searchFragment"
             app:destination="@id/searchFragment" />
+        <action
+            android:id="@+id/action_discoverFragment_to_mapFragment"
+            app:destination="@id/mapFragment" />
     </fragment>
     <fragment
         android:id="@+id/searchFragment"
@@ -35,5 +38,9 @@
         android:id="@+id/testFragment"
         android:name="de.ur.explure.views.TestFragment"
         android:label="TestFragment" />
+    <fragment
+        android:id="@+id/mapFragment"
+        android:name="de.ur.explure.views.MapFragment"
+        android:label="MapFragment" />
 
 </navigation>

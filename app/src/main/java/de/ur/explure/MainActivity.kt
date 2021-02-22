@@ -60,7 +60,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         val controller =
-            mainAppRouter.getNavigationController()
+            mainAppRouter.getNullableNavController()
                 ?: return super.onOptionsItemSelected(item)
         return item.onNavDestinationSelected(controller)
     }
