@@ -3,7 +3,7 @@ name: Generate-apk
 on:
   push:
     branches:
-      - master
+      - release/merge_branch
     tags:
       - 'v*'
 
