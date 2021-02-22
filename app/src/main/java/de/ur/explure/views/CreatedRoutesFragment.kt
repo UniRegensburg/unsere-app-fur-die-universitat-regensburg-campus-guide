@@ -8,7 +8,7 @@ import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import de.ur.explure.R
 import de.ur.explure.RouteAdapter
-import de.ur.explure.RouteItem
+import de.ur.explure.model.route.Route
 import de.ur.explure.viewmodel.CreatedRoutesFragmentViewModel
 import kotlinx.android.synthetic.main.fragment_created_routes.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -16,10 +16,14 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 class CreatedRoutesFragment : Fragment(R.layout.fragment_created_routes), RouteAdapter.OnItemClickListener {
 
     private val viewModel: CreatedRoutesFragmentViewModel by viewModel()
-    private var routeList: ArrayList<RouteItem> = ArrayList()
+    private lateinit var adapter : RouteAdapter
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        adapter = RouteAdapter( this)
+        createdRoutesRecyclerView.adapter = adapter
+        createdRoutesRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+        createdRoutesRecyclerView.setHasFixedSize(true)
 
         observeUserModel()
         observeRouteModel()
@@ -38,21 +42,13 @@ class CreatedRoutesFragment : Fragment(R.layout.fragment_created_routes), RouteA
     private fun observeRouteModel() {
         viewModel.createdRoutes.observe(viewLifecycleOwner, { routes ->
             if (routes != null) {
-                val list = ArrayList<RouteItem>()
-                for (route in routes) {
-                    val item = RouteItem(R.drawable.ic_home, route.description, route.createdAt.toString())
-                    list += item
-                }
-                routeList = list
-                createdRoutesRecyclerView.adapter = RouteAdapter(list, this)
-                createdRoutesRecyclerView.layoutManager = LinearLayoutManager(this.context)
-                createdRoutesRecyclerView.setHasFixedSize(true)
+                adapter.routeList = routes
             }
         })
     }
 
     override fun onItemClick(position: Int) {
-        showDialog(routeList[position].routeName)
+        viewModel.navigateToSinglePage()
     }
 
     private fun showDialog(routeName: String) {

@@ -20,7 +20,7 @@
                 android:id="@+id/textView4"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/lorem_ipsum" />
+                android:text="Results" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerView_searchResults"

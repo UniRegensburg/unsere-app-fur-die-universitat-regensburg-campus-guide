@@ -59,7 +59,7 @@
     <string name="bibliothekenButton">Bibliotheken</string>
     <string name="searchMapButton">Zur Karten-Suche</string>
 
-	<string name="login_email">Email</string>
+    <string name="login_email">Email</string>
     <string name="login_password">Passwort</string>
     <string name="login_button">Anmelden</string>
     <string name="login_text">Anmelden</string>

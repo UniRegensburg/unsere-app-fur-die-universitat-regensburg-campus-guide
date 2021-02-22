@@ -34,24 +34,7 @@ class TestViewModel(
 
     fun testAction() {
         viewModelScope.launch {
-            val waypoint = WayPointDTO("title", GeoPoint(45.1, 32.0), "Descrp")
-            val waypoint2 = WayPointDTO("title", GeoPoint(45.1, 32.0), "Descrp")
-            val route = RouteDTO(
-                "Category",
-                "title2",
-                "Descr",
-                50.0,
-                15.3,
-                mutableListOf(waypoint, waypoint2)
-            )
-            val fullRoute = userRepo.getRoute("83bAuunZzXwaPIJ0Xc3a")
-            val previewRoute = userRepo.getRoute("83bAuunZzXwaPIJ0Xc3a", true)
-            Log.d(
-                "TAG", fullRoute.toString()
-            )
-            Log.d("TAG", previewRoute.toString())
-            Timber.d(fullRoute.toString())
-            Timber.d(previewRoute.toString())
+            authService.logout()
         }
     }
 }

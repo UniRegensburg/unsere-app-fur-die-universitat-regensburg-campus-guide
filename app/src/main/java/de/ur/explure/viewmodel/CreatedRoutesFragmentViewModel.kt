@@ -3,6 +3,7 @@ package de.ur.explure.viewmodel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import de.ur.explure.R
 import de.ur.explure.model.route.Route
 import de.ur.explure.model.user.User
 import de.ur.explure.navigation.MainAppRouter
@@ -45,5 +46,9 @@ class CreatedRoutesFragmentViewModel(
                 }
             }
         }
+    }
+
+    fun navigateToSinglePage() {
+        appRouter.getNavController().navigate(R.id.singleRouteFragment)
     }
 }

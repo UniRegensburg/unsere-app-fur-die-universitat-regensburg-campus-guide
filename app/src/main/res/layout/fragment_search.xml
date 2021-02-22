@@ -34,7 +34,6 @@
         android:ems="10"
         android:hint="@string/search_button"
         android:inputType="textPersonName"
-        android:text="@string/search_button"
         app:layout_constraintBottom_toTopOf="@+id/textView"
         app:layout_constraintEnd_toStartOf="@+id/searchButton"
         app:layout_constraintHorizontal_bias="0.5"

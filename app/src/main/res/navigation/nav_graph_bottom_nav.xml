@@ -42,5 +42,35 @@
         android:id="@+id/mapFragment"
         android:name="de.ur.explure.views.MapFragment"
         android:label="MapFragment" />
+    <fragment
+        android:id="@+id/createdRoutesFragment"
+        android:name="de.ur.explure.views.CreatedRoutesFragment"
+        android:label="createdRoutesFragment"
+        tools:layout="@layout/fragment_created_routes" />
+    <fragment
+        android:id="@+id/singleRouteFragment"
+        android:name="de.ur.explure.views.SingleRouteFragment"
+        android:label="singleRouteFragment"
+        tools:layout="@layout/fragment_single_route" />
+    <fragment
+        android:id="@+id/wordSearchFragment"
+        android:name="de.ur.explure.views.WordSearchFragment"
+        android:label="fragment_word_search"
+        tools:layout="@layout/fragment_word_search" />
+    <fragment
+        android:id="@+id/statisticsFragment"
+        android:name="de.ur.explure.views.StatisticsFragment"
+        android:label="statisticsFragment"
+        tools:layout="@layout/fragment_statistics" />
+    <fragment
+        android:id="@+id/favoriteRoutesFragment"
+        android:name="de.ur.explure.views.FavoriteRoutesFragment"
+        android:label="favoriteRoutesFragment"
+        tools:layout="@layout/fragment_favorite_routes" />
+    <fragment
+        android:id="@+id/categoryWorkFragment"
+        android:name="de.ur.explure.views.CategoryWorkFragment"
+        android:label="fragment_categorie_work"
+        tools:layout="@layout/fragment_categorie_work" />
 
 </navigation>

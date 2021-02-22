@@ -17,7 +17,6 @@ import de.ur.explure.services.FireStoreInstance
 import de.ur.explure.services.FirebaseAuthService
 import de.ur.explure.utils.SharedPreferencesManager
 import de.ur.explure.viewmodel.AuthenticationViewModel
-import de.ur.explure.viewmodel.AuthenticationViewModel
 import de.ur.explure.viewmodel.BottomNavViewModel
 import de.ur.explure.viewmodel.MapViewModel
 import de.ur.explure.viewmodel.SearchViewModel
@@ -59,7 +58,6 @@ val mainModule = module {
     single { RouteRepositoryImpl(get(), get()) }
     single { UserRepositoryImpl(get(), get()) }
     viewModel { AuthenticationViewModel(get(), get()) }
-
     viewModel { TestViewModel(get(), get(), get()) }
     viewModel { SearchViewModel(get()) }
     viewModel { WordSearchViewModel(get()) }
