@@ -5,34 +5,6 @@ package de.ur.explure.utils
  * https://github.com/mapbox/mapbox-navigation-android/blob/main/examples/src/main/java/com/mapbox/navigation/examples/utils/RouteDrawingUtil.kt
  */
 
-import android.graphics.Color
-import android.widget.Toast
-import com.mapbox.api.directions.v5.DirectionsCriteria
-import com.mapbox.api.matching.v5.MapboxMapMatching
-import com.mapbox.api.matching.v5.models.MapMatchingResponse
-import com.mapbox.geojson.Feature
-import com.mapbox.geojson.FeatureCollection
-import com.mapbox.geojson.LineString
-import com.mapbox.geojson.Point
-import com.mapbox.mapboxsdk.maps.MapView
-import com.mapbox.mapboxsdk.maps.MapboxMap
-import com.mapbox.mapboxsdk.style.layers.CircleLayer
-import com.mapbox.mapboxsdk.style.layers.LineLayer
-import com.mapbox.mapboxsdk.style.layers.Property.LINE_JOIN_ROUND
-import com.mapbox.mapboxsdk.style.layers.PropertyFactory.circleColor
-import com.mapbox.mapboxsdk.style.layers.PropertyFactory.circleOpacity
-import com.mapbox.mapboxsdk.style.layers.PropertyFactory.circleRadius
-import com.mapbox.mapboxsdk.style.layers.PropertyFactory.lineColor
-import com.mapbox.mapboxsdk.style.layers.PropertyFactory.lineJoin
-import com.mapbox.mapboxsdk.style.layers.PropertyFactory.lineOpacity
-import com.mapbox.mapboxsdk.style.layers.PropertyFactory.lineWidth
-import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
-import com.mapbox.navigation.core.directions.session.RoutesRequestCallback
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import timber.log.Timber
-
 /**
  * A utility for drawing a line on a map and using map matching to get a route.
  * When enable() is called the utility will listen for long click events on the map and for each point
@@ -61,7 +33,7 @@ import timber.log.Timber
  * to temporarily add a button to your layout in order to make use of this function.
  *
  */
-
+/*
 class RouteDrawingUtil(private val mapView: MapView) {
 
     private val touchPoints = mutableListOf<Point>()
@@ -239,3 +211,4 @@ class RouteDrawingUtil(private val mapView: MapView) {
         private const val CIRCLE_RADIUS = 5f
     }
 }
+*/

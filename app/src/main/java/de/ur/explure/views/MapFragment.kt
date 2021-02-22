@@ -1,7 +1,5 @@
 package de.ur.explure.views
 
-import android.graphics.BitmapFactory
-import android.graphics.Color.parseColor
 import android.location.Location
 import android.os.Bundle
 import android.view.View
@@ -13,48 +11,21 @@ import com.crazylegend.viewbinding.viewBinding
 import com.google.android.material.snackbar.Snackbar
 import com.mapbox.android.core.permissions.PermissionsListener
 import com.mapbox.android.core.permissions.PermissionsManager
-import com.mapbox.api.directions.v5.DirectionsCriteria
-import com.mapbox.api.directions.v5.models.DirectionsRoute
-import com.mapbox.api.directions.v5.models.RouteOptions
-import com.mapbox.core.constants.Constants
-import com.mapbox.geojson.LineString
 import com.mapbox.geojson.Point
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
 import com.mapbox.mapboxsdk.maps.Style
-import com.mapbox.mapboxsdk.style.expressions.Expression.color
-import com.mapbox.mapboxsdk.style.expressions.Expression.interpolate
-import com.mapbox.mapboxsdk.style.expressions.Expression.lineProgress
-import com.mapbox.mapboxsdk.style.expressions.Expression.linear
-import com.mapbox.mapboxsdk.style.expressions.Expression.stop
-import com.mapbox.mapboxsdk.style.layers.LineLayer
-import com.mapbox.mapboxsdk.style.layers.Property.LINE_CAP_ROUND
-import com.mapbox.mapboxsdk.style.layers.Property.LINE_JOIN_ROUND
-import com.mapbox.mapboxsdk.style.layers.PropertyFactory.iconImage
-import com.mapbox.mapboxsdk.style.layers.PropertyFactory.lineCap
-import com.mapbox.mapboxsdk.style.layers.PropertyFactory.lineGradient
-import com.mapbox.mapboxsdk.style.layers.PropertyFactory.lineJoin
-import com.mapbox.mapboxsdk.style.layers.PropertyFactory.lineWidth
-import com.mapbox.mapboxsdk.style.layers.SymbolLayer
-import com.mapbox.mapboxsdk.style.sources.GeoJsonOptions
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
-import com.mapbox.navigation.base.internal.extensions.applyDefaultParams
-import com.mapbox.navigation.base.internal.extensions.coordinates
-import com.mapbox.navigation.core.MapboxNavigation
-import com.mapbox.navigation.core.MapboxNavigationProvider
-import com.mapbox.navigation.core.directions.session.RoutesRequestCallback
 import de.ur.explure.R
 import de.ur.explure.databinding.FragmentMapBinding
-import de.ur.explure.extensions.toPoint
 import de.ur.explure.map.LocationManager
 import de.ur.explure.map.MarkerManager
 import de.ur.explure.utils.EventObserver
 import de.ur.explure.utils.Highlight
 import de.ur.explure.utils.SharedPreferencesManager
 import de.ur.explure.utils.TutorialBuilder
-import de.ur.explure.utils.getMapboxAccessToken
 import de.ur.explure.utils.isGPSEnabled
 import de.ur.explure.utils.measureContentWidth
 import de.ur.explure.utils.showSnackbar
@@ -66,6 +37,24 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.androidx.viewmodel.scope.emptyState
 import org.koin.core.parameter.parametersOf
 import timber.log.Timber
+
+// todo test if info window with
+// mapboxMap.selectMarker(Marker marker)
+
+// Todo oder so:
+// see https://stackoverflow.com/questions/39981810/i-cant-inflate-a-view-in-a-custom-infowindow-in-mapbox-setting-getinfowindow/40004875#40004875
+/*
+mapboxMap.setInfoWindowAdapter(new MapboxMap.InfoWindowAdapter() {
+          @Nullable
+          @Override
+          public View getInfoWindow(@NonNull Marker marker) {
+
+            // return your info window view.
+
+            return view
+          }
+});
+ */
 
 @Suppress("TooManyFunctions")
 class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, PermissionsListener {
@@ -89,9 +78,6 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
     // permission handling
     private var permissionsManager: PermissionsManager = PermissionsManager(this)
 
-    // navigation
-    private var mapboxNavigation: MapboxNavigation? = null
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -111,8 +97,6 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
         mapView = binding.mapView
         mapView?.onCreate(savedInstanceState)
         mapView?.getMapAsync(this)
-
-        setupMapboxNavigation()
     }
 
     private fun setupViewModelObservers() {
@@ -140,20 +124,6 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
                 }
             }
         })
-    }
-
-    private fun setupMapboxNavigation() {
-        val context = context ?: return
-
-        val navigationOptions = MapboxNavigation
-            .defaultNavigationOptionsBuilder(
-                context,
-                getMapboxAccessToken(context.applicationContext)
-            )
-            // .locationEngine(locationEngine)
-            .build()
-        mapboxNavigation = MapboxNavigationProvider.create(navigationOptions)
-        // mapboxNavigation = MapboxNavigationProvider.retrieve()
     }
 
     /**
@@ -253,56 +223,8 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
             setupMarkerManager(mapStyle)
             recreateMarkers()
 
-            setupNavigationLayers(mapStyle)
-
             mapViewModel.setMapReadyStatus(true)
         }
-    }
-
-    // TODO: this is the old approach using sources and layers with data-driven styling!
-    private fun setupNavigationLayers(mapStyle: Style) {
-        // Add the destination marker image
-        BitmapFactory.decodeResource(resources, R.drawable.ic_sharp_flag_24)?.let {
-            mapStyle.addImage(GOAL_ICON_ID, it)
-        }
-
-        // Add the LineLayer below the LocationComponent's bottom layer, which is the
-        // circular accuracy layer. The LineLayer will display the directions route.
-        mapStyle.addSource(
-            GeoJsonSource(
-                ROUTE_LINE_SOURCE_ID,
-                GeoJsonOptions().withLineMetrics(true)
-            )
-        )
-
-        mapStyle.addLayerBelow(
-            LineLayer(ROUTE_LINE_LAYER_ID, ROUTE_LINE_SOURCE_ID)
-                .withProperties(
-                    lineCap(LINE_CAP_ROUND),
-                    lineJoin(LINE_JOIN_ROUND),
-                    lineWidth(ROUTE_LINE_WIDTH),
-                    lineGradient(
-                        interpolate(
-                            linear(),
-                            lineProgress(),
-                            stop(0f, color(parseColor(ORIGIN_COLOR))),
-                            stop(1f, color(parseColor(DESTINATION_COLOR)))
-                        )
-                    )
-                ),
-            // show below the layer on which the user location puck is shown
-            "mapbox-location-shadow-layer"
-        )
-
-        // Add the SymbolLayer to show the destination marker
-        mapStyle.addSource(GeoJsonSource(ROUTE_MARKER_SOURCE_ID))
-        mapStyle.addLayerAbove(
-            SymbolLayer(ROUTE_MARKER_LAYER_ID, ROUTE_MARKER_SOURCE_ID)
-                .withProperties(
-                    iconImage(GOAL_ICON_ID)
-                ),
-            ROUTE_LINE_LAYER_ID
-        )
     }
 
     private fun setupMarkerManager(mapStyle: Style) {
@@ -367,85 +289,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
             )
         }
 
-        generateRoute(point)
-
         return false
-    }
-
-    private fun generateRoute(clickedPoint: LatLng) {
-        if (!map.locationComponent.isLocationComponentActivated) {
-            mapViewModel.getCurrentMapStyle()?.let {
-                startLocationTracking(it)
-            }
-        } else {
-            map.locationComponent.lastKnownLocation?.let { originLocation ->
-                val token = getMapboxAccessToken(requireActivity().applicationContext)
-                val routeOptions = RouteOptions.builder().applyDefaultParams()
-                    .accessToken(token)
-                    .coordinates(originLocation.toPoint(), null, clickedPoint.toPoint())
-                    .alternatives(true)
-                    .steps(true)
-                    .bannerInstructions(true)
-                    .voiceInstructions(false)
-                    .profile(DirectionsCriteria.PROFILE_WALKING)
-                    .overview(DirectionsCriteria.OVERVIEW_FULL)
-                    .build()
-
-                mapboxNavigation?.requestRoutes(
-                    routeOptions,
-                    object : RoutesRequestCallback {
-                        override fun onRoutesReady(routes: List<DirectionsRoute>) {
-                            onNewRouteAvailable(routes)
-                        }
-
-                        override fun onRoutesRequestFailure(
-                            throwable: Throwable,
-                            routeOptions: RouteOptions
-                        ) {
-                            Timber.e("route request failure %s", throwable.toString())
-                            showSnackbar(
-                                requireActivity(),
-                                R.string.route_request_failed,
-                                binding.mapContainer,
-                                colorRes = R.color.color_error
-                            )
-                        }
-
-                        override fun onRoutesRequestCanceled(routeOptions: RouteOptions) {
-                            Timber.d("route request canceled")
-                        }
-                    }
-                )
-            }
-        }
-    }
-
-    private fun onNewRouteAvailable(routes: List<DirectionsRoute>) {
-        if (routes.isNotEmpty()) {
-            showSnackbar(
-                requireActivity(),
-                String.format(
-                    getString(R.string.steps_in_route),
-                    routes[0].legs()?.get(0)?.steps()?.size
-                ),
-                binding.mapContainer,
-                colorRes = R.color.colorPrimary
-            )
-
-            // Update a gradient route LineLayer's source with the Maps SDK. This will
-            // visually add/update the line on the map. All of this is being done
-            // directly with Maps SDK code and NOT the Navigation UI SDK.
-            map.getStyle {
-                val routeLineSource = it.getSourceAs<GeoJsonSource>(ROUTE_LINE_SOURCE_ID)
-                val routeLineString = routes[0].geometry()?.let { geometry ->
-                    LineString.fromPolyline(geometry, Constants.PRECISION_6)
-                }
-                routeLineSource?.setGeoJson(routeLineString)
-            }
-            binding.routeRetrievalProgressSpinner.visibility = View.INVISIBLE
-        } else {
-            showSnackbar(requireActivity(), R.string.no_routes, binding.mapContainer)
-        }
     }
 
     /**
@@ -572,7 +416,6 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
 
         removeMapListeners()
 
-        mapboxNavigation?.onDestroy()
         mapView?.onDestroy()
     }
 

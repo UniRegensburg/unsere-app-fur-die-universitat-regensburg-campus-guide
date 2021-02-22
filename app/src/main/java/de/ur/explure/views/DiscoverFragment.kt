@@ -7,9 +7,7 @@ import com.crazylegend.viewbinding.viewBinding
 import de.ur.explure.R
 import de.ur.explure.databinding.FragmentDiscoverBinding
 import de.ur.explure.viewmodel.DiscoverViewModel
-import org.koin.androidx.viewmodel.ext.android.viewModel
 import de.ur.explure.viewmodel.TestViewModel
-import kotlinx.android.synthetic.main.fragment_discover.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class DiscoverFragment : Fragment(R.layout.fragment_discover) {
