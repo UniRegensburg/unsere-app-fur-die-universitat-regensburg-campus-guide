@@ -5,7 +5,8 @@ import com.google.firebase.firestore.DocumentId
 import de.ur.explure.model.comment.Comment
 import de.ur.explure.model.waypoint.WayPoint
 import kotlinx.android.parcel.Parcelize
-import java.util.*
+import java.util.Date
+import java.util.LinkedList
 
 @Parcelize
 data class Route(
