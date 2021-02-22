@@ -17,7 +17,6 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
         setOnClickListeners()
     }
 
-
     private fun setOnClickListeners() {
         searchButton.setOnClickListener {
             viewModel.navigateToSearchResult()
@@ -46,7 +45,7 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
         bibliothekenButton.setOnClickListener {
             viewModel.navigateToCategoryWork()
         }
-//insert navigateToMap
+// insert navigateToMap
         searchMapButton.setOnClickListener {
             viewModel.navigateToCategoryWork()
         }

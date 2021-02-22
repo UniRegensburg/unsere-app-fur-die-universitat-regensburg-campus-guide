@@ -12,18 +12,6 @@ import kotlinx.android.synthetic.main.search_item.view.*
 class SearchListAdapter(private val onClick: (Route) -> Unit) :
         ListAdapter<Route, SearchListAdapter.RouteViewHolder>(RouteDiffCallback) {
 
-    var routeList = listOf<Route>()
-        set(value) {
-            field = value
-            notifyDataSetChanged()
-        }
-
-    override fun getItem(position: Int): Route {
-        return routeList[position]
-    }
-
-
-    /* ViewHolder for Routes, takes in the inflated view and the onClick behavior. */
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RouteViewHolder {
         return RouteViewHolder.from(parent)
     }
@@ -37,7 +25,7 @@ class SearchListAdapter(private val onClick: (Route) -> Unit) :
         fun bind(data: Route, onClick: (Route) -> Unit) {
             itemView.search_route_title.text = data.title
             itemView.search_route_description.text = data.description
-            itemView.setOnClickListener{
+            itemView.setOnClickListener {
                 onClick(data)
             }
         }
@@ -51,7 +39,6 @@ class SearchListAdapter(private val onClick: (Route) -> Unit) :
             }
         }
     }
-
 }
 
 object RouteDiffCallback : DiffUtil.ItemCallback<Route>() {

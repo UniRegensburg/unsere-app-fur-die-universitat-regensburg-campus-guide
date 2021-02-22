@@ -10,7 +10,7 @@ import de.ur.explure.utils.FirebaseResult
 import kotlinx.coroutines.launch
 
 class WordSearchViewModel(
-        private val routeRepo: RouteRepositoryImpl
+    private val routeRepo: RouteRepositoryImpl
 ) : ViewModel() {
 
     var searchedRoutes: MutableLiveData<List<Route>> = MutableLiveData()
@@ -27,8 +27,5 @@ class WordSearchViewModel(
             }
             Log.d("Koller1", searchedRoutes.toString())
         }
-
     }
-
-
 }
