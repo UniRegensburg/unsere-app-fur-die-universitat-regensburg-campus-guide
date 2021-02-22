@@ -3,7 +3,10 @@ package de.ur.explure.views
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.View
+import androidx.recyclerview.widget.LinearLayoutManager
 import de.ur.explure.R
+import de.ur.explure.RouteAdapter
+import de.ur.explure.RouteItem
 import de.ur.explure.viewmodel.FavoriteRoutesFragmentViewModel
 import kotlinx.android.synthetic.main.fragment_created_routes.*
 import kotlinx.android.synthetic.main.fragment_favorite_routes.*
@@ -34,7 +37,14 @@ class FavoriteRoutesFragment : Fragment(R.layout.fragment_favorite_routes) {
     private fun observeRouteModel() {
         viewModel.favoriteRoutes.observe(viewLifecycleOwner, { routes ->
             if (routes != null) {
-                // do stuff
+                val list = ArrayList<RouteItem>()
+                for (route in routes) {
+                    val item = RouteItem(R.drawable.ic_home, route.description, route.createdAt.toString())
+                    list += item
+                }
+                favoriteRoutesRecyclerView.adapter = RouteAdapter(list)
+                favoriteRoutesRecyclerView.layoutManager = LinearLayoutManager(this.context)
+                favoriteRoutesRecyclerView.setHasFixedSize(true)
             }
         })
     }

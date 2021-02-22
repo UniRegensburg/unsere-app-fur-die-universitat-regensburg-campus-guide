@@ -5,7 +5,8 @@
     <string name="menu_discover_title">Entdecken</string>
     <string name="menu_search_title">Suche</string>
     <string name="own_routes">Eigene Routen</string>
-    <string name="test_route_example">Meine Route 001<br />14.01.2021 15:15</string>
+    <string name="test_route_example">Meine Route 001</string>
+    <string name="test_route_timestamp">14.01.2021 15:15</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="favorite_routes">Favorisierte Routen</string>
