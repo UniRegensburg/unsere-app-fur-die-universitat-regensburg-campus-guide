@@ -58,7 +58,7 @@ class FavoriteRoutesFragment : Fragment(R.layout.fragment_favorite_routes), Rout
     }
 
     private fun showDialog(routeName: String) {
-        lateinit var dialog: AlertDialog
+        val dialog: AlertDialog
         val builder = AlertDialog.Builder(this.context)
 
         builder.setTitle(routeName)

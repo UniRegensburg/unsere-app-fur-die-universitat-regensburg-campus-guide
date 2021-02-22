@@ -56,7 +56,7 @@ class CreatedRoutesFragment : Fragment(R.layout.fragment_created_routes), RouteA
     }
 
     private fun showDialog(routeName: String) {
-        lateinit var dialog: AlertDialog
+        val dialog: AlertDialog
         val builder = AlertDialog.Builder(this.context)
 
         builder.setTitle(routeName)
