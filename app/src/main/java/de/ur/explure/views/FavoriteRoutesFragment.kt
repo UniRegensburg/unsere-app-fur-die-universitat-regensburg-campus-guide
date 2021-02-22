@@ -17,12 +17,11 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 class FavoriteRoutesFragment : Fragment(R.layout.fragment_favorite_routes), RouteAdapter.OnItemClickListener {
 
     private val viewModel: FavoriteRoutesFragmentViewModel by viewModel()
-    private lateinit var adapter : RouteAdapter
-
+    private lateinit var adapter: RouteAdapter
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        adapter = RouteAdapter( this)
+        adapter = RouteAdapter(this)
         favoriteRoutesRecyclerView.adapter = adapter
         favoriteRoutesRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         favoriteRoutesRecyclerView.setHasFixedSize(true)
