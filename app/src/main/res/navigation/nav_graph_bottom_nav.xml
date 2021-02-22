@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph_discover"
+    app:startDestination="@id/discoverFragment">
+
+    <fragment
+        android:id="@+id/discoverFragment"
+        android:name="de.ur.explure.views.DiscoverFragment"
+        android:label="DiscoverFragment"
+        tools:layout="@layout/fragment_discover" >
+        <action
+            android:id="@+id/action_discoverFragment_to_searchFragment"
+            app:destination="@id/searchFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/searchFragment"
+        android:name="de.ur.explure.views.SearchFragment"
+        tools:layout="@layout/fragment_search"
+        android:label="SearchFragment" >
+        <action
+            android:id="@+id/action_searchFragment_to_profileFragment"
+            app:destination="@id/profileFragment" />
+        <action
+            android:id="@+id/action_searchFragment_to_testFragment"
+            app:destination="@id/testFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="de.ur.explure.views.ProfileFragment"
+        tools:layout="@layout/fragment_profile"
+        android:label="ProfileFragment" />
+    <fragment
+        android:id="@+id/testFragment"
+        android:name="de.ur.explure.views.TestFragment"
+        android:label="TestFragment" />
+
+</navigation>
