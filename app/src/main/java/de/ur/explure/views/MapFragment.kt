@@ -9,7 +9,6 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.crazylegend.viewbinding.viewBinding
 import com.google.android.material.snackbar.Snackbar
-import com.mapbox.android.core.permissions.PermissionsListener
 import com.mapbox.android.core.permissions.PermissionsManager
 import com.mapbox.geojson.Point
 import com.mapbox.mapboxsdk.geometry.LatLng
@@ -22,6 +21,7 @@ import de.ur.explure.R
 import de.ur.explure.databinding.FragmentMapBinding
 import de.ur.explure.map.LocationManager
 import de.ur.explure.map.MarkerManager
+import de.ur.explure.map.PermissionHelper
 import de.ur.explure.utils.EventObserver
 import de.ur.explure.utils.Highlight
 import de.ur.explure.utils.SharedPreferencesManager
@@ -38,26 +38,8 @@ import org.koin.androidx.viewmodel.scope.emptyState
 import org.koin.core.parameter.parametersOf
 import timber.log.Timber
 
-// todo test if info window with
-// mapboxMap.selectMarker(Marker marker)
-
-// Todo oder so:
-// see https://stackoverflow.com/questions/39981810/i-cant-inflate-a-view-in-a-custom-infowindow-in-mapbox-setting-getinfowindow/40004875#40004875
-/*
-mapboxMap.setInfoWindowAdapter(new MapboxMap.InfoWindowAdapter() {
-          @Nullable
-          @Override
-          public View getInfoWindow(@NonNull Marker marker) {
-
-            // return your info window view.
-
-            return view
-          }
-});
- */
-
 @Suppress("TooManyFunctions")
-class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, PermissionsListener {
+class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
 
     private val binding by viewBinding(FragmentMapBinding::bind)
 
@@ -76,7 +58,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
     private lateinit var locationManager: LocationManager
 
     // permission handling
-    private var permissionsManager: PermissionsManager = PermissionsManager(this)
+    private val permissionHelper: PermissionHelper by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -316,48 +298,24 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
                 return
             }
 
-            // enable location tracking with custom loaction engine
             if (::locationManager.isInitialized) {
                 mapViewModel.setLocationTrackingStatus(isEnabled = true)
+
+                // enable location tracking with custom location engine
                 locationManager.activateLocationComponent(
                     map.locationComponent, loadedMapStyle, useDefaultEngine = false
                 )
             }
         } else {
-            permissionsManager.requestLocationPermissions(activity)
+            permissionHelper.requestLocationPermissions(
+                activity,
+                onPermissionsResultCallback = this::onLocationPermissionsResult,
+                onPermissionsExplanationNeededCallback = this::onLocationPermissionExplanation
+            )
         }
     }
 
-    private fun onNewLocationReceived(location: Location) {
-        // Pass the new location to the Maps SDK's LocationComponent
-        map.locationComponent.forceLocationUpdate(location)
-        // save the new location
-        mapViewModel.setCurrentUserPosition(location)
-    }
-
-    /**
-     * * Permission Code
-     */
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<String>,
-        grantResults: IntArray
-    ) {
-        permissionsManager.onRequestPermissionsResult(requestCode, permissions, grantResults)
-    }
-
-    override fun onExplanationNeeded(permissionsToExplain: MutableList<String>?) {
-        showSnackbar(
-            requireActivity(),
-            R.string.location_permission_explanation,
-            binding.mapButtonContainer,
-            Snackbar.LENGTH_LONG,
-            colorRes = R.color.color_info
-        )
-    }
-
-    override fun onPermissionResult(granted: Boolean) {
+    private fun onLocationPermissionsResult(granted: Boolean) {
         if (granted) {
             // try to find the device location and enable location tracking
             map.style?.let { startLocationTracking(it) }
@@ -370,6 +328,23 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
                 colorRes = R.color.color_warning
             )
         }
+    }
+
+    private fun onLocationPermissionExplanation() {
+        showSnackbar(
+            requireActivity(),
+            R.string.location_permission_explanation,
+            binding.mapButtonContainer,
+            Snackbar.LENGTH_LONG,
+            colorRes = R.color.color_info
+        )
+    }
+
+    private fun onNewLocationReceived(location: Location) {
+        // Pass the new location to the Maps SDK's LocationComponent
+        map.locationComponent.forceLocationUpdate(location)
+        // save the new location
+        mapViewModel.setCurrentUserPosition(location)
     }
 
     /**
@@ -425,17 +400,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
     companion object {
         // Note: this layer is not in all map styles available (e.g. the satellite style)!
         // private const val FIRST_SYMBOL_LAYER_ID = "waterway-label"
-        private const val ROUTE_LINE_WIDTH = 6f
 
-        private const val ROUTE_LINE_SOURCE_ID = "ROUTE_LINE_SOURCE_ID"
-        private const val ROUTE_LINE_LAYER_ID = "ROUTE_LINE_LAYER_ID"
         private const val ROUTE_MARKER_SOURCE_ID = "ROUTE_MARKER_SOURCE_ID"
-        private const val ROUTE_MARKER_LAYER_ID = "ROUTE_MARKER_LAYER_ID"
-
-        private const val ORIGIN_COLOR = "#32a852" // Green
-        private const val DESTINATION_COLOR = "#F84D4D" // Red
-
-        // private const val MARKER_ICON_ID = "marker-icon-id"
-        private const val GOAL_ICON_ID = "goal-icon-id"
     }
 }

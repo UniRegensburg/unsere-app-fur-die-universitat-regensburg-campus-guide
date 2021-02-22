@@ -8,6 +8,7 @@ import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.Style
 import de.ur.explure.map.LocationManager
 import de.ur.explure.map.MarkerManager
+import de.ur.explure.map.PermissionHelper
 import de.ur.explure.navigation.AppRouter
 import de.ur.explure.repository.rating.RatingRepositoryImpl
 import de.ur.explure.repository.user.UserRepositoryImpl
@@ -38,7 +39,7 @@ val mainModule = module {
     factory { (callback: (Location) -> Unit) ->
         LocationManager(androidApplication(), callback)
     }
-    // single { (context: Activity) -> PermissionHelper(context) }
+    single { PermissionHelper() }
 
     single { FirebaseAuth.getInstance() }
     factory { FirebaseFirestore.getInstance() }

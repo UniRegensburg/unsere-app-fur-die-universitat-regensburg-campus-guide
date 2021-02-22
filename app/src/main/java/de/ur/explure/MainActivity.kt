@@ -13,7 +13,9 @@ import androidx.navigation.ui.setupWithNavController
 import com.crazylegend.viewbinding.viewBinder
 import de.ur.explure.databinding.ActivityMainBinding
 import de.ur.explure.extensions.setupWithNavController
+import de.ur.explure.map.PermissionHelper
 import de.ur.explure.viewmodel.MainViewModel
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
 
@@ -30,6 +32,8 @@ class MainActivity : AppCompatActivity() {
     private val appBarConfiguration by lazy { AppBarConfiguration(navGraphDestinations) }
 
     private var destinationChangeListener: NavController.OnDestinationChangedListener? = null
+
+    private val permissionHelper: PermissionHelper by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -136,9 +140,13 @@ class MainActivity : AppCompatActivity() {
         Timber.w("Unhandled Configuration Change occured!")
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        // MapboxNavigationProvider.destroy()
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        permissionHelper.onRequestLocationPermissionsResult(requestCode, permissions, grantResults)
     }
 
     companion object {
