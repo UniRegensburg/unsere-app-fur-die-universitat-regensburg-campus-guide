@@ -28,4 +28,12 @@ class MainAppRouter {
             false
         }
     }
+
+    fun getNavigationController(): NavController? {
+        return if (this::navController.isInitialized) {
+            navController
+        } else {
+            null
+        }
+    }
 }

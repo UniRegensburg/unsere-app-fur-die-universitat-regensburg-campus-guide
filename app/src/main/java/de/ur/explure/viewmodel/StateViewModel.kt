@@ -3,11 +3,10 @@ package de.ur.explure.viewmodel
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModel
-import androidx.navigation.NavController
 import de.ur.explure.navigation.StateAppRouter
 import de.ur.explure.services.FirebaseAuthService
-import org.koin.core.KoinComponent
-import org.koin.core.inject
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
 /**
  * State Viewmodel used to handle initializing operations for main app and observe auth state
@@ -35,22 +34,5 @@ class StateViewModel : ViewModel(), KoinComponent {
                 stateAppRouter.navigateToLogin()
             }
         })
-    }
-
-    /**
-     * Sets the current navigation graph in the appRouter.
-     */
-
-    fun initializeStateNavController(navController: NavController) {
-        stateAppRouter.initializeNavController(navController)
-    }
-
-    /**
-     * Navigate ups in the current navigation controller.
-     *
-     * @return Returns [Boolean] value = true if backstack is not empty | false if backstack is empty.
-     */
-    fun navigateUp(): Boolean {
-        return stateAppRouter.navigateUp()
     }
 }
