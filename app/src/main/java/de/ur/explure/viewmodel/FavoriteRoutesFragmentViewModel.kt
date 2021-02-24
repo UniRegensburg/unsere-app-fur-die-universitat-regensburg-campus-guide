@@ -46,4 +46,8 @@ class FavoriteRoutesFragmentViewModel(
             }
         }
     }
+
+    fun navigateToSinglePage() {
+        // appRouter.getNavController().navigate(R.id.singleRouteFragment)
+    }
 }
