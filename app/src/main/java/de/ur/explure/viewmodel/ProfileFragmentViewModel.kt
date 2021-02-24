@@ -30,6 +30,7 @@ class ProfileFragmentViewModel(
     fun updateUserName(newUserName: String) {
         viewModelScope.launch {
             updateUserName(newUserName)
+            getUserInfo()
         }
     }
 }
