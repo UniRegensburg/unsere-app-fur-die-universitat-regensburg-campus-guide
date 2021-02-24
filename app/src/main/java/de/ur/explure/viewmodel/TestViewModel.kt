@@ -1,6 +1,5 @@
 package de.ur.explure.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.firestore.GeoPoint
@@ -29,7 +28,7 @@ class TestViewModel(
     }
 
     fun showMap() {
-        mainAppRouter.getNavController().navigate(R.id.mapFragment)
+        mainAppRouter.getNavController()?.navigate(R.id.mapFragment)
     }
 
     fun testAction() {
@@ -46,10 +45,6 @@ class TestViewModel(
             )
             val fullRoute = userRepo.getRoute("83bAuunZzXwaPIJ0Xc3a")
             val previewRoute = userRepo.getRoute("83bAuunZzXwaPIJ0Xc3a", true)
-            Log.d(
-                "TAG", fullRoute.toString()
-            )
-            Log.d("TAG", previewRoute.toString())
             Timber.d(fullRoute.toString())
             Timber.d(previewRoute.toString())
         }
