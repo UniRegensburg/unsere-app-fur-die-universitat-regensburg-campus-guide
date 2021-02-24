@@ -10,7 +10,8 @@ import de.ur.explure.model.route.Route
 import kotlinx.android.synthetic.main.route_element.view.*
 
 class RouteAdapter(
-    private val listener: OnItemClickListener
+    private val onItemClickListener: OnItemClickListener,
+    private val onItemLongClickListener: OnItemLongClickListener
 ) : RecyclerView.Adapter<RouteAdapter.RouteViewHolder>() {
 
     var routeList: List<Route> = emptyList()
@@ -33,23 +34,39 @@ class RouteAdapter(
 
     override fun getItemCount() = routeList.size
 
-    inner class RouteViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
+    inner class RouteViewHolder(itemView: View) :
+            RecyclerView.ViewHolder(itemView),
+            View.OnClickListener,
+            View.OnLongClickListener {
         val routeName: TextView = itemView.routeName
         val routeTimestamp: TextView = itemView.routeTimestamp
 
         init {
             itemView.setOnClickListener(this)
+            itemView.setOnLongClickListener(this)
         }
 
         override fun onClick(v: View?) {
             val position: Int = adapterPosition
             if (position != RecyclerView.NO_POSITION) {
-                listener.onItemClick(position)
+                onItemClickListener.onItemClick(position)
             }
+        }
+
+        override fun onLongClick(v: View?): Boolean {
+            val position: Int = adapterPosition
+            if (position != RecyclerView.NO_POSITION) {
+                onItemLongClickListener.onItemLongClick(position)
+            }
+            return true
         }
     }
 
     interface OnItemClickListener {
         fun onItemClick(position: Int)
+    }
+
+    interface OnItemLongClickListener {
+        fun onItemLongClick(position: Int)
     }
 }

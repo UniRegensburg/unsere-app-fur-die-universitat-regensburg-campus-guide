@@ -36,10 +36,14 @@ class FavoriteRoutesFragmentViewModel(
             val userInfo = userRepo.getUserInfo()
             when (userInfo) {
                 is FirebaseResult.Success -> {
-                    val routeInfo = routeRepo.getRoutes(userInfo.data.favouriteRoutes)
-                    when (routeInfo) {
-                        is FirebaseResult.Success -> {
-                            favoriteRoutes.postValue(routeInfo.data)
+                    if (userInfo.data.favouriteRoutes.size == 0) {
+                        favoriteRoutes.postValue(emptyList())
+                    } else {
+                        val routeInfo = routeRepo.getRoutes(userInfo.data.favouriteRoutes)
+                        when (routeInfo) {
+                            is FirebaseResult.Success -> {
+                                favoriteRoutes.postValue(routeInfo.data)
+                            }
                         }
                     }
                 }
@@ -49,5 +53,12 @@ class FavoriteRoutesFragmentViewModel(
 
     fun navigateToSinglePage() {
         // appRouter.getNavController().navigate(R.id.singleRouteFragment)
+    }
+
+    fun removeRouteFromFavoriteRoutes(route: Route) {
+        viewModelScope.launch {
+            userRepo.removeRouteFromFavouriteRoutes(route.id)
+            getFavoriteRoutes()
+        }
     }
 }

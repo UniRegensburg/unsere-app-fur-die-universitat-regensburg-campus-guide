@@ -8,19 +8,21 @@ import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import de.ur.explure.R
 import de.ur.explure.adapter.RouteAdapter
+import de.ur.explure.model.route.Route
 import de.ur.explure.viewmodel.FavoriteRoutesFragmentViewModel
 import kotlinx.android.synthetic.main.fragment_favorite_routes.*
 import kotlinx.android.synthetic.main.fragment_favorite_routes.userNameTextView
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class FavoriteRoutesFragment : Fragment(R.layout.fragment_favorite_routes), RouteAdapter.OnItemClickListener {
+class FavoriteRoutesFragment : Fragment(R.layout.fragment_favorite_routes),
+        RouteAdapter.OnItemClickListener, RouteAdapter.OnItemLongClickListener {
 
     private val viewModel: FavoriteRoutesFragmentViewModel by viewModel()
     private lateinit var adapter: RouteAdapter
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        adapter = RouteAdapter(this)
+        adapter = RouteAdapter(this, this)
         favoriteRoutesRecyclerView.adapter = adapter
         favoriteRoutesRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         favoriteRoutesRecyclerView.setHasFixedSize(true)
@@ -51,20 +53,25 @@ class FavoriteRoutesFragment : Fragment(R.layout.fragment_favorite_routes), Rout
         viewModel.navigateToSinglePage()
     }
 
-    private fun showDialog(routeName: String) {
+    override fun onItemLongClick(position: Int) {
+        showDialog(adapter.routeList[position])
+    }
+
+    private fun showDialog(route: Route) {
         val dialog: AlertDialog
         val builder = AlertDialog.Builder(this.context)
 
-        builder.setTitle(routeName)
-        builder.setMessage("Sind Sie sicher, dass Sie die Route starten möchten?")
+        builder.setTitle("FAVORISIERUNG AUFHEBEN")
+        builder.setMessage("Sind Sie sicher, dass Sie die Route '${route.title}' " +
+                "aus Ihren Favoriten entfernen möchten?")
 
         val dialogClickListener = DialogInterface.OnClickListener { _, which ->
             when (which) {
                 DialogInterface.BUTTON_POSITIVE -> {
-                    // start navigation
+                    viewModel.removeRouteFromFavoriteRoutes(route)
                 }
                 DialogInterface.BUTTON_NEGATIVE -> {
-                    // disable dialog
+                    // do nothing
                 }
             }
         }

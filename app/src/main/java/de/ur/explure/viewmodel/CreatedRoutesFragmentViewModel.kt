@@ -36,10 +36,14 @@ class CreatedRoutesFragmentViewModel(
             val userInfo = userRepo.getUserInfo()
             when (userInfo) {
                 is FirebaseResult.Success -> {
-                    val routeInfo = routeRepo.getRoutes(userInfo.data.createdRoutes)
-                    when (routeInfo) {
-                        is FirebaseResult.Success -> {
-                            createdRoutes.postValue(routeInfo.data)
+                    if (userInfo.data.createdRoutes.size == 0) {
+                        createdRoutes.postValue(emptyList())
+                    } else {
+                        val routeInfo = routeRepo.getRoutes(userInfo.data.createdRoutes)
+                        when (routeInfo) {
+                            is FirebaseResult.Success -> {
+                                createdRoutes.postValue(routeInfo.data)
+                            }
                         }
                     }
                 }
@@ -49,5 +53,13 @@ class CreatedRoutesFragmentViewModel(
 
     fun navigateToSinglePage() {
         // appRouter.getNavController().navigate(R.id.singleRouteFragment)
+    }
+
+    fun deleteRoute(route: Route) {
+        viewModelScope.launch {
+            routeRepo.deleteRoute(route.id)
+            userRepo.removeRouteFromCreatedRoutes(route.id)
+            getCreatedRoutes()
+        }
     }
 }

@@ -181,7 +181,7 @@ class UserRepositoryImpl(
         return try {
             val userId = firebaseAuth.getCurrentUserId() ?: return NO_USER_RESULT
             fireStore.userCollection.document(userId)
-                .update(ACTIVE_ROUTES_KEY, (arrayRemove(routeId))).await()
+                .update(FINISHED_ROUTES_KEY, (arrayRemove(routeId))).await()
         } catch (exception: Exception) {
             FirebaseResult.Error(exception)
         }
@@ -201,7 +201,7 @@ class UserRepositoryImpl(
         return try {
             val userId = firebaseAuth.getCurrentUserId() ?: return NO_USER_RESULT
             fireStore.userCollection.document(userId)
-                .update(ACTIVE_ROUTES_KEY, (arrayRemove(routeId))).await()
+                .update(FAVOURITE_ROUTES_KEY, (arrayRemove(routeId))).await()
         } catch (exception: Exception) {
             FirebaseResult.Error(exception)
         }
@@ -221,7 +221,7 @@ class UserRepositoryImpl(
         return try {
             val userId = firebaseAuth.getCurrentUserId() ?: return NO_USER_RESULT
             fireStore.userCollection.document(userId)
-                .update(ACTIVE_ROUTES_KEY, (arrayRemove(routeId))).await()
+                .update(CREATED_ROUTES_KEY, (arrayRemove(routeId))).await()
         } catch (exception: Exception) {
             FirebaseResult.Error(exception)
         }
