@@ -1,5 +1,6 @@
 package de.ur.explure.views
 
+import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.util.Patterns
 import android.view.View
@@ -18,6 +19,10 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        // lock the screen rotation for the login process as this messes up the auth observer in the
+        // main activity
+        activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_NOSENSOR
+
         observe()
         setOnClickListener()
     }
