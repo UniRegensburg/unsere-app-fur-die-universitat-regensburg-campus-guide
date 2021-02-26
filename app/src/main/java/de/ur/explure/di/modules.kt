@@ -9,7 +9,11 @@ import de.ur.explure.repository.route.RouteRepositoryImpl
 import de.ur.explure.repository.user.UserRepositoryImpl
 import de.ur.explure.services.FireStoreInstance
 import de.ur.explure.services.FirebaseAuthService
-import de.ur.explure.viewmodel.*
+import de.ur.explure.viewmodel.AuthenticationViewModel
+import de.ur.explure.viewmodel.BottomNavViewModel
+import de.ur.explure.viewmodel.SingleRouteViewModel
+import de.ur.explure.viewmodel.StateViewModel
+import de.ur.explure.viewmodel.TestViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 

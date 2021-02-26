@@ -3,12 +3,17 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph_profile"
-    app:startDestination="@id/profileFragment">
+    app:startDestination="@id/singleRouteFragment">
 
     <fragment
         android:id="@+id/profileFragment"
         android:name="de.ur.explure.views.ProfileFragment"
         android:label="ProfileFragment"
         tools:layout="@layout/fragment_profile" />
+    <fragment
+        android:id="@+id/singleRouteFragment"
+        android:name="de.ur.explure.views.SingleRouteFragment"
+        android:label="fragment_single_route"
+        tools:layout="@layout/fragment_single_route" />
 
 </navigation>

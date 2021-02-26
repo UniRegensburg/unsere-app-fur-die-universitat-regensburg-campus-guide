@@ -1,80 +1,213 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:fillViewport="false"
     tools:context=".views.SingleRouteFragment">
 
-    <TextView
-        android:id="@+id/routeName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
-        android:text="@string/route_text"
-        android:textSize="30dp"
-        android:textStyle="bold"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
-
-    <TextView
-        android:id="@+id/routeInformation"
-        android:layout_marginTop="25dp"
-        android:layout_marginHorizontal="10dp"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/scrollView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/route_information"
-        app:layout_constraintTop_toBottomOf="@+id/routeName"
-        />
+        android:layout_height="wrap_content">
 
-    <Button
-        android:id="@+id/mapPreview"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginTop="40dp"
-        android:layout_marginEnd="16dp"
-        android:text="@string/map_preview"
-        app:layout_constraintBottom_toTopOf="@id/startRoute"
-        app:layout_constraintEnd_toStartOf="@id/waypoints"
-        app:layout_constraintStart_toStartOf="@id/routeInformation"
-        app:layout_constraintTop_toBottomOf="@+id/routeInformation"
-        app:layout_constraintVertical_chainStyle="spread" />
+        <TextView
+            android:id="@+id/routeName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="50dp"
+            android:layout_marginEnd="16dp"
+            android:text="@string/route_name"
+            android:textSize="30sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toStartOf="@id/shareRouteButton"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_chainStyle="spread" />
 
-    <TextView
-        android:id="@+id/waypoints"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:text="@string/waypoints"
-        app:layout_constraintTop_toTopOf="@id/mapPreview"
-        app:layout_constraintStart_toEndOf="@id/mapPreview"
-        app:layout_constraintEnd_toEndOf="@id/routeInformation"
-        app:layout_constraintBottom_toBottomOf ="@id/mapPreview"/>
+        <ImageButton
+            android:id="@+id/shareRouteButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:background="?attr/actionModeShareDrawable"
+            android:contentDescription="@string/share_route"
+            app:layout_constraintBottom_toBottomOf="@id/routeName"
+            app:layout_constraintEnd_toEndOf="@id/routeInformation"
+            app:layout_constraintTop_toTopOf="@id/routeName" />
 
-    <Button
-        android:id="@+id/startRoute"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="60dp"
-        android:layout_marginEnd="30dp"
-        android:layout_marginBottom="30dp"
-        android:background="@color/PrimaryColor"
-        android:text="@string/start_route"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/shareButton"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@id/mapPreview"
-        app:layout_constraintTop_toBottomOf="@+id/mapPreview" />
+        <TextView
+            android:id="@+id/routeInformation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="10dp"
+            android:layout_marginTop="35dp"
+            android:text="@string/route_information"
+            app:layout_constraintBottom_toTopOf="@id/routeDuration"
+            app:layout_constraintTop_toBottomOf="@+id/routeName" />
 
-    <ImageButton
-        android:id="@+id/shareButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="40dp"
-        android:background="?attr/actionModeShareDrawable"
-        app:layout_constraintBottom_toBottomOf="@id/startRoute"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/startRoute"
-        android:contentDescription="@string/share_route" />
+        <TextView
+            android:id="@+id/routeDuration"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="10dp"
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+            android:layout_marginTop="24dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="10dp"
+
+            android:text="@string/route_duration"
+            app:layout_constraintBottom_toTopOf="@id/horizontalView"
+            app:layout_constraintEnd_toStartOf="@id/routeDistance"
+            app:layout_constraintStart_toStartOf="@id/routeInformation"
+            app:layout_constraintTop_toBottomOf="@id/routeInformation"
+            app:layout_constraintVertical_chainStyle="spread" />
+
+        <View
+            android:id="@+id/verticalView1"
+            android:layout_width="1dp"
+            android:layout_height="0dp"
+            android:background="@color/PrimaryColor"
+            app:layout_constraintBottom_toBottomOf="@id/routeDuration"
+            app:layout_constraintEnd_toStartOf="@id/routeDistance"
+            app:layout_constraintStart_toEndOf="@id/routeDuration"
+            app:layout_constraintTop_toTopOf="@id/routeDuration" />
+
+        <TextView
+            android:id="@+id/routeDistance"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:text="@string/route_distance"
+            app:layout_constraintBottom_toBottomOf="@id/routeDuration"
+            app:layout_constraintEnd_toStartOf="@id/routeRating"
+            app:layout_constraintStart_toEndOf="@id/routeDuration"
+            app:layout_constraintTop_toTopOf="@id/routeDuration" />
+
+        <View
+            android:id="@+id/verticalView2"
+            android:layout_width="1dp"
+            android:layout_height="0dp"
+            android:background="@color/PrimaryColor"
+            app:layout_constraintBottom_toBottomOf="@id/routeDuration"
+            app:layout_constraintEnd_toStartOf="@id/routeRating"
+            app:layout_constraintStart_toEndOf="@id/routeDistance"
+            app:layout_constraintTop_toTopOf="@id/routeDuration" />
+
+        <TextView
+            android:id="@+id/routeRating"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:text="@string/route_rating"
+            app:layout_constraintBottom_toBottomOf="@id/routeDuration"
+            app:layout_constraintEnd_toEndOf="@id/routeInformation"
+            app:layout_constraintStart_toEndOf="@id/routeDistance"
+            app:layout_constraintTop_toTopOf="@id/routeDuration" />
+
+        <View
+            android:id="@+id/horizontalView"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/PrimaryColor"
+            android:padding="32dp"
+            app:layout_constraintBottom_toTopOf="@id/startRouteButton"
+            app:layout_constraintEnd_toEndOf="@id/routeInformation"
+            app:layout_constraintStart_toStartOf="@id/routeInformation"
+            app:layout_constraintTop_toBottomOf="@id/routeDuration" />
+
+        <Button
+            android:id="@+id/startRouteButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
+            android:layout_marginBottom="24dp"
+            android:background="@color/PrimaryColor"
+            android:paddingLeft="36dp"
+            android:paddingRight="36dp"
+            android:text="@string/start_route"
+            app:layout_constraintBottom_toTopOf="@+id/mapButton"
+            app:layout_constraintEnd_toEndOf="@id/routeInformation"
+            app:layout_constraintStart_toStartOf="@id/routeInformation"
+            app:layout_constraintTop_toBottomOf="@id/horizontalView" />
+
+        <Button
+            android:id="@+id/mapButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:background="@android:color/transparent"
+            android:text="@string/map_button"
+            android:textColor="@color/PrimaryColor"
+            app:layout_constraintEnd_toStartOf="@id/waypointsButton"
+            app:layout_constraintStart_toStartOf="@id/routeInformation"
+            app:layout_constraintTop_toBottomOf="@id/startRouteButton"
+            app:layout_constraintVertical_chainStyle="spread" />
+
+        <Button
+            android:id="@+id/waypointsButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:text="@string/waypoints_button"
+            android:textColor="@color/PrimaryColor"
+            app:layout_constraintEnd_toStartOf="@id/pictureButton"
+            app:layout_constraintStart_toEndOf="@id/mapButton"
+            app:layout_constraintTop_toTopOf="@id/mapButton" />
+
+        <Button
+            android:id="@+id/pictureButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:text="@string/picture_button"
+            android:textColor="@color/PrimaryColor"
+            app:layout_constraintEnd_toEndOf="@id/routeInformation"
+            app:layout_constraintStart_toEndOf="@id/waypointsButton"
+            app:layout_constraintTop_toTopOf="@id/mapButton" />
+
+        <ViewFlipper
+            android:id="@+id/viewFlipper"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="@id/routeInformation"
+            app:layout_constraintStart_toStartOf="@id/routeInformation"
+            app:layout_constraintTop_toBottomOf="@+id/mapButton">
+
+            <TextView
+                android:id="@+id/mapPreview"
+                android:layout_width="match_parent"
+                android:layout_height="175dp"
+                android:layout_marginTop="35dp"
+                android:text="@string/map_preview"
+                android:textSize="60sp"
+                app:layout_constraintEnd_toEndOf="@id/routeInformation"
+                app:layout_constraintStart_toStartOf="@id/routeInformation"
+                app:layout_constraintTop_toBottomOf="@+id/viewFlipper" />
+
+            <TextView
+                android:id="@+id/waypoints"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/waypoints"
+                app:layout_constraintEnd_toEndOf="@id/routeInformation"
+                app:layout_constraintStart_toStartOf="@id/routeInformation"
+                app:layout_constraintTop_toBottomOf="@id/viewFlipper" />
+
+            <ImageView
+                android:id="@+id/image"
+                android:layout_width="match_parent"
+                android:layout_height="175dp"
+                android:layout_marginTop="35dp"
+                android:src="@drawable/ic_profile"
+                app:layout_constraintEnd_toEndOf="@id/routeInformation"
+                app:layout_constraintStart_toStartOf="@id/routeInformation"
+                app:layout_constraintTop_toBottomOf="@id/viewFlipper"
+                android:contentDescription="@string/picture_button" />
+
+        </ViewFlipper>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>
