@@ -7,4 +7,9 @@
     <color name="colorLightGreen">#FFD1EABE</color>
     <color name="colorTransparentGrey">#11000022</color>
     <color name="colorLightGrey">#F2F9F0</color>
+
+    <color name="color_warning">#C88624</color>
+    <color name="color_error">#8E1111</color>
+    <color name="color_info">#2A82C8</color>
+
 </resources>
