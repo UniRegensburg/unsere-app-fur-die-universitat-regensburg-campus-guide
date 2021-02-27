@@ -20,7 +20,7 @@ import de.ur.explure.viewmodel.AuthenticationViewModel
 import de.ur.explure.viewmodel.BottomNavViewModel
 import de.ur.explure.viewmodel.MapViewModel
 import de.ur.explure.viewmodel.StateViewModel
-import de.ur.explure.viewmodel.TestViewModel
+import de.ur.explure.viewmodel.DiscoverViewModel
 import org.koin.android.ext.koin.androidApplication
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
@@ -52,7 +52,7 @@ val mainModule = module {
     single { UserRepositoryImpl(get(), get()) }
     viewModel { AuthenticationViewModel(get(), get()) }
 
-    viewModel { TestViewModel(get(), get(), get()) }
+    viewModel { DiscoverViewModel(get(), get(), get()) }
     viewModel { StateViewModel() }
     viewModel { BottomNavViewModel() }
     viewModel { MapViewModel(get()) }
