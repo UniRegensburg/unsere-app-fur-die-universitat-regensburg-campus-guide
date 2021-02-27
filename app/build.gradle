@@ -95,6 +95,8 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.2"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.1.1"
 
+    //Adapters
+    implementation 'com.hannesdorfmann:adapterdelegates4-kotlin-dsl-layoutcontainer:4.3.0'
 
     //Mapbox
     //implementation "com.mapbox.mapboxsdk:mapbox-android-sdk:9.5.0"
