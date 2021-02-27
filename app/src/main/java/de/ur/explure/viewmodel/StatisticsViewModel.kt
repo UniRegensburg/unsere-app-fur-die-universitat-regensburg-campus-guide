@@ -11,7 +11,7 @@ import de.ur.explure.repository.user.UserRepositoryImpl
 import de.ur.explure.utils.FirebaseResult
 import kotlinx.coroutines.launch
 
-class StatisticsFragmentViewModel(
+class StatisticsViewModel(
     private val userRepo: UserRepositoryImpl,
     private val ratingRepo: RatingRepositoryImpl,
     private val routeRepo: RouteRepositoryImpl,

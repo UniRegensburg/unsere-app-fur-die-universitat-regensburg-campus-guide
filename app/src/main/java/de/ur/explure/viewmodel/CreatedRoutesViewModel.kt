@@ -11,7 +11,7 @@ import de.ur.explure.repository.user.UserRepositoryImpl
 import de.ur.explure.utils.FirebaseResult
 import kotlinx.coroutines.launch
 
-class CreatedRoutesFragmentViewModel(
+class CreatedRoutesViewModel(
     private val userRepo: UserRepositoryImpl,
     private val routeRepo: RouteRepositoryImpl,
     private val appRouter: MainAppRouter
@@ -36,7 +36,7 @@ class CreatedRoutesFragmentViewModel(
             val userInfo = userRepo.getUserInfo()
             when (userInfo) {
                 is FirebaseResult.Success -> {
-                    if (userInfo.data.createdRoutes.size == 0) {
+                    if (userInfo.data.createdRoutes.isEmpty()) {
                         createdRoutes.postValue(emptyList())
                     } else {
                         val routeInfo = routeRepo.getRoutes(userInfo.data.createdRoutes)

@@ -9,7 +9,7 @@ import de.ur.explure.repository.user.UserRepositoryImpl
 import de.ur.explure.utils.FirebaseResult
 import kotlinx.coroutines.launch
 
-class ProfileFragmentViewModel(
+class ProfileViewModel(
     private val userRepo: UserRepositoryImpl,
     private val appRouter: MainAppRouter
 ) : ViewModel() {

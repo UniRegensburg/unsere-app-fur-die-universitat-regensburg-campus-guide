@@ -4,15 +4,14 @@ import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.View
 import de.ur.explure.R
-import de.ur.explure.viewmodel.StatisticsFragmentViewModel
-import kotlinx.android.synthetic.main.fragment_favorite_routes.*
+import de.ur.explure.viewmodel.StatisticsViewModel
 import kotlinx.android.synthetic.main.fragment_statistics.*
 import kotlinx.android.synthetic.main.fragment_statistics.userNameTextView
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class StatisticsFragment : Fragment(R.layout.fragment_statistics) {
 
-    private val viewModel: StatisticsFragmentViewModel by viewModel()
+    private val viewModel: StatisticsViewModel by viewModel()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)

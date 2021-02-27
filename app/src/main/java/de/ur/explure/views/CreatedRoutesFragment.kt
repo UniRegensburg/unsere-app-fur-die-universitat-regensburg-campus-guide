@@ -9,27 +9,31 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import de.ur.explure.R
 import de.ur.explure.adapter.RouteAdapter
 import de.ur.explure.model.route.Route
-import de.ur.explure.viewmodel.CreatedRoutesFragmentViewModel
+import de.ur.explure.viewmodel.CreatedRoutesViewModel
 import kotlinx.android.synthetic.main.fragment_created_routes.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class CreatedRoutesFragment : Fragment(R.layout.fragment_created_routes),
         RouteAdapter.OnItemClickListener, RouteAdapter.OnItemLongClickListener {
 
-    private val viewModel: CreatedRoutesFragmentViewModel by viewModel()
+    private val viewModel: CreatedRoutesViewModel by viewModel()
     private lateinit var adapter: RouteAdapter
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        adapter = RouteAdapter(this, this)
-        createdRoutesRecyclerView.adapter = adapter
-        createdRoutesRecyclerView.layoutManager = LinearLayoutManager(requireContext())
-        createdRoutesRecyclerView.setHasFixedSize(true)
+        initializeAdapter()
 
         observeUserModel()
         observeRouteModel()
         viewModel.getUserInfo()
         viewModel.getCreatedRoutes()
+    }
+
+    private fun initializeAdapter() {
+        adapter = RouteAdapter(this, this)
+        createdRoutesRecyclerView.adapter = adapter
+        createdRoutesRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+        createdRoutesRecyclerView.setHasFixedSize(true)
     }
 
     private fun observeUserModel() {
@@ -60,8 +64,9 @@ class CreatedRoutesFragment : Fragment(R.layout.fragment_created_routes),
         val dialog: AlertDialog
         val builder = AlertDialog.Builder(this.context)
 
-        builder.setTitle("ROUTE LÖSCHEN")
-        builder.setMessage("Sind Sie sicher, dass Sie die Route '${route.title}' entfernen möchten?")
+        builder.setTitle(String.format(getResources().getString(R.string.delete_route)))
+        builder.setMessage(String.format(getResources().getString(R.string.delete_route_message_one)) +
+                route.title + String.format(getResources().getString(R.string.delete_route_message_two)))
 
         val dialogClickListener = DialogInterface.OnClickListener { _, which ->
             when (which) {
@@ -74,8 +79,8 @@ class CreatedRoutesFragment : Fragment(R.layout.fragment_created_routes),
             }
         }
 
-        builder.setPositiveButton("JA", dialogClickListener)
-        builder.setNegativeButton("NEIN", dialogClickListener)
+        builder.setPositiveButton(String.format(getResources().getString(R.string.yes)), dialogClickListener)
+        builder.setNegativeButton(String.format(getResources().getString(R.string.no)), dialogClickListener)
 
         dialog = builder.create()
         dialog.show()

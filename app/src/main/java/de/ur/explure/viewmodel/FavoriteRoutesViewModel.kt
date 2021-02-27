@@ -11,7 +11,7 @@ import de.ur.explure.repository.user.UserRepositoryImpl
 import de.ur.explure.utils.FirebaseResult
 import kotlinx.coroutines.launch
 
-class FavoriteRoutesFragmentViewModel(
+class FavoriteRoutesViewModel(
     private val userRepo: UserRepositoryImpl,
     private val routeRepo: RouteRepositoryImpl,
     private val appRouter: MainAppRouter
