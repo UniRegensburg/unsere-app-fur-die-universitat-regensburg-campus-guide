@@ -26,8 +26,7 @@ class DiscoverFragment : Fragment(R.layout.fragment_discover) {
         initObservers()
         getData()
 
-
-        ///Delete
+        // /Delete
         binding.showMapButton.setOnClickListener {
             discoverViewModel.showMap()
         }

@@ -7,6 +7,7 @@ import de.ur.explure.services.FirebaseAuthService
 import de.ur.explure.utils.FirebaseResult
 import java.lang.Exception
 
+@Suppress("TooGenericExceptionCaught")
 class CategoryRepositoryImpl(
     private val authService: FirebaseAuthService,
     private val fireStore: FireStoreInstance
@@ -26,5 +27,4 @@ class CategoryRepositoryImpl(
             FirebaseResult.Error(e)
         }
     }
-
 }

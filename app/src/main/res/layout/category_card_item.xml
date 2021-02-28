@@ -6,6 +6,9 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_margin="5dp"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?android:attr/selectableItemBackground"
     app:cardBackgroundColor="@color/colorPrimary"
     card_view:cardCornerRadius="15dp"
     card_view:cardElevation="4dp">
@@ -15,14 +18,12 @@
         android:layout_width="120dp"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="12dp"
-        android:layout_marginVertical="10dp"
-        android:clickable="true"
-        android:focusable="true">
+        android:layout_marginVertical="10dp">
 
         <ImageView
             android:id="@+id/iv_category_icon"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:background="@drawable/circular_background"
             android:backgroundTint="@android:color/white"
             android:padding="7dp"

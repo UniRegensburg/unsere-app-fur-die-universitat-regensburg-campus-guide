@@ -6,5 +6,4 @@ import de.ur.explure.utils.FirebaseResult
 interface CategoryRepository {
 
     suspend fun getAllCategories(): FirebaseResult<List<Category>>
-
 }

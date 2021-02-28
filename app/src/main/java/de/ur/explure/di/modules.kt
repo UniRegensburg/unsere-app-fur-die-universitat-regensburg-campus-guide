@@ -3,6 +3,7 @@ package de.ur.explure.di
 import android.location.Location
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.Style
@@ -44,6 +45,7 @@ val mainModule = module {
         LocationManager(androidApplication(), callback)
     }
     // single { (context: Activity) -> PermissionHelper(context) }
+    single { FirebaseStorage.getInstance() }
     single { FirebaseAuth.getInstance() }
     factory { FirebaseFirestore.getInstance() }
     factory { FireStoreInstance(get()) }
