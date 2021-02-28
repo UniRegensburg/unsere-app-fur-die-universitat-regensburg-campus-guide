@@ -1,64 +1,37 @@
 package de.ur.explure.viewmodel
 
-import android.widget.TextView
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import de.ur.explure.model.route.Route
+import de.ur.explure.model.waypoint.WayPoint
 import de.ur.explure.repository.route.RouteRepositoryImpl
 import de.ur.explure.utils.FirebaseResult
 import kotlinx.coroutines.launch
+import java.util.*
 
 @Suppress("StringLiteralDuplication")
 class SingleRouteViewModel(private val routeRepository: RouteRepositoryImpl) : ViewModel() {
-    fun setRouteName(textView: TextView) {
-        textView.text = ""
+
+    var route: MutableLiveData<Route> = MutableLiveData()
+
+    var waypointList: MutableLiveData<LinkedList<WayPoint>> = MutableLiveData(LinkedList())
+
+    fun setRouteData() {
         viewModelScope.launch {
             when (val routeName = routeRepository.getRoute("83bAuunZzXwaPIJ0Xc3a")) {
                 is FirebaseResult.Success -> {
-                    textView.text = routeName.data.title
+                    route.postValue(routeName.data)
                 }
             }
         }
     }
 
-    fun setRouteInformation(textView: TextView) {
-        textView.text = ""
+    fun setWaypoints() {
         viewModelScope.launch {
-            when (val routeInformation = routeRepository.getRoute("83bAuunZzXwaPIJ0Xc3a")) {
+            when (val route = routeRepository.getRoute("83bAuunZzXwaPIJ0Xc3a")) {
                 is FirebaseResult.Success -> {
-                    textView.text = routeInformation.data.description
-                }
-            }
-        }
-    }
-
-    fun setWaypoints(textView: TextView) {
-        textView.text = ""
-        viewModelScope.launch {
-            when (val routeWaypoints = routeRepository.getRoute("83bAuunZzXwaPIJ0Xc3a")) {
-                is FirebaseResult.Success -> {
-                    textView.text = routeWaypoints.data.wayPoints.toString()
-                }
-            }
-        }
-    }
-
-    fun setRouteDuration(textView: TextView) {
-        textView.text = ""
-        viewModelScope.launch {
-            when (val routeDuration = routeRepository.getRoute("83bAuunZzXwaPIJ0Xc3a")) {
-                is FirebaseResult.Success -> {
-                    textView.text = routeDuration.data.duration.toString()
-                }
-            }
-        }
-    }
-
-    fun setRouteDistance(textView: TextView) {
-        textView.text = ""
-        viewModelScope.launch {
-            when (val routeDistance = routeRepository.getRoute("83bAuunZzXwaPIJ0Xc3a")) {
-                is FirebaseResult.Success -> {
-                    textView.text = routeDistance.data.distance.toString()
+                        waypointList.value = route.data.wayPoints
                 }
             }
         }

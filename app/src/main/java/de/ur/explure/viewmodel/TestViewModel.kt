@@ -29,7 +29,7 @@ class TestViewModel(
     fun testAction() {
         viewModelScope.launch {
             val waypoint = WayPointDTO("title", GeoPoint(45.1, 32.0), "Descrp")
-            val waypoint2 = WayPointDTO("title", GeoPoint(45.1, 32.0), "Descrp")
+            val waypoint2 = WayPointDTO("title2", GeoPoint(45.1, 32.0), "Descrp")
             val route = RouteDTO(
                 "Category",
                 "title2",

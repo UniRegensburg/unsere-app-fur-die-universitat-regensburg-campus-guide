@@ -16,8 +16,7 @@ class AuthenticationViewModel(
 ) : ViewModel() {
 
     private val _toast = MutableLiveData<String?>()
-    val toast: LiveData<String?>
-        get() = _toast
+    val toast: LiveData<String?> = _toast
 
     fun signIn(email: String, password: String) {
         viewModelScope.launch {

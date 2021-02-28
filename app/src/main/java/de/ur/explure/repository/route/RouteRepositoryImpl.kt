@@ -189,7 +189,7 @@ class RouteRepositoryImpl(
         return FirebaseResult.Success(routeObject)
     }
 
-    private suspend fun getWayPoints(routeId: String): List<WayPoint>? {
+    suspend fun getWayPoints(routeId: String): List<WayPoint>? {
         val wayPointCall =
             fireStore.routeCollection.document(routeId).collection(WAYPOINT_COLLECTION_NAME).get()
                 .await()
