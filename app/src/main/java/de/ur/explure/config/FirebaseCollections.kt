@@ -5,6 +5,7 @@ package de.ur.explure.config
  */
 
 object FirebaseCollections {
+    const val CATEGORY_COLLECTION_NAME = "categories"
     const val USER_COLLECTION_NAME = "users"
     const val RATING_COLLECTION_NAME = "ratings"
     const val ROUTE_COLLECTION_NAME = "routes"

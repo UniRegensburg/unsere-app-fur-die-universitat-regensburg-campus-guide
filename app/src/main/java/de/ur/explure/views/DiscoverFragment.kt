@@ -24,7 +24,6 @@ class DiscoverFragment : Fragment(R.layout.fragment_discover) {
         super.onViewCreated(view, savedInstanceState)
         initializeAdapter()
         initObservers()
-        setOnClickListeners()
         getData()
 
 
@@ -57,11 +56,5 @@ class DiscoverFragment : Fragment(R.layout.fragment_discover) {
         rv_category_list.adapter = categoryAdapter
         rv_category_list.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
-    }
-
-    private fun setOnClickListeners() {
-        binding.button.setOnClickListener {
-            discoverViewModel.testAction()
-        }
     }
 }

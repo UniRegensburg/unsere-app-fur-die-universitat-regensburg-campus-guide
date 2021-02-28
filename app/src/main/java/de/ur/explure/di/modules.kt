@@ -10,6 +10,7 @@ import de.ur.explure.map.LocationManager
 import de.ur.explure.map.MarkerManager
 import de.ur.explure.navigation.MainAppRouter
 import de.ur.explure.navigation.StateAppRouter
+import de.ur.explure.repository.category.CategoryRepositoryImpl
 import de.ur.explure.repository.rating.RatingRepositoryImpl
 import de.ur.explure.repository.route.RouteRepositoryImpl
 import de.ur.explure.repository.user.UserRepositoryImpl
@@ -50,9 +51,9 @@ val mainModule = module {
     single { RatingRepositoryImpl(get(), get()) }
     single { RouteRepositoryImpl(get(), get()) }
     single { UserRepositoryImpl(get(), get()) }
+    single { CategoryRepositoryImpl(get(), get()) }
     viewModel { AuthenticationViewModel(get(), get()) }
-
-    viewModel { DiscoverViewModel(get(), get(), get()) }
+    viewModel { DiscoverViewModel(get(), get()) }
     viewModel { StateViewModel() }
     viewModel { BottomNavViewModel() }
     viewModel { MapViewModel(get()) }
