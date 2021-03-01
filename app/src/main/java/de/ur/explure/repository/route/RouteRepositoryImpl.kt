@@ -1,6 +1,11 @@
 package de.ur.explure.repository.route
 
-import com.google.firebase.firestore.*
+import com.google.firebase.firestore.DocumentSnapshot
+import com.google.firebase.firestore.FieldPath
+import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.QueryDocumentSnapshot
+import com.google.firebase.firestore.QuerySnapshot
+import com.google.firebase.firestore.WriteBatch
 import de.ur.explure.config.ErrorConfig
 import de.ur.explure.config.FirebaseCollections.ANSWER_COLLECTION_NAME
 import de.ur.explure.config.FirebaseCollections.COMMENT_COLLECTION_NAME
@@ -16,7 +21,7 @@ import de.ur.explure.model.waypoint.WayPoint
 import de.ur.explure.services.FireStoreInstance
 import de.ur.explure.services.FirebaseAuthService
 import de.ur.explure.utils.FirebaseResult
-import java.util.*
+import java.util.Date
 
 @Suppress("TooGenericExceptionCaught", "UnnecessaryParentheses", "ReturnCount")
 class RouteRepositoryImpl(
@@ -200,7 +205,10 @@ class RouteRepositoryImpl(
         }
     }
 
-    override suspend fun getMostPopularRoutes(lastRating: Double?, batchSize: Long): FirebaseResult<List<Route>> {
+    override suspend fun getMostPopularRoutes(
+        lastRating: Double?,
+        batchSize: Long
+    ): FirebaseResult<List<Route>> {
         return try {
             when (val routeCall =
                 fireStore.routeCollection

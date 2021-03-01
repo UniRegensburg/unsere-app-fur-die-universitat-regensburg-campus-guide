@@ -55,7 +55,6 @@ class DiscoverViewModel(
                 }
                 is FirebaseResult.Canceled -> {
                     Timber.d("Failed to update latestRoutes")
-
                 }
             }
         }
@@ -63,17 +62,16 @@ class DiscoverViewModel(
 
     fun getPopularRoutes() {
         viewModelScope.launch {
-            val lastRating : Double? = getLastVisibleRating()
+            val lastRating: Double? = getLastVisibleRating()
             when (val latestRouteCall = routeRepo.getMostPopularRoutes(lastRating, ROUTE_BATCH_SIZE)) {
                 is FirebaseResult.Success -> {
                     popularRouteList.appendRoutes(latestRouteCall.data)
                 }
                 is FirebaseResult.Error -> {
-                    Timber.d("Failed to update latestRoutes")
+                    Timber.d("Failed to update popularRoutes")
                 }
                 is FirebaseResult.Canceled -> {
-                    Timber.d("Failed to update latestRoutes")
-
+                    Timber.d("Failed to update popularRoutes")
                 }
             }
         }
@@ -101,4 +99,3 @@ class DiscoverViewModel(
         const val ROUTE_BATCH_SIZE: Long = 10
     }
 }
-

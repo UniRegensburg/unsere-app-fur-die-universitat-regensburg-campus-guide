@@ -28,7 +28,7 @@ data class RouteDTO(
     var wayPoints: MutableList<WayPointDTO> = mutableListOf(),
     @ServerTimestamp
     var createdAt: Date? = null,
-    var wayPointCount : Int
+    var wayPointCount: Int
 ) : Parcelable {
 
     fun addWayPoint(wayPoint: WayPointDTO) {

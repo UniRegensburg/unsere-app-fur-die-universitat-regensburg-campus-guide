@@ -15,6 +15,7 @@ import kotlinx.android.synthetic.main.fragment_discover.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
 
+@Suppress("TooManyFunctions", "StringLiteralDuplication")
 class DiscoverFragment : Fragment(R.layout.fragment_discover) {
 
     private val binding by viewBinding(FragmentDiscoverBinding::bind)
@@ -85,7 +86,6 @@ class DiscoverFragment : Fragment(R.layout.fragment_discover) {
                 popularRoutesAdapter.setList(popularRoutes)
             }
         })
-
     }
 
     private fun setOnClickListeners() {

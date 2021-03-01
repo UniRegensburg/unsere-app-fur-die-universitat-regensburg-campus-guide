@@ -1,11 +1,6 @@
 package de.ur.explure.adapter
 
-import android.content.res.ColorStateList
-import android.content.res.Resources
-import android.graphics.Color
-import androidx.core.widget.ImageViewCompat
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
-import com.bumptech.glide.request.RequestOptions
 import com.google.firebase.storage.FirebaseStorage
 import com.hannesdorfmann.adapterdelegates4.AdapterDelegate
 import com.hannesdorfmann.adapterdelegates4.ListDelegationAdapter
