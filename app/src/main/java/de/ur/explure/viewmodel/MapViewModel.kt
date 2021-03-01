@@ -20,6 +20,9 @@ class MapViewModel(private val state: SavedStateHandle) : ViewModel() {
     private val _mapReady = MutableLiveData<Event<Boolean>>()
     val mapReady: LiveData<Event<Boolean>> = _mapReady
 
+    private val _routeCreationModeActive = MutableLiveData<Boolean>()
+    val routeCreationModeActive: LiveData<Boolean> = _routeCreationModeActive
+
     private var currentMapStyle: Style? = null
 
     // TODO only saving the latlng coords will probably not be enough later but symbol cannot be parcelized
@@ -72,6 +75,10 @@ class MapViewModel(private val state: SavedStateHandle) : ViewModel() {
 
     fun setLocationTrackingStatus(isEnabled: Boolean) {
         state[LOCATION_TRACKING_KEY] = isEnabled
+    }
+
+    fun setRouteCreationModeStatus(isActive: Boolean) {
+        _routeCreationModeActive.value = isActive
     }
 
     companion object {

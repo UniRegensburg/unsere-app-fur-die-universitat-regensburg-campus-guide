@@ -1,4 +1,4 @@
-package de.ur.explure
+package de.ur.explure.map
 
 // TODO
 /*

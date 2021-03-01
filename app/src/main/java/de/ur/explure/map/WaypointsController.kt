@@ -1,4 +1,4 @@
-package de.ur.explure.utils
+package de.ur.explure.map
 
 import android.location.Location
 import com.mapbox.geojson.Point
@@ -8,7 +8,7 @@ import de.ur.explure.extensions.toPoint
 /**
  * Utility - Class to temporarily store a list of waypoints.
  *
- * Taken from https://github.com/mapbox/mapbox-navigation-android/blob/main/examples/src/main/java/com/mapbox/navigation/examples/core/utils/WaypointsController.kt
+ * Taken and adjusted from https://github.com/mapbox/mapbox-navigation-android/blob/main/examples/src/main/java/com/mapbox/navigation/examples/core/utils/WaypointsController.kt
  */
 
 class WaypointsController {
@@ -38,5 +38,9 @@ class WaypointsController {
 
         // ? clear()
         return coordinates
+    }
+
+    fun getAllWaypoints(): MutableList<Point> {
+        return waypoints
     }
 }

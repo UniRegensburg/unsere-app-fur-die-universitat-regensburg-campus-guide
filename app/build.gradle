@@ -90,6 +90,11 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.2"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.1.1"
 
+    //ReactiveX
+    implementation "io.reactivex.rxjava3:rxandroid:3.0.0"
+    implementation("io.reactivex.rxjava3:rxjava:3.0.3")
+    // implementation("io.reactivex.rxjava3:rxkotlin:3.0.1")
+
     //Mapbox
     //implementation "com.mapbox.mapboxsdk:mapbox-android-sdk:9.5.0"
     // the corresponding sdk version is bundled with the plugin
@@ -107,4 +112,15 @@ dependencies {
 
     // Networking
     // implementation "com.squareup.retrofit2:retrofit:2.9.0"
+
+    // TODO test this:
+    // Sliding Up Panel
+    implementation 'com.sothree.slidinguppanel:library:3.4.0'
+
+    // Circular Image View
+    implementation 'de.hdodenhof:circleimageview:3.1.0'
+
+    // View Animations
+    implementation 'com.daimajia.easing:library:2.0@aar'
+    implementation 'com.daimajia.androidanimations:library:2.4@aar'
 }

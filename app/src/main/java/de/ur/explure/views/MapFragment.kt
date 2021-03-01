@@ -4,12 +4,25 @@ import android.location.Location
 import android.os.Bundle
 import android.view.View
 import android.widget.ArrayAdapter
+import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.addCallback
 import androidx.appcompat.widget.ListPopupWindow
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.commit
+import androidx.fragment.app.replace
+import androidx.navigation.fragment.findNavController
 import com.crazylegend.viewbinding.viewBinding
+import com.daimajia.androidanimations.library.Techniques
+import com.daimajia.androidanimations.library.YoYo
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.mapbox.android.core.permissions.PermissionsManager
+import com.mapbox.api.directions.v5.DirectionsCriteria
+import com.mapbox.api.directions.v5.models.DirectionsRoute
+import com.mapbox.api.matching.v5.MapboxMapMatching
+import com.mapbox.api.matching.v5.models.MapMatchingResponse
 import com.mapbox.geojson.Point
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapView
@@ -22,10 +35,13 @@ import de.ur.explure.databinding.FragmentMapBinding
 import de.ur.explure.map.LocationManager
 import de.ur.explure.map.MarkerManager
 import de.ur.explure.map.PermissionHelper
+import de.ur.explure.map.WaypointsController
 import de.ur.explure.utils.EventObserver
 import de.ur.explure.utils.Highlight
 import de.ur.explure.utils.SharedPreferencesManager
 import de.ur.explure.utils.TutorialBuilder
+import de.ur.explure.utils.getMapboxAccessToken
+import de.ur.explure.utils.hasInternetConnection
 import de.ur.explure.utils.isGPSEnabled
 import de.ur.explure.utils.measureContentWidth
 import de.ur.explure.utils.showSnackbar
@@ -36,6 +52,9 @@ import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.androidx.viewmodel.scope.emptyState
 import org.koin.core.parameter.parametersOf
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import timber.log.Timber
 
 @Suppress("TooManyFunctions")
@@ -54,11 +73,17 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
     private lateinit var map: MapboxMap
     private lateinit var markerManager: MarkerManager
 
+    // route creation
+    private val waypointsController = WaypointsController()
+    private val directionsRoute: DirectionsRoute? = null
+
     // location tracking
     private lateinit var locationManager: LocationManager
 
     // permission handling
     private val permissionHelper: PermissionHelper by inject()
+
+    private var backPressedCallback: OnBackPressedCallback? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -68,6 +93,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
         // disable the buttons until the map has finished loading
         binding.ownLocationButton.isEnabled = false
         binding.changeStyleButton.isEnabled = false
+        binding.buildRouteButton.isEnabled = false
 
         // init locationManager and sync with fragment lifecycle
         locationManager = get { parametersOf(this::onNewLocationReceived) }
@@ -75,37 +101,243 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
 
         setupViewModelObservers()
 
+        setupBackButtonClickObserver()
+
         // init mapbox map
         mapView = binding.mapView
         mapView?.onCreate(savedInstanceState)
         mapView?.getMapAsync(this)
+
+        // setup bottomSheet
+        childFragmentManager.commit {
+            replace<RouteCreationBottomSheet>(R.id.bottomSheetContainer)
+            setReorderingAllowed(true)
+            addToBackStack(null)
+        }
+    }
+
+    private fun setupBackButtonClickObserver() {
+        // This callback will show an alert dialog when the back button is pressed
+        backPressedCallback = activity?.onBackPressedDispatcher?.addCallback(
+            viewLifecycleOwner,
+            enabled = true
+        ) {
+            // Handle the back button event
+            with(MaterialAlertDialogBuilder(requireActivity())) {
+                setTitle("Karte verlassen?")
+                setMessage(
+                    "Dein aktueller Stand geht verloren, wenn du diese Ansicht jetzt verlässt!" +
+                            " Trotzdem zurückgehen?"
+                )
+                setPositiveButton("Ja") { _, _ -> findNavController().navigateUp() }
+                setNegativeButton("Nein") { _, _ -> }
+                show()
+            }
+        }
     }
 
     private fun setupViewModelObservers() {
         mapViewModel.mapReady.observe(viewLifecycleOwner, EventObserver {
             // this should only get called if the event has never been handled before because of the EventObserver
             Timber.d("Map has finished loading and can be used now!")
-
-            // enable the buttons now that the map is ready
-            binding.ownLocationButton.isEnabled = true
-            binding.changeStyleButton.isEnabled = true
-
-            binding.changeStyleButton.setOnClickListener {
-                showMapStyleOptions(layoutResource = R.layout.popup_list_item)
-            }
-
-            binding.ownLocationButton.setOnClickListener {
-                mapViewModel.getCurrentMapStyle()?.let { style -> startLocationTracking(style) }
-            }
-
-            // if location tracking was enabled before, start it again without forcing the user to
-            // press the button again
-            if (mapViewModel.isLocationTrackingActivated() == true) {
-                mapViewModel.getCurrentMapStyle()?.let {
-                    startLocationTracking(it)
-                }
+            setupInitialUIState()
+        })
+        mapViewModel.routeCreationModeActive.observe(viewLifecycleOwner, { active ->
+            if (active) {
+                enterRouteCreationMode()
+            } else {
+                leaveRouteCreationMode()
             }
         })
+    }
+
+    private fun setupInitialUIState() {
+        // enable the buttons now that the map is ready
+        binding.ownLocationButton.isEnabled = true
+        binding.changeStyleButton.isEnabled = true
+        binding.buildRouteButton.isEnabled = true
+
+        binding.changeStyleButton.setOnClickListener {
+            showMapStyleOptions(layoutResource = R.layout.popup_list_item)
+        }
+
+        binding.ownLocationButton.setOnClickListener {
+            mapViewModel.getCurrentMapStyle()?.let { style -> startLocationTracking(style) }
+        }
+
+        binding.buildRouteButton.setOnClickListener {
+            showEnterRouteCreationDialog()
+        }
+
+        binding.endRouteBuildingButton.setOnClickListener {
+            saveRoute()
+        }
+
+        // if location tracking was enabled before, start it again without forcing the user to
+        // press the button again
+        if (mapViewModel.isLocationTrackingActivated() == true) {
+            mapViewModel.getCurrentMapStyle()?.let {
+                startLocationTracking(it)
+            }
+        }
+    }
+
+    private fun showEnterRouteCreationDialog() {
+        val activity = activity ?: return
+
+        MaterialAlertDialogBuilder(activity)
+            .setTitle("Routen erstellen")
+            .setMessage(R.string.route_creation_options)
+            .setPositiveButton("Route manuell erstellen") { _, _ ->
+                setupRouteCreationMode()
+            }
+            .setNegativeButton("Route aufzeichnen") { _, _ ->
+                Toast.makeText(
+                    activity,
+                    "Dieses Feature ist leider noch nicht implementiert. Wir arbeiten dran!",
+                    Toast.LENGTH_SHORT
+                ).show()
+                // TODO
+                // startLocationTracking(mapViewModel.getCurrentMapStyle() ?: return@setPositiveButton)
+            }
+            .show()
+    }
+
+    private fun setupRouteCreationMode() {
+        mapViewModel.setRouteCreationModeStatus(isActive = true)
+
+        // TODO show fragment manually as the injected mapViewModel in the RouteCreationBottomSheet doesn't seem to work
+        val fragment: RouteCreationBottomSheet =
+            childFragmentManager.findFragmentById(R.id.bottomSheetContainer) as RouteCreationBottomSheet
+        fragment.showRouteCreationSheet()
+
+        /*
+        showSnackbar(
+            "Click on the map to add points and build your route out these. You can see and reorder
+            your waypoints at any time in the menu.",
+            binding.mapContainer,
+            length = Snackbar.LENGTH_LONG
+        )*/
+
+        // TODO map listeners erst hier setzen und sobald der Modus vorbei ist wieder entfernen?
+        map.addOnMapClickListener {
+            waypointsController.add(it)
+            return@addOnMapClickListener true // consume the click
+        }
+    }
+
+    private fun enterRouteCreationMode() {
+        // toggle the start/end buttons
+        binding.buildRouteButton.isEnabled = false
+        binding.buildRouteButton.visibility = View.GONE
+        binding.endRouteBuildingButton.visibility = View.VISIBLE
+        binding.endRouteBuildingButton.isEnabled = true
+        // and play an animation
+        @Suppress("MagicNumber")
+        YoYo.with(Techniques.FlipInX)
+            .duration(500)
+            .playOn(binding.endRouteBuildingButton)
+    }
+
+    // TODO this method is unfinished!
+    private fun leaveRouteCreationMode() {
+        binding.endRouteBuildingButton.visibility = View.INVISIBLE
+        binding.endRouteBuildingButton.isEnabled = false
+        binding.buildRouteButton.visibility = View.VISIBLE
+        binding.buildRouteButton.isEnabled = true
+    }
+
+    private fun saveRoute() {
+        with(MaterialAlertDialogBuilder(requireActivity())) {
+            setTitle("Erstellte Route speichern?")
+            setPositiveButton("Ja") { _, _ ->
+                convertPointsToRoute()
+            }
+            setNegativeButton("Weiter bearbeiten") { _, _ -> }
+            show()
+        }
+    }
+
+    private fun convertPointsToRoute() {
+        // check first if the user has an internet connection before requesting a route from mapbox
+        if (!hasInternetConnection(requireContext(), R.string.no_internet_map_matching)) {
+            return
+        }
+
+        val wayPoints = waypointsController.getAllWaypoints()
+        if (wayPoints.size < 2) {
+            showSnackbar(
+                "Du musst mindestens 2 Punkte auf der Karte auswählen, damit eine Route erstellt werden kann!",
+                binding.mapContainer,
+                colorRes = R.color.color_error
+            )
+            return
+        }
+
+        fetchRoute(wayPoints)
+
+        // TODO save route
+
+        // reset the controller
+        waypointsController.clear()
+    }
+
+    private fun fetchRoute(coordinates: List<Point>) {
+        Timber.d("MapMatching request with ${coordinates.size} coordinates.")
+
+        val mapMatchingRequest = MapboxMapMatching.builder()
+            .accessToken(getMapboxAccessToken(requireActivity()))
+            .coordinates(coordinates)
+            .waypointIndices(0, coordinates.size - 1)
+            .steps(true)
+            .bannerInstructions(true)
+            // .voiceInstructions(true)
+            .profile(DirectionsCriteria.PROFILE_WALKING)
+            // .overview(DirectionsCriteria.OVERVIEW_FULL)
+            // .annotations(DirectionsCriteria.ANNOTATION_DURATION, DirectionsCriteria.ANNOTATION_DISTANCE)
+            .build()
+
+        mapMatchingRequest.enqueueCall(
+            object : Callback<MapMatchingResponse> {
+                override fun onFailure(call: Call<MapMatchingResponse>, t: Throwable) {
+                    Timber.e("MapMatching request failure %s", t.toString())
+                }
+
+                override fun onResponse(
+                    call: Call<MapMatchingResponse>,
+                    response: Response<MapMatchingResponse>
+                ) {
+                    Timber.d("MapMatching request succeeded")
+
+                    if (response.isSuccessful) {
+                        val allMatchings = response.body()?.matchings()
+                        if (allMatchings?.isEmpty() == true) {
+                            Timber.w("Couldn't get any map matchings for the waypoints!")
+                            return
+                        }
+
+                        val route = allMatchings?.get(0)?.toDirectionRoute()
+                        Timber.d("Route: $route")
+                        if (route != null) {
+                            // TODO
+                            /*
+                            if (directionsRoute == null) {
+                                startNavigation.visibility = View.VISIBLE
+                            }
+                            directionsRoute = route
+                            mapboxNavigation?.setRoutes(listOf(route))
+                            navigationMapboxMap?.drawRoute(route)
+                            */
+                            binding.startNavigationButton.visibility = View.VISIBLE
+                        } else {
+                            binding.startNavigationButton.visibility = View.GONE
+                        }
+                    } else {
+                        Timber.e("Response unsuccessful: ${response.errorBody()}")
+                    }
+                }
+            }
+        )
     }
 
     /**
@@ -393,6 +625,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
         Timber.d("in MapFragment onDestroyView")
 
         removeMapListeners()
+        backPressedCallback?.remove()
 
         mapView?.onDestroy()
     }

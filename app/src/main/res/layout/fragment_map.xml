@@ -18,6 +18,39 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/mapView" />
 
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/buildRouteButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_normal"
+        android:text="Route erstellen"
+        app:elevation="12dp"
+        app:icon="@drawable/ic_baseline_follow_the_signs_24"
+        app:iconSize="32dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:strokeColor="@android:color/black"
+        app:strokeWidth="1dp" />
+
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/endRouteBuildingButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_normal"
+        android:enabled="false"
+        android:text="Route speichern"
+        android:visibility="invisible"
+        app:backgroundTint="@color/mapbox_blue"
+        app:elevation="12dp"
+        app:icon="@drawable/ic_baseline_save_24"
+        app:iconSize="32dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:strokeColor="@android:color/black"
+        app:strokeWidth="1dp" />
+
     <com.mapbox.mapboxsdk.maps.MapView
         android:id="@+id/mapView"
         android:layout_width="match_parent"
@@ -30,6 +63,23 @@
         mapbox:mapbox_cameraZoomMax="20"
         mapbox:mapbox_cameraZoomMin="2" />
 
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/top_guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent=".15" />
+
+    <include layout="@layout/route_creation_options_menu" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/bottom_guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent=".85" />
+
+    <!-- TODO direkt auf buttons app:layout_dodgeInsetEdges="bottom" ?-->
     <!-- ! the buttons need to be wrapped in a coordinatorLayout so the snackbar won't overlap them when shown -->
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:id="@+id/map_button_container"
@@ -39,7 +89,8 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="@+id/mapView"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_dodgeInsetEdges="bottom">
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/changeStyleButton"
@@ -51,7 +102,7 @@
             app:fabSize="auto"
             app:layout_anchor="@id/view_placeholder_1"
             app:pressedTranslationZ="12dp"
-            app:srcCompat="@drawable/ic_sharp_swap_horiz_24"
+            app:srcCompat="@drawable/ic_baseline_layers_24"
             tools:ignore="ContentDescription" />
 
         <!-- invisible placeholder to add some margin between the buttons; normal margins don't work in a coordinatorLayout -->
@@ -68,13 +119,13 @@
             android:layout_height="wrap_content"
             android:layout_gravity="top|end"
             android:enabled="false"
-            android:src="@drawable/ic_navigation_24"
             app:backgroundTint="@color/mapbox_blue"
             app:borderWidth="0dp"
             app:elevation="@dimen/fab_elevation"
             app:fabSize="auto"
             app:layout_anchor="@id/view_placeholder_2"
             app:pressedTranslationZ="12dp"
+            app:srcCompat="@drawable/ic_navigation_24"
             tools:ignore="ContentDescription" />
 
         <View
@@ -92,14 +143,26 @@
             android:layout_gravity="bottom|end"
             android:layout_marginEnd="@dimen/fab_margin"
             android:layout_marginBottom="@dimen/fab_margin"
-            android:src="@android:drawable/ic_menu_mylocation"
             app:borderWidth="0dp"
             app:elevation="@dimen/fab_elevation"
             app:fabSize="auto"
             app:pressedTranslationZ="12dp"
+            app:srcCompat="@drawable/ic_baseline_my_location_24"
             tools:ignore="ContentDescription" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+    <!-- TODO vllt auf nestedScrollView oder direkt auf bottomSheet app:layout_insetEdge="bottom" setzen? -->
+
+    <!-- <include layout="@layout/route_creation_bottomsheet" /> -->
+
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/bottomSheetContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
