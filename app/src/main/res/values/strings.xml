@@ -47,4 +47,11 @@
     <string name="wrong_email">Emailadresse ist falsch</string>
     <string name="email_sent">Email wurde gesendet</string>
     <string name="registration_failed">Registrierung fehlgeschlagen</string>
+
+    <string name="route_item_title">Route Name</string>
+    <string name="route_item_rating">(%1d)</string>
+    <string name="route_item_waypoints">0</string>
+    <string name="route_item_distance">%1d km</string>
+    <string name="route_item_duration">%1d h</string>
+    <string name="route_item_author">von %1s</string>
 </resources>
