@@ -56,4 +56,5 @@
     <string name="route_item_author">von %1s</string>
 
     <string name="discover_new_routes">New Routes</string>
+    <string name="more">More</string>
 </resources>

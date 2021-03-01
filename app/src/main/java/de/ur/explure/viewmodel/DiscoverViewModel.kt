@@ -69,7 +69,7 @@ class DiscoverViewModel(
     }
 
     companion object {
-        const val ROUTE_BATCH_SIZE: Long = 15
+        const val ROUTE_BATCH_SIZE: Long = 10
     }
 }
 

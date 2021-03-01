@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.crazylegend.viewbinding.viewBinding
 import com.mapbox.mapboxsdk.plugins.annotation.Line
 import de.ur.explure.R
@@ -29,12 +30,31 @@ class DiscoverFragment : Fragment(R.layout.fragment_discover) {
         super.onViewCreated(view, savedInstanceState)
         initializeAdapter()
         initObservers()
+        observeRecyclerViewScroll()
+        setOnClickListeners()
         getData()
 
         // /Delete
         binding.showMapButton.setOnClickListener {
             discoverViewModel.showMap()
         }
+    }
+
+    private fun setOnClickListeners() {
+        tv_new_route_more.setOnClickListener {
+            discoverViewModel.getLatestRoutes()
+        }
+    }
+
+    private fun observeRecyclerViewScroll() {
+        rv_new_route_list.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+                if (!recyclerView.canScrollVertically(1) && newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    tv_new_route_more.visibility = View.VISIBLE
+                }
+            }
+        })
     }
 
     private fun getData() {
