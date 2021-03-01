@@ -57,4 +57,6 @@
 
     <string name="discover_new_routes">New Routes</string>
     <string name="more">More</string>
+    <string name="short_text_placeholder">abcde</string>
+    <string name="middle_text_placeholder">ABCDEFGHIJKL</string>
 </resources>

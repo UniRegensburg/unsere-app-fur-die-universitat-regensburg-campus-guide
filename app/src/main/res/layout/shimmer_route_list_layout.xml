@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.facebook.shimmer.ShimmerFrameLayout
+    android:id="@+id/shimmer_route_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+        <include layout="@layout/shimmer_route_card" />
+        <include layout="@layout/shimmer_route_card" />
+        <include layout="@layout/shimmer_route_card" />
+    </LinearLayout>
+</com.facebook.shimmer.ShimmerFrameLayout>

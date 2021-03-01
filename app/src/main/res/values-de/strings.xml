@@ -22,5 +22,7 @@
 
     <string name="discover_new_routes">Neue Routen</string>
     <string name="more">Mehr</string>
+    <string name="short_text_placeholder">abcde</string>
+    <string name="middle_text_placeholder">ABCDEFGHIJKL</string>
 
 </resources>

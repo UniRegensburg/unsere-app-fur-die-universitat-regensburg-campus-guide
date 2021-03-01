@@ -6,16 +6,18 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.crazylegend.viewbinding.viewBinding
+import com.facebook.shimmer.ShimmerFrameLayout
 import de.ur.explure.R
 import de.ur.explure.adapter.CategoryDiscoverAdapter
 import de.ur.explure.adapter.RouteDiscoverAdapter
 import de.ur.explure.databinding.FragmentDiscoverBinding
 import de.ur.explure.viewmodel.DiscoverViewModel
 import kotlinx.android.synthetic.main.fragment_discover.*
+import kotlinx.android.synthetic.main.shimmer_route_list_layout.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
 
-@Suppress("TooManyFunctions", "StringLiteralDuplication")
+@Suppress("TooManyFunctions", "StringLiteralDuplication", "FunctionMaxLength")
 class DiscoverFragment : Fragment(R.layout.fragment_discover) {
 
     private val binding by viewBinding(FragmentDiscoverBinding::bind)
@@ -30,6 +32,7 @@ class DiscoverFragment : Fragment(R.layout.fragment_discover) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initializeAdapter()
+        startShimmer()
         initObservers()
         observeRecyclerViewScroll()
         setOnClickListeners()
@@ -39,6 +42,12 @@ class DiscoverFragment : Fragment(R.layout.fragment_discover) {
         binding.showMapButton.setOnClickListener {
             discoverViewModel.showMap()
         }
+    }
+
+    private fun startShimmer() {
+        (shimmer_popular_route_layout as ShimmerFrameLayout).startShimmer()
+        (shimmer_latest_route_layout as ShimmerFrameLayout).startShimmer()
+        (shimmer_category_layout as ShimmerFrameLayout).startShimmer()
     }
 
     private fun observeRecyclerViewScroll() {
@@ -68,6 +77,7 @@ class DiscoverFragment : Fragment(R.layout.fragment_discover) {
         discoverViewModel.categories.observe(viewLifecycleOwner, { categories ->
             if (categories != null) {
                 categoryAdapter.setList(categories)
+                stopShimmerAndVisibilityOfCategories()
             }
         })
     }
@@ -76,6 +86,7 @@ class DiscoverFragment : Fragment(R.layout.fragment_discover) {
         discoverViewModel.latestRouteList.observe(viewLifecycleOwner, { latestRoutes ->
             if (latestRoutes != null) {
                 latestRoutesAdapter.setList(latestRoutes)
+                stopShimmerAndVisibilityOfLatestRoutes()
             }
         })
     }
@@ -84,6 +95,7 @@ class DiscoverFragment : Fragment(R.layout.fragment_discover) {
         discoverViewModel.popularRouteList.observe(viewLifecycleOwner, { popularRoutes ->
             if (popularRoutes != null) {
                 popularRoutesAdapter.setList(popularRoutes)
+                stopShimmerAndVisibilityOfPopularRoutes()
             }
         })
     }
@@ -95,6 +107,21 @@ class DiscoverFragment : Fragment(R.layout.fragment_discover) {
         tv_popular_route_more.setOnClickListener {
             discoverViewModel.getPopularRoutes()
         }
+    }
+
+    private fun stopShimmerAndVisibilityOfLatestRoutes() {
+        (shimmer_latest_route_layout as ShimmerFrameLayout).stopShimmer()
+        shimmer_latest_route_layout.visibility = View.GONE
+    }
+
+    private fun stopShimmerAndVisibilityOfPopularRoutes() {
+        (shimmer_popular_route_layout as ShimmerFrameLayout).stopShimmer()
+        shimmer_popular_route_layout.visibility = View.GONE
+    }
+
+    private fun stopShimmerAndVisibilityOfCategories() {
+        (shimmer_category_layout as ShimmerFrameLayout).stopShimmer()
+        shimmer_category_layout.visibility = View.GONE
     }
 
     private fun observePopularListScroll() {
