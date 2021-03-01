@@ -54,4 +54,6 @@
     <string name="route_item_distance">%1d km</string>
     <string name="route_item_duration">%1d h</string>
     <string name="route_item_author">von %1s</string>
+
+    <string name="discover_new_routes">New Routes</string>
 </resources>

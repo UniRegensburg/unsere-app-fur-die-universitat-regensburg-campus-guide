@@ -20,4 +20,6 @@
     <string name="location_tracking_button_title">Eigenen Standort anzeigen</string>
     <string name="location_tracking_button_description">Über diesen Button kannst du deinen aktuellen Standort auf der Karte anzeigen und verfolgen.</string>
 
+    <string name="discover_new_routes">Neue Routen</string>
+
 </resources>

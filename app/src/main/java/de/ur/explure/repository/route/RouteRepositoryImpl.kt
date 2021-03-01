@@ -9,6 +9,7 @@ import de.ur.explure.config.ErrorConfig
 import de.ur.explure.config.FirebaseCollections.ANSWER_COLLECTION_NAME
 import de.ur.explure.config.FirebaseCollections.COMMENT_COLLECTION_NAME
 import de.ur.explure.config.FirebaseCollections.WAYPOINT_COLLECTION_NAME
+import de.ur.explure.config.RouteDocumentConfig
 import de.ur.explure.extensions.await
 import de.ur.explure.model.comment.Comment
 import de.ur.explure.model.comment.CommentDTO
@@ -18,6 +19,7 @@ import de.ur.explure.model.waypoint.WayPoint
 import de.ur.explure.services.FireStoreInstance
 import de.ur.explure.services.FirebaseAuthService
 import de.ur.explure.utils.FirebaseResult
+import java.util.*
 
 @Suppress("TooGenericExceptionCaught", "UnnecessaryParentheses", "ReturnCount")
 class RouteRepositoryImpl(
@@ -172,6 +174,27 @@ class RouteRepositoryImpl(
                 .collection(ANSWER_COLLECTION_NAME)
                 .document()
                 .set(commentDTO.toMap(userId)).await()
+        } catch (exception: Exception) {
+            FirebaseResult.Error(exception)
+        }
+    }
+
+    override suspend fun getLatestRoutes(lastVisibleDate: Date?, batchSize : Long): FirebaseResult<List<Route>> {
+        return try {
+            when (val routeCall =
+                fireStore.routeCollection
+                    .orderBy(RouteDocumentConfig.DATE_FIELD)
+                    .startAfter(lastVisibleDate)
+                    .limit(batchSize)
+                    .get()
+                    .await()) {
+                is FirebaseResult.Success -> {
+                    val routeList = routeCall.data.toObjects(Route::class.java)
+                    FirebaseResult.Success(routeList)
+                }
+                is FirebaseResult.Error -> FirebaseResult.Error(routeCall.exception)
+                is FirebaseResult.Canceled -> FirebaseResult.Canceled(routeCall.exception)
+            }
         } catch (exception: Exception) {
             FirebaseResult.Error(exception)
         }

@@ -55,7 +55,7 @@ val mainModule = module {
     single { UserRepositoryImpl(get(), get()) }
     single { CategoryRepositoryImpl(get(), get()) }
     viewModel { AuthenticationViewModel(get(), get()) }
-    viewModel { DiscoverViewModel(get(), get()) }
+    viewModel { DiscoverViewModel(get(), get(), get()) }
     viewModel { StateViewModel() }
     viewModel { BottomNavViewModel() }
     viewModel { MapViewModel(get()) }
