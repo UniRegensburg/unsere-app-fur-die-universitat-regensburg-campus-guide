@@ -47,22 +47,19 @@ class RouteDiscoverAdapter(private val clickListener: (Route) -> Unit) :
                             .transition(DrawableTransitionOptions.withCrossFade())
                             .into(itemView.iv_route_thumbnail)
                     } catch (_: Exception) {
-
                     }
                 }
 
                 itemView.tv_route_title.text = item.title
-                itemView.tv_author_name.text =
-                    getString(R.string.route_item_author, "Fachschaft Wiwi")
                 itemView.tv_rating_count.text =
                     getString(R.string.route_item_rating, item.rating.size)
                 itemView.tv_distance.text =
                     getString(R.string.route_item_distance, item.distance.toInt())
                 itemView.tv_duration.text =
                     getString(R.string.route_item_duration, item.duration.toInt())
-                itemView.tv_way_point_count.text = "0"
-                itemView.tv_comment.text = "0"
-                itemView.rating_bar_route.rating = 3.5F
+                itemView.tv_way_point_count.text = item.wayPointCount.toString()
+                itemView.tv_comment.text = item.commentCount.toString()
+                itemView.rating_bar_route.rating = item.currentRating.toFloat()
             }
         }
     }

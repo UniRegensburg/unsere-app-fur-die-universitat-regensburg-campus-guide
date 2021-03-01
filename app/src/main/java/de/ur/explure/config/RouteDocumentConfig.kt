@@ -10,4 +10,5 @@ object RouteDocumentConfig {
     const val DURATION_FIELD = "duration"
     const val THUMBNAIL_URL_FIELD = "thumbnailUrl"
     const val RATING_FIELD = "rating"
+    const val WAYPOINT_COUNT_FIELD = "wayPointCount"
 }
