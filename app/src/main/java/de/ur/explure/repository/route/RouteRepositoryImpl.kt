@@ -1,10 +1,6 @@
 package de.ur.explure.repository.route
 
-import com.google.firebase.firestore.QuerySnapshot
-import com.google.firebase.firestore.FieldPath
-import com.google.firebase.firestore.DocumentSnapshot
-import com.google.firebase.firestore.WriteBatch
-import com.google.firebase.firestore.QueryDocumentSnapshot
+import com.google.firebase.firestore.*
 import de.ur.explure.config.ErrorConfig
 import de.ur.explure.config.FirebaseCollections.ANSWER_COLLECTION_NAME
 import de.ur.explure.config.FirebaseCollections.COMMENT_COLLECTION_NAME
@@ -13,6 +9,7 @@ import de.ur.explure.config.RouteDocumentConfig
 import de.ur.explure.extensions.await
 import de.ur.explure.model.comment.Comment
 import de.ur.explure.model.comment.CommentDTO
+import de.ur.explure.model.rating.RatingValues
 import de.ur.explure.model.route.Route
 import de.ur.explure.model.route.RouteDTO
 import de.ur.explure.model.waypoint.WayPoint
@@ -179,12 +176,36 @@ class RouteRepositoryImpl(
         }
     }
 
-    override suspend fun getLatestRoutes(lastVisibleDate: Date?, batchSize : Long): FirebaseResult<List<Route>> {
+    override suspend fun getLatestRoutes(
+        lastVisibleDate: Date?,
+        batchSize: Long
+    ): FirebaseResult<List<Route>> {
         return try {
             when (val routeCall =
                 fireStore.routeCollection
                     .orderBy(RouteDocumentConfig.DATE_FIELD)
                     .startAfter(lastVisibleDate)
+                    .limit(batchSize)
+                    .get()
+                    .await()) {
+                is FirebaseResult.Success -> {
+                    val routeList = routeCall.data.toObjects(Route::class.java)
+                    FirebaseResult.Success(routeList)
+                }
+                is FirebaseResult.Error -> FirebaseResult.Error(routeCall.exception)
+                is FirebaseResult.Canceled -> FirebaseResult.Canceled(routeCall.exception)
+            }
+        } catch (exception: Exception) {
+            FirebaseResult.Error(exception)
+        }
+    }
+
+    override suspend fun getMostPopularRoutes(lastRating: Double?, batchSize: Long): FirebaseResult<List<Route>> {
+        return try {
+            when (val routeCall =
+                fireStore.routeCollection
+                    .orderBy(RouteDocumentConfig.CURRENT_RATING_FIELD, Query.Direction.DESCENDING)
+                    .startAfter(lastRating ?: RatingValues.FIVE_STARS)
                     .limit(batchSize)
                     .get()
                     .await()) {

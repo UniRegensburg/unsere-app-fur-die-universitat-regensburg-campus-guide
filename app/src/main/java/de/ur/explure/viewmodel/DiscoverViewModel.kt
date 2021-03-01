@@ -26,6 +26,8 @@ class DiscoverViewModel(
 
     val latestRouteList: MutableLiveData<MutableList<Route>> = MutableLiveData()
 
+    val popularRouteList: MutableLiveData<MutableList<Route>> = MutableLiveData()
+
     fun showMap() {
         val mapAction = DiscoverFragmentDirections.actionDiscoverFragmentToMapFragment()
         mainAppRouter.getNavController().navigate(mapAction)
@@ -43,8 +45,8 @@ class DiscoverViewModel(
 
     fun getLatestRoutes() {
         viewModelScope.launch {
-            val latestDate: Date? = getLastVisibleDate()
-            when (val latestRouteCall = routeRepo.getLatestRoutes(latestDate, ROUTE_BATCH_SIZE)) {
+            val lastDate: Date? = getLastVisibleDate()
+            when (val latestRouteCall = routeRepo.getLatestRoutes(lastDate, ROUTE_BATCH_SIZE)) {
                 is FirebaseResult.Success -> {
                     latestRouteList.appendRoutes(latestRouteCall.data)
                 }
@@ -59,13 +61,40 @@ class DiscoverViewModel(
         }
     }
 
+    fun getPopularRoutes() {
+        viewModelScope.launch {
+            val lastRating : Double? = getLastVisibleRating()
+            when (val latestRouteCall = routeRepo.getMostPopularRoutes(lastRating, ROUTE_BATCH_SIZE)) {
+                is FirebaseResult.Success -> {
+                    popularRouteList.appendRoutes(latestRouteCall.data)
+                }
+                is FirebaseResult.Error -> {
+                    Timber.d("Failed to update latestRoutes")
+                }
+                is FirebaseResult.Canceled -> {
+                    Timber.d("Failed to update latestRoutes")
+
+                }
+            }
+        }
+    }
+
+    private fun getLastVisibleRating(): Double? {
+        var lastRating: Double? = null
+        val routeList = popularRouteList.value
+        if (!routeList.isNullOrEmpty()) {
+            lastRating = routeList[routeList.lastIndex].currentRating
+        }
+        return lastRating
+    }
+
     private fun getLastVisibleDate(): Date? {
-        var latestDate: Date? = null
+        var lastDate: Date? = null
         val routeList = latestRouteList.value
         if (!routeList.isNullOrEmpty()) {
-            latestDate = routeList[routeList.lastIndex].createdAt
+            lastDate = routeList[routeList.lastIndex].createdAt
         }
-        return latestDate
+        return lastDate
     }
 
     companion object {

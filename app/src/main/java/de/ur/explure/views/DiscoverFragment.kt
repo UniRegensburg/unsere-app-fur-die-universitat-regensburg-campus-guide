@@ -6,12 +6,10 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.crazylegend.viewbinding.viewBinding
-import com.mapbox.mapboxsdk.plugins.annotation.Line
 import de.ur.explure.R
 import de.ur.explure.adapter.CategoryDiscoverAdapter
 import de.ur.explure.adapter.RouteDiscoverAdapter
 import de.ur.explure.databinding.FragmentDiscoverBinding
-import de.ur.explure.model.route.Route
 import de.ur.explure.viewmodel.DiscoverViewModel
 import kotlinx.android.synthetic.main.fragment_discover.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -24,7 +22,9 @@ class DiscoverFragment : Fragment(R.layout.fragment_discover) {
 
     private lateinit var categoryAdapter: CategoryDiscoverAdapter
 
-    private lateinit var latestRouteAdapter: RouteDiscoverAdapter
+    private lateinit var latestRoutesAdapter: RouteDiscoverAdapter
+
+    private lateinit var popularRoutesAdapter: RouteDiscoverAdapter
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -40,13 +40,75 @@ class DiscoverFragment : Fragment(R.layout.fragment_discover) {
         }
     }
 
+    private fun observeRecyclerViewScroll() {
+        observePopularListScroll()
+        observeLatestListScroll()
+    }
+
+    private fun getData() {
+        discoverViewModel.getCategories()
+        discoverViewModel.getLatestRoutes()
+        discoverViewModel.getPopularRoutes()
+    }
+
+    private fun initObservers() {
+        initCategoryObserver()
+        initLatestRouteObserver()
+        initPopularRouteObserver()
+    }
+
+    private fun initializeAdapter() {
+        initCategoryAdapter()
+        initLatestRouteAdapter()
+        initPopularRouteAdapter()
+    }
+
+    private fun initCategoryObserver() {
+        discoverViewModel.categories.observe(viewLifecycleOwner, { categories ->
+            if (categories != null) {
+                categoryAdapter.setList(categories)
+            }
+        })
+    }
+
+    private fun initLatestRouteObserver() {
+        discoverViewModel.latestRouteList.observe(viewLifecycleOwner, { latestRoutes ->
+            if (latestRoutes != null) {
+                latestRoutesAdapter.setList(latestRoutes)
+            }
+        })
+    }
+
+    private fun initPopularRouteObserver() {
+        discoverViewModel.popularRouteList.observe(viewLifecycleOwner, { popularRoutes ->
+            if (popularRoutes != null) {
+                popularRoutesAdapter.setList(popularRoutes)
+            }
+        })
+
+    }
+
     private fun setOnClickListeners() {
         tv_new_route_more.setOnClickListener {
             discoverViewModel.getLatestRoutes()
         }
+        tv_popular_route_more.setOnClickListener {
+            discoverViewModel.getPopularRoutes()
+        }
     }
 
-    private fun observeRecyclerViewScroll() {
+    private fun observePopularListScroll() {
+        rv_popular_route_list.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                super.onScrollStateChanged(recyclerView, newState)
+                if (!recyclerView.canScrollVertically(1) && newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    tv_popular_route_more.visibility = View.VISIBLE
+                }
+            }
+        })
+    }
+
+    private fun observeLatestListScroll() {
         rv_new_route_list.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
@@ -57,34 +119,11 @@ class DiscoverFragment : Fragment(R.layout.fragment_discover) {
         })
     }
 
-    private fun getData() {
-        discoverViewModel.getCategories()
-        discoverViewModel.getLatestRoutes()
-    }
-
-    private fun initObservers() {
-        discoverViewModel.categories.observe(viewLifecycleOwner, { categories ->
-            if (categories != null) {
-                categoryAdapter.setList(categories)
-            }
-        })
-        discoverViewModel.latestRouteList.observe(viewLifecycleOwner, { latestRoutes ->
-            if (latestRoutes != null) {
-                latestRouteAdapter.setList(latestRoutes)
-            }
-        })
-    }
-
-    private fun initializeAdapter() {
-        initCategoryAdapter()
-        initLatestRouteAdapter()
-    }
-
     private fun initLatestRouteAdapter() {
-        latestRouteAdapter = RouteDiscoverAdapter {
+        latestRoutesAdapter = RouteDiscoverAdapter {
             Timber.d("%s clicked", it.title)
         }
-        rv_new_route_list.adapter = latestRouteAdapter
+        rv_new_route_list.adapter = latestRoutesAdapter
         rv_new_route_list.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
     }
@@ -95,6 +134,15 @@ class DiscoverFragment : Fragment(R.layout.fragment_discover) {
         }
         rv_category_list.adapter = categoryAdapter
         rv_category_list.layoutManager =
+            LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+    }
+
+    private fun initPopularRouteAdapter() {
+        popularRoutesAdapter = RouteDiscoverAdapter {
+            Timber.d("%s clicked", it.title)
+        }
+        rv_popular_route_list.adapter = popularRoutesAdapter
+        rv_popular_route_list.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
     }
 }

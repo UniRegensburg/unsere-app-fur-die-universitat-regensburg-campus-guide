@@ -9,6 +9,7 @@ object RouteDocumentConfig {
     const val DISTANCE_FIELD = "distance"
     const val DURATION_FIELD = "duration"
     const val THUMBNAIL_URL_FIELD = "thumbnailUrl"
-    const val RATING_FIELD = "rating"
+    const val RATING_LIST_FIELD = "rating"
+    const val CURRENT_RATING_FIELD = "currentRating"
     const val WAYPOINT_COUNT_FIELD = "wayPointCount"
 }
