@@ -42,10 +42,16 @@ class DiscoverFragment : Fragment(R.layout.fragment_discover) {
         setOnClickListeners()
         getData()
 
-        // /Delete
+        //Delete
         binding.showMapButton.setOnClickListener {
             discoverViewModel.showMap()
         }
+    }
+
+    override fun onDestroyView() {
+        detachAdapterOnViewDetach(rv_popular_route_list)
+        detachAdapterOnViewDetach(rv_new_route_list)
+        super.onDestroyView()
     }
 
     private fun startShimmer() {
@@ -175,5 +181,16 @@ class DiscoverFragment : Fragment(R.layout.fragment_discover) {
         rv_popular_route_list.adapter = popularRoutesAdapter
         rv_popular_route_list.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+    }
+
+    private fun detachAdapterOnViewDetach(recyclerView: RecyclerView) {
+        recyclerView.addOnAttachStateChangeListener(object :
+            View.OnAttachStateChangeListener {
+            override fun onViewAttachedToWindow(v: View) = run { }
+
+            override fun onViewDetachedFromWindow(v: View) {
+                recyclerView.adapter = null
+            }
+        })
     }
 }
