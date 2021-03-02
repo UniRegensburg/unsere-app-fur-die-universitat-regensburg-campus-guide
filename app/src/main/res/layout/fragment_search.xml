@@ -24,7 +24,7 @@
         app:layout_constraintVertical_bias="0.003" />
 
     <EditText
-        android:id="@+id/editTextTextPersonName"
+        android:id="@+id/edSearchEntry"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="5dp"
@@ -34,7 +34,6 @@
         android:ems="10"
         android:hint="@string/search_button"
         android:inputType="textPersonName"
-        android:text="@string/search_button"
         app:layout_constraintBottom_toTopOf="@+id/textView"
         app:layout_constraintEnd_toStartOf="@+id/searchButton"
         app:layout_constraintHorizontal_bias="0.5"
@@ -93,9 +92,9 @@
         android:backgroundTint="@color/PrimaryColor"
         android:contentDescription="@string/search_button"
         android:src="@android:drawable/ic_menu_search"
-        app:layout_constraintBottom_toBottomOf="@+id/editTextTextPersonName"
+        app:layout_constraintBottom_toBottomOf="@+id/edSearchEntry"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/editTextTextPersonName"
+        app:layout_constraintTop_toTopOf="@+id/edSearchEntry"
         app:layout_constraintVertical_bias="0.578" />
 
 
@@ -168,8 +167,8 @@
         app:layout_constraintBottom_toTopOf="@+id/lernenButton"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/editTextTextPersonName"
-        app:layout_constraintTop_toBottomOf="@+id/editTextTextPersonName"
+        app:layout_constraintStart_toStartOf="@+id/edSearchEntry"
+        app:layout_constraintTop_toBottomOf="@+id/edSearchEntry"
         app:layout_constraintVertical_bias="0.0" />
 
     <TextView

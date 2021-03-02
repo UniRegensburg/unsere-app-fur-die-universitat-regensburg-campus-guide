@@ -11,7 +11,7 @@ class SearchViewModel(
         stateAppRouter.navigateToCategoryWork()
     }
 
-    fun navigateToSearchResult() {
-        stateAppRouter.navigateToSearchResult()
+    fun navigateToSearchResult(search: String) {
+        stateAppRouter.navigateToSearchResult(search)
     }
 }

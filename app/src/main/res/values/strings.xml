@@ -46,4 +46,6 @@
     <string name="wrong_email">Emailadresse ist falsch</string>
     <string name="email_sent">Email wurde gesendet</string>
     <string name="registration_failed">Registrierung fehlgeschlagen</string>
+    <string name="title_page_searchresults">Ergebnisse deiner Suche</string>
+    <string name="no_results">Zu deiner Suche konnten keine passenden Routen gefunden werden.</string>
 </resources>

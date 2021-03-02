@@ -17,7 +17,6 @@ import org.koin.core.inject
 class StateViewModel : ViewModel(), KoinComponent {
 
     private val stateAppRouter: StateAppRouter by inject()
-
     private val authRepo: FirebaseAuthService by inject()
 
     /**

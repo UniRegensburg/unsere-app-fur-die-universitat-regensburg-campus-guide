@@ -15,17 +15,18 @@ class WordSearchViewModel(
 
     var searchedRoutes: MutableLiveData<List<Route>> = MutableLiveData()
 
-    fun getSearchedRoutes() {
+    fun getSearchedRoutes(message: String) {
         viewModelScope.launch {
-
-            val routeList = listOf("kXvvpB6ukGQtiafDTMxq", "QZLgj7nsSAWFHg54dqzG", "83bAuunZzXwaPIJ0Xc3a")
-            val routeLists = routeRepo.getRoutes(routeList, true)
+            val routeLists = routeRepo.getSearchedRoutes(message)
+            // val routeList = listOf("kXvvpB6ukGQtiafDTMxq", "QZLgj7nsSAWFHg54dqzG", "83bAuunZzXwaPIJ0Xc3a")
+            // val routeLists = routeRepo.getRoutes(routeList, true)
             when (routeLists) {
                 is FirebaseResult.Success -> {
                     searchedRoutes.postValue(routeLists.data)
                 }
             }
-            Log.d("Koller1", searchedRoutes.toString())
+            Log.d("Koller1", message.toString())
+            Log.d("Koller2", routeLists.toString())
         }
     }
 }

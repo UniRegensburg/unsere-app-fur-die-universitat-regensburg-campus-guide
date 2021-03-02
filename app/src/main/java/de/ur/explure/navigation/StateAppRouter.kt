@@ -1,5 +1,6 @@
 package de.ur.explure.navigation
 
+import android.os.Bundle
 import androidx.navigation.NavController
 import de.ur.explure.R
 
@@ -66,8 +67,10 @@ class StateAppRouter {
         navController.navigate(R.id.navigateToCategoryWork)
     }
 
-    fun navigateToSearchResult() {
+    fun navigateToSearchResult(search: String) {
+        val bundle = Bundle()
+        bundle.putString("STRING_KEY", search)
         navController.setGraph(R.navigation.nav_graph_search)
-        navController.navigate(R.id.navigateToSearchResult)
+        navController.navigate(R.id.navigateToSearchResult, bundle)
     }
 }

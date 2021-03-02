@@ -19,7 +19,10 @@ class SearchFragment : Fragment(R.layout.fragment_search) {
 
     private fun setOnClickListeners() {
         searchButton.setOnClickListener {
-            viewModel.navigateToSearchResult()
+            val searchEdit = edSearchEntry.text.toString()
+            if (searchEdit.isNotEmpty()) {
+                viewModel.navigateToSearchResult(searchEdit)
+            }
         }
 
         chillenButton.setOnClickListener {

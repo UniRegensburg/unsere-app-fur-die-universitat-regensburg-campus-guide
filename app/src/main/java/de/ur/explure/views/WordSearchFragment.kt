@@ -17,7 +17,7 @@ class WordSearchFragment : Fragment(R.layout.fragment_word_search) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
+        val message = arguments?.getString("STRING_KEY")
         searchAdapter = SearchListAdapter { }
 
         recyclerView_searchResults.apply {
@@ -28,7 +28,9 @@ class WordSearchFragment : Fragment(R.layout.fragment_word_search) {
 
         observeRouteModel()
 
-        viewModel.getSearchedRoutes()
+        if (message != null) {
+            viewModel.getSearchedRoutes(message)
+        }
     }
 
     private fun observeRouteModel() {
