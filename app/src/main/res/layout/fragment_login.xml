@@ -97,34 +97,33 @@
             android:id="@+id/withoutAccountButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
             android:text="@string/without_account"
             android:textColor="@color/PrimaryColor"
-            android:background="@android:color/transparent"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/orText"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/orText" />
+            app:layout_constraintStart_toStartOf="parent" />
 
         <TextView
             android:id="@+id/orText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/or_text"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toTopOf="@id/signUpButton"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/signUpButton"/>
+            app:layout_constraintStart_toStartOf="parent" />
 
         <Button
             android:id="@+id/signUpButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="5dp"
+            android:background="@android:color/transparent"
             android:text="@string/sign_up_button"
             android:textColor="@color/PrimaryColor"
-            android:background="@android:color/transparent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            />
+            app:layout_constraintStart_toStartOf="parent" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.core.widget.NestedScrollView>
 

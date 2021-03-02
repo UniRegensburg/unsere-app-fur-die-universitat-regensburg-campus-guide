@@ -1,5 +1,6 @@
 package de.ur.explure.views
 
+import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
@@ -31,6 +32,10 @@ class DiscoverFragment : Fragment(R.layout.fragment_discover) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        // unlock the screen rotation if it was locked during the login process
+        activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR
+
+        testViewModel.loginUser()
         initializeAdapter()
         startShimmer()
         initObservers()

@@ -15,5 +15,5 @@
     <color name="textColor">#373737</color>
     <color name="duskYellow">#ffc922</color>
     <color name="lightGey">#B3B3B3</color>
-
+    <color name="content_background">#F6F0DE</color>
 </resources>
