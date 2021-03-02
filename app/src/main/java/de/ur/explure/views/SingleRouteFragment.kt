@@ -17,6 +17,8 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route) {
 
     lateinit var wayPointAdapter: WayPointAdapter
     lateinit var imageAdapter: ImageAdapter
+    var totalRating: Float = 0.0F
+    var count: Float = 0.0F
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -37,6 +39,12 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route) {
                 routeDescription.text = route.description
                 routeDuration.text = route.duration.toString()
                 routeDistance.text = route.distance.toString()
+               for (element in route.rating) {
+                   totalRating += element.toFloat()
+                   count += 1
+                   val averageRating = totalRating / count
+                   routeRating.rating = averageRating
+                }
             }
         })
     }

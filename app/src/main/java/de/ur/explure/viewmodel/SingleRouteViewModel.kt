@@ -1,5 +1,6 @@
 package de.ur.explure.viewmodel
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -13,15 +14,16 @@ import java.util.*
 @Suppress("StringLiteralDuplication")
 class SingleRouteViewModel(private val routeRepository: RouteRepositoryImpl) : ViewModel() {
 
-    var route: MutableLiveData<Route> = MutableLiveData()
-
-    var waypointList: MutableLiveData<LinkedList<WayPoint>> = MutableLiveData(LinkedList())
+    private val _route: MutableLiveData<Route> = MutableLiveData()
+    val route: LiveData<Route> = _route
+    private val _waypointList: MutableLiveData<LinkedList<WayPoint>> = MutableLiveData(LinkedList())
+    val waypointList: LiveData<LinkedList<WayPoint>> = _waypointList
 
     fun setRouteData() {
         viewModelScope.launch {
             when (val routeName = routeRepository.getRoute("83bAuunZzXwaPIJ0Xc3a")) {
                 is FirebaseResult.Success -> {
-                    route.postValue(routeName.data)
+                    _route.postValue(routeName.data)
                 }
             }
         }
@@ -31,7 +33,7 @@ class SingleRouteViewModel(private val routeRepository: RouteRepositoryImpl) : V
         viewModelScope.launch {
             when (val route = routeRepository.getRoute("83bAuunZzXwaPIJ0Xc3a")) {
                 is FirebaseResult.Success -> {
-                        waypointList.value = route.data.wayPoints
+                        _waypointList.value = route.data.wayPoints
                 }
             }
         }
