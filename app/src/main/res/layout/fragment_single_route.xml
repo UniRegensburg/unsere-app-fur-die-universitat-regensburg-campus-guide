@@ -35,16 +35,16 @@
             android:background="?attr/actionModeShareDrawable"
             android:contentDescription="@string/share_route"
             app:layout_constraintBottom_toBottomOf="@id/routeName"
-            app:layout_constraintEnd_toEndOf="@id/routeDescription"
+            app:layout_constraintEnd_toEndOf="@id/routeImage"
             app:layout_constraintTop_toTopOf="@id/routeName" />
 
-        <TextView
-            android:id="@+id/routeDescription"
+        <ImageView
+            android:id="@+id/routeImage"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="10dp"
             android:layout_marginTop="35dp"
-            android:text="@string/route_information"
+            android:contentDescription="@string/route_name"
             app:layout_constraintBottom_toTopOf="@id/routeDuration"
             app:layout_constraintTop_toBottomOf="@+id/routeName" />
 
@@ -53,16 +53,14 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
-
             android:layout_marginTop="24dp"
             android:layout_marginEnd="10dp"
             android:layout_marginBottom="10dp"
-
             android:text="@string/route_duration"
             app:layout_constraintBottom_toTopOf="@id/horizontalView"
             app:layout_constraintEnd_toStartOf="@id/routeDistance"
-            app:layout_constraintStart_toStartOf="@id/routeDescription"
-            app:layout_constraintTop_toBottomOf="@id/routeDescription"
+            app:layout_constraintStart_toStartOf="@id/routeImage"
+            app:layout_constraintTop_toBottomOf="@id/routeImage"
             app:layout_constraintVertical_chainStyle="spread" />
 
         <View
@@ -105,7 +103,7 @@
             android:layout_margin="24dp"
             android:progressTint="@color/PrimaryColor"
             app:layout_constraintBottom_toBottomOf="@id/routeDuration"
-            app:layout_constraintEnd_toEndOf="@id/routeDescription"
+            app:layout_constraintEnd_toEndOf="@id/routeImage"
             app:layout_constraintStart_toEndOf="@id/routeDistance"
             app:layout_constraintTop_toTopOf="@id/routeDuration" />
 
@@ -116,8 +114,8 @@
             android:background="@color/PrimaryColor"
             android:padding="32dp"
             app:layout_constraintBottom_toTopOf="@id/startRouteButton"
-            app:layout_constraintEnd_toEndOf="@id/routeDescription"
-            app:layout_constraintStart_toStartOf="@id/routeDescription"
+            app:layout_constraintEnd_toEndOf="@id/routeImage"
+            app:layout_constraintStart_toStartOf="@id/routeImage"
             app:layout_constraintTop_toBottomOf="@id/routeDuration" />
 
         <Button
@@ -130,23 +128,34 @@
             android:paddingLeft="36dp"
             android:paddingRight="36dp"
             android:text="@string/start_route"
-            app:layout_constraintBottom_toTopOf="@+id/mapButton"
-            app:layout_constraintEnd_toEndOf="@id/routeDescription"
-            app:layout_constraintStart_toStartOf="@id/routeDescription"
+            app:layout_constraintBottom_toTopOf="@+id/descriptionButton"
+            app:layout_constraintEnd_toEndOf="@id/routeImage"
+            app:layout_constraintStart_toStartOf="@id/routeImage"
             app:layout_constraintTop_toBottomOf="@id/horizontalView" />
+
+        <Button
+            android:id="@+id/descriptionButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:background="@android:color/transparent"
+            android:text="@string/route_description"
+            android:textColor="@color/PrimaryColor"
+            app:layout_constraintEnd_toStartOf="@id/mapButton"
+            app:layout_constraintStart_toStartOf="@id/routeImage"
+            app:layout_constraintTop_toBottomOf="@id/startRouteButton"
+            app:layout_constraintVertical_chainStyle="spread" />
 
         <Button
             android:id="@+id/mapButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
             android:background="@android:color/transparent"
-            android:text="@string/map_button"
+            android:text="@string/map_preview"
             android:textColor="@color/PrimaryColor"
             app:layout_constraintEnd_toStartOf="@id/waypointsButton"
-            app:layout_constraintStart_toStartOf="@id/routeDescription"
-            app:layout_constraintTop_toBottomOf="@id/startRouteButton"
-            app:layout_constraintVertical_chainStyle="spread" />
+            app:layout_constraintStart_toEndOf="@id/descriptionButton"
+            app:layout_constraintTop_toTopOf="@id/descriptionButton" />
 
         <Button
             android:id="@+id/waypointsButton"
@@ -155,28 +164,29 @@
             android:background="@android:color/transparent"
             android:text="@string/waypoints_button"
             android:textColor="@color/PrimaryColor"
-            app:layout_constraintEnd_toStartOf="@id/pictureButton"
+            app:layout_constraintEnd_toEndOf="@id/routeImage"
             app:layout_constraintStart_toEndOf="@id/mapButton"
-            app:layout_constraintTop_toTopOf="@id/mapButton" />
-
-        <Button
-            android:id="@+id/pictureButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:background="@android:color/transparent"
-            android:text="@string/picture_button"
-            android:textColor="@color/PrimaryColor"
-            app:layout_constraintEnd_toEndOf="@id/routeDescription"
-            app:layout_constraintStart_toEndOf="@id/waypointsButton"
-            app:layout_constraintTop_toTopOf="@id/mapButton" />
+            app:layout_constraintTop_toTopOf="@id/descriptionButton" />
 
         <ViewFlipper
             android:id="@+id/viewFlipper"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:layout_constraintEnd_toEndOf="@id/routeDescription"
-            app:layout_constraintStart_toStartOf="@id/routeDescription"
-            app:layout_constraintTop_toBottomOf="@+id/mapButton">
+            app:layout_constraintEnd_toEndOf="@id/routeImage"
+            app:layout_constraintStart_toStartOf="@id/routeImage"
+            app:layout_constraintTop_toBottomOf="@+id/descriptionButton">
+
+            <TextView
+                android:id="@+id/routeDescription"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="35dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginEnd="8dp"
+                android:text="@string/route_description"
+                app:layout_constraintEnd_toEndOf="@id/routeDistance"
+                app:layout_constraintStart_toStartOf="@id/routeImage"
+                app:layout_constraintTop_toBottomOf="@+id/viewFlipper" />
 
             <ImageView
                 android:id="@+id/mapPreview"
@@ -188,7 +198,7 @@
                 app:srcCompat="@android:drawable/ic_menu_mapmode"
                 android:contentDescription="@string/map_preview"
                 app:layout_constraintEnd_toEndOf="@id/routeDistance"
-                app:layout_constraintStart_toStartOf="@id/routeDescription"
+                app:layout_constraintStart_toStartOf="@id/routeImage"
                 app:layout_constraintTop_toBottomOf="@+id/viewFlipper" />
 
             <androidx.recyclerview.widget.RecyclerView
@@ -197,19 +207,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_marginEnd="8dp"
-                app:layout_constraintEnd_toEndOf="@id/routeDescription"
-                app:layout_constraintStart_toStartOf="@id/routeDescription"
+                app:layout_constraintEnd_toEndOf="@id/routeImage"
+                app:layout_constraintStart_toStartOf="@id/routeImage"
                 app:layout_constraintTop_toBottomOf="@id/viewFlipper" />
-
-            <androidx.viewpager.widget.ViewPager
-                android:id="@+id/images"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_marginTop="35dp"
-                app:layout_constraintEnd_toEndOf="@id/routeDescription"
-                app:layout_constraintStart_toStartOf="@id/routeDescription"
-                app:layout_constraintTop_toBottomOf="@id/viewFlipper"
-                />
 
         </ViewFlipper>
 

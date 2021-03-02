@@ -5,7 +5,6 @@ import androidx.fragment.app.Fragment
 import android.view.View
 import androidx.recyclerview.widget.LinearLayoutManager
 import de.ur.explure.R
-import de.ur.explure.adapter.ImageAdapter
 import de.ur.explure.adapter.WayPointAdapter
 import de.ur.explure.viewmodel.SingleRouteViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -16,16 +15,13 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route) {
     private val singleRouteViewModel: SingleRouteViewModel by viewModel()
 
     lateinit var wayPointAdapter: WayPointAdapter
-    lateinit var imageAdapter: ImageAdapter
-    var totalRating: Float = 0.0F
-    var count: Float = 0.0F
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         observeRouteInformation()
+        observeRating()
         observeWaypoints()
-        observeImages()
         setOnClickListener()
 
         singleRouteViewModel.setRouteData()
@@ -39,12 +35,14 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route) {
                 routeDescription.text = route.description
                 routeDuration.text = route.duration.toString()
                 routeDistance.text = route.distance.toString()
-               for (element in route.rating) {
-                   totalRating += element.toFloat()
-                   count += 1
-                   val averageRating = totalRating / count
-                   routeRating.rating = averageRating
-                }
+            }
+        })
+    }
+
+    private fun observeRating() {
+        singleRouteViewModel.rating.observe(viewLifecycleOwner, { rating ->
+            if (rating != null) {
+                routeRating.rating = rating.ratingValue.toFloat()
             }
         })
     }
@@ -58,22 +56,14 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route) {
         })
     }
 
-    private fun observeImages() {
-        singleRouteViewModel.waypointList.observe(viewLifecycleOwner, { image ->
-            imageAdapter = ImageAdapter(requireContext(), image)
-            images.adapter = imageAdapter
-            imageAdapter.notifyDataSetChanged()
-        })
-    }
-
     private fun setOnClickListener() {
-        mapButton.setOnClickListener {
+        descriptionButton.setOnClickListener {
             viewFlipper.displayedChild = 0
         }
-        waypointsButton.setOnClickListener {
+        mapButton.setOnClickListener {
             viewFlipper.displayedChild = 1
         }
-        pictureButton.setOnClickListener {
+        waypointsButton.setOnClickListener {
             viewFlipper.displayedChild = 2
         }
         startRouteButton.setOnClickListener {

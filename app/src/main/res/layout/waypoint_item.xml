@@ -31,5 +31,5 @@
         android:layout_alignParentTop="true"
         android:layout_toEndOf="@+id/waypointTitle"
         android:layout_marginStart="16dp"
-        android:text="@string/route_information" />
+        android:text="@string/route_description" />
 </RelativeLayout>

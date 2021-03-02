@@ -10,7 +10,9 @@ import de.ur.explure.model.waypoint.WayPoint
 import kotlinx.android.synthetic.main.waypoint_item.view.*
 import java.util.*
 
-class WayPointAdapter(private val dataSource: LinkedList<WayPoint>) : RecyclerView.Adapter<WayPointAdapter.ViewHolder>() {
+class WayPointAdapter(
+    private val dataSource: LinkedList<WayPoint>
+) : RecyclerView.Adapter<WayPointAdapter.ViewHolder>() {
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val waypointTitle: TextView = itemView.waypointTitle

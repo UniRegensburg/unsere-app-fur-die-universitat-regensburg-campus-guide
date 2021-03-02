@@ -5,14 +5,14 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import de.ur.explure.R
-import de.ur.explure.navigation.StateAppRouter
+import de.ur.explure.navigation.MainAppRouter
 import de.ur.explure.services.FirebaseAuthService
 import de.ur.explure.utils.FirebaseResult
 import kotlinx.coroutines.launch
 
 class AuthenticationViewModel(
     private val authService: FirebaseAuthService,
-    private val stateAppRouter: StateAppRouter
+    private val mainAppRouter: MainAppRouter
 ) : ViewModel() {
 
     private val _toast = MutableLiveData<String?>()
@@ -22,7 +22,7 @@ class AuthenticationViewModel(
         viewModelScope.launch {
             when (val loginTask = authService.signIn(email, password)) {
                 is FirebaseResult.Success -> {
-                  // do task
+                    // do task
                 }
                 is FirebaseResult.Error -> {
                     _toast.value = loginTask.exception.message
@@ -84,10 +84,10 @@ class AuthenticationViewModel(
     }
 
     fun goBackToLogin() {
-        stateAppRouter.navigateUp()
+        mainAppRouter.navigateUp()
     }
 
     fun navigateToRegister() {
-        stateAppRouter.navigateToRegister()
+        mainAppRouter.navigateToRegister()
     }
 }
