@@ -30,7 +30,7 @@ class DiscoverViewModel(
 
     fun showMap() {
         val mapAction = DiscoverFragmentDirections.actionDiscoverFragmentToMapFragment()
-        mainAppRouter.getNavController().navigate(mapAction)
+        mainAppRouter.getNavController()?.navigate(mapAction)
     }
 
     fun getCategories() {

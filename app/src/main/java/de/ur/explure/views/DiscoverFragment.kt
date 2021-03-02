@@ -35,7 +35,6 @@ class DiscoverFragment : Fragment(R.layout.fragment_discover) {
         // unlock the screen rotation if it was locked during the login process
         activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR
 
-        testViewModel.loginUser()
         initializeAdapter()
         startShimmer()
         initObservers()

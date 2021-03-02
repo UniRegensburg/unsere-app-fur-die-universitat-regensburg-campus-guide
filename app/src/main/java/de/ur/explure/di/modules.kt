@@ -46,6 +46,7 @@ val mainModule = module {
     // firebase
     single { FirebaseAuth.getInstance() }
     factory { FirebaseFirestore.getInstance() }
+    factory { FirebaseStorage.getInstance() }
     factory { FireStoreInstance(get()) }
     single { FirebaseAuthService(get()) }
 
