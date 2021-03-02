@@ -12,7 +12,6 @@ import de.ur.explure.repository.route.RouteRepositoryImpl
 import de.ur.explure.utils.FirebaseResult
 import de.ur.explure.views.DiscoverFragmentDirections
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import java.util.*
 
 @Suppress("MagicNumber")
@@ -28,6 +27,10 @@ class DiscoverViewModel(
 
     val popularRouteList: MutableLiveData<MutableList<Route>> = MutableLiveData()
 
+    val showRouteError: MutableLiveData<Boolean> = MutableLiveData()
+
+    val showCategoryError: MutableLiveData<Boolean> = MutableLiveData()
+
     fun showMap() {
         val mapAction = DiscoverFragmentDirections.actionDiscoverFragmentToMapFragment()
         mainAppRouter.getNavController()?.navigate(mapAction)
@@ -35,10 +38,11 @@ class DiscoverViewModel(
 
     fun getCategories() {
         viewModelScope.launch {
-            when (val categoryCall = categoryRepo.getAllCategories()) {
-                is FirebaseResult.Success -> {
-                    categories.postValue(categoryCall.data)
-                }
+            val categoryCall = categoryRepo.getAllCategories()
+            if (categoryCall is FirebaseResult.Success) {
+                categories.postValue(categoryCall.data)
+            } else {
+                displayCategoryErrorOnFragment()
             }
         }
     }
@@ -46,16 +50,11 @@ class DiscoverViewModel(
     fun getLatestRoutes() {
         viewModelScope.launch {
             val lastDate: Date? = getLastVisibleDate()
-            when (val latestRouteCall = routeRepo.getLatestRoutes(lastDate, ROUTE_BATCH_SIZE)) {
-                is FirebaseResult.Success -> {
-                    latestRouteList.appendRoutes(latestRouteCall.data)
-                }
-                is FirebaseResult.Error -> {
-                    Timber.d("Failed to update latestRoutes")
-                }
-                is FirebaseResult.Canceled -> {
-                    Timber.d("Failed to update latestRoutes")
-                }
+            val latestRouteCall = routeRepo.getLatestRoutes(lastDate, ROUTE_BATCH_SIZE)
+            if (latestRouteCall is FirebaseResult.Success) {
+                latestRouteList.appendRoutes(latestRouteCall.data)
+            } else {
+                displayRouteErrorOnFragment()
             }
         }
     }
@@ -63,18 +62,21 @@ class DiscoverViewModel(
     fun getPopularRoutes() {
         viewModelScope.launch {
             val lastRating: Double? = getLastVisibleRating()
-            when (val latestRouteCall = routeRepo.getMostPopularRoutes(lastRating, ROUTE_BATCH_SIZE)) {
-                is FirebaseResult.Success -> {
-                    popularRouteList.appendRoutes(latestRouteCall.data)
-                }
-                is FirebaseResult.Error -> {
-                    Timber.d("Failed to update popularRoutes")
-                }
-                is FirebaseResult.Canceled -> {
-                    Timber.d("Failed to update popularRoutes")
-                }
+            val popularRouteCall = routeRepo.getMostPopularRoutes(lastRating, ROUTE_BATCH_SIZE)
+            if (popularRouteCall is FirebaseResult.Success) {
+                popularRouteList.appendRoutes(popularRouteCall.data)
+            } else {
+                displayRouteErrorOnFragment()
             }
         }
+    }
+
+    fun resetCategoryErrorFlag() {
+        showCategoryError.postValue(false)
+    }
+
+    fun resetRouteErrorFlag() {
+        showRouteError.postValue(false)
     }
 
     private fun getLastVisibleRating(): Double? {
@@ -93,6 +95,14 @@ class DiscoverViewModel(
             lastDate = routeList[routeList.lastIndex].createdAt
         }
         return lastDate
+    }
+
+    private fun displayCategoryErrorOnFragment() {
+        showCategoryError.postValue(true)
+    }
+
+    private fun displayRouteErrorOnFragment() {
+        showRouteError.postValue(true)
     }
 
     companion object {

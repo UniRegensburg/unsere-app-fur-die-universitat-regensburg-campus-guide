@@ -56,6 +56,8 @@
     <string name="route_item_author">von %1s</string>
 
     <string name="discover_new_routes">New Routes</string>
+    <string name="discover_route_error">Failed Loading Routes, please try again</string>
+    <string name="discover_category_error">Failed Loading Categories, please try again</string>
     <string name="more">More</string>
     <string name="short_text_placeholder">abcde</string>
     <string name="middle_text_placeholder">ABCDEFGHIJKL</string>

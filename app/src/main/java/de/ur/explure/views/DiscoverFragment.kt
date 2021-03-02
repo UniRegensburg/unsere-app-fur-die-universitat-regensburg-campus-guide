@@ -8,13 +8,14 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.crazylegend.viewbinding.viewBinding
 import com.facebook.shimmer.ShimmerFrameLayout
+import com.google.android.material.snackbar.Snackbar
 import de.ur.explure.R
 import de.ur.explure.adapter.CategoryDiscoverAdapter
 import de.ur.explure.adapter.RouteDiscoverAdapter
 import de.ur.explure.databinding.FragmentDiscoverBinding
+import de.ur.explure.utils.showSnackbar
 import de.ur.explure.viewmodel.DiscoverViewModel
 import kotlinx.android.synthetic.main.fragment_discover.*
-import kotlinx.android.synthetic.main.shimmer_route_list_layout.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
 
@@ -42,7 +43,7 @@ class DiscoverFragment : Fragment(R.layout.fragment_discover) {
         setOnClickListeners()
         getData()
 
-        //Delete
+        // Delete
         binding.showMapButton.setOnClickListener {
             discoverViewModel.showMap()
         }
@@ -75,6 +76,8 @@ class DiscoverFragment : Fragment(R.layout.fragment_discover) {
         initCategoryObserver()
         initLatestRouteObserver()
         initPopularRouteObserver()
+        initCategoryErrorObserver()
+        initRouteErrorObserver()
     }
 
     private fun initializeAdapter() {
@@ -110,12 +113,50 @@ class DiscoverFragment : Fragment(R.layout.fragment_discover) {
         })
     }
 
+    private fun initCategoryErrorObserver() {
+        discoverViewModel.showCategoryError.observe(viewLifecycleOwner, { showCategoryError ->
+            if (showCategoryError) {
+                showCategoryErrorSnackBar()
+            }
+        })
+    }
+
+    private fun initRouteErrorObserver() {
+        discoverViewModel.showRouteError.observe(viewLifecycleOwner, { showRouteError ->
+            if (showRouteError) {
+                showRouteErrorSnackBar()
+            }
+        })
+    }
+
     private fun setOnClickListeners() {
         tv_new_route_more.setOnClickListener {
             discoverViewModel.getLatestRoutes()
         }
         tv_popular_route_more.setOnClickListener {
             discoverViewModel.getPopularRoutes()
+        }
+    }
+
+    private fun showCategoryErrorSnackBar() {
+        showSnackbar(
+            requireActivity(),
+            R.string.discover_category_error,
+            R.id.discover_container,
+            Snackbar.LENGTH_SHORT, null
+        ) {
+            discoverViewModel.resetCategoryErrorFlag()
+        }
+    }
+
+    private fun showRouteErrorSnackBar() {
+        showSnackbar(
+            requireActivity(),
+            R.string.discover_route_error,
+            R.id.discover_container,
+            Snackbar.LENGTH_SHORT, null
+        ) {
+            discoverViewModel.resetRouteErrorFlag()
         }
     }
 
