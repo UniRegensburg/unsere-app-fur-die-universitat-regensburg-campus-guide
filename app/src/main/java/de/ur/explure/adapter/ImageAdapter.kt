@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.viewpager.widget.PagerAdapter
+import com.squareup.picasso.Picasso
 import de.ur.explure.R
 import de.ur.explure.model.waypoint.WayPoint
 import kotlinx.android.synthetic.main.image_item.view.*
@@ -23,8 +24,8 @@ class ImageAdapter(private val context: Context, private val dataSource: LinkedL
     override fun instantiateItem(container: ViewGroup, position: Int): Any {
         val layoutInflater = LayoutInflater.from(context)
         val view = layoutInflater.inflate(R.layout.image_item, container, false)
-        //val currentItem = dataSource[position]
-        // view.singleImage.setImageResource(currentItem)
+        val currentItem = dataSource[position]
+        Picasso.with(context).load(currentItem.imageURL).placeholder(R.mipmap.ic_launcher).into(view.singleImage)
         container.addView(view)
         return view
     }
