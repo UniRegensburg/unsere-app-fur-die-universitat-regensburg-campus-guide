@@ -22,6 +22,10 @@ import timber.log.Timber
 @Suppress("TooManyFunctions", "StringLiteralDuplication", "FunctionMaxLength")
 class DiscoverFragment : Fragment(R.layout.fragment_discover) {
 
+    companion object {
+        const val RECYCLER_VIEW_VIEW_POSITION = 1
+    }
+
     private val binding by viewBinding(FragmentDiscoverBinding::bind)
     private val discoverViewModel: DiscoverViewModel by viewModel()
 
@@ -162,17 +166,17 @@ class DiscoverFragment : Fragment(R.layout.fragment_discover) {
 
     private fun stopShimmerAndVisibilityOfLatestRoutes() {
         (shimmer_latest_route_layout as ShimmerFrameLayout).stopShimmer()
-        shimmer_latest_route_layout.visibility = View.GONE
+        vs_new_routes.displayedChild = RECYCLER_VIEW_VIEW_POSITION
     }
 
     private fun stopShimmerAndVisibilityOfPopularRoutes() {
         (shimmer_popular_route_layout as ShimmerFrameLayout).stopShimmer()
-        shimmer_popular_route_layout.visibility = View.GONE
+        vs_popular_routes.displayedChild = RECYCLER_VIEW_VIEW_POSITION
     }
 
     private fun stopShimmerAndVisibilityOfCategories() {
         (shimmer_category_layout as ShimmerFrameLayout).stopShimmer()
-        shimmer_category_layout.visibility = View.GONE
+        vs_categories.displayedChild = RECYCLER_VIEW_VIEW_POSITION
     }
 
     private fun observePopularListScroll() {

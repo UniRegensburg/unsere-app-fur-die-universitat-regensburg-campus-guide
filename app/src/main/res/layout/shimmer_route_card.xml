@@ -70,10 +70,11 @@
             android:background="@color/lightGey"
             android:text="@string/short_text_placeholder"
             android:textColor="@android:color/transparent"
-            android:textSize="12sp"
+            android:textSize="10sp"
             app:layout_constraintBottom_toBottomOf="@+id/rating_bar_route"
             app:layout_constraintStart_toEndOf="@+id/rating_bar_route"
-            app:layout_constraintTop_toTopOf="@+id/rating_bar_route" />
+            app:layout_constraintTop_toTopOf="@+id/rating_bar_route"
+            tools:ignore="SmallSp" />
 
         <ImageView
             android:id="@+id/iv_waypoint_icon"
@@ -95,10 +96,11 @@
             android:background="@color/lightGey"
             android:text="@string/short_text_placeholder"
             android:textColor="@android:color/transparent"
-            android:textSize="12sp"
+            android:textSize="10sp"
             app:layout_constraintBottom_toBottomOf="@+id/iv_waypoint_icon"
             app:layout_constraintStart_toEndOf="@id/iv_waypoint_icon"
-            app:layout_constraintTop_toTopOf="@+id/iv_waypoint_icon" />
+            app:layout_constraintTop_toTopOf="@+id/iv_waypoint_icon"
+            tools:ignore="SmallSp" />
 
 
         <ImageView
@@ -121,10 +123,11 @@
             android:background="@color/lightGey"
             android:text="@string/short_text_placeholder"
             android:textColor="@android:color/transparent"
-            android:textSize="12sp"
+            android:textSize="10sp"
             app:layout_constraintBottom_toBottomOf="@+id/iv_duration_icon"
             app:layout_constraintStart_toEndOf="@id/iv_duration_icon"
-            app:layout_constraintTop_toTopOf="@+id/iv_duration_icon" />
+            app:layout_constraintTop_toTopOf="@+id/iv_duration_icon"
+            tools:ignore="SmallSp" />
 
         <ImageView
             android:id="@+id/iv_comment_icon"
@@ -146,10 +149,11 @@
             android:background="@color/lightGey"
             android:text="@string/short_text_placeholder"
             android:textColor="@android:color/transparent"
-            android:textSize="12sp"
+            android:textSize="10sp"
             app:layout_constraintBottom_toBottomOf="@+id/iv_comment_icon"
             app:layout_constraintStart_toEndOf="@id/iv_comment_icon"
-            app:layout_constraintTop_toTopOf="@+id/iv_comment_icon" />
+            app:layout_constraintTop_toTopOf="@+id/iv_comment_icon"
+            tools:ignore="SmallSp" />
 
         <ImageView
             android:id="@+id/iv_distance_icon"
@@ -171,10 +175,11 @@
             android:background="@color/lightGey"
             android:text="@string/short_text_placeholder"
             android:textColor="@android:color/transparent"
-            android:textSize="12sp"
+            android:textSize="10sp"
             app:layout_constraintBottom_toBottomOf="@+id/iv_distance_icon"
             app:layout_constraintStart_toEndOf="@id/iv_distance_icon"
-            app:layout_constraintTop_toTopOf="@+id/iv_distance_icon" />
+            app:layout_constraintTop_toTopOf="@+id/iv_distance_icon"
+            tools:ignore="SmallSp" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

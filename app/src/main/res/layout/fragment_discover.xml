@@ -11,29 +11,30 @@
         android:layout_height="wrap_content"
         android:paddingBottom="10dp">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rv_category_list"
+        <ViewSwitcher
+            android:id="@+id/vs_categories"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
-            android:orientation="horizontal"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:layout_constraintBottom_toTopOf="@+id/tv_new_routes"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:listitem="@layout/category_card_item" />
+            app:layout_constraintTop_toTopOf="parent">
 
-        <include
-            android:id="@+id/shimmer_category_layout"
-            layout="@layout/shimmer_category_layout"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            app:layout_constraintBottom_toTopOf="@+id/tv_new_routes"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            <include
+                android:id="@+id/shimmer_category_layout"
+                layout="@layout/shimmer_category_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_category_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:listitem="@layout/category_card_item" />
+
+        </ViewSwitcher>
 
         <TextView
             android:id="@+id/tv_new_routes"
@@ -45,9 +46,8 @@
             android:textColor="@color/textColor"
             android:textSize="24sp"
             android:textStyle="bold"
-            app:layout_constraintBottom_toTopOf="@+id/rv_new_route_list"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/rv_category_list" />
+            app:layout_constraintTop_toBottomOf="@+id/vs_categories" />
 
         <TextView
             android:id="@+id/tv_new_route_more"
@@ -66,29 +66,33 @@
             app:layout_constraintBottom_toBottomOf="@+id/tv_new_routes"
             app:layout_constraintEnd_toEndOf="parent" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rv_new_route_list"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:orientation="horizontal"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:layout_constraintBottom_toTopOf="@+id/tv_popular_routes"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_new_routes"
-            tools:listitem="@layout/route_card_item" />
 
-        <include
-            android:id="@+id/shimmer_latest_route_layout"
-            layout="@layout/shimmer_route_list_layout"
+        <ViewSwitcher
+            android:id="@+id/vs_new_routes"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            app:layout_constraintBottom_toTopOf="@+id/tv_popular_routes"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_new_routes" />
+            app:layout_constraintTop_toBottomOf="@id/tv_new_routes">
+
+
+            <include
+                android:id="@+id/shimmer_latest_route_layout"
+                layout="@layout/shimmer_route_list_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintTop_toBottomOf="@id/tv_new_routes" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_new_route_list"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:listitem="@layout/route_card_item" />
+
+        </ViewSwitcher>
 
         <TextView
             android:id="@+id/tv_popular_routes"
@@ -100,9 +104,8 @@
             android:textColor="@color/textColor"
             android:textSize="24sp"
             android:textStyle="bold"
-            app:layout_constraintBottom_toTopOf="@+id/rv_popular_route_list"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/rv_new_route_list" />
+            app:layout_constraintTop_toBottomOf="@+id/vs_new_routes" />
 
         <TextView
             android:id="@+id/tv_popular_route_more"
@@ -121,29 +124,33 @@
             app:layout_constraintBottom_toBottomOf="@+id/tv_popular_routes"
             app:layout_constraintEnd_toEndOf="parent" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rv_popular_route_list"
+        <ViewSwitcher
+            android:id="@+id/vs_popular_routes"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:orientation="horizontal"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_popular_routes"
-            tools:listitem="@layout/route_card_item" />
+            app:layout_constraintTop_toBottomOf="@id/tv_popular_routes">
 
-        <include
-            android:id="@+id/shimmer_popular_route_layout"
-            layout="@layout/shimmer_route_list_layout"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_popular_routes" />
+
+            <include
+                android:id="@+id/shimmer_popular_route_layout"
+                layout="@layout/shimmer_route_list_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_popular_route_list"
+                android:layout_width="match_parent"
+
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:listitem="@layout/route_card_item" />
+
+
+        </ViewSwitcher>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/showMapButton"
