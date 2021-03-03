@@ -20,10 +20,6 @@ import timber.log.Timber
 @Suppress("TooManyFunctions", "StringLiteralDuplication", "FunctionMaxLength")
 class DiscoverFragment : Fragment(R.layout.fragment_discover) {
 
-    companion object {
-        const val RECYCLER_VIEW_VIEW_POSITION = 1
-    }
-
     private val binding by viewBinding(FragmentDiscoverBinding::bind)
     private val discoverViewModel: DiscoverViewModel by viewModel()
 
@@ -49,12 +45,6 @@ class DiscoverFragment : Fragment(R.layout.fragment_discover) {
         binding.showMapButton.setOnClickListener {
             discoverViewModel.showMap()
         }
-    }
-
-    override fun onDestroyView() {
-        detachAdapterOnViewDetach(binding.rvPopularRouteList)
-        detachAdapterOnViewDetach(binding.rvNewRouteList)
-        super.onDestroyView()
     }
 
     private fun startShimmer() {
@@ -226,14 +216,7 @@ class DiscoverFragment : Fragment(R.layout.fragment_discover) {
             LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
     }
 
-    private fun detachAdapterOnViewDetach(recyclerView: RecyclerView) {
-        recyclerView.addOnAttachStateChangeListener(object :
-            View.OnAttachStateChangeListener {
-            override fun onViewAttachedToWindow(v: View) = run { }
-
-            override fun onViewDetachedFromWindow(v: View) {
-                recyclerView.adapter = null
-            }
-        })
+    companion object {
+        const val RECYCLER_VIEW_VIEW_POSITION = 1
     }
 }
