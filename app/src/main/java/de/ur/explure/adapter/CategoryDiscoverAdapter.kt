@@ -7,14 +7,13 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions.withC
 import com.google.firebase.storage.FirebaseStorage
 import com.hannesdorfmann.adapterdelegates4.AdapterDelegate
 import com.hannesdorfmann.adapterdelegates4.ListDelegationAdapter
-import com.hannesdorfmann.adapterdelegates4.dsl.adapterDelegateLayoutContainer
+import com.hannesdorfmann.adapterdelegates4.dsl.adapterDelegateViewBinding
 import de.ur.explure.GlideApp
 import de.ur.explure.R
+import de.ur.explure.databinding.CategoryCardItemBinding
 import de.ur.explure.model.category.Category
-import kotlinx.android.synthetic.main.category_card_item.view.*
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import java.lang.Exception
 
 class CategoryDiscoverAdapter(private val exportListener: (Category) -> Unit) :
     ListDelegationAdapter<List<Category>>(), KoinComponent {
@@ -30,35 +29,34 @@ class CategoryDiscoverAdapter(private val exportListener: (Category) -> Unit) :
         this.notifyDataSetChanged()
     }
 
-    private fun categoryDelegate(): AdapterDelegate<List<Category>> {
-        return adapterDelegateLayoutContainer(R.layout.category_card_item) {
+    private fun categoryDelegate(): AdapterDelegate<List<Category>> = adapterDelegateViewBinding(
+        { layoutInflater, root -> CategoryCardItemBinding.inflate(layoutInflater, root, false) }
+    ) {
 
-            itemView.category_cardview.setOnClickListener { exportListener(item) }
+        binding.categoryCardview.setOnClickListener { exportListener(item) }
 
-            bind {
-                val gsReference = fireStorage.getReferenceFromUrl(item.iconResource)
-                GlideApp.with(itemView)
-                    .load(gsReference)
-                    .fitCenter()
-                    .error(R.drawable.circular_background)
-                    .transition(withCrossFade())
-                    .into(itemView.iv_category_icon)
+        bind {
+            val gsReference = fireStorage.getReferenceFromUrl(item.iconResource)
+            GlideApp.with(itemView)
+                .load(gsReference)
+                .fitCenter()
+                .error(R.drawable.circular_background)
+                .transition(withCrossFade())
+                .into(binding.ivCategoryIcon)
 
-                val color = try {
-                    Color.parseColor(item.color)
-                } catch (_: Exception) {
-                    Color.WHITE
-                }
-
-                itemView.category_cardview.setCardBackgroundColor(color)
-
-                ImageViewCompat.setImageTintList(
-                    itemView.iv_category_icon,
-                    ColorStateList.valueOf(color)
-                )
-
-                itemView.tv_category_name.text = item.name
+            val color = try {
+                Color.parseColor(item.color)
+            } catch (_: Exception) {
+                Color.WHITE
             }
+            binding.categoryCardview.setCardBackgroundColor(color)
+
+            ImageViewCompat.setImageTintList(
+                binding.ivCategoryIcon,
+                ColorStateList.valueOf(color)
+            )
+
+            binding.tvCategoryName.text = item.name
         }
     }
 }
