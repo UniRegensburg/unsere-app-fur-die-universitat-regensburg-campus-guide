@@ -7,7 +7,6 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.crazylegend.viewbinding.viewBinding
-import com.facebook.shimmer.ShimmerFrameLayout
 import com.google.android.material.snackbar.Snackbar
 import de.ur.explure.R
 import de.ur.explure.adapter.CategoryDiscoverAdapter
@@ -15,7 +14,6 @@ import de.ur.explure.adapter.RouteDiscoverAdapter
 import de.ur.explure.databinding.FragmentDiscoverBinding
 import de.ur.explure.utils.showSnackbar
 import de.ur.explure.viewmodel.DiscoverViewModel
-import kotlinx.android.synthetic.main.fragment_discover.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
 
@@ -54,15 +52,15 @@ class DiscoverFragment : Fragment(R.layout.fragment_discover) {
     }
 
     override fun onDestroyView() {
-        detachAdapterOnViewDetach(rv_popular_route_list)
-        detachAdapterOnViewDetach(rv_new_route_list)
+        detachAdapterOnViewDetach(binding.rvPopularRouteList)
+        detachAdapterOnViewDetach(binding.rvNewRouteList)
         super.onDestroyView()
     }
 
     private fun startShimmer() {
-        (shimmer_popular_route_layout as ShimmerFrameLayout).startShimmer()
-        (shimmer_latest_route_layout as ShimmerFrameLayout).startShimmer()
-        (shimmer_category_layout as ShimmerFrameLayout).startShimmer()
+        binding.shimmerCategoryLayout.shimmerCategoryLayout.startShimmer()
+        binding.shimmerLatestRouteLayout.shimmerRouteLayout.startShimmer()
+        binding.shimmerPopularRouteLayout.shimmerRouteLayout.startShimmer()
     }
 
     private fun observeRecyclerViewScroll() {
@@ -134,10 +132,10 @@ class DiscoverFragment : Fragment(R.layout.fragment_discover) {
     }
 
     private fun setOnClickListeners() {
-        tv_new_route_more.setOnClickListener {
+        binding.tvPopularRouteMore.setOnClickListener {
             discoverViewModel.getLatestRoutes()
         }
-        tv_popular_route_more.setOnClickListener {
+        binding.tvPopularRouteMore.setOnClickListener {
             discoverViewModel.getPopularRoutes()
         }
     }
@@ -165,37 +163,37 @@ class DiscoverFragment : Fragment(R.layout.fragment_discover) {
     }
 
     private fun stopShimmerAndVisibilityOfLatestRoutes() {
-        (shimmer_latest_route_layout as ShimmerFrameLayout).stopShimmer()
-        vs_new_routes.displayedChild = RECYCLER_VIEW_VIEW_POSITION
+        binding.shimmerLatestRouteLayout.shimmerRouteLayout.stopShimmer()
+        binding.vsNewRoutes.displayedChild = RECYCLER_VIEW_VIEW_POSITION
     }
 
     private fun stopShimmerAndVisibilityOfPopularRoutes() {
-        (shimmer_popular_route_layout as ShimmerFrameLayout).stopShimmer()
-        vs_popular_routes.displayedChild = RECYCLER_VIEW_VIEW_POSITION
+        binding.shimmerPopularRouteLayout.shimmerRouteLayout.stopShimmer()
+        binding.vsPopularRoutes.displayedChild = RECYCLER_VIEW_VIEW_POSITION
     }
 
     private fun stopShimmerAndVisibilityOfCategories() {
-        (shimmer_category_layout as ShimmerFrameLayout).stopShimmer()
-        vs_categories.displayedChild = RECYCLER_VIEW_VIEW_POSITION
+        binding.shimmerCategoryLayout.shimmerCategoryLayout.stopShimmer()
+        binding.vsCategories.displayedChild = RECYCLER_VIEW_VIEW_POSITION
     }
 
     private fun observePopularListScroll() {
-        rv_popular_route_list.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+        binding.rvPopularRouteList.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
                 if (!recyclerView.canScrollVertically(1) && newState == RecyclerView.SCROLL_STATE_IDLE) {
-                    tv_popular_route_more.visibility = View.VISIBLE
+                    binding.tvPopularRouteMore.visibility = View.VISIBLE
                 }
             }
         })
     }
 
     private fun observeLatestListScroll() {
-        rv_new_route_list.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+        binding.rvNewRouteList.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
                 if (!recyclerView.canScrollVertically(1) && newState == RecyclerView.SCROLL_STATE_IDLE) {
-                    tv_new_route_more.visibility = View.VISIBLE
+                    binding.tvNewRouteMore.visibility = View.VISIBLE
                 }
             }
         })
@@ -205,8 +203,8 @@ class DiscoverFragment : Fragment(R.layout.fragment_discover) {
         latestRoutesAdapter = RouteDiscoverAdapter {
             Timber.d("%s clicked", it.title)
         }
-        rv_new_route_list.adapter = latestRoutesAdapter
-        rv_new_route_list.layoutManager =
+        binding.rvNewRouteList.adapter = latestRoutesAdapter
+        binding.rvNewRouteList.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
     }
 
@@ -214,8 +212,8 @@ class DiscoverFragment : Fragment(R.layout.fragment_discover) {
         categoryAdapter = CategoryDiscoverAdapter {
             Timber.d("%s clicked", it.name)
         }
-        rv_category_list.adapter = categoryAdapter
-        rv_category_list.layoutManager =
+        binding.rvCategoryList.adapter = categoryAdapter
+        binding.rvCategoryList.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
     }
 
@@ -223,8 +221,8 @@ class DiscoverFragment : Fragment(R.layout.fragment_discover) {
         popularRoutesAdapter = RouteDiscoverAdapter {
             Timber.d("%s clicked", it.title)
         }
-        rv_popular_route_list.adapter = popularRoutesAdapter
-        rv_popular_route_list.layoutManager =
+        binding.rvPopularRouteList.adapter = popularRoutesAdapter
+        binding.rvPopularRouteList.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
     }
 
