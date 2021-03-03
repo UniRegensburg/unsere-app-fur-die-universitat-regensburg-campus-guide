@@ -21,6 +21,7 @@
     <string name="location_tracking_button_description">Über diesen Button kannst du deinen aktuellen Standort auf der Karte anzeigen und verfolgen.</string>
 
     <string name="discover_new_routes">Neue Routen</string>
+    <string name="discover_popular_routes">Beliebte Routen</string>
     <string name="discover_route_error">Fehler beim Laden der Routen, bitte versuche es später nochmal!</string>
     <string name="discover_category_error">Fehler beim Laden der Kategorien, bitte versuche es später nochmal!</string>
     <string name="more">Mehr</string>

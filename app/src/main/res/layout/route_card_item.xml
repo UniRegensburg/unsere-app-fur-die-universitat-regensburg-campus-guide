@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:card_view="http://schemas.android.com/tools"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/route_cardview"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
@@ -11,14 +12,13 @@
     android:focusable="true"
     android:foreground="?android:attr/selectableItemBackground"
     app:cardBackgroundColor="@android:color/white"
-    card_view:cardCornerRadius="15dp"
-    card_view:cardElevation="4dp">
+    card_view:cardCornerRadius="@dimen/cardview_corner_radius"
+    card_view:cardElevation="@dimen/cardview_default_elevation">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@android:color/transparent"
-        android:paddingBottom="10dp">
+        android:background="@android:color/transparent">
 
         <ImageView
             android:id="@+id/iv_route_thumbnail"
@@ -29,16 +29,17 @@
             android:src="@drawable/map_background"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="ContentDescription" />
 
         <TextView
             android:id="@+id/tv_route_title"
             android:layout_width="120dp"
             android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
             android:layout_marginTop="2dp"
             android:lines="2"
             android:maxLines="2"
-            android:layout_marginStart="4dp"
             android:text="@string/route_item_title"
             android:textColor="@color/textColor"
             android:textSize="16sp"
@@ -80,7 +81,8 @@
             android:src="@drawable/ic_waypoints"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/rating_bar_route"
-            app:tint="@color/textColor" />
+            app:tint="@color/textColor"
+            tools:ignore="ContentDescription" />
 
         <TextView
             android:id="@+id/tv_way_point_count"
@@ -103,7 +105,8 @@
             android:src="@drawable/ic_duration"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/rating_bar_route"
-            app:tint="@color/textColor" />
+            app:tint="@color/textColor"
+            tools:ignore="ContentDescription" />
 
         <TextView
             android:id="@+id/tv_duration"
@@ -125,7 +128,8 @@
             android:src="@drawable/ic_comment"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/iv_duration_icon"
-            app:tint="@color/textColor" />
+            app:tint="@color/textColor"
+            tools:ignore="ContentDescription" />
 
         <TextView
             android:id="@+id/tv_comment"
@@ -147,7 +151,8 @@
             android:src="@drawable/ic_distance"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/iv_waypoint_icon"
-            app:tint="@color/textColor" />
+            app:tint="@color/textColor"
+            tools:ignore="ContentDescription" />
 
         <TextView
             android:id="@+id/tv_distance"
@@ -159,7 +164,6 @@
             app:layout_constraintBottom_toBottomOf="@+id/iv_distance_icon"
             app:layout_constraintStart_toEndOf="@id/iv_distance_icon"
             app:layout_constraintTop_toTopOf="@+id/iv_distance_icon" />
-
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
