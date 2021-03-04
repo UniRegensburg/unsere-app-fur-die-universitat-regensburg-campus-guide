@@ -14,6 +14,7 @@ class FireStoreInstance(private val fireStore: FirebaseFirestore) {
     val userCollection = fireStore.collection(FirebaseCollections.USER_COLLECTION_NAME)
     val routeCollection = fireStore.collection(FirebaseCollections.ROUTE_COLLECTION_NAME)
     val ratingCollection = fireStore.collection(FirebaseCollections.RATING_COLLECTION_NAME)
+    val categoryCollection = fireStore.collection(FirebaseCollections.CATEGORY_COLLECTION_NAME)
     /**
      * Returns a write batch for firestore. Used to execute multiple write operation at the same time.
      *
