@@ -21,7 +21,6 @@
     <string name="location_tracking_button_title">Show own location</string>
     <string name="location_tracking_button_description">With this button you can display and track your own location.</string>
 
-    <!-- Authentication -->
     <string name="login_email">Email</string>
     <string name="login_password">Password</string>
     <string name="login_button">Login</string>
@@ -35,19 +34,19 @@
     <string name="sign_up_button">Register?</string>
     <string name="register_text">Register</string>
     <string name="new_email">Email</string>
-    <string name="new_password">password</string>
-    <string name="confirm_password">Conform password</string>
-    <string name="register_button">Register</string>
-    <string name="already_account">Already have an account?</string>
-    <string name="back_to_login_button">Login</string>
-    <string name="login_failed">Login failed</string>
-    <string name="builder_text">Forgot password</string>
-    <string name="positive_button">Reset</string>
-    <string name="negative_button">Close</string>
-    <string name="empty_email">Please enter your email</string>
-    <string name="wrong_email">Wrong email</string>
-    <string name="email_sent">Email sent</string>
-    <string name="registration_failed">Registration failed</string>
+    <string name="new_password">Passwort</string>
+    <string name="confirm_password">Bestätige Passwort</string>
+    <string name="register_button">Registrieren</string>
+    <string name="already_account">Sie haben bereits ein Konto?</string>
+    <string name="back_to_login_button">Anmelden</string>
+    <string name="login_failed">Anmeldung fehlgeschlagen</string>
+    <string name="builder_text">Passwort vergessen</string>
+    <string name="positive_button">Zurücksetzen</string>
+    <string name="negative_button">Schließen</string>
+    <string name="empty_email">Bitte Emailadresse eingeben</string>
+    <string name="wrong_email">Emailadresse ist falsch</string>
+    <string name="email_sent">Email wurde gesendet</string>
+    <string name="registration_failed">Registrierung fehlgeschlagen</string>
 
     <!-- Single Route -->
     <string name="route_name">Route</string>
@@ -62,4 +61,19 @@
     <string name="waypoints">Waypoints</string>
     <string name="share_route">Share</string>
     <string name="start_route">Start Route</string>
+
+    <string name="route_item_title">Route Name</string>
+    <string name="route_item_rating">(%1d)</string>
+    <string name="route_item_waypoints">0</string>
+    <string name="route_item_distance">%1d km</string>
+    <string name="route_item_duration">%1d h</string>
+    <string name="route_item_author">von %1s</string>
+
+    <string name="discover_new_routes">New Routes</string>
+    <string name="discover_popular_routes">Popular Routes</string>
+    <string name="discover_route_error">Failed Loading Routes, please try again</string>
+    <string name="discover_category_error">Failed Loading Categories, please try again</string>
+    <string name="more">More</string>
+    <string name="short_text_placeholder">abcde</string>
+    <string name="middle_text_placeholder">ABCDEFGHIJKL</string>
 </resources>

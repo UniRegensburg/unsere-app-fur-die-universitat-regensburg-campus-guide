@@ -99,7 +99,6 @@
             style="@style/Widget.AppCompat.RatingBar.Small"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-
             android:layout_margin="24dp"
             android:progressTint="@color/PrimaryColor"
             app:layout_constraintBottom_toBottomOf="@id/routeDuration"
@@ -112,7 +111,8 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@color/PrimaryColor"
-            android:padding="32dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
             app:layout_constraintBottom_toTopOf="@id/startRouteButton"
             app:layout_constraintEnd_toEndOf="@id/routeImage"
             app:layout_constraintStart_toStartOf="@id/routeImage"

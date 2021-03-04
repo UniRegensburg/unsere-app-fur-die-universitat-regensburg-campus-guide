@@ -27,26 +27,50 @@ class SingleRouteViewModel(
     val rating: LiveData<Rating> = _rating
 
     fun setRouteData() {
-        viewModelScope.launch {
-            when (val routeName = routeRepository.getRoute("83bAuunZzXwaPIJ0Xc3a")) {
+        /*viewModelScope.launch {
+            val routeID : String = getRouteID()
+            when (val routeData = routeRepository.getRoute(routeID, true)) {
                 is FirebaseResult.Success -> {
-                    _route.postValue(routeName.data)
+                    _route.postValue(routeData.data)
+                }
+            }
+        }*/
+        viewModelScope.launch {
+            when (val routeData = routeRepository.getRoute("83bAuunZzXwaPIJ0Xc3a")) {
+                is FirebaseResult.Success -> {
+                    _route.postValue(routeData.data)
                 }
             }
         }
     }
 
     fun setWaypoints() {
+        /*viewModelScope.launch {
+            val routeID : String = getRouteID()
+            when (val route = routeRepository.getRoute(routeID, true)) {
+                is FirebaseResult.Success -> {
+                        _waypointList.value = route.data.wayPoints
+                }
+            }
+        }*/
         viewModelScope.launch {
             when (val route = routeRepository.getRoute("83bAuunZzXwaPIJ0Xc3a")) {
                 is FirebaseResult.Success -> {
-                        _waypointList.value = route.data.wayPoints
+                    _waypointList.value = route.data.wayPoints
                 }
             }
         }
     }
 
     fun setRating() {
+        /*viewModelScope.launch {
+            val ratingID = getRatingID()
+            when (val rating = ratingRepository.getRating(ratingID)) {
+                is FirebaseResult.Success -> {
+                    _rating.postValue(rating.data)
+                }
+            }
+        }*/
         viewModelScope.launch {
             when (val rating = ratingRepository.getRating("83bAuunZzXwaPIJ0Xc3a")) {
                 is FirebaseResult.Success -> {
@@ -54,5 +78,23 @@ class SingleRouteViewModel(
                 }
             }
         }
+    }
+
+    private fun getRouteID(): String {
+        var routeID = ""
+        val routeList = _route.value
+        if (routeList != null) {
+            routeID = routeList.id
+            }
+        return routeID
+    }
+
+    private fun getRatingID(): String {
+        var ratingID = ""
+        val ratingList = _rating.value
+        if (ratingList != null) {
+            ratingID = ratingList.id
+        }
+        return ratingID
     }
 }
