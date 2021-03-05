@@ -8,13 +8,15 @@ import kotlinx.android.parcel.Parcelize
 import java.util.Date
 import de.ur.explure.config.RouteDocumentConfig.AUTHOR_ID_FIELD
 import de.ur.explure.config.RouteDocumentConfig.CATEGORY_FIELD
+import de.ur.explure.config.RouteDocumentConfig.CURRENT_RATING_FIELD
 import de.ur.explure.config.RouteDocumentConfig.DATE_FIELD
 import de.ur.explure.config.RouteDocumentConfig.DESCR_FIELD
 import de.ur.explure.config.RouteDocumentConfig.DISTANCE_FIELD
 import de.ur.explure.config.RouteDocumentConfig.DURATION_FIELD
-import de.ur.explure.config.RouteDocumentConfig.RATING_FIELD
+import de.ur.explure.config.RouteDocumentConfig.RATING_LIST_FIELD
 import de.ur.explure.config.RouteDocumentConfig.THUMBNAIL_URL_FIELD
 import de.ur.explure.config.RouteDocumentConfig.TITLE_FIELD
+import de.ur.explure.config.RouteDocumentConfig.WAYPOINT_COUNT_FIELD
 
 @Parcelize
 data class RouteDTO(
@@ -26,6 +28,7 @@ data class RouteDTO(
     var wayPoints: MutableList<WayPointDTO> = mutableListOf(),
     @ServerTimestamp
     var createdAt: Date? = null,
+    var wayPointCount: Int
 ) : Parcelable {
 
     fun addWayPoint(wayPoint: WayPointDTO) {
@@ -42,7 +45,9 @@ data class RouteDTO(
             CATEGORY_FIELD to category,
             THUMBNAIL_URL_FIELD to thumbnailUrl,
             DATE_FIELD to FieldValue.serverTimestamp(),
-            RATING_FIELD to emptyList<String>()
+            RATING_LIST_FIELD to emptyList<String>(),
+            WAYPOINT_COUNT_FIELD to wayPoints.size,
+            CURRENT_RATING_FIELD to 0
         )
     }
 }
