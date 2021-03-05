@@ -7,14 +7,12 @@
     <!-- Created Routes -->
     <string name="own_routes">Own Routes</string>
     <string name="delete_route">DELETE ROUTE</string>
-    <string name="delete_route_message_one">"Are you sure that your route </string>
-    <string name="delete_route_message_two"> should be deleted?"</string>
+    <string name="delete_route_message">"Are you sure that your route %1$s should be deleted?"</string>
 
     <!-- Favorite Routes -->
     <string name="favorite_routes">Favorite Routes</string>
     <string name="remove_favorite">REMOVE FAVORITE</string>
-    <string name="remove_favorite_message_one">Are you sure that the route </string>
-    <string name="remove_favorite_message_two"> should be removed from your favorites?</string>
+    <string name="remove_favorite_message"> Are you sure that the route %1$s should be removed from your favorites?</string>
 
     <!-- Example Route Information (Placeholder) -->
     <string name="test_route_example">My Route 001</string>

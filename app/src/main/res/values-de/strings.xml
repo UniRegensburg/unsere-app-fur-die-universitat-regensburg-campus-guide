@@ -4,14 +4,12 @@
     <!-- Created Routes -->
     <string name="own_routes">Eigene Routen</string>
     <string name="delete_route">ROUTE LÖSCHEN</string>
-    <string name="delete_route_message_one">"Sind Sie sicher, dass Sie die Route </string>
-    <string name="delete_route_message_two"> entfernen möchten?"</string>
+    <string name="delete_route_message">"Sind Sie sicher, dass Sie die Route %1$s entfernen möchten?"</string>
 
     <!-- Favorite Routes -->
     <string name="favorite_routes">Favorisierte Routen</string>
     <string name="remove_favorite">FAVORISIERUNG AUFHEBEN</string>
-    <string name="remove_favorite_message_one">Sind Sie sicher, dass Sie die Route </string>
-    <string name="remove_favorite_message_two"> aus Ihren Favoriten entfernen möchten?</string>
+    <string name="remove_favorite_message">Sind Sie sicher, dass Sie die Route %1$s aus Ihren Favoriten entfernen möchten?</string>
 
     <!-- Example Route Information (Placeholder) -->
     <string name="test_route_example">Meine Route 001</string>

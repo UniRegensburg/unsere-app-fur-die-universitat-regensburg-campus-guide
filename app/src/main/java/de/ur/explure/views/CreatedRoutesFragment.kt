@@ -1,7 +1,6 @@
 package de.ur.explure.views
 
 import android.app.AlertDialog
-import android.content.DialogInterface
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.View
@@ -61,28 +60,12 @@ class CreatedRoutesFragment : Fragment(R.layout.fragment_created_routes),
     }
 
     private fun showDialog(route: Route) {
-        val dialog: AlertDialog
-        val builder = AlertDialog.Builder(this.context)
-
-        builder.setTitle(String.format(getResources().getString(R.string.delete_route)))
-        builder.setMessage(String.format(getResources().getString(R.string.delete_route_message_one)) +
-                route.title + String.format(getResources().getString(R.string.delete_route_message_two)))
-
-        val dialogClickListener = DialogInterface.OnClickListener { _, which ->
-            when (which) {
-                DialogInterface.BUTTON_POSITIVE -> {
-                    viewModel.deleteRoute(route)
-                }
-                DialogInterface.BUTTON_NEGATIVE -> {
-                    // do nothing
-                }
-            }
+        with(AlertDialog.Builder(requireContext())) {
+            setTitle(resources.getString(R.string.delete_route))
+            setMessage(resources.getString(R.string.delete_route_message, route.title))
+            setPositiveButton(resources.getString(R.string.yes)) { _, _ -> viewModel.deleteRoute(route) }
+            setNegativeButton(resources.getString(R.string.no)) { _, _ -> }
+            show()
         }
-
-        builder.setPositiveButton(String.format(getResources().getString(R.string.yes)), dialogClickListener)
-        builder.setNegativeButton(String.format(getResources().getString(R.string.no)), dialogClickListener)
-
-        dialog = builder.create()
-        dialog.show()
     }
 }

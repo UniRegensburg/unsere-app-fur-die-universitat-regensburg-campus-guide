@@ -1,7 +1,6 @@
 package de.ur.explure.views
 
 import android.app.AlertDialog
-import android.content.DialogInterface
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.View
@@ -33,9 +32,9 @@ class FavoriteRoutesFragment : Fragment(R.layout.fragment_favorite_routes),
 
     private fun initializeAdapter() {
         adapter = RouteAdapter(this, this)
-        createdRoutesRecyclerView.adapter = adapter
-        createdRoutesRecyclerView.layoutManager = LinearLayoutManager(requireContext())
-        createdRoutesRecyclerView.setHasFixedSize(true)
+        favoriteRoutesRecyclerView.adapter = adapter
+        favoriteRoutesRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+        favoriteRoutesRecyclerView.setHasFixedSize(true)
     }
 
     private fun observeUserModel() {
@@ -63,28 +62,13 @@ class FavoriteRoutesFragment : Fragment(R.layout.fragment_favorite_routes),
     }
 
     private fun showDialog(route: Route) {
-        val dialog: AlertDialog
-        val builder = AlertDialog.Builder(this.context)
-
-        builder.setTitle(String.format(getResources().getString(R.string.remove_favorite)))
-        builder.setMessage(String.format(getResources().getString(R.string.remove_favorite_message_one)) +
-                route.title + String.format(getResources().getString(R.string.remove_favorite_message_two)))
-
-        val dialogClickListener = DialogInterface.OnClickListener { _, which ->
-            when (which) {
-                DialogInterface.BUTTON_POSITIVE -> {
-                    viewModel.removeRouteFromFavoriteRoutes(route)
-                }
-                DialogInterface.BUTTON_NEGATIVE -> {
-                    // do nothing
-                }
-            }
+        with(AlertDialog.Builder(requireContext())) {
+            setTitle(resources.getString(R.string.remove_favorite))
+            setMessage(resources.getString(R.string.remove_favorite_message, route.title))
+            setPositiveButton(resources.getString(R.string.yes)) { _, _ ->
+                viewModel.removeRouteFromFavoriteRoutes(route) }
+            setNegativeButton(resources.getString(R.string.no)) { _, _ -> }
+            show()
         }
-
-        builder.setPositiveButton(String.format(getResources().getString(R.string.yes)), dialogClickListener)
-        builder.setNegativeButton(String.format(getResources().getString(R.string.no)), dialogClickListener)
-
-        dialog = builder.create()
-        dialog.show()
     }
 }

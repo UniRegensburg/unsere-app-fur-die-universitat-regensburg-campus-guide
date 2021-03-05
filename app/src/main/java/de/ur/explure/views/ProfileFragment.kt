@@ -5,7 +5,6 @@ import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.TypedValue
 import android.view.View
 import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
@@ -15,6 +14,7 @@ import androidx.navigation.Navigation
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import de.ur.explure.R
+import de.ur.explure.extensions.toDp
 import de.ur.explure.viewmodel.ProfileViewModel
 import kotlinx.android.synthetic.main.fragment_profile.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -66,7 +66,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
     private fun showDialog() {
         val builder = AlertDialog.Builder(this.requireContext())
 
-        builder.setTitle(String.format(getResources().getString(R.string.change_user_name)))
+        builder.setTitle(resources.getString(R.string.change_user_name))
 
         val constraintLayout = getEditUserNameLayout(this.requireContext())
         builder.setView(constraintLayout)
@@ -74,11 +74,11 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         val textInputLayout = constraintLayout.findViewWithTag<TextInputLayout>("textInputLayoutTag")
         val textInputEditText = constraintLayout.findViewWithTag<TextInputEditText>("textInputEditTextTag")
 
-        builder.setPositiveButton(String.format(getResources().getString(R.string.confirm))) { _, which ->
+        builder.setPositiveButton(resources.getString(R.string.confirm)) { _, which ->
             val name = textInputEditText.text
             viewModel.updateUserName(name.toString())
         }
-        builder.setNegativeButton(String.format(getResources().getString(R.string.abort)), null)
+        builder.setNegativeButton(resources.getString(R.string.abort), null)
         builder.setCancelable(false)
 
         val dialog = builder.create()
@@ -97,7 +97,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
 
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
                 if (p0.isNullOrBlank()) {
-                    textInputLayout.error = String.format(getResources().getString(R.string.user_name_needed))
+                    textInputLayout.error = resources.getString(R.string.user_name_needed)
                     dialog.getButton(AlertDialog.BUTTON_POSITIVE)
                             .isEnabled = false
                 } else {
@@ -127,7 +127,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
                 HORIZONTAL_MARGIN_EDIT_TEXT.toDp(context)
         )
         textInputLayout.layoutParams = layoutParams
-        textInputLayout.hint = String.format(getResources().getString(R.string.new_user_name_hint))
+        textInputLayout.hint = resources.getString(R.string.new_user_name_hint)
         textInputLayout.id = View.generateViewId()
         textInputLayout.tag = "textInputLayoutTag"
 
@@ -143,10 +143,6 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         constraintLayout.addView(textInputLayout)
         return constraintLayout
     }
-
-    private fun Int.toDp(context: Context): Int = TypedValue.applyDimension(
-            TypedValue.COMPLEX_UNIT_DIP, this.toFloat(), context.resources.displayMetrics
-    ).toInt()
 
     companion object {
         private const val VERTICAL_MARGIN_EDIT_TEXT = 8
