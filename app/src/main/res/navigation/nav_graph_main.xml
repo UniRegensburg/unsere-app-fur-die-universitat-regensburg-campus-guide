@@ -21,12 +21,29 @@
     <fragment
         android:id="@+id/searchFragment"
         android:name="de.ur.explure.views.SearchFragment"
-        android:label="SearchPage"
+        android:label="SearchFragment"
+        app:startDestination="@id/action_searchFragment_to_profileFragment2"
         tools:layout="@layout/fragment_search">
         <action
-            android:id="@+id/action_searchFragment_to_testFragment"
-            app:destination="@id/testFragment" />
+            android:id="@+id/action_searchFragment_to_profileFragment2"
+            app:destination="@id/profileFragment" />
+        <action
+            android:id="@+id/action_searchFragment_to_wordSearchFragment"
+            app:destination="@id/navigateToSearchResult" />
+        <action
+            android:id="@+id/navigateToCategoryWork"
+            app:destination="@id/categoryWorkFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/navigateToSearchResult"
+        android:name="de.ur.explure.views.WordSearchFragment"
+        android:label="fragment_word_search"
+        tools:layout="@layout/fragment_word_search" />
+    <fragment
+        android:id="@+id/categoryWorkFragment"
+        android:name="de.ur.explure.views.CategoryWorkFragment"
+        android:label="fragment_categorie_work"
+        tools:layout="@layout/fragment_categorie_work" />
 
     <fragment
         android:id="@+id/profileFragment"

@@ -1,17 +1,17 @@
 package de.ur.explure.viewmodel
 
 import androidx.lifecycle.ViewModel
-import de.ur.explure.navigation.StateAppRouter
+import de.ur.explure.navigation.MainAppRouter
 
 class SearchViewModel(
-    private val stateAppRouter: StateAppRouter
+    private val mainAppRouter: MainAppRouter
 ) : ViewModel() {
 
     fun navigateToCategoryWork() {
-        stateAppRouter.navigateToCategoryWork()
+        //mainAppRouter.getNavController()?.navigate(R.id.c)
     }
 
     fun navigateToSearchResult(search: String) {
-        stateAppRouter.navigateToSearchResult(search)
+        //stateAppRouter.navigateToSearchResult(search)
     }
 }

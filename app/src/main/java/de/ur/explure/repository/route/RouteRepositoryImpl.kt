@@ -21,6 +21,7 @@ import de.ur.explure.model.waypoint.WayPoint
 import de.ur.explure.services.FireStoreInstance
 import de.ur.explure.services.FirebaseAuthService
 import de.ur.explure.utils.FirebaseResult
+import timber.log.Timber
 import java.util.Date
 
 @Suppress("TooGenericExceptionCaught", "UnnecessaryParentheses", "ReturnCount")
@@ -313,7 +314,7 @@ class RouteRepositoryImpl(
                     (fireStore.routeCollection.whereGreaterThanOrEqualTo("description", message).get().await())) {
                 is FirebaseResult.Success -> {
                     val routeList = searchResult.data.toObjects(Route::class.java)
-                    Log.d("Koller3", routeList.toString())
+                    Timber.d(routeList.toString())
                     FirebaseResult.Success(routeList)
                 }
                 is FirebaseResult.Error -> FirebaseResult.Error(searchResult.exception)
