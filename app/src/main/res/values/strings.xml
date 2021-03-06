@@ -79,4 +79,5 @@
     <string name="more">More</string>
     <string name="short_text_placeholder">abcde</string>
     <string name="middle_text_placeholder">ABCDEFGHIJKL</string>
+    <string name="route_search_hint">Search</string>
 </resources>

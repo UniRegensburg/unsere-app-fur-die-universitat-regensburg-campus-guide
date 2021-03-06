@@ -27,5 +27,6 @@
     <string name="more">Mehr</string>
     <string name="short_text_placeholder">abcde</string>
     <string name="middle_text_placeholder">ABCDEFGHIJKL</string>
+    <string name="route_search_hint">Suche</string>
 
 </resources>

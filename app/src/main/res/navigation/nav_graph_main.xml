@@ -22,40 +22,23 @@
         android:id="@+id/searchFragment"
         android:name="de.ur.explure.views.SearchFragment"
         android:label="SearchFragment"
-        app:startDestination="@id/action_searchFragment_to_profileFragment2"
-        tools:layout="@layout/fragment_search">
-        <action
-            android:id="@+id/action_searchFragment_to_profileFragment2"
-            app:destination="@id/profileFragment" />
-        <action
-            android:id="@+id/action_searchFragment_to_wordSearchFragment"
-            app:destination="@id/navigateToSearchResult" />
-        <action
-            android:id="@+id/navigateToCategoryWork"
-            app:destination="@id/categoryWorkFragment" />
-    </fragment>
+        tools:layout="@layout/fragment_search" />
     <fragment
-        android:id="@+id/navigateToSearchResult"
-        android:name="de.ur.explure.views.WordSearchFragment"
+        android:id="@+id/textQueryFragment"
+        android:name="de.ur.explure.views.TextQueryFragment"
         android:label="fragment_word_search"
-        tools:layout="@layout/fragment_word_search" />
+        tools:layout="@layout/fragment_text_query" />
     <fragment
-        android:id="@+id/categoryWorkFragment"
-        android:name="de.ur.explure.views.CategoryWorkFragment"
+        android:id="@+id/categoryQueryFragment"
+        android:name="de.ur.explure.views.CategoryQueryFragment"
         android:label="fragment_categorie_work"
-        tools:layout="@layout/fragment_categorie_work" />
+        tools:layout="@layout/fragment_category_query" />
 
     <fragment
         android:id="@+id/profileFragment"
         android:name="de.ur.explure.views.ProfileFragment"
         android:label="Profile"
         tools:layout="@layout/fragment_profile" />
-
-    <fragment
-        android:id="@+id/testFragment"
-        android:name="de.ur.explure.views.TestFragment"
-        android:label="TestFragment"
-        tools:layout="@layout/fragment_test" />
 
     <fragment
         android:id="@+id/mapFragment"

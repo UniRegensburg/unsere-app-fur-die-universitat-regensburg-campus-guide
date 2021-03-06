@@ -14,7 +14,7 @@ import de.ur.explure.views.DiscoverFragmentDirections
 import kotlinx.coroutines.launch
 import java.util.*
 
-@Suppress("MagicNumber")
+@Suppress("MagicNumber", "TooManyFunctions")
 class DiscoverViewModel(
     private val mainAppRouter: MainAppRouter,
     private val categoryRepo: CategoryRepositoryImpl,
@@ -103,6 +103,14 @@ class DiscoverViewModel(
 
     private fun displayRouteErrorOnFragment() {
         showRouteError.postValue(true)
+    }
+
+    fun startTextQuery(query: String) {
+        mainAppRouter.navigateToTextSearchResult(query)
+    }
+
+    fun startCategoryQuery(categoryId: String){
+        mainAppRouter.navigateToCategoryQuery(categoryId)
     }
 
     companion object {

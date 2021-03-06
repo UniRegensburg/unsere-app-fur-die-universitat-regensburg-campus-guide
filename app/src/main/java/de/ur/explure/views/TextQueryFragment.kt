@@ -6,18 +6,19 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import de.ur.explure.R
 import de.ur.explure.SearchListAdapter
+import de.ur.explure.config.BundleConfig
 import de.ur.explure.viewmodel.WordSearchViewModel
-import kotlinx.android.synthetic.main.fragment_word_search.*
+import kotlinx.android.synthetic.main.fragment_text_query.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class WordSearchFragment : Fragment(R.layout.fragment_word_search) {
+class TextQueryFragment : Fragment(R.layout.fragment_text_query) {
 
     private val viewModel: WordSearchViewModel by viewModel()
     lateinit var searchAdapter: SearchListAdapter
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val message = arguments?.getString("STRING_KEY")
+        val message = arguments?.getString(BundleConfig.TEXT_QUERY_KEY)
         searchAdapter = SearchListAdapter { }
 
         recyclerView_searchResults.apply {

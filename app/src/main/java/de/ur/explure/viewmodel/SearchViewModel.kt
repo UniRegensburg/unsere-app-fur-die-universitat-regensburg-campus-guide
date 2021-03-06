@@ -8,10 +8,10 @@ class SearchViewModel(
 ) : ViewModel() {
 
     fun navigateToCategoryWork() {
-        //mainAppRouter.getNavController()?.navigate(R.id.c)
+        // mainAppRouter.getNavController()?.navigate(R.id.c)
     }
 
     fun navigateToSearchResult(search: String) {
-        //stateAppRouter.navigateToSearchResult(search)
+        // stateAppRouter.navigateToSearchResult(search)
     }
 }
