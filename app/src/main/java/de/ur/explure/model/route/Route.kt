@@ -5,7 +5,8 @@ import com.google.firebase.firestore.DocumentId
 import de.ur.explure.model.comment.Comment
 import de.ur.explure.model.waypoint.WayPoint
 import kotlinx.android.parcel.Parcelize
-import java.util.*
+import java.util.Date
+import java.util.LinkedList
 
 @Parcelize
 data class Route(
@@ -18,10 +19,13 @@ data class Route(
     val description: String = "",
     val distance: Double = 0.0,
     val duration: Double = 0.0,
-    val thumbnailUrl: String? = null,
+    val thumbnailUrl: String = "",
     val wayPoints: LinkedList<WayPoint> = LinkedList(),
     val comments: LinkedList<Comment> = LinkedList(),
-    val rating: List<String> = emptyList()
+    val rating: List<String> = emptyList(),
+    val wayPointCount: Int = 0,
+    val currentRating: Double = 0.0,
+    val commentCount: Int = 0,
 ) : Parcelable {
 
     fun fillWayPoints(wayPointList: List<WayPoint>) {

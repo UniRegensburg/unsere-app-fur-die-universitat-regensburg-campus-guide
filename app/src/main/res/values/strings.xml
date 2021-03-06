@@ -1,9 +1,25 @@
 <resources>
-    <string name="app_name">ExplURe</string>
+    <string name="app_name" translatable="false">ExplURe</string>
 
-    <string name="menu_profile_title">Profil</string>
-    <string name="menu_discover_title">Entdecken</string>
-    <string name="menu_search_title">Suche</string>
+    <!-- Bottom Navigation -->
+    <string name="menu_profile_title">Profile</string>
+    <string name="menu_discover_title">Discover</string>
+    <string name="menu_search_title">Search</string>
+
+    <!-- Location Tracking -->
+    <string name="gps_not_activated">GPS doesn\'t seem to be enabled! Please enable it in the device settings to continue!</string>
+
+    <!-- Location Permissions -->
+    <string name="location_permission_not_given">Without the permission your current location can\'t be displayed or used!</string>
+    <string name="location_permission_explanation">
+        The permission for your location is needed to display your current location on the map and for navigation!
+    </string>
+
+    <!-- Tutorial Information -->
+    <string name="map_style_button_title">Different map styles are available!</string>
+    <string name="map_style_button_description">With this button you can change the current map style.</string>
+    <string name="location_tracking_button_title">Show own location</string>
+    <string name="location_tracking_button_description">With this button you can display and track your own location.</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
@@ -48,4 +64,19 @@
     <string name="registration_failed">Registrierung fehlgeschlagen</string>
     <string name="title_page_searchresults">Ergebnisse deiner Suche</string>
     <string name="no_results">Zu deiner Suche konnten keine passenden Routen gefunden werden.</string>
+
+    <string name="route_item_title">Route Name</string>
+    <string name="route_item_rating">(%1d)</string>
+    <string name="route_item_waypoints">0</string>
+    <string name="route_item_distance">%1d km</string>
+    <string name="route_item_duration">%1d h</string>
+    <string name="route_item_author">von %1s</string>
+
+    <string name="discover_new_routes">New Routes</string>
+    <string name="discover_popular_routes">Popular Routes</string>
+    <string name="discover_route_error">Failed Loading Routes, please try again</string>
+    <string name="discover_category_error">Failed Loading Categories, please try again</string>
+    <string name="more">More</string>
+    <string name="short_text_placeholder">abcde</string>
+    <string name="middle_text_placeholder">ABCDEFGHIJKL</string>
 </resources>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Bottom Navigation -->
+    <string name="menu_profile_title">Profil</string>
+    <string name="menu_discover_title">Entdecken</string>
+    <string name="menu_search_title">Suche</string>
+
+    <!-- Location Tracking -->
+    <string name="gps_not_activated">GPS ist nicht aktiviert! Bitte aktiviere die Standortfreigabe in den Geräteeinstellungen, um diese Funktion zu nutzen!</string>
+
+    <!-- Location Permissions -->
+    <string name="location_permission_not_given">Ohne die Berechtigung kann dein aktueller Standort nicht angezeigt oder verwendet werden!</string>
+    <string name="location_permission_explanation">
+        Die Berechtigung für den Standortzugriff wird benötigt, um deine aktuelle Position auf der Karte anzeigen und für die Navigation verwenden zu können!
+    </string>
+
+    <!-- Tutorial Information -->
+    <string name="map_style_button_title">Verschiedene Kartenstile sind verfügbar!</string>
+    <string name="map_style_button_description">Über diesen Button kannst du den aktuellen Kartenstil ändern.</string>
+    <string name="location_tracking_button_title">Eigenen Standort anzeigen</string>
+    <string name="location_tracking_button_description">Über diesen Button kannst du deinen aktuellen Standort auf der Karte anzeigen und verfolgen.</string>
+
+    <string name="discover_new_routes">Neue Routen</string>
+    <string name="discover_popular_routes">Beliebte Routen</string>
+    <string name="discover_route_error">Fehler beim Laden der Routen, bitte versuche es später nochmal!</string>
+    <string name="discover_category_error">Fehler beim Laden der Kategorien, bitte versuche es später nochmal!</string>
+    <string name="more">Mehr</string>
+    <string name="short_text_placeholder">abcde</string>
+    <string name="middle_text_placeholder">ABCDEFGHIJKL</string>
+
+</resources>

@@ -4,6 +4,7 @@ import de.ur.explure.model.comment.CommentDTO
 import de.ur.explure.model.route.Route
 import de.ur.explure.model.route.RouteDTO
 import de.ur.explure.utils.FirebaseResult
+import java.util.*
 
 interface RouteRepository {
 
@@ -18,4 +19,8 @@ interface RouteRepository {
     suspend fun addComment(routeId: String, commentDTO: CommentDTO): FirebaseResult<Void>
 
     suspend fun addAnswer(routeId: String, commentId: String, commentDTO: CommentDTO): FirebaseResult<Void>
+
+    suspend fun getLatestRoutes(lastVisibleDate: Date?, batchSize: Long): FirebaseResult<List<Route>>
+
+    suspend fun getMostPopularRoutes(lastRating: Double?, batchSize: Long): FirebaseResult<List<Route>>
 }
