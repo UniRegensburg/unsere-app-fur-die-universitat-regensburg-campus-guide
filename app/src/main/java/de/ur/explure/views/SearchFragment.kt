@@ -1,7 +1,5 @@
 package de.ur.explure.views
 
-import android.os.Bundle
-import android.view.View
 import androidx.fragment.app.Fragment
 import de.ur.explure.R
 import de.ur.explure.viewmodel.SearchViewModel
@@ -11,46 +9,4 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 class SearchFragment : Fragment(R.layout.fragment_search) {
 
     private val viewModel: SearchViewModel by viewModel()
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        setOnClickListeners()
-    }
-
-    private fun setOnClickListeners() {
-        searchButton.setOnClickListener {
-            val searchEdit = edSearchEntry.text.toString()
-            if (searchEdit.isNotEmpty()) {
-                viewModel.navigateToSearchResult(searchEdit)
-            }
-        }
-
-        chillenButton.setOnClickListener {
-            viewModel.navigateToCategoryWork()
-        }
-
-        lernenButton.setOnClickListener {
-            viewModel.navigateToCategoryWork()
-        }
-
-        freizeitButton.setOnClickListener {
-            viewModel.navigateToCategoryWork()
-        }
-
-        cafeteButton.setOnClickListener {
-            viewModel.navigateToCategoryWork()
-        }
-
-        organisationButton.setOnClickListener {
-            viewModel.navigateToCategoryWork()
-        }
-
-        bibliothekenButton.setOnClickListener {
-            viewModel.navigateToCategoryWork()
-        }
-// insert navigateToMap
-        searchMapButton.setOnClickListener {
-            viewModel.navigateToCategoryWork()
-        }
-    }
 }
