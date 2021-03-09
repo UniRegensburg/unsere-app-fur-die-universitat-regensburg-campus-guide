@@ -3,6 +3,7 @@ package de.ur.explure.views
 import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.view.View
+import android.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -39,12 +40,8 @@ class DiscoverFragment : Fragment(R.layout.fragment_discover) {
         initObservers()
         observeRecyclerViewScroll()
         setOnClickListeners()
+        setupSearchBar()
         getData()
-
-        // Delete
-        binding.showMapButton.setOnClickListener {
-            discoverViewModel.showMap()
-        }
     }
 
     private fun startShimmer() {
@@ -135,7 +132,7 @@ class DiscoverFragment : Fragment(R.layout.fragment_discover) {
             requireActivity(),
             R.string.discover_category_error,
             R.id.discover_container,
-            Snackbar.LENGTH_SHORT, null
+            Snackbar.LENGTH_SHORT
         ) {
             discoverViewModel.resetCategoryErrorFlag()
         }
@@ -146,7 +143,7 @@ class DiscoverFragment : Fragment(R.layout.fragment_discover) {
             requireActivity(),
             R.string.discover_route_error,
             R.id.discover_container,
-            Snackbar.LENGTH_SHORT, null
+            Snackbar.LENGTH_SHORT
         ) {
             discoverViewModel.resetRouteErrorFlag()
         }
@@ -189,6 +186,19 @@ class DiscoverFragment : Fragment(R.layout.fragment_discover) {
         })
     }
 
+    private fun setupSearchBar() {
+        binding.svRouteSearch.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String): Boolean {
+                if (query.isNotEmpty()) {
+                    discoverViewModel.startTextQuery(query)
+                }
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String): Boolean = false
+        })
+    }
+
     private fun initLatestRouteAdapter() {
         latestRoutesAdapter = RouteDiscoverAdapter {
             Timber.d("%s clicked", it.title)
@@ -200,7 +210,7 @@ class DiscoverFragment : Fragment(R.layout.fragment_discover) {
 
     private fun initCategoryAdapter() {
         categoryAdapter = CategoryDiscoverAdapter {
-            Timber.d("%s clicked", it.name)
+            discoverViewModel.startCategoryQuery(it.id)
         }
         binding.rvCategoryList.adapter = categoryAdapter
         binding.rvCategoryList.layoutManager =

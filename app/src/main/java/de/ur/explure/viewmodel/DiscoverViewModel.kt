@@ -10,11 +10,10 @@ import de.ur.explure.navigation.MainAppRouter
 import de.ur.explure.repository.category.CategoryRepositoryImpl
 import de.ur.explure.repository.route.RouteRepositoryImpl
 import de.ur.explure.utils.FirebaseResult
-import de.ur.explure.views.DiscoverFragmentDirections
 import kotlinx.coroutines.launch
 import java.util.*
 
-@Suppress("MagicNumber")
+@Suppress("MagicNumber", "TooManyFunctions")
 class DiscoverViewModel(
     private val mainAppRouter: MainAppRouter,
     private val categoryRepo: CategoryRepositoryImpl,
@@ -30,11 +29,6 @@ class DiscoverViewModel(
     val showRouteError: MutableLiveData<Boolean> = MutableLiveData()
 
     val showCategoryError: MutableLiveData<Boolean> = MutableLiveData()
-
-    fun showMap() {
-        val mapAction = DiscoverFragmentDirections.actionDiscoverFragmentToMapFragment()
-        mainAppRouter.getNavController()?.navigate(mapAction)
-    }
 
     fun getCategories() {
         viewModelScope.launch {
@@ -103,6 +97,14 @@ class DiscoverViewModel(
 
     private fun displayRouteErrorOnFragment() {
         showRouteError.postValue(true)
+    }
+
+    fun startTextQuery(query: String) {
+        mainAppRouter.navigateToTextSearchResult(query)
+    }
+
+    fun startCategoryQuery(categoryId: String) {
+        mainAppRouter.navigateToCategoryQuery(categoryId)
     }
 
     companion object {

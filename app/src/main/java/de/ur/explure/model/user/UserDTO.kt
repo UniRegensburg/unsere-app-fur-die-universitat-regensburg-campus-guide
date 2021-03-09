@@ -8,7 +8,7 @@ import de.ur.explure.config.UserDocumentConfig.FAVOURITE_ROUTES_KEY
 import de.ur.explure.config.UserDocumentConfig.FINISHED_ROUTES_KEY
 import de.ur.explure.config.UserDocumentConfig.NAME_KEY
 import de.ur.explure.config.UserDocumentConfig.PROFILE_PICTURE_KEY
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class UserDTO(

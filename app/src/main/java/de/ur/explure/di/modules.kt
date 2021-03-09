@@ -21,6 +21,7 @@ import de.ur.explure.viewmodel.AuthenticationViewModel
 import de.ur.explure.viewmodel.MainViewModel
 import de.ur.explure.viewmodel.MapViewModel
 import de.ur.explure.viewmodel.DiscoverViewModel
+import de.ur.explure.viewmodel.WordSearchViewModel
 import org.koin.android.ext.koin.androidApplication
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
@@ -58,6 +59,7 @@ val mainModule = module {
 
     // viewmodels
     viewModel { AuthenticationViewModel(get(), get()) }
+    viewModel { WordSearchViewModel(get()) }
     viewModel { DiscoverViewModel(get(), get(), get()) }
     viewModel { MainViewModel(get(), get()) }
     viewModel { MapViewModel(get()) }
