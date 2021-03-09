@@ -6,7 +6,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.crazylegend.viewbinding.viewBinding
 import de.ur.explure.R
-import de.ur.explure.SearchListAdapter
+import de.ur.explure.adapter.SearchListAdapter
 import de.ur.explure.config.BundleConfig
 import de.ur.explure.databinding.FragmentTextQueryBinding
 import de.ur.explure.viewmodel.WordSearchViewModel
