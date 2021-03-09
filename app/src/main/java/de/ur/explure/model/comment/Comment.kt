@@ -2,7 +2,7 @@ package de.ur.explure.model.comment
 
 import android.os.Parcelable
 import com.google.firebase.firestore.DocumentId
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 import java.util.*
 
 @Parcelize

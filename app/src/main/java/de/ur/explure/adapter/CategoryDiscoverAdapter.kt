@@ -1,6 +1,5 @@
 package de.ur.explure.adapter
 
-import android.annotation.SuppressLint
 import android.content.res.ColorStateList
 import android.graphics.Color
 import androidx.core.widget.ImageViewCompat
@@ -30,7 +29,6 @@ class CategoryDiscoverAdapter(private val exportListener: (Category) -> Unit) :
         this.notifyDataSetChanged()
     }
 
-    @SuppressLint("Range")
     private fun categoryDelegate(): AdapterDelegate<List<Category>> = adapterDelegateViewBinding(
         { layoutInflater, root -> CategoryCardItemBinding.inflate(layoutInflater, root, false) }
     ) {

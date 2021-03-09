@@ -10,26 +10,18 @@
         android:name="de.ur.explure.views.DiscoverFragment"
         android:label="DiscoverPage"
         tools:layout="@layout/fragment_discover">
-        <action
-            android:id="@+id/action_discoverFragment_to_searchFragment"
-            app:destination="@id/searchFragment" />
-        <action
-            android:id="@+id/action_discoverFragment_to_mapFragment"
-            app:destination="@id/mapFragment" />
     </fragment>
 
     <fragment
-        android:id="@+id/searchFragment"
-        android:name="de.ur.explure.views.SearchFragment"
-        android:label="SearchPage"
-        tools:layout="@layout/fragment_search">
-        <action
-            android:id="@+id/action_searchFragment_to_testFragment"
-            app:destination="@id/testFragment" />
-        <action
-            android:id="@+id/action_searchFragment_to_testFragment2"
-            app:destination="@id/testFragment" />
-    </fragment>
+        android:id="@+id/textQueryFragment"
+        android:name="de.ur.explure.views.TextQueryFragment"
+        android:label="Search Results"
+        tools:layout="@layout/fragment_text_query" />
+    <fragment
+        android:id="@+id/categoryQueryFragment"
+        android:name="de.ur.explure.views.CategoryQueryFragment"
+        android:label="Category Search Results"
+        tools:layout="@layout/fragment_category_query" />
 
     <fragment
         android:id="@+id/profileFragment"

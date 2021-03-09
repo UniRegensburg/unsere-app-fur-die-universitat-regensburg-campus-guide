@@ -17,6 +17,9 @@ import de.ur.explure.repository.user.UserRepositoryImpl
 import de.ur.explure.services.FireStoreInstance
 import de.ur.explure.services.FirebaseAuthService
 import de.ur.explure.utils.SharedPreferencesManager
+import de.ur.explure.viewmodel.WordSearchViewModel
+import org.koin.android.ext.koin.androidApplication
+import de.ur.explure.utils.SharedPreferencesManager
 import de.ur.explure.viewmodel.AuthenticationViewModel
 import de.ur.explure.viewmodel.DiscoverViewModel
 import de.ur.explure.viewmodel.MainViewModel
@@ -59,6 +62,7 @@ val mainModule = module {
 
     // viewmodels
     viewModel { AuthenticationViewModel(get(), get()) }
+    viewModel { WordSearchViewModel(get()) }
     viewModel { DiscoverViewModel(get(), get(), get()) }
     viewModel { MainViewModel(get(), get()) }
     viewModel { MapViewModel(get()) }

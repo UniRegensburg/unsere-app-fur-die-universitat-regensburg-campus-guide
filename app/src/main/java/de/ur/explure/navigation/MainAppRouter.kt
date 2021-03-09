@@ -1,6 +1,10 @@
 package de.ur.explure.navigation
 
+import android.os.Bundle
 import androidx.navigation.NavController
+import de.ur.explure.R
+import de.ur.explure.config.BundleConfig.CATEGORY_QUERY_KEY
+import de.ur.explure.config.BundleConfig.TEXT_QUERY_KEY
 import de.ur.explure.R
 
 /**
@@ -74,5 +78,17 @@ class MainAppRouter {
         } else {
             null
         }
+    }
+
+    fun navigateToTextSearchResult(query: String) {
+        val bundle = Bundle()
+        bundle.putString(TEXT_QUERY_KEY, query)
+        navController.navigate(R.id.textQueryFragment, bundle)
+    }
+
+    fun navigateToCategoryQuery(categoryId: String) {
+        val bundle = Bundle()
+        bundle.putString(CATEGORY_QUERY_KEY, categoryId)
+        navController.navigate(R.id.categoryQueryFragment, bundle)
     }
 }

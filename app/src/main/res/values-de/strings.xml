@@ -3,7 +3,7 @@
     <!-- Bottom Navigation -->
     <string name="menu_profile_title">Profil</string>
     <string name="menu_discover_title">Entdecken</string>
-    <string name="menu_search_title">Suche</string>
+    <string name="menu_map_title">Karte</string>
 
     <!-- Location Tracking -->
     <string name="gps_not_activated">GPS ist nicht aktiviert! Bitte aktiviere die Standortfreigabe in den Geräteeinstellungen, um diese Funktion zu nutzen!</string>
@@ -69,5 +69,10 @@
     <string name="more">Mehr</string>
     <string name="short_text_placeholder">abcde</string>
     <string name="middle_text_placeholder">ABCDEFGHIJKL</string>
+    <string name="route_search_hint">Suche</string>
 
+
+    <!--Test Strings-->
+    <string name="lorem_ipsum">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.  </string>
+    <string name="arbeits_button">Arbeiten</string>
 </resources>
