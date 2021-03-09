@@ -5,7 +5,7 @@ import com.google.firebase.firestore.FieldValue
 import de.ur.explure.config.CommentDocumentConfig.AUTHOR_ID_FIELD
 import de.ur.explure.config.CommentDocumentConfig.DATE_FIELD
 import de.ur.explure.config.CommentDocumentConfig.MESSAGE_FIELD
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class CommentDTO(

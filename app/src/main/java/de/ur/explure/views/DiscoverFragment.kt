@@ -137,7 +137,7 @@ class DiscoverFragment : Fragment(R.layout.fragment_discover) {
             requireActivity(),
             R.string.discover_category_error,
             R.id.discover_container,
-            Snackbar.LENGTH_SHORT, null
+            Snackbar.LENGTH_SHORT
         ) {
             discoverViewModel.resetCategoryErrorFlag()
         }
@@ -148,7 +148,7 @@ class DiscoverFragment : Fragment(R.layout.fragment_discover) {
             requireActivity(),
             R.string.discover_route_error,
             R.id.discover_container,
-            Snackbar.LENGTH_SHORT, null
+            Snackbar.LENGTH_SHORT
         ) {
             discoverViewModel.resetRouteErrorFlag()
         }

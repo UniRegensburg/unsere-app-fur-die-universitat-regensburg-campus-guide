@@ -26,12 +26,12 @@
     <fragment
         android:id="@+id/textQueryFragment"
         android:name="de.ur.explure.views.TextQueryFragment"
-        android:label="fragment_word_search"
+        android:label="Search Results"
         tools:layout="@layout/fragment_text_query" />
     <fragment
         android:id="@+id/categoryQueryFragment"
         android:name="de.ur.explure.views.CategoryQueryFragment"
-        android:label="fragment_categorie_work"
+        android:label="Category Search Results"
         tools:layout="@layout/fragment_category_query" />
 
     <fragment

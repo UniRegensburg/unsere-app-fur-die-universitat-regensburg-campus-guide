@@ -1,16 +1,15 @@
 package de.ur.explure
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import de.ur.explure.databinding.SearchItemBinding
 import de.ur.explure.model.route.Route
-import kotlinx.android.synthetic.main.search_item.view.*
 
 class SearchListAdapter(private val onClick: (Route) -> Unit) :
-        ListAdapter<Route, SearchListAdapter.RouteViewHolder>(RouteDiffCallback) {
+    ListAdapter<Route, SearchListAdapter.RouteViewHolder>(RouteDiffCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RouteViewHolder {
         return RouteViewHolder.from(parent)
@@ -20,22 +19,22 @@ class SearchListAdapter(private val onClick: (Route) -> Unit) :
         holder.bind(getItem(position), onClick)
     }
 
-    class RouteViewHolder private constructor(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    class RouteViewHolder private constructor(private val binding: SearchItemBinding) :
+        RecyclerView.ViewHolder(binding.root) {
 
         fun bind(data: Route, onClick: (Route) -> Unit) {
-            itemView.search_route_title.text = data.title
-            itemView.search_route_description.text = data.description
-            itemView.setOnClickListener {
+            binding.searchRouteTitle.text = data.title
+            binding.searchRouteDescription.text = data.description
+            binding.root.setOnClickListener {
                 onClick(data)
             }
         }
 
         companion object {
             fun from(parent: ViewGroup): RouteViewHolder {
-                val layoutInflater = LayoutInflater.from(parent.context)
-                val view = layoutInflater.inflate(R.layout.search_item, parent, false)
-
-                return RouteViewHolder(view)
+                val binding =
+                    SearchItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+                return RouteViewHolder(binding)
             }
         }
     }

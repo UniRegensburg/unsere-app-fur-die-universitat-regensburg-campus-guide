@@ -1,20 +1,22 @@
 package de.ur.explure.views
 
+import android.app.AlertDialog
 import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.util.Patterns
 import android.view.View
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
+import com.crazylegend.viewbinding.viewBinding
+import com.google.android.material.textfield.TextInputEditText
 import de.ur.explure.R
+import de.ur.explure.databinding.FragmentLoginBinding
 import de.ur.explure.viewmodel.AuthenticationViewModel
-import kotlinx.android.synthetic.main.fragment_login.*
-import kotlinx.android.synthetic.main.reset_password.view.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class LoginFragment : Fragment(R.layout.fragment_login) {
 
+    private val binding by viewBinding(FragmentLoginBinding::bind)
     private val authenticationViewModel: AuthenticationViewModel by viewModel()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -36,23 +38,23 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
     }
 
     private fun setOnClickListener() {
-        signUpButton.setOnClickListener {
+        binding.signUpButton.setOnClickListener {
             authenticationViewModel.navigateToRegister()
         }
-        loginButton.setOnClickListener {
+        binding.loginButton.setOnClickListener {
             login()
         }
-        resetPasswordTV.setOnClickListener {
+        binding.resetPasswordTV.setOnClickListener {
             resetPassword()
         }
-        withoutAccountButton.setOnClickListener {
+        binding.withoutAccountButton.setOnClickListener {
             signInAnonymously()
         }
     }
 
     private fun login() {
-        val email = edLoginEmail.text.toString()
-        val password = edLoginPassword.text.toString()
+        val email = binding.edLoginEmail.text.toString()
+        val password = binding.edLoginPassword.text.toString()
         if (email.isNotEmpty() && password.isNotEmpty()) {
             authenticationViewModel.signIn(email, password)
         } else {
@@ -61,24 +63,25 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
     }
 
     private fun resetPassword() {
-        val builder = AlertDialog.Builder(this.requireContext())
-        builder.setTitle(R.string.builder_text)
-        val view = layoutInflater.inflate(R.layout.reset_password, null)
-        builder.setView(view)
-        builder.setPositiveButton(R.string.positive_button) { _, _ ->
-            val email = view.edResetEmail.text.toString()
-            if (email.isEmpty()) {
-                Toast.makeText(context, R.string.empty_email, Toast.LENGTH_LONG).show()
+        val resetPasswordView = layoutInflater.inflate(R.layout.reset_password, null)
+        AlertDialog.Builder(requireContext())
+            .setTitle(R.string.builder_text)
+            .setView(resetPasswordView)
+            .setPositiveButton(R.string.positive_button) { _, _ ->
+                val email =
+                    resetPasswordView.findViewById<TextInputEditText>(R.id.edResetEmail).text.toString()
+                if (email.isEmpty()) {
+                    Toast.makeText(context, R.string.empty_email, Toast.LENGTH_LONG).show()
+                }
+                if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                    Toast.makeText(context, R.string.wrong_email, Toast.LENGTH_LONG).show()
+                } else {
+                    authenticationViewModel.resetPassword(email)
+                    Toast.makeText(context, R.string.email_sent, Toast.LENGTH_LONG).show()
+                }
             }
-            if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-                Toast.makeText(context, R.string.wrong_email, Toast.LENGTH_LONG).show()
-            } else {
-                authenticationViewModel.resetPassword(email)
-                Toast.makeText(context, R.string.email_sent, Toast.LENGTH_LONG).show()
-            }
-        }
-        builder.setNegativeButton(R.string.negative_button) { _, _ -> }
-        builder.show()
+            .setNegativeButton(R.string.negative_button) { _, _ -> }
+            .show()
     }
 
     private fun signInAnonymously() {
