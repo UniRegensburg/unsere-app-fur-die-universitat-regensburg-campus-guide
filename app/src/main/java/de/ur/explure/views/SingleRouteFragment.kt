@@ -1,27 +1,33 @@
 package de.ur.explure.views
 
 import android.os.Bundle
-import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.View
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import com.crazylegend.viewbinding.viewBinding
 import com.google.firebase.storage.FirebaseStorage
 import de.ur.explure.GlideApp
 import de.ur.explure.R
 import de.ur.explure.adapter.WayPointAdapter
+import de.ur.explure.databinding.FragmentSingleRouteBinding
 import de.ur.explure.viewmodel.SingleRouteViewModel
-import org.koin.androidx.viewmodel.ext.android.viewModel
-import kotlinx.android.synthetic.main.fragment_single_route.*
-import org.koin.core.component.KoinComponent
 import org.koin.android.ext.android.inject
+import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.component.KoinComponent
 
 class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinComponent {
 
+    private val binding by viewBinding(FragmentSingleRouteBinding::bind)
+
     private val singleRouteViewModel: SingleRouteViewModel by viewModel()
+
+    // TODO: access to firestorage should probably not happen in the fragment! move to repository or viewmodel instead
+    //  -> probably not even necessary: the route thumbnail has probably already been downloaded before
+    //  so it can simply be passed as a safe arg param or accessed via a sharedViewModel
     private val fireStorage: FirebaseStorage by inject()
 
-    lateinit var wayPointAdapter: WayPointAdapter
+    private lateinit var wayPointAdapter: WayPointAdapter
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -45,10 +51,10 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinCompon
     private fun observeRouteInformation() {
         singleRouteViewModel.route.observe(viewLifecycleOwner, { route ->
             if (route != null) {
-                routeName.text = route.title
-                routeDescription.text = route.description
-                routeDuration.text = route.duration.toString()
-                routeDistance.text = route.distance.toString()
+                binding.routeName.text = route.title
+                binding.routeDescription.text = route.description
+                binding.routeDuration.text = route.duration.toString()
+                binding.routeDistance.text = route.distance.toString()
                 setImage()
             }
         })
@@ -57,7 +63,7 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinCompon
     private fun observeRating() {
         singleRouteViewModel.rating.observe(viewLifecycleOwner, { rating ->
             if (rating != null) {
-                routeRating.rating = rating.ratingValue.toFloat()
+                binding.routeRating.rating = rating.ratingValue.toFloat()
             }
         })
     }
@@ -65,8 +71,8 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinCompon
     private fun observeWaypoints() {
         singleRouteViewModel.waypointList.observe(viewLifecycleOwner, { waypoint ->
             wayPointAdapter = WayPointAdapter(waypoint)
-            waypoints.adapter = wayPointAdapter
-            waypoints.layoutManager = LinearLayoutManager(requireContext())
+            binding.waypoints.adapter = wayPointAdapter
+            binding.waypoints.layoutManager = LinearLayoutManager(requireContext())
             wayPointAdapter.notifyDataSetChanged()
         })
     }
@@ -75,12 +81,13 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinCompon
         singleRouteViewModel.route.observe(viewLifecycleOwner, { image ->
             if (image.thumbnailUrl.isNotEmpty()) {
                 try {
+                    // TODO not here!
                     val gsReference = fireStorage.getReferenceFromUrl(image.thumbnailUrl)
                     GlideApp.with(requireContext())
                         .load(gsReference)
                         .error(R.drawable.map_background)
                         .transition(DrawableTransitionOptions.withCrossFade())
-                        .into(routeImage)
+                        .into(binding.routeImage)
                 } catch (_: Exception) {
                 }
             }
@@ -88,19 +95,19 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinCompon
     }
 
     private fun setOnClickListener() {
-        descriptionButton.setOnClickListener {
-            viewFlipper.displayedChild = 0
+        binding.descriptionButton.setOnClickListener {
+            binding.viewFlipper.displayedChild = 0
         }
-        mapButton.setOnClickListener {
-            viewFlipper.displayedChild = 1
+        binding.mapButton.setOnClickListener {
+            binding.viewFlipper.displayedChild = 1
         }
-        waypointsButton.setOnClickListener {
-            viewFlipper.displayedChild = 2
+        binding.waypointsButton.setOnClickListener {
+            binding.viewFlipper.displayedChild = 2
         }
-        startRouteButton.setOnClickListener {
+        binding.startRouteButton.setOnClickListener {
             // start route
         }
-        shareRouteButton.setOnClickListener {
+        binding.shareRouteButton.setOnClickListener {
             // share Route
         }
     }

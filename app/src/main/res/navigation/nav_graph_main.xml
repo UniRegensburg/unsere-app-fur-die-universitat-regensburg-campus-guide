@@ -17,6 +17,7 @@
         android:name="de.ur.explure.views.TextQueryFragment"
         android:label="Search Results"
         tools:layout="@layout/fragment_text_query" />
+
     <fragment
         android:id="@+id/categoryQueryFragment"
         android:name="de.ur.explure.views.CategoryQueryFragment"
@@ -34,9 +35,5 @@
         android:name="de.ur.explure.views.MapFragment"
         android:label="Map"
         tools:layout="@layout/fragment_map" />
-    <fragment
-        android:id="@+id/testFragment"
-        android:name="de.ur.explure.views.TestFragment"
-        android:label="TestFragment" />
 
 </navigation>

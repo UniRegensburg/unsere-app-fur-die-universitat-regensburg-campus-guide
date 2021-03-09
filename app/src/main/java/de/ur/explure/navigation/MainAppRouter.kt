@@ -5,7 +5,6 @@ import androidx.navigation.NavController
 import de.ur.explure.R
 import de.ur.explure.config.BundleConfig.CATEGORY_QUERY_KEY
 import de.ur.explure.config.BundleConfig.TEXT_QUERY_KEY
-import de.ur.explure.R
 
 /**
  * Main router class used for navigation operations with the navigation component.
