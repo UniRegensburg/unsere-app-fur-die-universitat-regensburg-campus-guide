@@ -7,19 +7,19 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.crazylegend.viewbinding.viewBinding
 import de.ur.explure.R
-import de.ur.explure.adapter.RouteAdapter
+import de.ur.explure.adapter.ProfileRouteAdapter
 import de.ur.explure.databinding.FragmentFavoriteRoutesBinding
 import de.ur.explure.model.route.Route
 import de.ur.explure.viewmodel.FavoriteRoutesViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class FavoriteRoutesFragment : Fragment(R.layout.fragment_favorite_routes),
-    RouteAdapter.OnItemClickListener, RouteAdapter.OnItemLongClickListener {
+    ProfileRouteAdapter.OnItemClickListener, ProfileRouteAdapter.OnItemLongClickListener {
 
     private val binding by viewBinding(FragmentFavoriteRoutesBinding::bind)
 
     private val viewModel: FavoriteRoutesViewModel by viewModel()
-    private lateinit var adapter: RouteAdapter
+    private lateinit var adapter: ProfileRouteAdapter
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -32,7 +32,7 @@ class FavoriteRoutesFragment : Fragment(R.layout.fragment_favorite_routes),
     }
 
     private fun initializeAdapter() {
-        adapter = RouteAdapter(this, this)
+        adapter = ProfileRouteAdapter(this, this)
         binding.favoriteRoutesRecyclerView.adapter = adapter
         binding.favoriteRoutesRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.favoriteRoutesRecyclerView.setHasFixedSize(true)

@@ -7,19 +7,19 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.crazylegend.viewbinding.viewBinding
 import de.ur.explure.R
-import de.ur.explure.adapter.RouteAdapter
+import de.ur.explure.adapter.ProfileRouteAdapter
 import de.ur.explure.databinding.FragmentCreatedRoutesBinding
 import de.ur.explure.model.route.Route
 import de.ur.explure.viewmodel.CreatedRoutesViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class CreatedRoutesFragment : Fragment(R.layout.fragment_created_routes),
-    RouteAdapter.OnItemClickListener, RouteAdapter.OnItemLongClickListener {
+    ProfileRouteAdapter.OnItemClickListener, ProfileRouteAdapter.OnItemLongClickListener {
 
     private val binding by viewBinding(FragmentCreatedRoutesBinding::bind)
 
     private val viewModel: CreatedRoutesViewModel by viewModel()
-    private lateinit var adapter: RouteAdapter
+    private lateinit var adapter: ProfileRouteAdapter
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -32,7 +32,7 @@ class CreatedRoutesFragment : Fragment(R.layout.fragment_created_routes),
     }
 
     private fun initializeAdapter() {
-        adapter = RouteAdapter(this, this)
+        adapter = ProfileRouteAdapter(this, this)
         binding.createdRoutesRecyclerView.adapter = adapter
         binding.createdRoutesRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.createdRoutesRecyclerView.setHasFixedSize(true)
