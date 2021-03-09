@@ -7,6 +7,8 @@ admin.initializeApp();
 
 // Get functions from different files
 const commentCount = require("./functions/commentCount");
+const wayPointCount = require("./functions/wayPointCount");
 
 // Export functions to firebase
 exports.commentCount = commentCount.commentCount;
+exports.wayPointCount = wayPointCount.wayPointCount;
