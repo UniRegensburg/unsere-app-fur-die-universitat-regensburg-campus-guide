@@ -1,6 +1,5 @@
 package de.ur.explure.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -31,8 +30,6 @@ class WordSearchViewModel(
                     searchedRoutes.postValue(routeLists.data)
                 }
             }
-            Log.d("Koller1", message.toString())
-            Log.d("Koller2", routeLists.toString())
         }
     }
 
