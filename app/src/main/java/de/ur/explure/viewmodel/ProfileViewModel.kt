@@ -17,9 +17,8 @@ class ProfileViewModel(
     var user: MutableLiveData<User> = MutableLiveData()
 
     fun getUserInfo() {
-        viewModelScope.launch() {
-            val userInfo = userRepo.getUserInfo()
-            when (userInfo) {
+        viewModelScope.launch {
+            when (val userInfo = userRepo.getUserInfo()) {
                 is FirebaseResult.Success -> {
                     user.postValue(userInfo.data)
                 }
@@ -32,5 +31,17 @@ class ProfileViewModel(
             updateUserName(newUserName)
             getUserInfo()
         }
+    }
+
+    fun showCreatedRoutes() {
+        appRouter.navigateToCreatedRoutes()
+    }
+
+    fun showFavoriteRoutes() {
+        appRouter.navigateToFavoriteRoutes()
+    }
+
+    fun showStatisticsFragment() {
+        appRouter.navigateToStatisticsFragment()
     }
 }

@@ -2,18 +2,21 @@ package de.ur.explure.views
 
 import android.app.AlertDialog
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.View
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.crazylegend.viewbinding.viewBinding
 import de.ur.explure.R
 import de.ur.explure.adapter.RouteAdapter
+import de.ur.explure.databinding.FragmentCreatedRoutesBinding
 import de.ur.explure.model.route.Route
 import de.ur.explure.viewmodel.CreatedRoutesViewModel
-import kotlinx.android.synthetic.main.fragment_created_routes.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class CreatedRoutesFragment : Fragment(R.layout.fragment_created_routes),
-        RouteAdapter.OnItemClickListener, RouteAdapter.OnItemLongClickListener {
+    RouteAdapter.OnItemClickListener, RouteAdapter.OnItemLongClickListener {
+
+    private val binding by viewBinding(FragmentCreatedRoutesBinding::bind)
 
     private val viewModel: CreatedRoutesViewModel by viewModel()
     private lateinit var adapter: RouteAdapter
@@ -30,15 +33,15 @@ class CreatedRoutesFragment : Fragment(R.layout.fragment_created_routes),
 
     private fun initializeAdapter() {
         adapter = RouteAdapter(this, this)
-        createdRoutesRecyclerView.adapter = adapter
-        createdRoutesRecyclerView.layoutManager = LinearLayoutManager(requireContext())
-        createdRoutesRecyclerView.setHasFixedSize(true)
+        binding.createdRoutesRecyclerView.adapter = adapter
+        binding.createdRoutesRecyclerView.layoutManager = LinearLayoutManager(requireContext())
+        binding.createdRoutesRecyclerView.setHasFixedSize(true)
     }
 
     private fun observeUserModel() {
         viewModel.user.observe(viewLifecycleOwner, { user ->
             if (user != null) {
-                userNameTextView.text = user.name
+                binding.userNameTextView.text = user.name
             }
         })
     }
@@ -63,7 +66,11 @@ class CreatedRoutesFragment : Fragment(R.layout.fragment_created_routes),
         with(AlertDialog.Builder(requireContext())) {
             setTitle(resources.getString(R.string.delete_route))
             setMessage(resources.getString(R.string.delete_route_message, route.title))
-            setPositiveButton(resources.getString(R.string.yes)) { _, _ -> viewModel.deleteRoute(route) }
+            setPositiveButton(resources.getString(R.string.yes)) { _, _ ->
+                viewModel.deleteRoute(
+                    route
+                )
+            }
             setNegativeButton(resources.getString(R.string.no)) { _, _ -> }
             show()
         }

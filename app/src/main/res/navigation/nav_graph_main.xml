@@ -32,7 +32,35 @@
         android:id="@+id/profileFragment"
         android:name="de.ur.explure.views.ProfileFragment"
         android:label="Profile"
-        tools:layout="@layout/fragment_profile" />
+        tools:layout="@layout/fragment_profile">
+        <action
+            android:id="@+id/action_discoverFragment_to_createdRoutes"
+            app:destination="@id/createdRoutesFragment" />
+        <action
+            android:id="@+id/action_discoverFragment_to_favoritesRoutes"
+            app:destination="@id/favoriteRoutesFragment" />
+        <action
+            android:id="@+id/action_discoverFragment_to_statisticsFragment"
+            app:destination="@id/statisticsFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/createdRoutesFragment"
+        android:name="de.ur.explure.views.CreatedRoutesFragment"
+        android:label="Created Routes"
+        tools:layout="@layout/fragment_created_routes" />
+
+    <fragment
+        android:id="@+id/favoriteRoutesFragment"
+        android:name="de.ur.explure.views.FavoriteRoutesFragment"
+        android:label="Favorite Routes"
+        tools:layout="@layout/fragment_favorite_routes" />
+
+    <fragment
+        android:id="@+id/statisticsFragment"
+        android:name="de.ur.explure.views.StatisticsFragment"
+        android:label="Statistics"
+        tools:layout="@layout/fragment_statistics" />
 
     <fragment
         android:id="@+id/testFragment"

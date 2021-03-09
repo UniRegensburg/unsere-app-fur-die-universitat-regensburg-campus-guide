@@ -13,22 +13,20 @@ import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.fragment.app.Fragment
-import androidx.navigation.Navigation
+import com.crazylegend.viewbinding.viewBinding
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import de.ur.explure.R
+import de.ur.explure.databinding.FragmentProfileBinding
 import de.ur.explure.extensions.toDp
 import de.ur.explure.viewmodel.ProfileViewModel
-import kotlinx.android.synthetic.main.fragment_profile.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class ProfileFragment : Fragment(R.layout.fragment_profile) {
 
-    private val viewModel: ProfileViewModel by viewModel()
+    private val binding by viewBinding(FragmentProfileBinding::bind)
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-    }
+    private val viewModel: ProfileViewModel by viewModel()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -43,25 +41,25 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
     private fun observeUserModel() {
         viewModel.user.observe(viewLifecycleOwner, { user ->
             if (user != null) {
-                userNameTextView.text = user.name
+                binding.userNameTextView.text = user.name
             }
         })
     }
 
     private fun setOnClickListeners() {
-        ownRoutesButton.setOnClickListener {
-            Navigation.findNavController(it).navigate(R.id.createdRoutesFragment)
+        binding.ownRoutesButton.setOnClickListener {
+            viewModel.showCreatedRoutes()
         }
 
-        favoriteRoutesButton.setOnClickListener {
-            Navigation.findNavController(it).navigate(R.id.favoriteRoutesFragment)
+        binding.favoriteRoutesButton.setOnClickListener {
+            viewModel.showFavoriteRoutes()
         }
 
-        statisticsButton.setOnClickListener {
-            Navigation.findNavController(it).navigate(R.id.statisticsFragment)
+        binding.statisticsButton.setOnClickListener {
+            viewModel.showStatisticsFragment()
         }
 
-        logOutButton.setOnClickListener {
+        binding.logOutButton.setOnClickListener {
             Toast.makeText(activity, "Still to come!", Toast.LENGTH_SHORT).show()
         }
     }
@@ -71,11 +69,11 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == R.id.changeUserName) {
+        return if (item.itemId == R.id.changeUserName) {
             showDialog()
-            return true
+            true
         } else {
-            return super.onOptionsItemSelected(item)
+            super.onOptionsItemSelected(item)
         }
     }
 
@@ -87,10 +85,12 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         val constraintLayout = getEditUserNameLayout(this.requireContext())
         builder.setView(constraintLayout)
 
-        val textInputLayout = constraintLayout.findViewWithTag<TextInputLayout>("textInputLayoutTag")
-        val textInputEditText = constraintLayout.findViewWithTag<TextInputEditText>("textInputEditTextTag")
+        val textInputLayout =
+            constraintLayout.findViewWithTag<TextInputLayout>("textInputLayoutTag")
+        val textInputEditText =
+            constraintLayout.findViewWithTag<TextInputEditText>("textInputEditTextTag")
 
-        builder.setPositiveButton(resources.getString(R.string.confirm)) { _, which ->
+        builder.setPositiveButton(resources.getString(R.string.confirm)) { _, _ ->
             val name = textInputEditText.text
             viewModel.updateUserName(name.toString())
         }
@@ -115,11 +115,11 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
                 if (p0.isNullOrBlank()) {
                     textInputLayout.error = resources.getString(R.string.user_name_needed)
                     dialog.getButton(AlertDialog.BUTTON_POSITIVE)
-                            .isEnabled = false
+                        .isEnabled = false
                 } else {
                     textInputLayout.error = ""
                     dialog.getButton(AlertDialog.BUTTON_POSITIVE)
-                            .isEnabled = true
+                        .isEnabled = true
                 }
             }
         })
@@ -128,8 +128,8 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
     private fun getEditUserNameLayout(context: Context): ConstraintLayout {
         val constraintLayout = ConstraintLayout(context)
         val layoutParams = ConstraintLayout.LayoutParams(
-                ConstraintLayout.LayoutParams.MATCH_PARENT,
-                ConstraintLayout.LayoutParams.WRAP_CONTENT
+            ConstraintLayout.LayoutParams.MATCH_PARENT,
+            ConstraintLayout.LayoutParams.WRAP_CONTENT
         )
         constraintLayout.layoutParams = layoutParams
         constraintLayout.id = View.generateViewId()
@@ -137,10 +137,10 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         val textInputLayout = TextInputLayout(context)
         textInputLayout.boxBackgroundMode = TextInputLayout.BOX_BACKGROUND_OUTLINE
         layoutParams.setMargins(
-                VERTICAL_MARGIN_EDIT_TEXT.toDp(context),
-                HORIZONTAL_MARGIN_EDIT_TEXT.toDp(context),
-                VERTICAL_MARGIN_EDIT_TEXT.toDp(context),
-                HORIZONTAL_MARGIN_EDIT_TEXT.toDp(context)
+            VERTICAL_MARGIN_EDIT_TEXT.toDp(context),
+            HORIZONTAL_MARGIN_EDIT_TEXT.toDp(context),
+            VERTICAL_MARGIN_EDIT_TEXT.toDp(context),
+            HORIZONTAL_MARGIN_EDIT_TEXT.toDp(context)
         )
         textInputLayout.layoutParams = layoutParams
         textInputLayout.hint = resources.getString(R.string.new_user_name_hint)

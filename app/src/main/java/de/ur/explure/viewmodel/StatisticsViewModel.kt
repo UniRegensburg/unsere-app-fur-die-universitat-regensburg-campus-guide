@@ -23,9 +23,8 @@ class StatisticsViewModel(
     var createdWaypoints: MutableLiveData<String> = MutableLiveData()
 
     fun getUserInfo() {
-        viewModelScope.launch() {
-            val userInfo = userRepo.getUserInfo()
-            when (userInfo) {
+        viewModelScope.launch {
+            when (val userInfo = userRepo.getUserInfo()) {
                 is FirebaseResult.Success -> {
                     user.postValue(userInfo.data)
                 }
@@ -35,11 +34,9 @@ class StatisticsViewModel(
 
     fun getTraveledDistance() {
         viewModelScope.launch {
-            val userInfo = userRepo.getUserInfo()
-            when (userInfo) {
+            when (val userInfo = userRepo.getUserInfo()) {
                 is FirebaseResult.Success -> {
-                    val routeInfo = routeRepo.getRoutes(userInfo.data.finishedRoutes)
-                    when (routeInfo) {
+                    when (val routeInfo = routeRepo.getRoutes(userInfo.data.finishedRoutes)) {
                         is FirebaseResult.Success -> {
                             var dist = 0.0
                             for (route in routeInfo.data) {
@@ -55,11 +52,9 @@ class StatisticsViewModel(
 
     fun getCreatedWaypoints() {
         viewModelScope.launch {
-            val userInfo = userRepo.getUserInfo()
-            when (userInfo) {
+            when (val userInfo = userRepo.getUserInfo()) {
                 is FirebaseResult.Success -> {
-                    val routeInfo = routeRepo.getRoutes(userInfo.data.createdRoutes)
-                    when (routeInfo) {
+                    when (val routeInfo = routeRepo.getRoutes(userInfo.data.createdRoutes)) {
                         is FirebaseResult.Success -> {
                             var waypoints = 0
                             for (route in routeInfo.data) {

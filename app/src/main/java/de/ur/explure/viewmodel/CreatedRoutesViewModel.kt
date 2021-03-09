@@ -21,9 +21,8 @@ class CreatedRoutesViewModel(
     var createdRoutes: MutableLiveData<List<Route>> = MutableLiveData()
 
     fun getUserInfo() {
-        viewModelScope.launch() {
-            val userInfo = userRepo.getUserInfo()
-            when (userInfo) {
+        viewModelScope.launch {
+            when (val userInfo = userRepo.getUserInfo()) {
                 is FirebaseResult.Success -> {
                     user.postValue(userInfo.data)
                 }
@@ -33,14 +32,12 @@ class CreatedRoutesViewModel(
 
     fun getCreatedRoutes() {
         viewModelScope.launch {
-            val userInfo = userRepo.getUserInfo()
-            when (userInfo) {
+            when (val userInfo = userRepo.getUserInfo()) {
                 is FirebaseResult.Success -> {
                     if (userInfo.data.createdRoutes.isEmpty()) {
                         createdRoutes.postValue(emptyList())
                     } else {
-                        val routeInfo = routeRepo.getRoutes(userInfo.data.createdRoutes)
-                        when (routeInfo) {
+                        when (val routeInfo = routeRepo.getRoutes(userInfo.data.createdRoutes)) {
                             is FirebaseResult.Success -> {
                                 createdRoutes.postValue(routeInfo.data)
                             }

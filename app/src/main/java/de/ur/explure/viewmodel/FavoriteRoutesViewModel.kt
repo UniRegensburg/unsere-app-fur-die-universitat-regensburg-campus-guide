@@ -21,9 +21,8 @@ class FavoriteRoutesViewModel(
     var favoriteRoutes: MutableLiveData<List<Route>> = MutableLiveData()
 
     fun getUserInfo() {
-        viewModelScope.launch() {
-            val userInfo = userRepo.getUserInfo()
-            when (userInfo) {
+        viewModelScope.launch {
+            when (val userInfo = userRepo.getUserInfo()) {
                 is FirebaseResult.Success -> {
                     user.postValue(userInfo.data)
                 }
@@ -33,14 +32,12 @@ class FavoriteRoutesViewModel(
 
     fun getFavoriteRoutes() {
         viewModelScope.launch {
-            val userInfo = userRepo.getUserInfo()
-            when (userInfo) {
+            when (val userInfo = userRepo.getUserInfo()) {
                 is FirebaseResult.Success -> {
-                    if (userInfo.data.favouriteRoutes.size == 0) {
+                    if (userInfo.data.favouriteRoutes.isEmpty()) {
                         favoriteRoutes.postValue(emptyList())
                     } else {
-                        val routeInfo = routeRepo.getRoutes(userInfo.data.favouriteRoutes)
-                        when (routeInfo) {
+                        when (val routeInfo = routeRepo.getRoutes(userInfo.data.favouriteRoutes)) {
                             is FirebaseResult.Success -> {
                                 favoriteRoutes.postValue(routeInfo.data)
                             }

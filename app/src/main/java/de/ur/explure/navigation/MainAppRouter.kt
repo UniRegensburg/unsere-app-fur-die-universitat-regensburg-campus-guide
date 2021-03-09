@@ -2,6 +2,7 @@ package de.ur.explure.navigation
 
 import androidx.navigation.NavController
 import de.ur.explure.R
+import de.ur.explure.views.ProfileFragmentDirections
 
 /**
  * Main router class used for navigation operations with the navigation component.
@@ -63,6 +64,21 @@ class MainAppRouter {
 
     fun navigateToRegister() {
         navController.navigate(R.id.navigateToRegister)
+    }
+
+    fun navigateToCreatedRoutes() {
+        val ownRoutesAction = ProfileFragmentDirections.actionDiscoverFragmentToCreatedRoutes()
+        navController.navigate(ownRoutesAction)
+    }
+
+    fun navigateToFavoriteRoutes() {
+        val favoriteRoutesAction = ProfileFragmentDirections.actionDiscoverFragmentToFavoritesRoutes()
+        navController.navigate(favoriteRoutesAction)
+    }
+
+    fun navigateToStatisticsFragment() {
+        val statisticsAction = ProfileFragmentDirections.actionDiscoverFragmentToStatisticsFragment()
+        navController.navigate(statisticsAction)
     }
 
     /**
