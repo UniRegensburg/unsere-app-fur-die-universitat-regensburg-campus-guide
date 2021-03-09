@@ -5,6 +5,7 @@ import androidx.navigation.NavController
 import de.ur.explure.R
 import de.ur.explure.config.BundleConfig.CATEGORY_QUERY_KEY
 import de.ur.explure.config.BundleConfig.TEXT_QUERY_KEY
+import de.ur.explure.views.DiscoverFragmentDirections
 
 /**
  * Main router class used for navigation operations with the navigation component.
@@ -89,5 +90,10 @@ class MainAppRouter {
         val bundle = Bundle()
         bundle.putString(CATEGORY_QUERY_KEY, categoryId)
         navController.navigate(R.id.categoryQueryFragment, bundle)
+    }
+
+    fun navigateToRouteDetails() {
+        val action = DiscoverFragmentDirections.actionDiscoverFragmentToRouteDetails()
+        navController.navigate(action)
     }
 }

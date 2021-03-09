@@ -202,6 +202,7 @@ class DiscoverFragment : Fragment(R.layout.fragment_discover) {
     private fun initLatestRouteAdapter() {
         latestRoutesAdapter = RouteDiscoverAdapter {
             Timber.d("%s clicked", it.title)
+            discoverViewModel.showRouteDetails()
         }
         binding.rvNewRouteList.adapter = latestRoutesAdapter
         binding.rvNewRouteList.layoutManager =
@@ -220,6 +221,7 @@ class DiscoverFragment : Fragment(R.layout.fragment_discover) {
     private fun initPopularRouteAdapter() {
         popularRoutesAdapter = RouteDiscoverAdapter {
             Timber.d("%s clicked", it.title)
+            discoverViewModel.showRouteDetails()
         }
         binding.rvPopularRouteList.adapter = popularRoutesAdapter
         binding.rvPopularRouteList.layoutManager =

@@ -10,6 +10,9 @@
         android:name="de.ur.explure.views.DiscoverFragment"
         android:label="DiscoverPage"
         tools:layout="@layout/fragment_discover">
+        <action
+            android:id="@+id/action_discoverFragment_to_routeDetails"
+            app:destination="@id/singleRouteFragment" />
     </fragment>
 
     <fragment
@@ -35,5 +38,11 @@
         android:name="de.ur.explure.views.MapFragment"
         android:label="Map"
         tools:layout="@layout/fragment_map" />
+
+    <fragment
+        android:id="@+id/singleRouteFragment"
+        android:name="de.ur.explure.views.SingleRouteFragment"
+        android:label="Route Information"
+        tools:layout="@layout/fragment_single_route" />
 
 </navigation>
