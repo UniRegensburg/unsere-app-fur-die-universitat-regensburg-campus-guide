@@ -29,4 +29,8 @@
     <string name="middle_text_placeholder">ABCDEFGHIJKL</string>
     <string name="route_search_hint">Suche</string>
 
+
+    <!--Test Strings-->
+    <string name="lorem_ipsum">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.  </string>
+    <string name="arbeits_button">Arbeiten</string>
 </resources>
