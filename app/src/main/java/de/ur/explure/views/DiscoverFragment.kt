@@ -42,11 +42,6 @@ class DiscoverFragment : Fragment(R.layout.fragment_discover) {
         setOnClickListeners()
         setupSearchBar()
         getData()
-
-        // Delete
-        binding.showMapButton.setOnClickListener {
-            discoverViewModel.showMap()
-        }
     }
 
     private fun startShimmer() {
