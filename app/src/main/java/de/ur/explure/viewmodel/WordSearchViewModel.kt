@@ -1,11 +1,9 @@
 package de.ur.explure.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.algolia.search.client.ClientSearch
-import com.algolia.search.dsl.attributesToRetrieve
 import com.algolia.search.model.APIKey
 import com.algolia.search.model.ApplicationID
 import com.algolia.search.model.IndexName
@@ -16,16 +14,14 @@ import de.ur.explure.utils.FirebaseResult
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-
+@Suppress("UnnecessaryParentheses")
 class WordSearchViewModel(
-        private val routeRepo: RouteRepositoryImpl
+    private val routeRepo: RouteRepositoryImpl
 ) : ViewModel() {
 
     var searchedRoutes: MutableLiveData<List<Route>> = MutableLiveData()
 
     fun getSearchedRoutes(message: String) {
-
-
         viewModelScope.launch {
 
             val applicationID = ApplicationID("CRDAJVEWKR")
@@ -34,13 +30,7 @@ class WordSearchViewModel(
             val indexName = IndexName("listOfRoutes")
             val index = client.initIndex(indexName)
 
-            val query = Query()
-                    .apply {
-                        query = (message)
-                        attributesToRetrieve {
-                            +"objectID"
-                        }
-                    }
+            val query = Query(message)
 
             val resultQuery = index.search(query).hits
 
@@ -48,12 +38,11 @@ class WordSearchViewModel(
 
             for (i in resultQuery.indices) {
                 val resultID = resultQuery.get(i).json.get("objectID").toString()
-                val trimResultID = resultID.substring(1,21)
-                resultIDs.add(i, trimResultID.toString())
+                val trimResultID = resultID.removePrefix(("\"")).removeSuffix(("\""))
+                resultIDs.add(i, trimResultID)
             }
             Timber.d(resultIDs.toString())
             val routeLists = routeRepo.getRoutes(resultIDs, true)
-
             Timber.d(routeLists.toString())
 
             when (routeLists) {
@@ -110,7 +99,6 @@ class WordSearchViewModel(
         }
     }*/
 }
-
 
 /*
 private val routeRepo: RouteRepositoryImpl

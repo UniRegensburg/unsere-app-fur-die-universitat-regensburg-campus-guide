@@ -27,7 +27,7 @@ class TextQueryFragment : Fragment(R.layout.fragment_text_query) {
             // setHasFixedSize(false)
         }
 
-        //viewModel.setupAlgolia()
+        // viewModel.setupAlgolia()
 
         observeRouteModel()
 
