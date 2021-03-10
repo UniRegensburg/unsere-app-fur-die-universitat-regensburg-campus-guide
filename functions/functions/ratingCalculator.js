@@ -6,7 +6,7 @@ const db = admin.firestore();
 
 const average = (array) => array.reduce((a, b) => a + b) / array.length;
 
-// Keeps track of the length of the "waypoints" child list in a separate property.
+// Calculate average of ratings for a route when rating property changes
 exports.ratingCalculator = functions.firestore.document("/routes/{routeId}").onUpdate(
     async (change, context) => {
         if (change.before.exists) {
