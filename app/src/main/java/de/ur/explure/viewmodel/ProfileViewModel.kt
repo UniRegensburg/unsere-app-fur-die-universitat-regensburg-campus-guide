@@ -28,7 +28,7 @@ class ProfileViewModel(
 
     fun updateUserName(newUserName: String) {
         viewModelScope.launch {
-            updateUserName(newUserName)
+            userRepo.updateUserName(newUserName)
             getUserInfo()
         }
     }
