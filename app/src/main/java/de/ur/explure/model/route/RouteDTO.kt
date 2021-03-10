@@ -4,7 +4,7 @@ import android.os.Parcelable
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.ServerTimestamp
 import de.ur.explure.model.waypoint.WayPointDTO
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 import java.util.Date
 import de.ur.explure.config.RouteDocumentConfig.AUTHOR_ID_FIELD
 import de.ur.explure.config.RouteDocumentConfig.CATEGORY_FIELD

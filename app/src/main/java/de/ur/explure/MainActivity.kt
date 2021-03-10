@@ -138,7 +138,7 @@ class MainActivity : AppCompatActivity() {
         // The top level views of the app
         val topLevelDestinations = setOf(
             R.id.discoverFragment,
-            R.id.searchFragment,
+            R.id.mapFragment,
             R.id.profileFragment
         )
 

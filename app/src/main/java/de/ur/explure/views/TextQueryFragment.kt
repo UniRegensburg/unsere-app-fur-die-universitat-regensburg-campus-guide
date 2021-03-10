@@ -4,27 +4,30 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.crazylegend.viewbinding.viewBinding
 import de.ur.explure.R
-import de.ur.explure.SearchListAdapter
+import de.ur.explure.adapter.SearchListAdapter
 import de.ur.explure.config.BundleConfig
+import de.ur.explure.databinding.FragmentTextQueryBinding
 import de.ur.explure.viewmodel.WordSearchViewModel
-import kotlinx.android.synthetic.main.fragment_text_query.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class TextQueryFragment : Fragment(R.layout.fragment_text_query) {
 
+    private val binding by viewBinding(FragmentTextQueryBinding::bind)
+
     private val viewModel: WordSearchViewModel by viewModel()
-    lateinit var searchAdapter: SearchListAdapter
+    private lateinit var searchAdapter: SearchListAdapter
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val message = arguments?.getString(BundleConfig.TEXT_QUERY_KEY)
         searchAdapter = SearchListAdapter { }
 
-        recyclerView_searchResults.apply {
+        binding.recyclerViewSearchResults.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = searchAdapter
-            // setHasFixedSize(false)
+            setHasFixedSize(true)
         }
 
         // viewModel.setupAlgolia()

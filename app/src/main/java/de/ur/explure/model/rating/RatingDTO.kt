@@ -3,7 +3,7 @@ package de.ur.explure.model.rating
 import android.os.Parcelable
 import com.google.firebase.firestore.FieldValue
 import de.ur.explure.config.RatingDocumentConfig
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class RatingDTO(
