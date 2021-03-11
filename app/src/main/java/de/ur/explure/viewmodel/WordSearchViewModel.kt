@@ -1,6 +1,5 @@
 package de.ur.explure.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -30,7 +29,6 @@ class WordSearchViewModel(
             val client = ClientSearch(applicationID, apiKey)
             val indexName = IndexName("listOfRoutes")
             val index = client.initIndex(indexName)
-            Log.d("Server", client.toString())
             val query = Query(message)
 
             val resultQuery = index.search(query).hits
@@ -41,19 +39,15 @@ class WordSearchViewModel(
                 val resultID = resultQuery.get(i).json.get("objectID").toString()
                 val trimResultID = resultID.removePrefix(("\"")).removeSuffix(("\""))
                 resultIDs.add(i, trimResultID)
-                Log.d("in for Schleife", resultID.toString())
             }
-            Log.d("nach for Schleife", resultIDs.toString())
             Timber.d(resultIDs.toString())
             val routeLists = routeRepo.getRoutes(resultIDs, true)
-            Log.d("nach Schleife 2", routeLists.toString())
             Timber.d(routeLists.toString())
 
             when (routeLists) {
                 is FirebaseResult.Success -> {
                     searchedRoutes.postValue(routeLists.data)
                     Timber.d(routeLists.toString())
-                    Log.d("nach Schleife 3", routeLists.toString())
                 }
             }
         }

@@ -27,7 +27,6 @@ class TextQueryFragment : Fragment(R.layout.fragment_text_query) {
         binding.recyclerViewSearchResults.apply {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = searchAdapter
-            setHasFixedSize(true)
         }
 
         // viewModel.setupAlgolia()
