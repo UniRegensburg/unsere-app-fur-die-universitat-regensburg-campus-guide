@@ -12,8 +12,8 @@ import kotlinx.android.synthetic.main.waypoint_list_item.view.*
 
 typealias onItemClickCallback = (itemView: View, waypoint: WayPoint) -> Unit
 
-class WaypointsAdapter(private val callback: onItemClickCallback) :
-    ListAdapter<WayPoint, WaypointsAdapter.ViewHolder>(DiffCallback()) {
+class RouteCreationAdapter(private val callback: onItemClickCallback) :
+    ListAdapter<WayPoint, RouteCreationAdapter.ViewHolder>(DiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder.from(parent)

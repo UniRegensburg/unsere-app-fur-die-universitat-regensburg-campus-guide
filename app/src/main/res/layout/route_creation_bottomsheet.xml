@@ -3,17 +3,17 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/route_creation_sheet_coordinator"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/waypoint_bottomsheet_layout"
         style="@style/BottomSheetDialogTheme"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@android:color/white"
-        app:behavior_hideable="true"
-        app:behavior_peekHeight="120dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/background_bottomsheet_dialog"
+        app:behavior_hideable="false"
+        app:behavior_peekHeight="80dp"
         app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
         <com.google.android.material.textview.MaterialTextView
@@ -23,29 +23,38 @@
             android:layout_marginVertical="@dimen/margin_normal"
             android:paddingHorizontal="16dp"
             android:text="Die Route besteht aktuell aus diesen Wegpunkten:"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Headline5"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
             android:textStyle="bold"
-            app:layout_constraintBottom_toTopOf="@id/recycler_waypoint_list"
+            app:layout_constraintBottom_toTopOf="@id/recycler_scroll_view"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recycler_waypoint_list"
+        <!-- TODO does not work: recyclerview shows only first item and not scrollable -->
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/recycler_scroll_view"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_margin="@dimen/margin_small"
-            android:clipToPadding="false"
-            android:paddingHorizontal="8dp"
+            android:layout_height="match_parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/waypoint_list_title"
-            tools:listitem="@layout/waypoint_list_item" />
-        <!--
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        app:spanCount="1"
-        -->
+            app:layout_constraintTop_toBottomOf="@id/waypoint_list_title">
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_waypoint_list"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="@dimen/margin_small"
+                android:clipToPadding="false"
+                android:overScrollMode="always"
+                android:paddingHorizontal="8dp"
+                android:scrollbars="none"
+                tools:listitem="@layout/waypoint_list_item" />
+            <!--
+            android:overScrollMode="never"
+            -->
+
+        </androidx.core.widget.NestedScrollView>
 
         <TextView
             android:id="@+id/empty_recycler_waypoint_text"

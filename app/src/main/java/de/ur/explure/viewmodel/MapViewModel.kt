@@ -5,11 +5,14 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import com.google.firebase.firestore.GeoPoint
 import com.mapbox.mapboxsdk.camera.CameraPosition
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.mapboxsdk.plugins.annotation.Symbol
+import de.ur.explure.model.waypoint.WayPoint
 import de.ur.explure.utils.Event
+import java.util.*
 
 /**
  * Map Viewmodel to handle and preserve map state.
@@ -28,6 +31,23 @@ class MapViewModel(private val state: SavedStateHandle) : ViewModel() {
     // TODO only saving the latlng coords will probably not be enough later but symbol cannot be parcelized
     // -> probably create an own mapPin parcelize data class ? (e.g. https://github.com/amohnacs15/MeshMap/blob/master/app/src/main/java/com/zhudapps/meshmap/model/MapPin.kt)
     private val markers: MutableList<LatLng> = state[ACTIVE_MARKERS_KEY] ?: mutableListOf()
+
+    val customRouteWaypoints: MutableLiveData<MutableList<WayPoint>> = MutableLiveData(mutableListOf())
+
+    fun addCustomWaypoint(coordinates: LatLng) {
+        val waypoint = WayPoint(
+            UUID.randomUUID().toString(),
+            "Marker ${customRouteWaypoints.value?.size}",
+            "Keine Beschreibung; Koordinaten: $coordinates",
+            GeoPoint(coordinates.latitude, coordinates.longitude),
+            null,
+            null,
+            null
+        )
+        customRouteWaypoints.value?.add(waypoint)
+        // assigning to itself is necessary to trigger the observer!
+        customRouteWaypoints.value = customRouteWaypoints.value
+    }
 
     fun saveMarker(marker: Symbol) {
         markers.add(marker.latLng)

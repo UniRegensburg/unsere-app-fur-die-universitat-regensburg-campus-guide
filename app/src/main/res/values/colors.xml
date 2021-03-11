@@ -12,4 +12,7 @@
 
     <color name="color_star_rating">#F8E223</color>
 
+    <color name="white_transparent">#BFFFFFFF</color>
+    <color name="selected_button_color">#FAF0D0</color>
+
 </resources>

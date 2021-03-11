@@ -62,5 +62,6 @@ fun Fragment.slideInView(v: View) {
     val slideInAnim: Animation =
         AnimationUtils.loadAnimation(requireActivity(), R.anim.slide_in_from_right)
     v.startAnimation(slideInAnim)
+    v.visibility = View.VISIBLE
     v.clearAnimation()
 }
