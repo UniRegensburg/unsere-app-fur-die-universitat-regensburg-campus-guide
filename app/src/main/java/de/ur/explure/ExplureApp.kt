@@ -2,6 +2,7 @@ package de.ur.explure
 
 import android.app.Application
 import com.mapbox.mapboxsdk.Mapbox
+import com.singhajit.sherlock.core.Sherlock
 import de.ur.explure.di.mainModule
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
@@ -22,6 +23,8 @@ class ExplureApp : Application() {
 
         if (BuildConfig.DEBUG) {
             Timber.plant(Timber.DebugTree())
+
+            Sherlock.init(this)
         }
 
         startKoin {

@@ -123,4 +123,10 @@ dependencies {
     // View Animations
     implementation 'com.daimajia.easing:library:2.0@aar'
     implementation 'com.daimajia.androidanimations:library:2.4@aar'
+
+    // Sherlock for easier debugging
+    debugImplementation('com.github.ajitsing:sherlock:1.0.4@aar') {
+        transitive = true
+    }
+    // releaseImplementation('com.github.ajitsing:sherlock-no-op:1.0.4@aar')
 }
