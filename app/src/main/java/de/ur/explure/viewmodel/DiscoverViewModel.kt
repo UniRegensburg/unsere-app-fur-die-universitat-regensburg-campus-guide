@@ -107,8 +107,10 @@ class DiscoverViewModel(
         mainAppRouter.navigateToCategoryQuery(categoryId)
     }
 
-    fun showRouteDetails() {
-        mainAppRouter.navigateToRouteDetails()
+    fun showRouteDetails(routeTitle: String, routeDescription: String,
+                         routeDuration: Int, routeDistance: Int, routeImage: String) {
+        mainAppRouter.navigateToRouteDetails(
+                routeTitle, routeDescription, routeDuration, routeDistance, routeImage)
     }
 
     companion object {

@@ -43,6 +43,22 @@
         android:id="@+id/singleRouteFragment"
         android:name="de.ur.explure.views.SingleRouteFragment"
         android:label="Route Information"
-        tools:layout="@layout/fragment_single_route" />
+        tools:layout="@layout/fragment_single_route" >
+        <argument
+            android:name="routeTitle"
+            app:argType="string" />
+        <argument
+            android:name="routeDescription"
+            app:argType="string" />
+        <argument
+            android:name="routeDuration"
+            app:argType="integer" />
+        <argument
+            android:name="routeDistance"
+            app:argType="integer" />
+        <argument
+            android:name="routeImage"
+            app:argType="string" />
+    </fragment>
 
 </navigation>

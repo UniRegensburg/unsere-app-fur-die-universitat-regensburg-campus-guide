@@ -16,7 +16,6 @@ import de.ur.explure.databinding.FragmentDiscoverBinding
 import de.ur.explure.utils.showSnackbar
 import de.ur.explure.viewmodel.DiscoverViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import timber.log.Timber
 
 @Suppress("TooManyFunctions", "StringLiteralDuplication", "FunctionMaxLength")
 class DiscoverFragment : Fragment(R.layout.fragment_discover) {
@@ -194,15 +193,15 @@ class DiscoverFragment : Fragment(R.layout.fragment_discover) {
                 }
                 return false
             }
-
             override fun onQueryTextChange(newText: String): Boolean = false
         })
     }
 
     private fun initLatestRouteAdapter() {
         latestRoutesAdapter = RouteDiscoverAdapter {
-            Timber.d("%s clicked", it.title)
-            discoverViewModel.showRouteDetails()
+            discoverViewModel.showRouteDetails(
+                    it.title, it.description,
+                    it.duration.toInt(), it.distance.toInt(), it.thumbnailUrl)
         }
         binding.rvNewRouteList.adapter = latestRoutesAdapter
         binding.rvNewRouteList.layoutManager =
@@ -220,8 +219,9 @@ class DiscoverFragment : Fragment(R.layout.fragment_discover) {
 
     private fun initPopularRouteAdapter() {
         popularRoutesAdapter = RouteDiscoverAdapter {
-            Timber.d("%s clicked", it.title)
-            discoverViewModel.showRouteDetails()
+            discoverViewModel.showRouteDetails(
+                    it.title, it.description, it.duration.toInt(),
+                    it.distance.toInt(), it.thumbnailUrl)
         }
         binding.rvPopularRouteList.adapter = popularRoutesAdapter
         binding.rvPopularRouteList.layoutManager =
