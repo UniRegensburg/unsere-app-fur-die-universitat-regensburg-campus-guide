@@ -199,9 +199,7 @@ class DiscoverFragment : Fragment(R.layout.fragment_discover) {
 
     private fun initLatestRouteAdapter() {
         latestRoutesAdapter = RouteDiscoverAdapter {
-            discoverViewModel.showRouteDetails(
-                    it.title, it.description,
-                    it.duration.toInt(), it.distance.toInt(), it.thumbnailUrl)
+            discoverViewModel.showRouteDetails(it.id)
         }
         binding.rvNewRouteList.adapter = latestRoutesAdapter
         binding.rvNewRouteList.layoutManager =
@@ -219,9 +217,7 @@ class DiscoverFragment : Fragment(R.layout.fragment_discover) {
 
     private fun initPopularRouteAdapter() {
         popularRoutesAdapter = RouteDiscoverAdapter {
-            discoverViewModel.showRouteDetails(
-                    it.title, it.description, it.duration.toInt(),
-                    it.distance.toInt(), it.thumbnailUrl)
+            discoverViewModel.showRouteDetails(it.id)
         }
         binding.rvPopularRouteList.adapter = popularRoutesAdapter
         binding.rvPopularRouteList.layoutManager =

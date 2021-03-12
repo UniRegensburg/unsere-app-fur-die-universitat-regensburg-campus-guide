@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="10dp">
+
+    <TextView
+        android:id="@+id/comment_author"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginBottom="8dp"
+        android:layout_alignParentStart="true"
+        android:text="@string/comment_author"
+        android:textStyle="bold"
+        android:textColor="@color/textColor" />
+
+    <TextView
+        android:id="@+id/comment_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/comment_author"
+        android:text="@string/comment_text"
+        android:textColor="@color/textColor"/>
+
+    <TextView
+        android:id="@+id/comment_date"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="8dp"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/comment_text"
+        android:text="@string/comment_text"
+        android:textSize="12sp"
+        android:textColor="@color/textColor"
+        android:textStyle="italic"/>
+
+    <TextView
+        android:id="@+id/show_answers"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="@string/show_answers"
+        android:textSize="12sp"
+        android:textColor="@color/PrimaryColor"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/comment_date"
+        android:visibility="gone"/>
+
+    <TextView
+        android:id="@+id/hide_answers"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="@string/hide_answers"
+        android:textSize="12sp"
+        android:textColor="@color/PrimaryColor"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/comment_date"
+        android:visibility="gone"/>
+
+    <RelativeLayout
+        android:id="@+id/answer_item"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"
+        android:layout_below="@id/hide_answers"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/answer_author"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginBottom="8dp"
+            android:layout_alignParentStart="true"
+            android:text="@string/comment_author"
+            android:textStyle="bold"
+            android:textColor="@color/textColor" />
+
+        <TextView
+            android:id="@+id/answer_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/answer_author"
+            android:text="@string/comment_text"
+            android:textColor="@color/textColor"/>
+
+        <TextView
+            android:id="@+id/answert_date"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/answer_text"
+            android:text="@string/comment_text"
+            android:textColor="@color/textColor"
+            android:textSize="12sp"
+            android:textStyle="italic"/>
+
+    </RelativeLayout>
+
+
+
+
+
+</RelativeLayout>

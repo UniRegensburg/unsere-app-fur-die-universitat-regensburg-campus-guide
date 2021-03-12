@@ -92,10 +92,8 @@ class MainAppRouter {
         navController.navigate(R.id.categoryQueryFragment, bundle)
     }
 
-    fun navigateToRouteDetails(routeTitle: String, routeDescription: String,
-                               routeDuration: Int, routeDistance: Int, routeImage: String) {
-        val action = DiscoverFragmentDirections.actionDiscoverFragmentToRouteDetails(
-                routeTitle, routeDescription, routeDuration, routeDistance, routeImage)
+    fun navigateToRouteDetails(routeId: String) {
+        val action = DiscoverFragmentDirections.actionDiscoverFragmentToRouteDetails(routeId)
         navController.navigate(action)
     }
 }

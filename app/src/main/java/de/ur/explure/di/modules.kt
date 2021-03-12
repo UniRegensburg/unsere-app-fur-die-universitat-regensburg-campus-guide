@@ -64,5 +64,5 @@ val mainModule = module {
     viewModel { DiscoverViewModel(get(), get(), get()) }
     viewModel { MainViewModel(get(), get()) }
     viewModel { MapViewModel(get()) }
-    viewModel { SingleRouteViewModel(get(), get()) }
+    viewModel { SingleRouteViewModel(get()) }
 }

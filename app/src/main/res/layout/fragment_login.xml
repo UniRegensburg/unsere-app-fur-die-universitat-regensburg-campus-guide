@@ -74,10 +74,8 @@
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
             android:layout_marginTop="8dp"
-            android:background="@color/PrimaryColor"
             android:text="@string/login_button"
             android:textColor="@color/cardview_dark_background"
-            app:backgroundTint="@color/PrimaryColor"
             app:layout_constraintTop_toBottomOf="@+id/tfPassword" />
 
         <TextView

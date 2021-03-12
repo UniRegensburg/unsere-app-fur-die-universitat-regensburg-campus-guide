@@ -12,7 +12,7 @@ data class Comment(
     val message: String = "",
     val createdAt: Date = Date(),
     val authorId: String = "",
-    val answers: LinkedList<Comment> = LinkedList()
+    val answers: LinkedList<Comment> = LinkedList(),
 ) : Parcelable {
 
     fun fillAnswers(answerList: List<Comment>) {
