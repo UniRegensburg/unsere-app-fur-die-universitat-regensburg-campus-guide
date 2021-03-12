@@ -25,4 +25,7 @@
         android:layout_marginStart="16dp"
         android:text="@string/route_description"
         android:textColor="@color/textColor"/>
+
+
+
 </RelativeLayout>

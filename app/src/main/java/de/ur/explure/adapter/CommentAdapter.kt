@@ -45,12 +45,11 @@ class CommentAdapter(private val dataSource: LinkedList<Comment>) :
     }
 
     private fun setOnClickListener(holder: ViewHolder, position: Int) {
-        val currentItem = dataSource[position]
         holder.showAnswers.setOnClickListener {
             holder.showAnswers.visibility = View.GONE
             holder.hideAnswers.visibility = View.VISIBLE
             holder.answerItem.visibility = View.VISIBLE
-            holder.answerAuthor.text = currentItem.answers.toString()
+            setAnswers(holder, position)
             notifyDataSetChanged()
         }
         holder.hideAnswers.setOnClickListener {
@@ -59,6 +58,15 @@ class CommentAdapter(private val dataSource: LinkedList<Comment>) :
             holder.showAnswers.visibility = View.VISIBLE
             notifyDataSetChanged()
         }
+    }
+
+    private fun setAnswers(holder: ViewHolder, position: Int) {
+        val currentItem = dataSource[position]
+        for (i in 0 until currentItem.answers.size) {
+            holder.answerAuthor.text = currentItem.answers[i].authorId
+            holder.answerText.text = currentItem.answers[i].message
+            holder.answerDate.text = currentItem.answers[i].createdAt.toString()
+       }
     }
 
     override fun getItemCount(): Int {
