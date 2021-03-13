@@ -9,7 +9,6 @@ import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.fragment.app.Fragment
@@ -60,7 +59,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         }
 
         binding.logOutButton.setOnClickListener {
-            Toast.makeText(activity, "Still to come!", Toast.LENGTH_SHORT).show()
+            viewModel.signOut()
         }
     }
 

@@ -6,10 +6,12 @@ import androidx.lifecycle.viewModelScope
 import de.ur.explure.model.user.User
 import de.ur.explure.navigation.MainAppRouter
 import de.ur.explure.repository.user.UserRepositoryImpl
+import de.ur.explure.services.FirebaseAuthService
 import de.ur.explure.utils.FirebaseResult
 import kotlinx.coroutines.launch
 
 class ProfileViewModel(
+    private val authService: FirebaseAuthService,
     private val userRepo: UserRepositoryImpl,
     private val appRouter: MainAppRouter
 ) : ViewModel() {
@@ -30,6 +32,12 @@ class ProfileViewModel(
         viewModelScope.launch {
             userRepo.updateUserName(newUserName)
             getUserInfo()
+        }
+    }
+
+    fun signOut() {
+        viewModelScope.launch {
+            authService.logout()
         }
     }
 
