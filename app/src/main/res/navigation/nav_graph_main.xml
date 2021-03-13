@@ -10,13 +10,21 @@
         android:name="de.ur.explure.views.DiscoverFragment"
         android:label="DiscoverPage"
         tools:layout="@layout/fragment_discover">
+        <action
+            android:id="@+id/action_discoverFragment_to_textQueryFragment"
+            app:destination="@id/textQueryFragment" />
     </fragment>
 
     <fragment
         android:id="@+id/textQueryFragment"
         android:name="de.ur.explure.views.TextQueryFragment"
         android:label="Search Results"
-        tools:layout="@layout/fragment_text_query" />
+        tools:layout="@layout/fragment_text_query" >
+        <argument
+            android:name="textQueryKey"
+            app:argType="string" />
+    </fragment>
+
     <fragment
         android:id="@+id/categoryQueryFragment"
         android:name="de.ur.explure.views.CategoryQueryFragment"

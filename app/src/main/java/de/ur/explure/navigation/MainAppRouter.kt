@@ -4,7 +4,7 @@ import android.os.Bundle
 import androidx.navigation.NavController
 import de.ur.explure.R
 import de.ur.explure.config.BundleConfig.CATEGORY_QUERY_KEY
-import de.ur.explure.config.BundleConfig.TEXT_QUERY_KEY
+import de.ur.explure.views.DiscoverFragmentDirections
 
 /**
  * Main router class used for navigation operations with the navigation component.
@@ -79,10 +79,9 @@ class MainAppRouter {
         }
     }
 
-    fun navigateToTextSearchResult(query: String) {
-        val bundle = Bundle()
-        bundle.putString(TEXT_QUERY_KEY, query)
-        navController.navigate(R.id.textQueryFragment, bundle)
+    fun navigateToTextSearchResult(textQueryKey: String) {
+        val action = DiscoverFragmentDirections.actionDiscoverFragmentToTextQueryFragment(textQueryKey)
+        navController.navigate(action)
     }
 
     fun navigateToCategoryQuery(categoryId: String) {

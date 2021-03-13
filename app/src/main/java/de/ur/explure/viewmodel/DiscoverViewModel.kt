@@ -99,8 +99,8 @@ class DiscoverViewModel(
         showRouteError.postValue(true)
     }
 
-    fun startTextQuery(query: String) {
-        mainAppRouter.navigateToTextSearchResult(query)
+    fun startTextQuery(textQueryKey: String) {
+        mainAppRouter.navigateToTextSearchResult(textQueryKey)
     }
 
     fun startCategoryQuery(categoryId: String) {
