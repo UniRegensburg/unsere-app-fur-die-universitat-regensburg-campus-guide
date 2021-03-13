@@ -2,6 +2,7 @@ package de.ur.explure.views
 
 import android.os.Bundle
 import android.view.View
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -13,6 +14,7 @@ import de.ur.explure.R
 import de.ur.explure.adapter.CommentAdapter
 import de.ur.explure.adapter.WayPointAdapter
 import de.ur.explure.databinding.FragmentSingleRouteBinding
+import de.ur.explure.model.comment.CommentDTO
 import de.ur.explure.viewmodel.SingleRouteViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.component.KoinComponent
@@ -35,7 +37,7 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinCompon
         singleRouteViewModel.getWayPointData(routeId)
         singleRouteViewModel.getCommentData(routeId)
         initObservers()
-        setOnClickListener()
+        setOnClickListener(routeId)
     }
 
     private fun initObservers() {
@@ -89,7 +91,27 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinCompon
         })
     }
 
-    private fun setOnClickListener() {
+    private fun addComment(routeId: String) {
+            // is that allowed?
+            val comment = CommentDTO(binding.commentInput.text.toString())
+            if (comment.toString().isNotEmpty()) {
+                singleRouteViewModel.addComment(comment, routeId)
+                binding.commentInput.text.clear()
+            }
+    }
+
+    private fun enableAddButton(routeId: String) {
+        binding.addCommentButton.setOnClickListener {
+            val commentInput = binding.commentInput.text.toString()
+            if (commentInput.isNotEmpty()) {
+                addComment(routeId)
+            } else {
+                Toast.makeText(context, R.string.empty_comment, Toast.LENGTH_LONG).show()
+            }
+        }
+    }
+
+    private fun setOnClickListener(routeId: String) {
         binding.descriptionButton.setOnClickListener {
             binding.viewFlipper.displayedChild = 0
         }
@@ -105,5 +127,6 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinCompon
         binding.shareRouteButton.setOnClickListener {
             // share Route
         }
+        enableAddButton(routeId)
     }
 }

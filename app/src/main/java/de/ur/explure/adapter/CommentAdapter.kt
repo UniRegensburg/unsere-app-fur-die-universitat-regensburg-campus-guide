@@ -23,7 +23,7 @@ class CommentAdapter(private val dataSource: LinkedList<Comment>) :
         val answerItem = binding.answerItem
         val answerAuthor = binding.answerAuthor
         val answerText = binding.answerText
-        val answerDate = binding.answertDate
+        val answerDate = binding.answerDate
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {

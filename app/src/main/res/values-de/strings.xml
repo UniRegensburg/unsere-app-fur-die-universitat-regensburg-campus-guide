@@ -66,6 +66,10 @@
     <string name="show_answers">Zeige Antworten</string>
     <string name="comment_date">Datum</string>
     <string name="hide_answers">Verstecke Antworten</string>
+    <string name="comment_input">Kommentar</string>
+    <string name="add_comment">Posten</string>
+    <string name="answer_input">Antwort</string>
+    <string name="empty_comment">Bitte Kommentar eingeben</string>
 
     <string name="discover_new_routes">Neue Routen</string>
     <string name="discover_popular_routes">Beliebte Routen</string>
