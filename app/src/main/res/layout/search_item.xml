@@ -38,7 +38,7 @@
 
 
         <TextView
-            android:id="@+id/search_route_title"
+            android:id="@+id/tv_route_title"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
@@ -53,7 +53,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/search_route_description"
+            android:id="@+id/tv_route_description"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="4dp"
@@ -75,8 +75,8 @@
             android:progressTint="@color/duskYellow"
             android:rating="3.0"
             android:stepSize="0.0"
-            app:layout_constraintStart_toStartOf="@id/search_route_title"
-            app:layout_constraintTop_toBottomOf="@+id/search_route_title" />
+            app:layout_constraintStart_toStartOf="@id/tv_route_title"
+            app:layout_constraintTop_toBottomOf="@+id/tv_route_title" />
 
         <TextView
             android:id="@+id/tv_rating_count"

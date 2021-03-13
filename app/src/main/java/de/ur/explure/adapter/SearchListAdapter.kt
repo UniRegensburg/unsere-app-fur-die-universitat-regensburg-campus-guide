@@ -2,14 +2,25 @@ package de.ur.explure.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import com.google.firebase.storage.FirebaseStorage
+import de.ur.explure.GlideApp
+import de.ur.explure.R
 import de.ur.explure.databinding.SearchItemBinding
 import de.ur.explure.model.route.Route
+import org.koin.core.Koin
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
+import org.koin.java.KoinJavaComponent.inject
+
 
 class SearchListAdapter(private val onClick: (Route) -> Unit) :
-    ListAdapter<Route, SearchListAdapter.RouteViewHolder>(SearchListDiffCallback) {
+    ListAdapter<Route, SearchListAdapter.RouteViewHolder>(SearchListDiffCallback){
+
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RouteViewHolder {
         return RouteViewHolder.from(parent)
@@ -20,11 +31,30 @@ class SearchListAdapter(private val onClick: (Route) -> Unit) :
     }
 
     class RouteViewHolder private constructor(private val binding: SearchItemBinding) :
-        RecyclerView.ViewHolder(binding.root) {
+        RecyclerView.ViewHolder(binding.root), KoinComponent {
+
+        private val fireStorage: FirebaseStorage by inject()
 
         fun bind(data: Route, onClick: (Route) -> Unit) {
-            binding.searchRouteTitle.text = data.title
-            binding.searchRouteDescription.text = data.description
+            if (data.thumbnailUrl.isNotEmpty()) {
+                try {
+                    val gsReference = fireStorage.getReferenceFromUrl(data.thumbnailUrl)
+                    GlideApp.with(itemView)
+                            .load(gsReference)
+                            .error(R.drawable.map_background)
+                            .transition(DrawableTransitionOptions.withCrossFade())
+                            .into(binding.ivRouteThumbnail)
+                } catch (_: Exception) {
+                }
+            }
+            binding.tvRouteTitle.text = data.title
+            binding.tvRouteDescription.text = data.description
+            binding.tvRatingCount.text = "(" + data.rating.size.toString() + ")"
+            binding.tvDistance.text = data.distance.toInt().toString() + " km"
+            binding.tvDuration.text = data.duration.toInt().toString() + " h"
+            binding.tvWayPointCount.text = data.wayPointCount.toString()
+            binding.tvComment.text = data.commentCount.toString()
+            binding.ratingBarRoute.rating = data.currentRating.toFloat()
             binding.root.setOnClickListener {
                 onClick(data)
             }
