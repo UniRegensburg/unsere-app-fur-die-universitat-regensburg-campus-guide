@@ -22,6 +22,30 @@ class TextQueryFragment : Fragment(R.layout.fragment_text_query) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initializeAdapter()
+        observeRouteResult()
+        observeRouteModel()
+    }
+
+    private fun observeRouteModel() {
+        viewModel.searchedRoutes.observe(viewLifecycleOwner, { routes ->
+            searchAdapter.submitList(routes)
+            binding.progressBar.setVisibility(View.GONE)
+            binding.titlePageSearchResult.setVisibility(View.VISIBLE)
+        })
+    }
+
+    private fun observeRouteResult() {
+        viewModel.noRoutes.observe(viewLifecycleOwner, {
+            if (it == true) {
+                binding.progressBar.setVisibility(View.GONE)
+                binding.noResults.setVisibility(View.VISIBLE)
+            }
+        })
+    }
+
+    private fun initializeAdapter() {
+        // viewModel.setupAlgolia()
         val message = args.textQueryKey
         searchAdapter = SearchListAdapter { }
 
@@ -30,19 +54,8 @@ class TextQueryFragment : Fragment(R.layout.fragment_text_query) {
             adapter = searchAdapter
         }
 
-        // viewModel.setupAlgolia()
-
-        observeRouteModel()
-
         if (message != null) {
             viewModel.getSearchedRoutes(message)
         }
-    }
-
-    private fun observeRouteModel() {
-
-        viewModel.searchedRoutes.observe(viewLifecycleOwner, { routes ->
-            searchAdapter.submitList(routes)
-        })
     }
 }

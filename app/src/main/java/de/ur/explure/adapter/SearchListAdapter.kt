@@ -2,7 +2,6 @@ package de.ur.explure.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -12,15 +11,11 @@ import de.ur.explure.GlideApp
 import de.ur.explure.R
 import de.ur.explure.databinding.SearchItemBinding
 import de.ur.explure.model.route.Route
-import org.koin.core.Koin
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import org.koin.java.KoinJavaComponent.inject
-
 
 class SearchListAdapter(private val onClick: (Route) -> Unit) :
-    ListAdapter<Route, SearchListAdapter.RouteViewHolder>(SearchListDiffCallback){
-
+        ListAdapter<Route, SearchListAdapter.RouteViewHolder>(SearchListDiffCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RouteViewHolder {
         return RouteViewHolder.from(parent)
@@ -31,7 +26,7 @@ class SearchListAdapter(private val onClick: (Route) -> Unit) :
     }
 
     class RouteViewHolder private constructor(private val binding: SearchItemBinding) :
-        RecyclerView.ViewHolder(binding.root), KoinComponent {
+            RecyclerView.ViewHolder(binding.root), KoinComponent {
 
         private val fireStorage: FirebaseStorage by inject()
 
@@ -63,7 +58,7 @@ class SearchListAdapter(private val onClick: (Route) -> Unit) :
         companion object {
             fun from(parent: ViewGroup): RouteViewHolder {
                 val binding =
-                    SearchItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+                        SearchItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
                 return RouteViewHolder(binding)
             }
         }

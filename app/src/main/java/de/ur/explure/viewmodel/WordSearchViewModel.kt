@@ -20,6 +20,7 @@ class WordSearchViewModel(
 ) : ViewModel() {
 
     var searchedRoutes: MutableLiveData<List<Route>> = MutableLiveData()
+    var noRoutes = MutableLiveData<Boolean>(false)
 
     fun getSearchedRoutes(message: String) {
         viewModelScope.launch {
@@ -35,6 +36,10 @@ class WordSearchViewModel(
 
             val resultIDs = mutableListOf<String>()
 
+            if (resultIDs.isNullOrEmpty()) {
+                noRoutes.postValue(true)
+            }
+
             for (i in resultQuery.indices) {
                 val resultID = resultQuery.get(i).json.get("objectID").toString()
                 val trimResultID = resultID.removePrefix(("\"")).removeSuffix(("\""))
@@ -46,7 +51,7 @@ class WordSearchViewModel(
 
             when (routeLists) {
                 is FirebaseResult.Success -> {
-                    searchedRoutes.postValue(routeLists.data)
+                    searchedRoutes.postValue(routeLists.data!!)
                     Timber.d(routeLists.toString())
                 }
             }
