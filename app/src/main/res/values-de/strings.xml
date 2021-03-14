@@ -33,4 +33,8 @@
     <!--Test Strings-->
     <string name="lorem_ipsum">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.  </string>
     <string name="arbeits_button">Arbeiten</string>
+
+    <!-- SearchFragment Strings-->
+    <string name="title_page_searchresults">Ergebnisse deiner Suche</string>
+    <string name="no_results">Keine Suchergebnisse</string>
 </resources>
