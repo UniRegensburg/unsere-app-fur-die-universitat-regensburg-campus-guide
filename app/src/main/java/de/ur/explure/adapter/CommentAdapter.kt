@@ -3,16 +3,17 @@ package de.ur.explure.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import de.ur.explure.databinding.CommentItemBinding
 import de.ur.explure.model.comment.Comment
-import java.util.*
 
 class CommentAdapter(private val listener: (String, String) -> Unit) :
         RecyclerView.Adapter<CommentAdapter.ViewHolder>() {
 
     private var firstLoading: Boolean = true
     private var commentList: MutableList<Comment> = mutableListOf()
+    private val viewPool = RecyclerView.RecycledViewPool()
 
     fun setItems(comments: List<Comment>) {
         commentList = comments.toMutableList()
@@ -26,9 +27,6 @@ class CommentAdapter(private val listener: (String, String) -> Unit) :
         val showAnswers = binding.showAnswers
         val hideAnswers = binding.hideAnswers
         val answerItem = binding.answerItem
-        val answerAuthor = binding.answerAuthor
-        val answerText = binding.answerText
-        val answerDate = binding.answerDate
         val answerInput = binding.answerInput
         val answerButton = binding.addAnswerButton
     }
@@ -59,7 +57,7 @@ class CommentAdapter(private val listener: (String, String) -> Unit) :
             holder.showAnswers.visibility = View.GONE
             holder.hideAnswers.visibility = View.VISIBLE
             holder.answerItem.visibility = View.VISIBLE
-            setAnswers(holder, position)
+            initAdapter(holder, position)
             notifyDataSetChanged()
         }
         holder.hideAnswers.setOnClickListener {
@@ -70,13 +68,14 @@ class CommentAdapter(private val listener: (String, String) -> Unit) :
         }
     }
 
-    private fun setAnswers(holder: ViewHolder, position: Int) {
-        val currentItem = commentList[position]
-        for (i in 0 until currentItem.answers.size) {
-            holder.answerAuthor.text = currentItem.answers[i].authorId
-            holder.answerText.text = currentItem.answers[i].message
-            holder.answerDate.text = currentItem.answers[i].createdAt.toString()
-       }
+    private fun initAdapter(holder: ViewHolder, position: Int) {
+        val layoutManager = LinearLayoutManager(holder.answerItem.context, RecyclerView.VERTICAL, false)
+        layoutManager.initialPrefetchItemCount = commentList[position].answers.size
+        val answerAdapter = AnswerAdapter()
+        holder.answerItem.layoutManager = layoutManager
+        holder.answerItem.adapter = answerAdapter
+        holder.answerItem.setRecycledViewPool(viewPool)
+        answerAdapter.setItems(commentList[position].answers)
     }
 
     override fun getItemCount(): Int {

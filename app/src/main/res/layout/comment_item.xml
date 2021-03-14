@@ -3,8 +3,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="10dp">
+    android:orientation="horizontal"
+    android:padding="8dp">
 
     <TextView
         android:id="@+id/comment_author"
@@ -94,50 +94,14 @@
         android:layout_below="@+id/answer_input"
         android:visibility="gone"/>
 
-    <RelativeLayout
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/answer_item"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:layout_marginStart="24dp"
-        android:layout_marginEnd="24dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
         android:layout_below="@id/hide_answers"
-        android:visibility="gone">
-
-        <TextView
-            android:id="@+id/answer_author"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginBottom="8dp"
-            android:layout_alignParentStart="true"
-            android:text="@string/comment_author"
-            android:textStyle="bold"
-            android:textColor="@color/textColor"/>
-
-        <TextView
-            android:id="@+id/answer_text"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_alignParentStart="true"
-            android:layout_below="@+id/answer_author"
-            android:text="@string/comment_text"
-            android:textColor="@color/textColor"/>
-
-        <TextView
-            android:id="@+id/answer_date"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:layout_marginStart="8dp"
-            android:layout_alignParentStart="true"
-            android:layout_below="@+id/answer_text"
-            android:text="@string/comment_text"
-            android:textColor="@color/textColor"
-            android:textSize="12sp"
-            android:textStyle="italic"/>
-
-    </RelativeLayout>
+        android:visibility="gone"/>
 
 </RelativeLayout>

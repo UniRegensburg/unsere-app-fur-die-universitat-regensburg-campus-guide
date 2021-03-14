@@ -18,7 +18,6 @@ import de.ur.explure.viewmodel.SingleRouteViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import java.util.*
 
 class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinComponent {
 
@@ -52,15 +51,13 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinCompon
 
     private fun initObservers() {
         observeRouteInformation()
-        // observeWayPoints()
     }
 
     private fun observeRouteInformation() {
         singleRouteViewModel.route.observe(viewLifecycleOwner, { route ->
             if (route != null) {
-
-                // WayPoints setzen
                 wayPointAdapter.setItems(route.wayPoints)
+
                 // Comments setzen
                 commentAdapter.setItems(route.comments)
 
@@ -74,10 +71,10 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinCompon
                     try {
                         val gsReference = fireStorage.getReferenceFromUrl(route.thumbnailUrl)
                         GlideApp.with(requireContext())
-                            .load(gsReference)
-                            .error(R.drawable.map_background)
-                            .transition(DrawableTransitionOptions.withCrossFade())
-                            .into(binding.routeImage)
+                                .load(gsReference)
+                                .error(R.drawable.map_background)
+                                .transition(DrawableTransitionOptions.withCrossFade())
+                                .into(binding.routeImage)
                     } catch (_: Exception) {
                     }
                 }
