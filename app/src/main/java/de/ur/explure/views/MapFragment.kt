@@ -168,6 +168,9 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
 
         binding.changeStyleButton.setOnClickListener {
             showMapStyleOptions(layoutResource = R.layout.popup_list_item)
+
+            // TODO remove this later:
+            showSnackbar(requireActivity(), "Snackbar Color Test")
         }
 
         binding.ownLocationButton.setOnClickListener {
@@ -367,7 +370,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
             showSnackbar(
                 "Du musst mindestens 2 Punkte auf der Karte auswählen, damit eine Route erstellt werden kann!",
                 binding.mapButtonContainer,
-                colorRes = R.color.color_error
+                colorRes = R.color.colorError
             )
             return
         }
@@ -420,7 +423,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
                             showSnackbar(
                                 requireActivity(),
                                 "Couldn't get any map matchings for the waypoints!",
-                                colorRes = R.color.color_error
+                                colorRes = R.color.colorError
                             )
                             return
                         }
@@ -429,8 +432,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
                             showSnackbar(
                                 requireActivity(),
                                 "Successfully mapmatched the given waypoints! Found " +
-                                        "${allMatchings.size} possible route options.",
-                                colorRes = R.color.colorAccent
+                                        "${allMatchings.size} possible route options."
                             )
                             showMapMatchedRoute(it)
                         }
@@ -714,7 +716,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
                     R.string.gps_not_activated,
                     binding.mapButtonContainer, // ! needs to be a coordinatorLayout to work correctly
                     Snackbar.LENGTH_LONG,
-                    colorRes = R.color.color_warning
+                    colorRes = R.color.colorWarning
                 )
                 return
             }
@@ -746,7 +748,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
                 R.string.location_permission_not_given,
                 binding.mapButtonContainer,
                 Snackbar.LENGTH_LONG,
-                colorRes = R.color.color_warning
+                colorRes = R.color.colorWarning
             )
         }
     }
@@ -757,7 +759,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
             R.string.location_permission_explanation,
             binding.mapButtonContainer,
             Snackbar.LENGTH_LONG,
-            colorRes = R.color.color_info
+            colorRes = R.color.colorInfo
         )
     }
 

@@ -24,7 +24,7 @@
         android:layout_marginStart="24dp"
         android:layout_marginTop="24dp"
         android:text="@string/arbeits_button"
-        android:textColor="@color/colorPrimary"
+        android:textColor="@color/themeColor"
         android:textSize="36sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -51,14 +51,14 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/lorem_ipsum"
-                android:textColor="@color/colorPrimaryDark" />
+                android:textColor="@color/themeColorDark" />
 
             <TextView
                 android:id="@+id/textViewTest2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/lorem_ipsum"
-                android:textColor="@color/colorPrimaryDark"
+                android:textColor="@color/themeColorDark"
                 android:layout_below="@id/textViewTest"
                 />
 

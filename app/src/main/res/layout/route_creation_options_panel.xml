@@ -31,7 +31,7 @@
         android:background="@drawable/icon_button_border"
         android:padding="8dp"
         android:src="@drawable/ic_baseline_add_location_alt_24"
-        android:tint="@color/colorAccent"
+        android:tint="@color/themeColor"
         tools:ignore="ContentDescription" />
 
     <ImageButton
@@ -44,7 +44,7 @@
         android:background="@drawable/icon_button_border"
         android:padding="8dp"
         android:src="@drawable/ic_baseline_edit_location_alt_24"
-        android:tint="@color/color_info"
+        android:tint="@color/colorInfo"
         tools:ignore="ContentDescription" />
 
     <ImageButton
@@ -57,7 +57,7 @@
         android:background="@drawable/icon_button_border"
         android:padding="8dp"
         android:src="@drawable/ic_baseline_wrong_location_24"
-        android:tint="@color/color_error"
+        android:tint="@color/colorError"
         tools:ignore="ContentDescription" />
 
     <!-- TODO schöneren ripple effekt als das machen! -->
@@ -73,7 +73,7 @@
         android:background="@drawable/icon_button_border"
         android:foreground="?attr/selectableItemBackgroundBorderless"
         android:src="@drawable/ic_baseline_delete_24"
-        android:tint="@color/color_error"
+        android:tint="@color/colorError"
         tools:ignore="ContentDescription" />
 
     <!-- TODO alternativ auch so möglich mit Text dazu: -->

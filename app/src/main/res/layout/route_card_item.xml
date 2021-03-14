@@ -11,15 +11,14 @@
     android:clickable="true"
     android:focusable="true"
     android:foreground="?android:attr/selectableItemBackground"
-    app:cardBackgroundColor="@android:color/white"
     card_view:cardCornerRadius="@dimen/cardview_corner_radius"
     card_view:cardElevation="@dimen/cardview_default_elevation">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:paddingBottom="10dp"
-        android:background="@android:color/transparent">
+        android:background="@android:color/transparent"
+        android:paddingBottom="10dp">
 
         <ImageView
             android:id="@+id/iv_route_thumbnail"
@@ -42,7 +41,6 @@
             android:lines="2"
             android:maxLines="2"
             android:text="@string/route_item_title"
-            android:textColor="@color/textColor"
             android:textSize="16sp"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
@@ -82,7 +80,6 @@
             android:src="@drawable/ic_waypoints"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/rating_bar_route"
-            app:tint="@color/textColor"
             tools:ignore="ContentDescription" />
 
         <TextView
@@ -106,7 +103,6 @@
             android:src="@drawable/ic_duration"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/rating_bar_route"
-            app:tint="@color/textColor"
             tools:ignore="ContentDescription" />
 
         <TextView
@@ -129,7 +125,6 @@
             android:src="@drawable/ic_comment"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/iv_duration_icon"
-            app:tint="@color/textColor"
             tools:ignore="ContentDescription" />
 
         <TextView
@@ -152,7 +147,6 @@
             android:src="@drawable/ic_distance"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/iv_waypoint_icon"
-            app:tint="@color/textColor"
             tools:ignore="ContentDescription" />
 
         <TextView
