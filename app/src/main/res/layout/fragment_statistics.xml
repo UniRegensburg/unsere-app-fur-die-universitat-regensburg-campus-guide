@@ -34,7 +34,7 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:stretchColumns="0,1"
-            android:padding="20dp">
+            android:padding="8dp">
 
             <TableRow>
                 <TextView
@@ -44,60 +44,131 @@
                     android:textSize="20sp"
                     android:textStyle="bold"
                     android:fontFamily="serif-monospace"
-                    android:gravity="center|center_vertical"
+                    android:gravity="center"
                     android:padding="1dp"
                     android:background="@drawable/button_border"/>
             </TableRow>
             <TableRow>
-                <TextView
+                <RelativeLayout
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/covered_track"
-                    android:textSize="20sp"
-                    android:gravity="start|center_vertical"
-                    android:padding="20dp"
-                    android:background="@drawable/button_border"/>
-                <TextView
-                    android:id="@+id/traveledDistanceTextView"
+                    android:layout_margin="16dp"
+                    android:background="@drawable/button_border"
+                    android:gravity="center">
+
+                    <ImageView
+                        android:id="@+id/coveredTrackStatisticImageView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:padding="10dp"
+                        android:src="@drawable/covered_track_statistic_icon" />
+
+                    <RelativeLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toEndOf="@id/coveredTrackStatisticImageView"
+                        android:layout_centerVertical="true">
+                        <TextView
+                            android:id="@+id/traveledDistanceTermTextView"
+                            android:layout_height="wrap_content"
+                            android:layout_width="wrap_content"
+                            android:layout_margin="5dp"
+                            android:text="@string/covered_track"
+                            android:textSize="12sp" />
+                        <TextView
+                            android:id="@+id/traveledDistanceTextView"
+                            android:layout_height="wrap_content"
+                            android:layout_width="wrap_content"
+                            android:layout_margin="5dp"
+                            android:layout_below="@id/traveledDistanceTermTextView"
+                            android:layout_centerHorizontal="true"
+                            android:text="@string/covered_track_value"
+                            android:textSize="12sp" />
+                    </RelativeLayout>
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/covered_track_value"
-                    android:textSize="20sp"
-                    android:gravity="end|center_vertical"
-                    android:padding="20dp"
-                    android:background="@drawable/button_border"/>
+                    android:layout_margin="16dp"
+                    android:background="@drawable/button_border"
+                    android:gravity="center">
+
+                    <ImageView
+                        android:id="@+id/startedRoutesStatisticImageView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:padding="10dp"
+                        android:src="@drawable/started_routes_statistic_icon" />
+
+                    <RelativeLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toEndOf="@id/startedRoutesStatisticImageView"
+                        android:layout_centerVertical="true">
+                        <TextView
+                            android:id="@+id/startedRoutesTermTextView"
+                            android:layout_height="wrap_content"
+                            android:layout_width="wrap_content"
+                            android:layout_margin="5dp"
+                            android:text="@string/started_routes"
+                            android:textSize="12sp" />
+                        <TextView
+                            android:id="@+id/startedRoutesTextView"
+                            android:layout_height="wrap_content"
+                            android:layout_width="wrap_content"
+                            android:layout_margin="5dp"
+                            android:layout_below="@id/startedRoutesTermTextView"
+                            android:layout_centerHorizontal="true"
+                            android:text="@string/started_routes_value"
+                            android:textSize="12sp" />
+                    </RelativeLayout>
+
+                </RelativeLayout>
             </TableRow>
             <TableRow>
-                <TextView
+                <RelativeLayout
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/started_routes"
-                    android:textSize="20sp"
-                    android:gravity="start|center_vertical"
-                    android:padding="20dp"
-                    android:background="@drawable/button_border"/>
-                <TextView
-                    android:id="@+id/startedRoutesTextView"
-                    android:layout_height="wrap_content"
-                    android:text="@string/started_routes_value"
-                    android:textSize="20sp"
-                    android:gravity="end|center_vertical"
-                    android:padding="20dp"
-                    android:background="@drawable/button_border"/>
-            </TableRow>
-            <TableRow>
-                <TextView
-                    android:layout_height="wrap_content"
-                    android:text="@string/ended_routes"
-                    android:textSize="20sp"
-                    android:gravity="start|center_vertical"
-                    android:padding="20dp"
-                    android:background="@drawable/button_border"/>
-                <TextView
-                    android:id="@+id/endedRoutesTextView"
-                    android:layout_height="wrap_content"
-                    android:text="@string/ended_routes_value"
-                    android:textSize="20sp"
-                    android:gravity="end|center_vertical"
-                    android:padding="20dp"
-                    android:background="@drawable/button_border"/>
+                    android:layout_margin="16dp"
+                    android:background="@drawable/button_border"
+                    android:gravity="center">
+
+                    <ImageView
+                        android:id="@+id/endedRoutesStatisticImageView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:padding="10dp"
+                        android:src="@drawable/finished_routes_statistic_icon" />
+
+                    <RelativeLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toEndOf="@id/endedRoutesStatisticImageView"
+                        android:layout_centerVertical="true">
+                        <TextView
+                            android:id="@+id/endedRoutesTermTextView"
+                            android:layout_height="wrap_content"
+                            android:layout_width="wrap_content"
+                            android:layout_margin="5dp"
+                            android:text="@string/ended_routes"
+                            android:textSize="12sp" />
+                        <TextView
+                            android:id="@+id/endedRoutesTextView"
+                            android:layout_height="wrap_content"
+                            android:layout_width="wrap_content"
+                            android:layout_margin="5dp"
+                            android:layout_below="@id/endedRoutesTermTextView"
+                            android:layout_centerHorizontal="true"
+                            android:text="@string/ended_routes_value"
+                            android:textSize="12sp" />
+                    </RelativeLayout>
+
+                </RelativeLayout>
             </TableRow>
             <TableRow>
                 <TextView
@@ -108,43 +179,89 @@
                     android:textStyle="bold"
                     android:fontFamily="serif-monospace"
                     android:gravity="center|center_vertical"
-                    android:layout_marginTop="12dp"
                     android:padding="1dp"
                     android:background="@drawable/button_border"/>
             </TableRow>
             <TableRow>
-                <TextView
+                <RelativeLayout
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/created_routes"
-                    android:textSize="20sp"
-                    android:gravity="start|center_vertical"
-                    android:padding="20dp"
-                    android:background="@drawable/button_border"/>
-                <TextView
-                    android:id="@+id/createdRoutesTextView"
+                    android:layout_margin="16dp"
+                    android:background="@drawable/button_border"
+                    android:gravity="center">
+
+                    <ImageView
+                        android:id="@+id/createdRoutesStatisticImageView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:padding="10dp"
+                        android:src="@drawable/created_routes_statistic_icon" />
+
+                    <RelativeLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toEndOf="@id/createdRoutesStatisticImageView"
+                        android:layout_centerVertical="true">
+                        <TextView
+                            android:id="@+id/createdRoutesTermTextView"
+                            android:layout_height="wrap_content"
+                            android:layout_width="wrap_content"
+                            android:layout_margin="5dp"
+                            android:text="@string/created_routes"
+                            android:textSize="12sp" />
+                        <TextView
+                            android:id="@+id/createdRoutesTextView"
+                            android:layout_height="wrap_content"
+                            android:layout_width="wrap_content"
+                            android:layout_margin="5dp"
+                            android:layout_below="@id/createdRoutesTermTextView"
+                            android:layout_centerHorizontal="true"
+                            android:text="@string/created_routes_value"
+                            android:textSize="12sp" />
+                    </RelativeLayout>
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/created_routes_value"
-                    android:textSize="20sp"
-                    android:gravity="end|center_vertical"
-                    android:padding="20dp"
-                    android:background="@drawable/button_border"/>
-            </TableRow>
-            <TableRow>
-                <TextView
-                    android:layout_height="wrap_content"
-                    android:text="@string/created_landmarks"
-                    android:textSize="20sp"
-                    android:gravity="start|center_vertical"
-                    android:padding="20dp"
-                    android:background="@drawable/button_border"/>
-                <TextView
-                    android:id="@+id/createdLandmarksTextView"
-                    android:layout_height="wrap_content"
-                    android:text="@string/created_landmarks_value"
-                    android:textSize="20sp"
-                    android:gravity="end|center_vertical"
-                    android:padding="20dp"
-                    android:background="@drawable/button_border"/>
+                    android:layout_margin="16dp"
+                    android:background="@drawable/button_border"
+                    android:gravity="center">
+
+                    <ImageView
+                        android:id="@+id/createdLandmarksStatisticImageView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:padding="10dp"
+                        android:src="@drawable/created_landmarks_statistic_icon" />
+
+                    <RelativeLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toEndOf="@id/createdLandmarksStatisticImageView"
+                        android:layout_centerVertical="true">
+                        <TextView
+                            android:id="@+id/createdLandmarksTermTextView"
+                            android:layout_height="wrap_content"
+                            android:layout_width="wrap_content"
+                            android:layout_margin="5dp"
+                            android:text="@string/created_landmarks"
+                            android:textSize="12sp" />
+                        <TextView
+                            android:id="@+id/createdLandmarksTextView"
+                            android:layout_height="wrap_content"
+                            android:layout_width="wrap_content"
+                            android:layout_margin="5dp"
+                            android:layout_below="@id/createdLandmarksTermTextView"
+                            android:layout_centerHorizontal="true"
+                            android:text="@string/created_landmarks_value"
+                            android:textSize="12sp" />
+                    </RelativeLayout>
+
+                </RelativeLayout>
             </TableRow>
             <TableRow>
                 <TextView
@@ -155,43 +272,88 @@
                     android:textStyle="bold"
                     android:fontFamily="serif-monospace"
                     android:gravity="center|center_vertical"
-                    android:layout_marginTop="12dp"
                     android:padding="1dp"
                     android:background="@drawable/button_border"/>
             </TableRow>
             <TableRow>
-                <TextView
+                <RelativeLayout
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/comments"
-                    android:textSize="20sp"
-                    android:gravity="start|center_vertical"
-                    android:padding="20dp"
-                    android:background="@drawable/button_border"/>
-                <TextView
-                    android:id="@+id/createdCommentsTextView"
+                    android:layout_margin="16dp"
+                    android:background="@drawable/button_border"
+                    android:gravity="center">
+
+                    <ImageView
+                        android:id="@+id/createdCommentsStatisticImageView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:padding="10dp"
+                        android:src="@drawable/created_comments_statistic_icon" />
+
+                    <RelativeLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toEndOf="@id/createdCommentsStatisticImageView"
+                        android:layout_centerVertical="true">
+                        <TextView
+                            android:id="@+id/createdCommentsTermTextView"
+                            android:layout_height="wrap_content"
+                            android:layout_width="wrap_content"
+                            android:layout_margin="5dp"
+                            android:text="@string/comments"
+                            android:textSize="12sp" />
+                        <TextView
+                            android:id="@+id/createdCommentsTextView"
+                            android:layout_height="wrap_content"
+                            android:layout_width="wrap_content"
+                            android:layout_margin="5dp"
+                            android:layout_below="@id/createdCommentsTermTextView"
+                            android:layout_centerHorizontal="true"
+                            android:text="@string/comments_value"
+                            android:textSize="12sp" />
+                    </RelativeLayout>
+
+                </RelativeLayout>
+                <RelativeLayout
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/comments_value"
-                    android:textSize="20sp"
-                    android:gravity="end|center_vertical"
-                    android:padding="20dp"
-                    android:background="@drawable/button_border"/>
-            </TableRow>
-            <TableRow>
-                <TextView
-                    android:layout_height="wrap_content"
-                    android:text="@string/ratings"
-                    android:textSize="20sp"
-                    android:gravity="start|center_vertical"
-                    android:padding="20dp"
-                    android:background="@drawable/button_border"/>
-                <TextView
-                    android:id="@+id/createdRatingsTextView"
-                    android:layout_height="wrap_content"
-                    android:text="@string/ratings_value"
-                    android:textSize="20sp"
-                    android:gravity="end|center_vertical"
-                    android:padding="20dp"
-                    android:background="@drawable/button_border"/>
+                    android:layout_margin="16dp"
+                    android:background="@drawable/button_border"
+                    android:gravity="center">
+
+                    <ImageView
+                        android:id="@+id/createdRatingsStatisticImageView"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:padding="10dp"
+                        android:src="@drawable/created_ratings_statistic_icon" />
+
+                    <RelativeLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toEndOf="@id/createdRatingsStatisticImageView"
+                        android:layout_centerVertical="true">
+                        <TextView
+                            android:id="@+id/createdRatingsTermTextView"
+                            android:layout_height="wrap_content"
+                            android:layout_width="wrap_content"
+                            android:layout_margin="5dp"
+                            android:text="@string/ratings"
+                            android:textSize="12sp" />
+                        <TextView
+                            android:id="@+id/createdRatingsTextView"
+                            android:layout_height="wrap_content"
+                            android:layout_width="wrap_content"
+                            android:layout_margin="5dp"
+                            android:layout_below="@id/createdRatingsTermTextView"
+                            android:layout_centerHorizontal="true"
+                            android:text="@string/ratings_value"
+                            android:textSize="12sp" />
+                    </RelativeLayout>
+
+                </RelativeLayout>
             </TableRow>
 
         </TableLayout>
