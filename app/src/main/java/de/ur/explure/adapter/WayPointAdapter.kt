@@ -1,6 +1,7 @@
 package de.ur.explure.adapter
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import de.ur.explure.databinding.WaypointItemBinding
@@ -19,6 +20,9 @@ class WayPointAdapter : RecyclerView.Adapter<WayPointAdapter.ViewHolder>() {
     inner class ViewHolder(binding: WaypointItemBinding) : RecyclerView.ViewHolder(binding.root) {
         val wayPointTitle = binding.wayPointTitle
         val wayPointDescription = binding.wayPointDescription
+        val hasImage = binding.wayPointHasImage
+        val hasVideo = binding.wayPointHasVideo
+        val hasAudio = binding.wayPointHasAudio
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -31,6 +35,20 @@ class WayPointAdapter : RecyclerView.Adapter<WayPointAdapter.ViewHolder>() {
         val currentItem = wayPointList[position]
         holder.wayPointTitle.text = currentItem.title
         holder.wayPointDescription.text = currentItem.description
+        setExtras(holder, position)
+    }
+
+    private fun setExtras(holder: ViewHolder, position: Int) {
+        val currentItem = wayPointList[position]
+            if (!currentItem.imageURL.isNullOrEmpty()) {
+                holder.hasImage.visibility = View.VISIBLE
+            }
+            if (!currentItem.videoURL.isNullOrEmpty()) {
+                holder.hasVideo.visibility = View.VISIBLE
+            }
+            if (!currentItem.audioURL.isNullOrEmpty()) {
+                holder.hasAudio.visibility = View.VISIBLE
+            }
     }
 
     override fun getItemCount(): Int {

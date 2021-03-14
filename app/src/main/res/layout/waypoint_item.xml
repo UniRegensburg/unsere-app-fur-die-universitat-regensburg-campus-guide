@@ -45,7 +45,8 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentTop="true"
         android:background="@drawable/ic_image"
-        android:contentDescription="@string/waypoints"/>
+        android:contentDescription="@string/waypoints"
+        android:visibility="gone"/>
 
     <ImageView
         android:id="@+id/wayPoint_has_video"
@@ -55,7 +56,8 @@
         android:layout_alignParentEnd="true"
         android:layout_below="@id/wayPoint_has_image"
         android:background="@drawable/ic_video"
-        android:contentDescription="@string/waypoints"/>
+        android:contentDescription="@string/waypoints"
+        android:visibility="gone"/>
 
     <ImageView
         android:id="@+id/wayPoint_has_audio"
@@ -65,6 +67,7 @@
         android:layout_alignParentEnd="true"
         android:layout_below="@id/wayPoint_has_video"
         android:background="@drawable/ic_audio"
-        android:contentDescription="@string/waypoints"/>
+        android:contentDescription="@string/waypoints"
+        android:visibility="gone"/>
 
 </RelativeLayout>
