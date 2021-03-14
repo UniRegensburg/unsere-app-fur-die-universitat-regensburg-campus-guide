@@ -25,7 +25,7 @@ class RouteLineManager(
 ) : DefaultLifecycleObserver {
 
     private val defaultLineColor = Color.RED
-    private val currentLines = mutableListOf<Line>()
+    // private val currentLines = mutableListOf<Line>()
 
     private val lineManager: LineManager = LineManager(mapView, map, mapStyle)
 
@@ -46,8 +46,6 @@ class RouteLineManager(
     }
 
     fun clearAllLines() {
-        //  currentLines.clear()
-        // TODO does this work as well?
         lineManager.deleteAll()
     }
 
@@ -59,16 +57,13 @@ class RouteLineManager(
 
     @Suppress("MagicNumber")
     private fun createLine(lineCoords: List<LatLng>, color: Int = defaultLineColor): Line? {
-        val line = lineManager.create(
+        return lineManager.create(
             LineOptions()
                 .withLatLngs(lineCoords)
                 .withLineColor(ColorUtils.colorToRgbaString(color))
                 .withLineWidth(5.0f)
                 .withLineOpacity(1.0f)
-                // TODO set arrow icon on end of line
         )
-        currentLines.add(line)
-        return line
     }
 
     override fun onDestroy(owner: LifecycleOwner) {

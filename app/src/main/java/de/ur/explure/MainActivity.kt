@@ -11,12 +11,13 @@ import androidx.navigation.ui.onNavDestinationSelected
 import androidx.navigation.ui.setupWithNavController
 import com.crazylegend.viewbinding.viewBinder
 import de.ur.explure.databinding.ActivityMainBinding
-import de.ur.explure.navigation.MainAppRouter
-import de.ur.explure.extensions.setupWithNavController
 import de.ur.explure.map.PermissionHelper
+import de.ur.explure.navigation.MainAppRouter
 import de.ur.explure.viewmodel.MainViewModel
+import de.ur.explure.viewmodel.MapViewModel
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.androidx.viewmodel.scope.emptyState
 
 /**
  * Main activity of the single activity application.
@@ -27,6 +28,7 @@ class MainActivity : AppCompatActivity() {
     // Uses this library to reduce viewbinding boilerplate code: https://github.com/FunkyMuse/KAHelpers/tree/master/viewbinding
     private val activityMainBinding by viewBinder(ActivityMainBinding::inflate)
 
+    private val mapViewModel: MapViewModel by viewModel(state = emptyState())
     private val mainViewModel: MainViewModel by viewModel()
     private val mainAppRouter: MainAppRouter by inject()
 
@@ -42,6 +44,7 @@ class MainActivity : AppCompatActivity() {
 
         setupBottomNavigation()
         setupToolbar()
+        setupViewModelObservers()
 
         // only set the auth state observer if the activity is created from scratch
         if (savedInstanceState == null) {
@@ -56,6 +59,17 @@ class MainActivity : AppCompatActivity() {
         setupBottomNavigation()
         setupToolbar()
     }*/
+
+    private fun setupViewModelObservers() {
+        mapViewModel.manualRouteCreationModeActive.observe(this, { active ->
+            // hide the bottom navigation bar when the user enters route creation mode on the map
+            if (active) {
+                activityMainBinding.bottomNav.visibility = View.GONE
+            } else {
+                activityMainBinding.bottomNav.visibility = View.VISIBLE
+            }
+        })
+    }
 
     private fun setupBottomNavigation() {
         activityMainBinding.bottomNav.setupWithNavController(navController)
