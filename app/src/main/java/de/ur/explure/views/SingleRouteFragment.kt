@@ -14,6 +14,7 @@ import de.ur.explure.R
 import de.ur.explure.adapter.CommentAdapter
 import de.ur.explure.adapter.WayPointAdapter
 import de.ur.explure.databinding.FragmentSingleRouteBinding
+import de.ur.explure.model.route.Route
 import de.ur.explure.viewmodel.SingleRouteViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.component.KoinComponent
@@ -57,29 +58,29 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinCompon
         singleRouteViewModel.route.observe(viewLifecycleOwner, { route ->
             if (route != null) {
                 wayPointAdapter.setItems(route.wayPoints)
-
-                // Comments setzen
                 commentAdapter.setItems(route.comments)
-
-                // Routen Info setzen
                 binding.routeName.text = route.title
                 binding.routeDescription.text = route.description
                 binding.routeDuration.text = getString(R.string.route_item_duration, route.duration.toInt())
                 binding.routeDistance.text = getString(R.string.route_item_distance, route.distance.toInt())
                 binding.routeRating.rating = route.currentRating.toFloat()
-                if (route.thumbnailUrl.isNotEmpty()) {
-                    try {
-                        val gsReference = fireStorage.getReferenceFromUrl(route.thumbnailUrl)
-                        GlideApp.with(requireContext())
-                                .load(gsReference)
-                                .error(R.drawable.map_background)
-                                .transition(DrawableTransitionOptions.withCrossFade())
-                                .into(binding.routeImage)
-                    } catch (_: Exception) {
-                    }
-                }
+                setImage(route)
             }
         })
+    }
+
+    private fun setImage(route: Route) {
+        if (route.thumbnailUrl.isNotEmpty()) {
+            try {
+                val gsReference = fireStorage.getReferenceFromUrl(route.thumbnailUrl)
+                GlideApp.with(requireContext())
+                        .load(gsReference)
+                        .error(R.drawable.map_background)
+                        .transition(DrawableTransitionOptions.withCrossFade())
+                        .into(binding.routeImage)
+            } catch (_: Exception) {
+            }
+        }
     }
 
     private fun setOnClickListener() {
