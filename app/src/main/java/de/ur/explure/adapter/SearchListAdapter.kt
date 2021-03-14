@@ -43,8 +43,6 @@ class SearchListAdapter(private val onClick: (Route) -> Unit) :
                 } catch (_: Exception) {
                 }
             }
-            itemView.context.resources.getString(R.string.route_item_rating, data.rating.size)
-            /*todo: import correct getString method instead of concatenade text*/
 
             binding.tvRouteTitle.text = data.title
             binding.tvRouteDescription.text = data.description
