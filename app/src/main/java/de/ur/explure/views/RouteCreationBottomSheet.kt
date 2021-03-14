@@ -15,14 +15,16 @@ import de.ur.explure.extensions.initHidden
 import de.ur.explure.extensions.show
 import de.ur.explure.model.waypoint.WayPoint
 import de.ur.explure.viewmodel.MapViewModel
-import org.koin.androidx.viewmodel.ext.android.getViewModel
+import org.koin.androidx.viewmodel.ext.android.sharedViewModel
+import org.koin.androidx.viewmodel.scope.emptyState
 
 class RouteCreationBottomSheet : Fragment(R.layout.route_creation_bottomsheet) {
 
     private val binding by viewBinding(RouteCreationBottomsheetBinding::bind)
 
     // see https://stackoverflow.com/questions/59094242/get-sharedviewmodel-in-childfragment-using-koin-and-navargs
-    private val mapViewModel: MapViewModel by lazy { requireParentFragment().getViewModel() }
+    // private val mapViewModel: MapViewModel by lazy { requireParentFragment().getViewModel() }
+    private val mapViewModel: MapViewModel by sharedViewModel(state = emptyState())
 
     private var routeCreationAdapter: RouteCreationAdapter? = null
 

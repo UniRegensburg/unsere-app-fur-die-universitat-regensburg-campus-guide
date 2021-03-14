@@ -73,7 +73,6 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
 
     // Setting the state as emptyState as a workaround for this issue: https://github.com/InsertKoinIO/koin/issues/963
     // private val mapViewModel: MapViewModel by viewModel(state = emptyState())
-
     private val mapViewModel: MapViewModel by sharedViewModel(state = emptyState())
 
     // SharedPrefs

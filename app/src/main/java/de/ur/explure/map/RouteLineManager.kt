@@ -15,6 +15,7 @@ import com.mapbox.mapboxsdk.plugins.annotation.Line
 import com.mapbox.mapboxsdk.plugins.annotation.LineManager
 import com.mapbox.mapboxsdk.plugins.annotation.LineOptions
 import com.mapbox.mapboxsdk.utils.ColorUtils
+import de.ur.explure.extensions.toLatLng
 
 class RouteLineManager(
     private val context: Application,
@@ -36,7 +37,7 @@ class RouteLineManager(
     @JvmName("addLineToMapPoints")
     fun addLineToMap(linePoints: List<Point>, @ColorRes color: Int? = null): Line? {
         val resolvedColor = color?.let { ContextCompat.getColor(context, it) } ?: defaultLineColor
-        val lineCoords = linePoints.map { LatLng(it.latitude(), it.longitude()) }
+        val lineCoords = linePoints.map { it.toLatLng() }
         return createLine(lineCoords, resolvedColor)
     }
 
