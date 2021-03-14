@@ -28,7 +28,6 @@ class StatisticsFragment : Fragment(R.layout.fragment_statistics) {
     private fun observeUserModel() {
         viewModel.user.observe(viewLifecycleOwner, { user ->
             if (user != null) {
-                binding.userNameTextView.text = user.name
                 binding.endedRoutesTextView.text = user.finishedRoutes.size.toString()
                 binding.createdRoutesTextView.text = user.createdRoutes.size.toString()
             }

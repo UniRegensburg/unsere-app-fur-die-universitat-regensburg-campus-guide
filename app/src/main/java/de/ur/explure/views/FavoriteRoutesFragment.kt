@@ -25,7 +25,6 @@ class FavoriteRoutesFragment : Fragment(R.layout.fragment_favorite_routes),
         super.onViewCreated(view, savedInstanceState)
         initializeAdapter()
 
-        observeUserModel()
         observeRouteModel()
         viewModel.getUserInfo()
         viewModel.getFavoriteRoutes()
@@ -36,14 +35,6 @@ class FavoriteRoutesFragment : Fragment(R.layout.fragment_favorite_routes),
         binding.favoriteRoutesRecyclerView.adapter = adapter
         binding.favoriteRoutesRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.favoriteRoutesRecyclerView.setHasFixedSize(true)
-    }
-
-    private fun observeUserModel() {
-        viewModel.user.observe(viewLifecycleOwner, { user ->
-            if (user != null) {
-                binding.userNameTextView.text = user.name
-            }
-        })
     }
 
     private fun observeRouteModel() {

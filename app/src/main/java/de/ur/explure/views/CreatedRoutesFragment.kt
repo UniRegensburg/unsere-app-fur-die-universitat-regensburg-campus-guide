@@ -25,7 +25,6 @@ class CreatedRoutesFragment : Fragment(R.layout.fragment_created_routes),
         super.onViewCreated(view, savedInstanceState)
         initializeAdapter()
 
-        observeUserModel()
         observeRouteModel()
         viewModel.getUserInfo()
         viewModel.getCreatedRoutes()
@@ -36,14 +35,6 @@ class CreatedRoutesFragment : Fragment(R.layout.fragment_created_routes),
         binding.createdRoutesRecyclerView.adapter = adapter
         binding.createdRoutesRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.createdRoutesRecyclerView.setHasFixedSize(true)
-    }
-
-    private fun observeUserModel() {
-        viewModel.user.observe(viewLifecycleOwner, { user ->
-            if (user != null) {
-                binding.userNameTextView.text = user.name
-            }
-        })
     }
 
     private fun observeRouteModel() {

@@ -6,42 +6,22 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".views.FavoriteRoutesFragment">
 
-    <RelativeLayout
-        android:id="@+id/userRepresentationLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/colorLightGreen">
-
-        <ImageView
-            android:id="@+id/profilePicture"
-            android:layout_marginStart="10dp"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            app:srcCompat="@drawable/user_profile_picture" />
-
-        <TextView
-            android:id="@+id/userNameTextView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_toEndOf="@id/profilePicture"
-            android:layout_marginStart="40dp"
-            android:text="@string/user_name"
-            android:layout_centerVertical="true"
-            android:textSize="26sp" />
-
-    </RelativeLayout>
-
     <TextView
         android:id="@+id/favoriteRoutesHeader"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/userRepresentationLayout"
-        android:background="@color/colorTransparentGrey"
-        android:padding="10dp"
+        android:gravity="center_vertical"
+        android:drawableLeft="@drawable/favorite_routes_icon"
+        android:drawableRight="@drawable/favorite_routes_icon"
+        android:background="@color/colorPrimary"
+        android:paddingStart="30dp"
+        android:paddingEnd="30dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp"
         android:text="@string/favorite_routes"
         android:textAlignment="center"
         android:textAllCaps="true"
-        android:textSize="28sp"
+        android:textSize="24sp"
         android:textStyle="bold" />
 
     <androidx.recyclerview.widget.RecyclerView
@@ -51,6 +31,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/favoriteRoutesHeader"
+        android:background="@color/colorLightGreen"
         tools:listitem="@layout/route_element"
         />
 
