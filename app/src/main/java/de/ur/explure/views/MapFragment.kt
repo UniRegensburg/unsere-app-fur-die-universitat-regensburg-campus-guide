@@ -85,7 +85,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
     private lateinit var routeLineManager: RouteLineManager
 
     // route creation
-    private val waypointsController = WaypointsController()
+    private val waypointsController: WaypointsController by inject()
     private var directionsRoute: DirectionsRoute? = null
 
     // location tracking
@@ -179,7 +179,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
         }
 
         binding.endRouteBuildingButton.setOnClickListener {
-            saveRoute()
+            convertPointsToRoute()
         }
 
         binding.startNavigationButton.setOnClickListener {
@@ -197,6 +197,10 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
             mapViewModel.getCurrentMapStyle()?.let {
                 startLocationTracking(it)
             }
+        }
+
+        if (mapViewModel.manualRouteCreationModeActive.value == true) {
+            setupManualRouteCreationMode()
         }
     }
 
@@ -293,6 +297,9 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
     private fun resetMapOverlays() {
         routeLineManager.clearAllLines()
 
+        // TODO this does not always work correctly because some symbols are redrawn at the start!
+        //  -> there shouldn't be two variables for markers in the viewmodel!!
+        mapViewModel.clearActiveMarkers()
         mapViewModel.getActiveMarkerSymbols().forEach {
             markerManager.deleteMarker(it)
         }
@@ -330,9 +337,8 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
         slideInView(binding.routeCreationOptionsLayout.root)
     }
 
-    // TODO this method is unfinished!
     private fun leaveManualRouteCreationMode() {
-        binding.endRouteBuildingButton.visibility = View.INVISIBLE
+        binding.endRouteBuildingButton.visibility = View.GONE
         binding.endRouteBuildingButton.isEnabled = false
         binding.buildRouteButton.visibility = View.VISIBLE
         binding.buildRouteButton.isEnabled = true
@@ -343,17 +349,9 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
             .playOn(binding.buildRouteButton)
 
         slideOutView(binding.routeCreationOptionsLayout.root)
-    }
 
-    private fun saveRoute() {
-        with(MaterialAlertDialogBuilder(requireActivity())) {
-            setTitle("Erstellte Route speichern?")
-            setPositiveButton("Ja") { _, _ ->
-                convertPointsToRoute()
-            }
-            setNegativeButton("Weiter bearbeiten") { _, _ -> }
-            show()
-        }
+        // reset the controller
+        waypointsController.clear()
     }
 
     // TODO this should be a separate option where a user can click to show the current route and
@@ -375,11 +373,6 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
         }
 
         fetchRoute(wayPoints)
-
-        // TODO save route
-
-        // reset the controller
-        waypointsController.clear()
     }
 
     private fun fetchRoute(coordinates: List<Point>) {
@@ -444,7 +437,8 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
 
                         // TODO things to do here:
                         //  - print the confidence and ask the user to provide more/ or more closely
-                        //    aligned points if below threshold
+                        //    aligned points if below threshold -> probably not: confidence is usually quite
+                        //    low but it works not too bad and there are almost never alternatives :(
                         //  - explain how this map matching works and that it is meant for outdoor usage!!
 
                         val allTracePoints = response.body()?.tracepoints()
@@ -473,11 +467,12 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
         )
     }
 
+    // TODO this drawn route should be saved and redrawn on config change as well to prevent another
+    //  map matching request!
     private fun showMapMatchedRoute(matchings: List<MapMatchingMatching>) {
         if (matchings.isNotEmpty()) {
             val routeGeometry = matchings[0].geometry() ?: return
             val lineString = LineString.fromPolyline(routeGeometry, PRECISION_6)
-            // val lineFeature = Feature.fromGeometry(lineString)
             routeLineManager.addLineToMap(lineString.coordinates())
         }
     }
@@ -505,6 +500,21 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
             )
         }
     }*/
+
+    // TODO this should only be shown when the user has already seen the route and is happy with it
+    //  -> add another button or confirm option somewhere in the layout! Maybe another bottomSheet ?
+    private fun confirmManualRouteCreationFinish() {
+        with(MaterialAlertDialogBuilder(requireActivity())) {
+            setTitle("Erstellte Route speichern?")
+            setPositiveButton("Ja") { _, _ ->
+                // TODO save route
+
+                mapViewModel.setManualRouteCreationModeStatus(isActive = false)
+            }
+            setNegativeButton("Weiter bearbeiten") { _, _ -> }
+            show()
+        }
+    }
 
     /**
      * Show a popup window to let the user choose a map style.
@@ -805,6 +815,8 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
 
         removeMapListeners()
         backPressedCallback?.remove()
+
+        mapViewModel.clearActiveMarkerSymbols()
 
         mapView?.onDestroy()
     }

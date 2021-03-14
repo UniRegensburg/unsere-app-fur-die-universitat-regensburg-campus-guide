@@ -23,7 +23,7 @@ class MapViewModel(private val state: SavedStateHandle) : ViewModel() {
     private val _mapReady = MutableLiveData<Event<Boolean>>()
     val mapReady: LiveData<Event<Boolean>> = _mapReady
 
-    private val _manualRouteCreationModeActive = MutableLiveData<Boolean>()
+    private val _manualRouteCreationModeActive = MutableLiveData<Boolean>(state[MANUAL_ROUTE_CREATION_KEY] ?: false)
     val manualRouteCreationModeActive: LiveData<Boolean> = _manualRouteCreationModeActive
 
     private var currentMapStyle: Style? = null
@@ -32,8 +32,9 @@ class MapViewModel(private val state: SavedStateHandle) : ViewModel() {
     // -> probably create an own mapPin parcelize data class ? (e.g. https://github.com/amohnacs15/MeshMap/blob/master/app/src/main/java/com/zhudapps/meshmap/model/MapPin.kt)
     private val markers: MutableList<LatLng> = state[ACTIVE_MARKERS_KEY] ?: mutableListOf()
 
-    private val activeMarkerSymbols: MutableList<Symbol> = mutableListOf()
+    private var activeMarkerSymbols: MutableList<Symbol> = mutableListOf()
 
+    // TODO save them on config change!!
     val customRouteWaypoints: MutableLiveData<MutableList<WayPoint>> = MutableLiveData(mutableListOf())
 
     fun addCustomWaypoint(coordinates: LatLng) {
@@ -66,6 +67,14 @@ class MapViewModel(private val state: SavedStateHandle) : ViewModel() {
 
     fun getActiveMarkerSymbols(): MutableList<Symbol> {
         return this.activeMarkerSymbols
+    }
+
+    fun clearActiveMarkerSymbols() {
+        this.activeMarkerSymbols = mutableListOf()
+    }
+
+    fun clearActiveMarkers() {
+        this.markers.clear()
     }
 
     fun setMapReadyStatus(status: Boolean) {
@@ -106,6 +115,7 @@ class MapViewModel(private val state: SavedStateHandle) : ViewModel() {
 
     fun setManualRouteCreationModeStatus(isActive: Boolean) {
         _manualRouteCreationModeActive.value = isActive
+        state[MANUAL_ROUTE_CREATION_KEY] = isActive
     }
 
     companion object {
@@ -122,5 +132,6 @@ class MapViewModel(private val state: SavedStateHandle) : ViewModel() {
         private const val CAMERA_POSITION_KEY = "cameraPosition"
         private const val ACTIVE_MARKERS_KEY = "activeMarkers"
         private const val LOCATION_TRACKING_KEY = "locationTracking"
+        private const val MANUAL_ROUTE_CREATION_KEY = "manualRouteCreationActive"
     }
 }

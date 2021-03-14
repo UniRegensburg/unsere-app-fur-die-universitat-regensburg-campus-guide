@@ -11,6 +11,7 @@ import de.ur.explure.map.LocationManager
 import de.ur.explure.map.MarkerManager
 import de.ur.explure.map.PermissionHelper
 import de.ur.explure.map.RouteLineManager
+import de.ur.explure.map.WaypointsController
 import de.ur.explure.navigation.MainAppRouter
 import de.ur.explure.repository.category.CategoryRepositoryImpl
 import de.ur.explure.repository.rating.RatingRepositoryImpl
@@ -46,6 +47,7 @@ val mainModule = module {
         LocationManager(androidApplication(), callback)
     }
     single { PermissionHelper() }
+    single { WaypointsController() }
 
     // navigation router
     single { MainAppRouter() }

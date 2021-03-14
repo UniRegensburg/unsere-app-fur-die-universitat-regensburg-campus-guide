@@ -24,7 +24,7 @@ class RouteLineManager(
     mapStyle: Style
 ) : DefaultLifecycleObserver {
 
-    private val defaultLineColor = Color.RED
+    private val defaultLineColor = Color.BLUE
     // private val currentLines = mutableListOf<Line>()
 
     private val lineManager: LineManager = LineManager(mapView, map, mapStyle)
