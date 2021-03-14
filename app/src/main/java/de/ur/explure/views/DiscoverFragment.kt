@@ -201,7 +201,7 @@ class DiscoverFragment : Fragment(R.layout.fragment_discover) {
 
     private fun initLatestRouteAdapter() {
         latestRoutesAdapter = RouteDiscoverAdapter {
-            Timber.d("%s clicked", it.title)
+            discoverViewModel.moveToCreatePage()
         }
         binding.rvNewRouteList.adapter = latestRoutesAdapter
         binding.rvNewRouteList.layoutManager =

@@ -87,10 +87,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="30dp"
-        android:background="@color/PrimaryColor"
+        android:background="@color/colorPrimary"
         android:text="@string/register_button"
         android:textColor="@color/cardview_dark_background"
-        app:backgroundTint="@color/PrimaryColor"
+        app:backgroundTint="@color/colorPrimary"
         app:layout_constraintTop_toBottomOf="@+id/textCPassword"
         tools:layout_editor_absoluteX="30dp" />
 
@@ -127,7 +127,7 @@
             android:layout_margin="30dp"
             android:background="@android:color/transparent"
             android:text="@string/back_to_login_button"
-            android:textColor="@color/PrimaryColor"
+            android:textColor="@color/colorPrimary"
             app:layout_constraintTop_toBottomOf="@+id/tvRegister"
             tools:layout_editor_absoluteX="221dp" />
 

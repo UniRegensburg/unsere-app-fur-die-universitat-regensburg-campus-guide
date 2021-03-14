@@ -74,10 +74,10 @@
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
             android:layout_marginTop="8dp"
-            android:background="@color/PrimaryColor"
+            android:background="@color/colorPrimary"
             android:text="@string/login_button"
             android:textColor="@color/cardview_dark_background"
-            app:backgroundTint="@color/PrimaryColor"
+            app:backgroundTint="@color/colorPrimary"
             app:layout_constraintTop_toBottomOf="@+id/tfPassword" />
 
         <TextView
@@ -89,7 +89,7 @@
             android:gravity="end"
             android:text="@string/reset_password"
             android:textAllCaps="false"
-            android:textColor="@color/PrimaryColor"
+            android:textColor="@color/colorPrimary"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/loginButton" />
 
@@ -99,7 +99,7 @@
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
             android:text="@string/without_account"
-            android:textColor="@color/PrimaryColor"
+            android:textColor="@color/colorPrimary"
             app:layout_constraintBottom_toTopOf="@id/orText"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
@@ -120,7 +120,7 @@
             android:layout_marginBottom="5dp"
             android:background="@android:color/transparent"
             android:text="@string/sign_up_button"
-            android:textColor="@color/PrimaryColor"
+            android:textColor="@color/colorPrimary"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />

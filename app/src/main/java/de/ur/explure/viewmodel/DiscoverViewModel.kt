@@ -3,6 +3,7 @@ package de.ur.explure.viewmodel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import de.ur.explure.R
 import de.ur.explure.extensions.appendRoutes
 import de.ur.explure.model.category.Category
 import de.ur.explure.model.route.Route
@@ -105,6 +106,10 @@ class DiscoverViewModel(
 
     fun startCategoryQuery(categoryId: String) {
         mainAppRouter.navigateToCategoryQuery(categoryId)
+    }
+
+    fun moveToCreatePage() {
+        mainAppRouter.getNavController()!!.navigate(R.id.createRouteFragment)
     }
 
     companion object {

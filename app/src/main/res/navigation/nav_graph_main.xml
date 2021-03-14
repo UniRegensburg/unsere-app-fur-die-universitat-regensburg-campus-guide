@@ -35,4 +35,9 @@
         android:label="Map"
         tools:layout="@layout/fragment_map" />
 
+    <fragment
+        android:id="@+id/createRouteFragment"
+        android:name="de.ur.explure.views.CreateRouteFragment"
+        android:label="CreateRouteFragment" />
+
 </navigation>
