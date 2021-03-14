@@ -21,10 +21,11 @@
     <string name="location_tracking_button_description">Über diesen Button kannst du deinen aktuellen Standort auf der Karte anzeigen und verfolgen.</string>
 
     <!-- Route Creation -->
-    <string name="route_creation_options">Es gibt 2 Möglichkeiten, um Routen zu erstellen:
+    <string name="route_creation_options">Es gibt 3 Möglichkeiten, um Routen zu erstellen:
         \n<ul>
-            \n<li>Entweder du aktivierst die Standortverfolgung und die App zeichnet die Route nebenbei auf während du die gewünschte Route selbst abgehst</li>
+            \n<li>Du kannst die Standortverfolgung aktivieren und die App zeichnet die Route nebenbei auf während du die gewünschte Route selbst abgehst</li>
             \n<li>Du baust dir direkt auf der Karte die Route aus Linien und Markern zusammen</li>
+            \n<li>Du zeichnest die Route selbst möglichst genau in die Karte ein.</li>
         </ul>
     </string>
 

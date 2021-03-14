@@ -9,6 +9,7 @@ import com.mapbox.mapboxsdk.maps.Style
 import de.ur.explure.map.LocationManager
 import de.ur.explure.map.MarkerManager
 import de.ur.explure.map.PermissionHelper
+import de.ur.explure.map.RouteLineManager
 import de.ur.explure.navigation.AppRouter
 import de.ur.explure.repository.rating.RatingRepositoryImpl
 import de.ur.explure.repository.user.UserRepositoryImpl
@@ -35,6 +36,9 @@ val mainModule = module {
     // use factory for MarkerManager to always return a new one, in case the mapStyle changes or a config change occurs
     factory { (mapView: MapView, map: MapboxMap, mapStyle: Style) ->
         MarkerManager(androidApplication(), mapView, map, mapStyle)
+    }
+    factory { (mapView: MapView, map: MapboxMap, mapStyle: Style) ->
+        RouteLineManager(androidApplication(), mapView, map, mapStyle)
     }
     factory { (callback: (Location) -> Unit) ->
         LocationManager(androidApplication(), callback)

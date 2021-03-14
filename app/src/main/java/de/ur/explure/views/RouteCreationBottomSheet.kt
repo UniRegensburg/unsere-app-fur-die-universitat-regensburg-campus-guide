@@ -39,7 +39,7 @@ class RouteCreationBottomSheet : Fragment(R.layout.route_creation_bottomsheet) {
     }
 
     private fun observeViewModel() {
-        mapViewModel.routeCreationModeActive.observe(viewLifecycleOwner, { active ->
+        mapViewModel.manualRouteCreationModeActive.observe(viewLifecycleOwner, { active ->
             if (active) {
                 showRouteCreationSheet()
             } else {

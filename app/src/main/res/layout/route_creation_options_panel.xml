@@ -60,6 +60,22 @@
         android:tint="@color/color_error"
         tools:ignore="ContentDescription" />
 
+    <!-- TODO schöneren ripple effekt als das machen! -->
+    <ImageButton
+        android:id="@+id/reset_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/delete_marker_button"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="24dp"
+        android:layout_marginBottom="6dp"
+        android:padding="8dp"
+        android:background="@drawable/icon_button_border"
+        android:foreground="?attr/selectableItemBackgroundBorderless"
+        android:src="@drawable/ic_baseline_delete_24"
+        android:tint="@color/color_error"
+        tools:ignore="ContentDescription" />
+
     <!-- TODO alternativ auch so möglich mit Text dazu: -->
     <!--
     <TextView

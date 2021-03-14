@@ -55,6 +55,10 @@ class MarkerManager(
         return createMarker(coordinate)
     }
 
+    fun deleteMarker(marker: Symbol) {
+        symbolManager.delete(marker)
+    }
+
     fun addMarkers(markerCoordinates: List<LatLng>?) {
         markerCoordinates?.forEach { coordinate ->
             createMarker(coordinate)
@@ -88,7 +92,7 @@ class MarkerManager(
      * 'delete this marker'- button at the bottom)
      */
     private fun onMarkerLongClickListener(marker: Symbol): Boolean {
-        symbolManager.delete(marker)
+        deleteMarker(marker)
         // true to consume the click so the map onLongClick - Listener won't be called!
         return true
     }

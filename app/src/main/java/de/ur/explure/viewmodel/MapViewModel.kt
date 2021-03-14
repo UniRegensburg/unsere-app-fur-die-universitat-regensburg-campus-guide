@@ -23,14 +23,16 @@ class MapViewModel(private val state: SavedStateHandle) : ViewModel() {
     private val _mapReady = MutableLiveData<Event<Boolean>>()
     val mapReady: LiveData<Event<Boolean>> = _mapReady
 
-    private val _routeCreationModeActive = MutableLiveData<Boolean>()
-    val routeCreationModeActive: LiveData<Boolean> = _routeCreationModeActive
+    private val _manualRouteCreationModeActive = MutableLiveData<Boolean>()
+    val manualRouteCreationModeActive: LiveData<Boolean> = _manualRouteCreationModeActive
 
     private var currentMapStyle: Style? = null
 
     // TODO only saving the latlng coords will probably not be enough later but symbol cannot be parcelized
     // -> probably create an own mapPin parcelize data class ? (e.g. https://github.com/amohnacs15/MeshMap/blob/master/app/src/main/java/com/zhudapps/meshmap/model/MapPin.kt)
     private val markers: MutableList<LatLng> = state[ACTIVE_MARKERS_KEY] ?: mutableListOf()
+
+    private val activeMarkerSymbols: MutableList<Symbol> = mutableListOf()
 
     val customRouteWaypoints: MutableLiveData<MutableList<WayPoint>> = MutableLiveData(mutableListOf())
 
@@ -50,6 +52,7 @@ class MapViewModel(private val state: SavedStateHandle) : ViewModel() {
     }
 
     fun saveMarker(marker: Symbol) {
+        activeMarkerSymbols.add(marker)
         markers.add(marker.latLng)
     }
 
@@ -59,6 +62,10 @@ class MapViewModel(private val state: SavedStateHandle) : ViewModel() {
 
     fun getAllActiveMarkers(): List<LatLng>? {
         return state[ACTIVE_MARKERS_KEY]
+    }
+
+    fun getActiveMarkerSymbols(): MutableList<Symbol> {
+        return this.activeMarkerSymbols
     }
 
     fun setMapReadyStatus(status: Boolean) {
@@ -97,8 +104,8 @@ class MapViewModel(private val state: SavedStateHandle) : ViewModel() {
         state[LOCATION_TRACKING_KEY] = isEnabled
     }
 
-    fun setRouteCreationModeStatus(isActive: Boolean) {
-        _routeCreationModeActive.value = isActive
+    fun setManualRouteCreationModeStatus(isActive: Boolean) {
+        _manualRouteCreationModeActive.value = isActive
     }
 
     companion object {

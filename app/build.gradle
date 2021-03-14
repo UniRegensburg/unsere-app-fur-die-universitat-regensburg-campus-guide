@@ -101,6 +101,8 @@ dependencies {
     implementation "com.mapbox.mapboxsdk:mapbox-android-plugin-annotation-v9:0.9.0"
     // implementation "com.mapbox.navigation:core:$mapbox_navigation_version"
     // implementation "com.mapbox.navigation:ui:$mapbox_navigation_version" // already contains maps-sdk and navigation-core
+    implementation "com.mapbox.navigation:ui:1.4.0"
+    implementation "com.mapbox.mapboxsdk:mapbox-android-core:3.1.1"
     // implementation "com.mapbox.mapboxsdk:mapbox-sdk-core:$mapbox_java_sdk_version" // Core Mapbox Java SDK
     implementation "com.mapbox.mapboxsdk:mapbox-sdk-services:$mapbox_java_sdk_version" // for Map Matching API
 

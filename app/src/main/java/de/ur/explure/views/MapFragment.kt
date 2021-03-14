@@ -1,6 +1,5 @@
 package de.ur.explure.views
 
-import android.graphics.Color
 import android.location.Location
 import android.os.Bundle
 import android.view.View
@@ -27,7 +26,6 @@ import com.mapbox.api.matching.v5.MapboxMapMatching
 import com.mapbox.api.matching.v5.models.MapMatchingMatching
 import com.mapbox.api.matching.v5.models.MapMatchingResponse
 import com.mapbox.core.constants.Constants.PRECISION_6
-import com.mapbox.geojson.Feature
 import com.mapbox.geojson.LineString
 import com.mapbox.geojson.Point
 import com.mapbox.mapboxsdk.geometry.LatLng
@@ -36,17 +34,13 @@ import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
 import com.mapbox.mapboxsdk.maps.Style
-import com.mapbox.mapboxsdk.style.layers.LineLayer
-import com.mapbox.mapboxsdk.style.layers.PropertyFactory.lineColor
-import com.mapbox.mapboxsdk.style.layers.PropertyFactory.lineOpacity
-import com.mapbox.mapboxsdk.style.layers.PropertyFactory.lineWidth
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
-import com.mapbox.mapboxsdk.utils.ColorUtils
 import de.ur.explure.R
 import de.ur.explure.databinding.FragmentMapBinding
 import de.ur.explure.map.LocationManager
 import de.ur.explure.map.MarkerManager
 import de.ur.explure.map.PermissionHelper
+import de.ur.explure.map.RouteLineManager
 import de.ur.explure.map.WaypointsController
 import de.ur.explure.utils.EventObserver
 import de.ur.explure.utils.Highlight
@@ -87,6 +81,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
     private var mapView: MapView? = null
     private lateinit var map: MapboxMap
     private lateinit var markerManager: MarkerManager
+    private lateinit var routeLineManager: RouteLineManager
 
     // route creation
     private val waypointsController = WaypointsController()
@@ -102,8 +97,6 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        Timber.d("in MapFragment onViewCreated")
 
         // disable the buttons until the map has finished loading
         binding.ownLocationButton.isEnabled = false
@@ -150,11 +143,11 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
             Timber.d("Map has finished loading and can be used now!")
             setupInitialUIState()
         })
-        mapViewModel.routeCreationModeActive.observe(viewLifecycleOwner, { active ->
+        mapViewModel.manualRouteCreationModeActive.observe(viewLifecycleOwner, { active ->
             if (active) {
-                enterRouteCreationMode()
+                enterManualRouteCreationMode()
             } else {
-                leaveRouteCreationMode()
+                leaveManualRouteCreationMode()
             }
         })
     }
@@ -188,8 +181,17 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
             saveRoute()
         }
 
-        // if location tracking was enabled before, start it again without forcing the user to
-        // press the button again
+        binding.startNavigationButton.setOnClickListener {
+            // convert directionsRoute to json so it can be passed as a string via safe args
+            val routeJson = directionsRoute?.toJson() ?: return@setOnClickListener
+            val action = MapFragmentDirections.actionMapFragmentToNavigationFragment(
+                route = routeJson
+            )
+            findNavController().navigate(action)
+        }
+
+        // if location tracking was enabled before, start it again to prevent forcing the user to
+        // press the button again manually
         if (mapViewModel.isLocationTrackingActivated() == true) {
             mapViewModel.getCurrentMapStyle()?.let {
                 startLocationTracking(it)
@@ -200,13 +202,14 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
     private fun showEnterRouteCreationDialog() {
         val activity = activity ?: return
 
+        // TODO should probably have a Cancel - Option as well:
         MaterialAlertDialogBuilder(activity)
-            .setTitle("Routen erstellen")
+            .setTitle("Route erstellen")
             .setMessage(R.string.route_creation_options)
             .setPositiveButton("Route manuell erstellen") { _, _ ->
-                setupRouteCreationMode()
+                setupManualRouteCreationMode()
             }
-            .setNegativeButton("Route aufzeichnen") { _, _ ->
+            .setNeutralButton("Route aufzeichnen") { _, _ ->
                 Toast.makeText(
                     activity,
                     "Dieses Feature ist leider noch nicht implementiert. Wir arbeiten dran!",
@@ -214,12 +217,21 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
                 ).show()
                 // TODO
                 // startLocationTracking(mapViewModel.getCurrentMapStyle() ?: return@setPositiveButton)
+                // enterRouteRecordingMode()
+            }
+            .setNegativeButton("Route einzeichnen") { _, _ ->
+                Toast.makeText(
+                    activity,
+                    "Dieses Feature ist leider auch noch nicht implementiert.",
+                    Toast.LENGTH_SHORT
+                ).show()
+                // enterRouteDrawMode()
             }
             .show()
     }
 
-    private fun setupRouteCreationMode() {
-        mapViewModel.setRouteCreationModeStatus(isActive = true)
+    private fun setupManualRouteCreationMode() {
+        mapViewModel.setManualRouteCreationModeStatus(isActive = true)
         /*
         showSnackbar(
             "Click on the map to add points and build your route out these. You can see and reorder
@@ -245,6 +257,15 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
             // TODO delete markers on click
             // markerManager.setOnMarkerClickListenerBehavior(delete)
         }
+        binding.routeCreationOptionsLayout.resetButton.setOnClickListener {
+            with(MaterialAlertDialogBuilder(requireActivity())) {
+                setTitle("Achtung!")
+                setMessage("Möchtest du wirklich alles seit Beginn der Routenerstellung rückgängig machen?")
+                setPositiveButton("Ja") { _, _ -> resetMapOverlays() }
+                setNegativeButton(R.string.cancel) { _, _ -> }
+                show()
+            }
+        }
         // TODO add a separate button for dragging markers too ? Would probably word if the other listeners are reset
     }
 
@@ -268,9 +289,22 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
         )
     }
 
+    private fun resetMapOverlays() {
+        routeLineManager.clearAllLines()
+
+        mapViewModel.getActiveMarkerSymbols().forEach {
+            markerManager.deleteMarker(it)
+        }
+        waypointsController.clear()
+    }
+
     private fun setAddMarkerClickListenerBehavior() {
         map.addOnMapClickListener {
-            markerManager.addMarker(it)
+
+            val symbol = markerManager.addMarker(it)
+            if (symbol != null) {
+                mapViewModel.saveMarker(symbol)
+            }
             mapViewModel.addCustomWaypoint(it)
             waypointsController.add(it)
             return@addOnMapClickListener true // consume the click
@@ -279,7 +313,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
 
     // TODO im routeCreation Mode wärs schön wenn zusätzlich noch ein button auftauchen würde mit
     //  dem man den Tilt einstellen kann für angenehmeres bearbeiten
-    private fun enterRouteCreationMode() {
+    private fun enterManualRouteCreationMode() {
         // toggle the start/end buttons
         binding.buildRouteButton.isEnabled = false
         binding.buildRouteButton.visibility = View.GONE
@@ -296,7 +330,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
     }
 
     // TODO this method is unfinished!
-    private fun leaveRouteCreationMode() {
+    private fun leaveManualRouteCreationMode() {
         binding.endRouteBuildingButton.visibility = View.INVISIBLE
         binding.endRouteBuildingButton.isEnabled = false
         binding.buildRouteButton.visibility = View.VISIBLE
@@ -321,6 +355,8 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
         }
     }
 
+    // TODO this should be a separate option where a user can click to show the current route and
+    //  not be hidden behind the save route - Button!
     private fun convertPointsToRoute() {
         // check first if the user has an internet connection before requesting a route from mapbox
         if (!hasInternetConnection(requireContext(), R.string.no_internet_map_matching)) {
@@ -348,28 +384,33 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
     private fun fetchRoute(coordinates: List<Point>) {
         Timber.d("MapMatching request with ${coordinates.size} coordinates.")
 
-        // TODO Testing stuff
-        val lineString = LineString.fromLngLats(coordinates)
-
-        val feature = Feature.fromGeometry(lineString)
-        drawLines(feature)
-
         val mapMatchingRequest = MapboxMapMatching.builder()
             .accessToken(getMapboxAccessToken(requireActivity()))
-            .coordinates(coordinates)
-            // .waypointIndices(0, coordinates.size - 1)
-            // .steps(true)
-            // .bannerInstructions(true)
-            // .voiceInstructions(true)
             .profile(DirectionsCriteria.PROFILE_WALKING)
-            // .overview(DirectionsCriteria.OVERVIEW_FULL)
-            // .annotations(DirectionsCriteria.ANNOTATION_DURATION, DirectionsCriteria.ANNOTATION_DISTANCE)
+            .coordinates(coordinates)
+            // * optional params: *
+            .waypointIndices(0, coordinates.size - 1)
+            // .addWaypointNames()
+            .steps(true)
+            .bannerInstructions(true)
+            // .voiceInstructions(true)
+            .tidy(true)
+            .overview(DirectionsCriteria.OVERVIEW_FULL)
+            .geometries("polyline6") // maximal precision
+            .annotations(
+                DirectionsCriteria.ANNOTATION_DURATION,
+                DirectionsCriteria.ANNOTATION_DISTANCE
+            )
+            // TODO timestamps pro Koordinate in ca. 5 Sekunden Abstand für bessere Ergebnisse ??
+            // .timestamps()
             .build()
 
         mapMatchingRequest.enqueueCall(
             object : Callback<MapMatchingResponse> {
                 override fun onFailure(call: Call<MapMatchingResponse>, t: Throwable) {
                     Timber.e("MapMatching request failure %s", t.toString())
+                    // TODO check for all exceptions and give appropriate user feedback
+                    //  see https://docs.mapbox.com/api/navigation/map-matching/#map-matching-api-errors
                 }
 
                 override fun onResponse(
@@ -393,19 +434,29 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
                         allMatchings?.let {
                             showSnackbar(
                                 requireActivity(),
-                                "Successfully mapmatched the given waypoints!",
+                                "Successfully mapmatched the given waypoints! Found " +
+                                        "${allMatchings.size} possible route options.",
                                 colorRes = R.color.colorAccent
                             )
-                            drawMapMatched(it)
+                            showMapMatchedRoute(it)
                         }
 
-                        val route = allMatchings?.get(0)?.toDirectionRoute()
-                        Timber.d("Route: $route")
-                        if (route != null) {
+                        // TODO things to do here:
+                        //  - print the confidence and ask the user to provide more/ or more closely
+                        //    aligned points if below threshold
+                        //  - explain how this map matching works and that it is meant for outdoor usage!!
 
+                        val allTracePoints = response.body()?.tracepoints()
+                        // Timber.d("All Trace Points:\n ${allTracePoints.toString()}")
+
+                        val bestMatching = allMatchings?.get(0)
+                        Timber.d("Confidence: ${bestMatching?.confidence()?.times(100)} %")
+                        bestMatching?.legs()?.get(0)
+
+                        val route = bestMatching?.toDirectionRoute()
+                        if (route != null) {
                             directionsRoute = route
 
-                            // TODO
                             // mapboxNavigation?.setRoutes(listOf(route))
                             // navigationMapboxMap?.drawRoute(route)
 
@@ -421,79 +472,37 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
         )
     }
 
-    private fun drawMapMatched(matchings: List<MapMatchingMatching>) {
+    private fun showMapMatchedRoute(matchings: List<MapMatchingMatching>) {
+        if (matchings.isNotEmpty()) {
+            val routeGeometry = matchings[0].geometry() ?: return
+            val lineString = LineString.fromPolyline(routeGeometry, PRECISION_6)
+            // val lineFeature = Feature.fromGeometry(lineString)
+            routeLineManager.addLineToMap(lineString.coordinates())
+        }
+    }
+
+    /*
+    private fun drawMapMatched(matchings: List<MapMatchingMatching>, color: String = "#3bb2d0") {
         val style = map.style
         if (style != null && matchings.isNotEmpty()) {
             val routeGeometry = matchings[0].geometry() ?: return
             style.addSource(
                 GeoJsonSource(
-                    "matched-source-id-$routeGeometry", Feature.fromGeometry(
+                    "source_map_matched", Feature.fromGeometry(
                         LineString.fromPolyline(routeGeometry, PRECISION_6)
                     )
                 )
             )
             style.addLayer(
-                LineLayer("matched-layer-id-$routeGeometry", "matched-source-id-$routeGeometry")
+                LineLayer("layer_map_matched", "source_map_matched")
                     .withProperties(
-                        lineColor(ColorUtils.colorToRgbaString(Color.parseColor("#3bb2d0"))),
+                        lineColor(ColorUtils.colorToRgbaString(Color.parseColor(color))),
                         @Suppress("MagicNumber")
-                        lineWidth(6f)
+                        lineWidth(6f),
+                        lineOpacity(0.8f)
                     )
             )
         }
-    }
-
-    private fun drawLines(feature: Feature) {
-        /*
-        val features: List<Feature>? = featureCollection.features()
-        if (features != null && features.isNotEmpty()) {
-            val feature: Feature = features[0]
-            drawBeforeMapMatching(feature)
-
-            val points = (feature.geometry() as? LineString)?.coordinates()
-            // fetchRoute(points)
-        }*/
-        drawBeforeMapMatching(feature)
-
-        val points = (feature.geometry() as? LineString)?.coordinates()
-        // fetchRoute(points)
-    }
-
-    private fun drawBeforeMapMatching(feature: Feature) {
-        map.getStyle { style: Style ->
-            style.addSource(GeoJsonSource("pre-matched-source-id", feature))
-            style.addLayer(
-                LineLayer("pre-matched-layer-id", "pre-matched-source-id").withProperties(
-                    lineColor(ColorUtils.colorToRgbaString(Color.parseColor("#c14a00"))),
-                    @Suppress("MagicNumber")
-                    lineWidth(6f),
-                    lineOpacity(1f)
-                )
-            )
-        }
-    }
-
-    /*
-    // TODO old version
-    private fun drawRoute(route: DirectionsRoute) {
-        // Convert LineString coordinates into LatLng[]
-        val lineString = LineString.fromPolyline(route.getGeometry(), Constants.PRECISION_6)
-        val coordinates: List<Position> = lineString.getCoordinates()
-        val points = arrayOfNulls<LatLng>(coordinates.size)
-        for (i in coordinates.indices) {
-            points[i] = LatLng(
-                coordinates[i].getLatitude(),
-                coordinates[i].getLongitude()
-            )
-        }
-
-        // Draw Points on MapView
-        map.addPolyline(
-            PolylineOptions()
-                .add(*points)
-                .color(Color.parseColor("#009688"))
-                .width(5f)
-        )
     }*/
 
     /**
@@ -598,6 +607,8 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
             setupMarkerManager(mapStyle)
             recreateMarkers()
 
+            setupRouteLineManager(mapStyle)
+
             // ! This needs to be called AFTER the MarkerManager is set up because this way clicks
             // ! on the markers will be handled before clicks on the map itself!
             setupMapListeners()
@@ -616,6 +627,11 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
         // recreate all markers that were on the map before the config change or process death
         val allActiveMarkers = mapViewModel.getAllActiveMarkers()
         markerManager.addMarkers(allActiveMarkers)
+    }
+
+    private fun setupRouteLineManager(mapStyle: Style) {
+        routeLineManager = get { parametersOf(mapView, map, mapStyle) }
+        viewLifecycleOwner.lifecycle.addObserver(routeLineManager)
     }
 
     /**
@@ -811,5 +827,38 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
             .include(southWestCorner)
             .include(northEastCorner)
             .build()
+
+        // Testing routes for map matching etc.:
+
+        // Busbahnhof -> Mensa -> vor Zentralbib -> Unisee -> Weg unter Mensa -> Botanischer Garten
+        val routePoints = listOf<Point>(
+            Point.fromLngLat(12.091897088615497, 48.9986755276432),
+            Point.fromLngLat(12.093398779683042, 48.99790078797133),
+            Point.fromLngLat(12.095176764949287, 48.99759573694382),
+            Point.fromLngLat(12.095045596693524, 48.99696500867813),
+            Point.fromLngLat(12.092009249797059, 48.996774307308414),
+            Point.fromLngLat(12.091600540864277, 48.99278790637206),
+        )
+
+        // Vielberthgebäude -> Unisee -> Botanischer Garten
+        val routePointsSimple = listOf<Point>(
+            Point.fromLngLat(12.095577, 49.000083),
+            Point.fromLngLat(12.095153, 48.998243),
+            Point.fromLngLat(12.091600540864277, 48.99278790637206)
+        )
+
+        // Vielberthgebäude -> PT-Cafete -> vor Zentralbib -> Mensa -> Weg unter Mensa
+        // -> Botanischer Garten -> außen vor H51 -> Chemie-Cafete -> Unisee -> Kugel
+        val routePointsComplicated = listOf<Point>(
+            Point.fromLngLat(12.095577, 49.000083),
+            Point.fromLngLat(12.095873, 48.999174),
+            Point.fromLngLat(12.095224, 48.998051),
+            Point.fromLngLat(12.093412, 48.997994),
+            Point.fromLngLat(12.091575, 48.993578),
+            Point.fromLngLat(12.094713, 48.994392),
+            Point.fromLngLat(12.095448, 48.995758),
+            Point.fromLngLat(12.095244, 48.997110),
+            Point.fromLngLat(12.095153, 48.998243)
+        )
     }
 }

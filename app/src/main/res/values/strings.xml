@@ -26,10 +26,11 @@
     <string name="route_request_failed">The route request failed</string>
 
     <!-- Route Creation -->
-    <string name="route_creation_options">Es gibt 2 Möglichkeiten, um Routen zu erstellen:
+    <string name="route_creation_options">There are 3 options to create a route:
         \n<ul>
-            \n<li>Entweder du aktivierst die Standortverfolgung und die App zeichnet die Route nebenbei auf während du die gewünschte Route selbst abgehst</li>
-            \n<li>Du baust dir direkt auf der Karte die Route aus Linien und Markern zusammen</li>
+            \n<li>You can activate location tracking and the app will record the route while you walk the route yourself.</li>
+            \n<li>You can build the route directly on the map with lines and markers.</li>
+            \n<li>You draw the route manually on the map.</li>
         </ul>
     </string>
 
