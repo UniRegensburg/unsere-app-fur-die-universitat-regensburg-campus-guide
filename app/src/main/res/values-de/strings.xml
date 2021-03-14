@@ -35,6 +35,9 @@
     <string name="ratings">Bewertungen:</string>
     <string name="ratings_value">0</string>
 
+    <!-- Logout Button (Profile) -->
+    <string name="logout">Abmelden</string>
+
     <!-- Statistics Page -->
     <string name="change_user_name">ÄNDERUNG DES BENUTZERNAMENS</string>
     <string name="user_name_needed">Ein Name wird benötigt.</string>

@@ -5,7 +5,7 @@
     <string name="user_name" translatable="false">Max Mustermann</string>
 
     <!-- Created Routes -->
-    <string name="own_routes">Own Routes</string>
+    <string name="own_routes">Created Routes</string>
     <string name="delete_route">DELETE ROUTE</string>
     <string name="delete_route_message">"Are you sure that your route %1$s should be deleted?"</string>
 
@@ -37,6 +37,10 @@
     <string name="comments_value">0</string>
     <string name="ratings">Ratings:</string>
     <string name="ratings_value">0</string>
+
+    <!-- Logout Button (Profile) -->
+
+    <string name="logout">Logout</string>
 
     <!-- Statistics Page -->
     <string name="change_user_name">CHANGE OF USERNAME</string>
