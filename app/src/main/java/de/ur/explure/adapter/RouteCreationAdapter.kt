@@ -7,8 +7,8 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import de.ur.explure.R
+import de.ur.explure.databinding.WaypointListItemBinding
 import de.ur.explure.model.waypoint.WayPoint
-import kotlinx.android.synthetic.main.waypoint_list_item.view.*
 
 typealias onItemClickCallback = (itemView: View, waypoint: WayPoint) -> Unit
 
@@ -28,12 +28,13 @@ class RouteCreationAdapter(private val callback: onItemClickCallback) :
     }
 
     // defined with a private constructor so it can only be instantiated with the from()-Method!
-    class ViewHolder private constructor(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    class ViewHolder private constructor(private val binding: WaypointListItemBinding) :
+        RecyclerView.ViewHolder(binding.root) {
 
         fun bind(waypoint: WayPoint, callback: onItemClickCallback) {
             // setup the view
-            itemView.waypoint_title.text = waypoint.title
-            itemView.waypoint_description.text = waypoint.description
+            binding.waypointTitle.text = waypoint.title
+            binding.waypointDescription.text = waypoint.description
 
             // TODO get the waypoint imageUrl and show it in the recycler item !
             /*
@@ -42,7 +43,7 @@ class RouteCreationAdapter(private val callback: onItemClickCallback) :
                 "drawable",
                 itemView.context.packageName
             )*/
-            // itemView.marker_image.setImageResource(iconIdentifier)
+            // binding.waypointImage.setImageResource(iconIdentifier)
 
             // TODO allow drag & drop when clicked on the drag_handler_icon !
 
@@ -51,7 +52,7 @@ class RouteCreationAdapter(private val callback: onItemClickCallback) :
 
         private fun enableItemClicks(waypoint: WayPoint, callback: onItemClickCallback) {
             // set a ripple effect on the background to be shown on click
-            itemView.marker_list_item.setBackgroundResource(R.drawable.ripple_effect)
+            binding.markerListItem.setBackgroundResource(R.drawable.ripple_effect)
 
             itemView.setOnClickListener {
                 // invoke the given callback on item click
@@ -61,10 +62,12 @@ class RouteCreationAdapter(private val callback: onItemClickCallback) :
 
         companion object {
             fun from(parent: ViewGroup): ViewHolder {
-                val layoutInflater = LayoutInflater.from(parent.context)
-                val view = layoutInflater.inflate(R.layout.waypoint_list_item, parent, false)
-
-                return ViewHolder(view)
+                val binding = WaypointListItemBinding.inflate(
+                    LayoutInflater.from(parent.context),
+                    parent,
+                    false
+                )
+                return ViewHolder(binding)
             }
         }
     }
