@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#809848</color>
-    <color name="colorPrimaryDark">#2E0014</color>
-    <color name="colorAccent">#B0CA87</color>
-
+    <color name="colorPrimary">#95BF74</color>
+    <color name="colorPrimaryDark">#668f47</color>
+    <color name="colorAccent">#c7f2a3</color>
+    <color name="PrimaryColor">#4CAF50</color>
     <color name="colorLightGrey">#F2F9F0</color>
 
     <color name="color_warning">#E69113</color>
@@ -22,5 +22,11 @@
     <color name="mapboxPink">#ee4e8b</color>
     <color name="mapboxYellow">#d9d838</color>
     <color name="mapboxRed">#b43b71</color>
+
+    <!-- Other colors -->
+    <color name="textColor">#373737</color>
+    <color name="duskYellow">#ffc922</color>
+    <color name="lightGey">#B3B3B3</color>
+    <color name="content_background">#F6F0DE</color>
 
 </resources>

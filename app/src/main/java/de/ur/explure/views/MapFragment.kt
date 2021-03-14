@@ -57,7 +57,7 @@ import de.ur.explure.viewmodel.MapViewModel
 import de.ur.explure.viewmodel.MapViewModel.Companion.All_MAP_STYLES
 import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
-import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.scope.emptyState
 import org.koin.core.parameter.parametersOf
 import retrofit2.Call
@@ -72,7 +72,9 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
     private val binding by viewBinding(FragmentMapBinding::bind)
 
     // Setting the state as emptyState as a workaround for this issue: https://github.com/InsertKoinIO/koin/issues/963
-    private val mapViewModel: MapViewModel by viewModel(state = emptyState())
+    // private val mapViewModel: MapViewModel by viewModel(state = emptyState())
+
+    private val mapViewModel: MapViewModel by sharedViewModel(state = emptyState())
 
     // SharedPrefs
     private val preferencesManager: SharedPreferencesManager by inject()

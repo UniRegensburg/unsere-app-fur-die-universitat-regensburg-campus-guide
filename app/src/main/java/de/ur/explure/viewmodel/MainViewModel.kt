@@ -1,47 +1,35 @@
 package de.ur.explure.viewmodel
 
-import androidx.lifecycle.LiveData
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModel
-import androidx.navigation.NavController
-import de.ur.explure.navigation.AppRouter
+import de.ur.explure.navigation.MainAppRouter
+import de.ur.explure.services.FirebaseAuthService
 
 /**
- * Main Viewmodel used to handle initializing operations for main app
+ * Main ViewModel used to handle initializing operations for main app and observe auth state.
  *
- * @property appRouter Navigation router as [AppRouter] used for navigation operations
  */
-class MainViewModel(private val appRouter: AppRouter) : ViewModel() {
 
-    private var currentNavController: LiveData<NavController>? = null
-
-    fun getCurrentNavController(): LiveData<NavController>? {
-        return currentNavController
-    }
-
-    /**
-     * Sets the current nav controller in the viewModel.
-     */
-    fun setCurrentNavController(controller: LiveData<NavController>) {
-        currentNavController = controller
-    }
+class MainViewModel(
+    private val mainAppRouter: MainAppRouter,
+    private val authRepo: FirebaseAuthService
+) :
+    ViewModel() {
 
     /**
-     * Sets the current navigation graph in the appRouter.
-     */
-    fun initializeNavController(navController: NavController) {
-        appRouter.initializeNavController(navController)
-    }
-
-    fun resetCurrentNavController() {
-        currentNavController = null
-    }
-
-    /**
-     * Navigate ups in the current navigation controller.
+     * Observe auth state of Firebase. Navigates to LoginFragment when no user is logged in.
+     * Navigates to main application when user is logged in.
      *
-     * @return Returns [Boolean] value = true if backstack is not empty | false if backstack is empty.
+     * @param activity  LifecycleOwner of the current activity
      */
-    fun navigateUp(): Boolean {
-        return appRouter.navigateUp()
+
+    fun observeAuthState(activity: LifecycleOwner) {
+        authRepo.currentUser.observe(activity, { user ->
+            if (user != null) {
+                mainAppRouter.navigateToMainApp()
+            } else {
+                mainAppRouter.navigateToLogin()
+            }
+        })
     }
 }

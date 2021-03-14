@@ -53,7 +53,7 @@ configurations {
 
 detekt {
     toolVersion = "$detekt_version"
-    input = files("$rootDir")
+    input = files("$rootDir/app/")
     config = files("$rootDir/config/detekt/detekt.yml")
     autoCorrect = false
     parallel = true

@@ -1,8 +1,9 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
-    id 'kotlin-android-extensions'
     id 'androidx.navigation.safeargs.kotlin'
+    id 'kotlin-kapt'
+    id 'kotlin-parcelize'
 }
 
 apply plugin: 'com.google.gms.google-services'
@@ -45,6 +46,9 @@ android {
 
     kotlinOptions {
         jvmTarget = "1.8"
+        // remove some koin warnings when defining KoinComponents, see
+        // https://github.com/InsertKoinIO/koin/issues/934
+        freeCompilerArgs += "-Xopt-in=org.koin.core.component.KoinApiExtension"
     }
 }
 
@@ -68,6 +72,7 @@ dependencies {
     //Navigation
     implementation "androidx.navigation:navigation-fragment-ktx:$nav_version"
     implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
+    implementation 'com.google.android.gms:play-services-maps:17.0.0'
 
     //Testing
     testImplementation 'junit:junit:4.13.1'
@@ -84,6 +89,10 @@ dependencies {
     implementation platform('com.google.firebase:firebase-bom:26.2.0')
     implementation 'com.google.firebase:firebase-firestore'
     implementation 'com.google.firebase:firebase-auth'
+    implementation 'com.google.firebase:firebase-auth-ktx'
+    implementation 'com.google.android.gms:play-services-auth:19.0.0'
+    implementation 'com.firebaseui:firebase-ui-storage:7.1.1'
+
 
     //Coroutines
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.2"
@@ -95,10 +104,14 @@ dependencies {
     implementation("io.reactivex.rxjava3:rxjava:3.0.3")
     // implementation("io.reactivex.rxjava3:rxkotlin:3.0.1")
 
+    //Adapters
+    implementation 'com.hannesdorfmann:adapterdelegates4-kotlin-dsl-viewbinding:4.3.0'
+
     //Mapbox
     //implementation "com.mapbox.mapboxsdk:mapbox-android-sdk:9.5.0"
     // the corresponding sdk version is bundled with the plugin
     implementation "com.mapbox.mapboxsdk:mapbox-android-plugin-annotation-v9:0.9.0"
+    implementation "com.mapbox.mapboxsdk:mapbox-android-telemetry:6.1.0"
     // implementation "com.mapbox.navigation:core:$mapbox_navigation_version"
     // implementation "com.mapbox.navigation:ui:$mapbox_navigation_version" // already contains maps-sdk and navigation-core
     implementation "com.mapbox.navigation:ui:1.4.0"
@@ -112,8 +125,11 @@ dependencies {
     // Kotlin Viewbinding - Helpers
     implementation "com.github.FunkyMuse.KAHelpers:viewbinding:2.2.7"
 
-    // Networking
-    // implementation "com.squareup.retrofit2:retrofit:2.9.0"
+    //Glide
+    kapt 'com.github.bumptech.glide:compiler:4.11.0'
+
+    //Facebook Shimmer
+    implementation 'com.facebook.shimmer:shimmer:0.5.0'
 
     // TODO test this:
     // Sliding Up Panel

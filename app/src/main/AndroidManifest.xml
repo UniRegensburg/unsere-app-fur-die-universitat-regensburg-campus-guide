@@ -16,7 +16,8 @@
         <!-- prevent automatic recreation onConfigChanges with:
         android:configChanges="orientation|screenSize|screenLayout|keyboardHidden" -->
         <activity
-            android:name="de.ur.explure.MainActivity">
+            android:name="de.ur.explure.MainActivity"
+            android:windowSoftInputMode="adjustPan">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
