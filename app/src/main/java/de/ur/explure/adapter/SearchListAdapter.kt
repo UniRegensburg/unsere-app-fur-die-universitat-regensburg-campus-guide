@@ -1,5 +1,6 @@
 package de.ur.explure.adapter
 
+import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -42,14 +43,14 @@ class SearchListAdapter(private val onClick: (Route) -> Unit) :
                 } catch (_: Exception) {
                 }
             }
-
+            itemView.context.resources.getString(R.string.route_item_rating, data.rating.size)
             /*todo: import correct getString method instead of concatenade text*/
 
             binding.tvRouteTitle.text = data.title
             binding.tvRouteDescription.text = data.description
-            binding.tvRatingCount.text = "(" + data.rating.size.toString() + ")"
-            binding.tvDistance.text = data.distance.toInt().toString() + " km"
-            binding.tvDuration.text = data.duration.toInt().toString() + " h"
+            binding.tvRatingCount.text = itemView.context.resources.getString(R.string.route_item_rating, data.rating.size)
+            binding.tvDistance.text = itemView.context.resources.getString(R.string.route_item_distance, data.distance.toInt())
+            binding.tvDuration.text = itemView.context.resources.getString(R.string.route_item_duration, data.duration.toInt())
             binding.tvWayPointCount.text = data.wayPointCount.toString()
             binding.tvComment.text = data.commentCount.toString()
             binding.ratingBarRoute.rating = data.currentRating.toFloat()
