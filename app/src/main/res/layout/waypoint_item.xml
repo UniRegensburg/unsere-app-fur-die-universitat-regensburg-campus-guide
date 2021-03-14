@@ -5,26 +5,66 @@
     android:orientation="horizontal"
     android:padding="10dp">
 
-    <TextView
-        android:id="@+id/waypoint_title"
+    <ImageView
+        android:id="@+id/wayPoint_image"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
         android:layout_alignParentStart="true"
-        android:text="@string/route_name"
-        android:textColor="@color/textColor"
-        android:textStyle="bold"/>
+        android:contentDescription="@string/waypoints"
+        android:background="@drawable/ic_waypoints"/>
+
+   <TextView
+       android:id="@+id/wayPoint_title"
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content"
+       android:text="@string/route_name"
+       android:layout_marginStart="8dp"
+       android:layout_marginEnd="8dp"
+       android:layout_toEndOf="@id/wayPoint_image"
+       android:layout_alignEnd="@id/wayPoint_has_image"
+       android:textColor="@color/textColor"
+       android:textStyle="bold"/>
 
     <TextView
-        android:id="@+id/waypoint_description"
+        android:id="@+id/wayPoint_description"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentTop="true"
-        android:layout_toEndOf="@+id/waypoint_title"
-        android:layout_marginStart="16dp"
+        android:layout_toEndOf="@id/wayPoint_image"
+        android:layout_alignEnd="@id/wayPoint_has_image"
+        android:layout_below="@id/wayPoint_title"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
         android:text="@string/route_description"
         android:textColor="@color/textColor"/>
 
+    <ImageView
+        android:id="@+id/wayPoint_has_image"
+        android:layout_width="10dp"
+        android:layout_height="10dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentTop="true"
+        android:background="@drawable/ic_image"
+        android:contentDescription="@string/waypoints"/>
+
+    <ImageView
+        android:id="@+id/wayPoint_has_video"
+        android:layout_width="10dp"
+        android:layout_height="10dp"
+        android:layout_marginTop="2dp"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@id/wayPoint_has_image"
+        android:background="@drawable/ic_video"
+        android:contentDescription="@string/waypoints"/>
+
+    <ImageView
+        android:id="@+id/wayPoint_has_audio"
+        android:layout_width="10dp"
+        android:layout_height="10dp"
+        android:layout_marginTop="2dp"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@id/wayPoint_has_video"
+        android:background="@drawable/ic_audio"
+        android:contentDescription="@string/waypoints"/>
 
 </RelativeLayout>

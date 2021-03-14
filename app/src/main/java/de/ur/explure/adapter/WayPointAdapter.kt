@@ -7,12 +7,18 @@ import de.ur.explure.databinding.WaypointItemBinding
 import de.ur.explure.model.waypoint.WayPoint
 import java.util.*
 
-class WayPointAdapter(private val dataSource: LinkedList<WayPoint>) :
-    RecyclerView.Adapter<WayPointAdapter.ViewHolder>() {
+class WayPointAdapter : RecyclerView.Adapter<WayPointAdapter.ViewHolder>() {
+
+    private var wayPointList: MutableList<WayPoint> = mutableListOf()
+
+    fun setItems(wayPoints: List<WayPoint>) {
+        wayPointList = wayPoints.toMutableList()
+        this.notifyDataSetChanged()
+    }
 
     inner class ViewHolder(binding: WaypointItemBinding) : RecyclerView.ViewHolder(binding.root) {
-        val waypointTitle = binding.waypointTitle
-        val waypointDescription = binding.waypointDescription
+        val wayPointTitle = binding.wayPointTitle
+        val wayPointDescription = binding.wayPointDescription
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -22,12 +28,12 @@ class WayPointAdapter(private val dataSource: LinkedList<WayPoint>) :
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val currentItem = dataSource[position]
-        holder.waypointTitle.text = currentItem.title
-        holder.waypointDescription.text = currentItem.description
+        val currentItem = wayPointList[position]
+        holder.wayPointTitle.text = currentItem.title
+        holder.wayPointDescription.text = currentItem.description
     }
 
     override fun getItemCount(): Int {
-        return dataSource.size
+        return wayPointList.size
     }
 }

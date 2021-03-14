@@ -11,12 +11,10 @@ import java.util.*
 class CommentAdapter(private val listener: (String, String) -> Unit) :
         RecyclerView.Adapter<CommentAdapter.ViewHolder>() {
 
-    // better solution?
     private var firstLoading: Boolean = true
-
     private var commentList: MutableList<Comment> = mutableListOf()
 
-    fun setItems(comments : List<Comment>){
+    fun setItems(comments: List<Comment>) {
         commentList = comments.toMutableList()
         this.notifyDataSetChanged()
     }
@@ -31,6 +29,7 @@ class CommentAdapter(private val listener: (String, String) -> Unit) :
         val answerAuthor = binding.answerAuthor
         val answerText = binding.answerText
         val answerDate = binding.answerDate
+        val answerInput = binding.answerInput
         val answerButton = binding.addAnswerButton
     }
 
@@ -51,7 +50,7 @@ class CommentAdapter(private val listener: (String, String) -> Unit) :
         }
         setOnClickListener(holder, position)
         holder.answerButton.setOnClickListener {
-            listener("Text", commentList[position].id)
+            listener(holder.answerInput.toString(), commentList[position].id)
         }
     }
 

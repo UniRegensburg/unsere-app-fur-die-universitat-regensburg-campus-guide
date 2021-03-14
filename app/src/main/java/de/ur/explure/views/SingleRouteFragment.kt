@@ -14,8 +14,6 @@ import de.ur.explure.R
 import de.ur.explure.adapter.CommentAdapter
 import de.ur.explure.adapter.WayPointAdapter
 import de.ur.explure.databinding.FragmentSingleRouteBinding
-import de.ur.explure.model.comment.Comment
-import de.ur.explure.model.comment.CommentDTO
 import de.ur.explure.viewmodel.SingleRouteViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.component.KoinComponent
@@ -43,27 +41,30 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinCompon
 
     private fun initAdapters() {
         commentAdapter = CommentAdapter { answerText, commentId ->
-            //viewModel
+            // viewModel
         }
         binding.comments.adapter = commentAdapter
         binding.comments.layoutManager = LinearLayoutManager(requireContext())
+        wayPointAdapter = WayPointAdapter()
+        binding.waypoints.adapter = wayPointAdapter
+        binding.waypoints.layoutManager = LinearLayoutManager(requireContext())
     }
 
     private fun initObservers() {
         observeRouteInformation()
-        observeWayPoints()
+        // observeWayPoints()
     }
 
     private fun observeRouteInformation() {
         singleRouteViewModel.route.observe(viewLifecycleOwner, { route ->
-            if (route != null){
+            if (route != null) {
 
-                //WayPoints setzen
-
-                //Comments setzen
+                // WayPoints setzen
+                wayPointAdapter.setItems(route.wayPoints)
+                // Comments setzen
                 commentAdapter.setItems(route.comments)
 
-                //Routen Info setzen
+                // Routen Info setzen
                 binding.routeName.text = route.title
                 binding.routeDescription.text = route.description
                 binding.routeDuration.text = getString(R.string.route_item_duration, route.duration.toInt())
@@ -81,16 +82,6 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinCompon
                     }
                 }
             }
-        })
-    }
-
-
-    private fun observeWayPoints() {
-        singleRouteViewModel.wayPointList.observe(viewLifecycleOwner, { wayPoint ->
-            wayPointAdapter = WayPointAdapter(wayPoint)
-            binding.waypoints.adapter = wayPointAdapter
-            binding.waypoints.layoutManager = LinearLayoutManager(requireContext())
-            wayPointAdapter.notifyDataSetChanged()
         })
     }
 
