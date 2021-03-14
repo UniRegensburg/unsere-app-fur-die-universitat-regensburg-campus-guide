@@ -30,36 +30,20 @@ class SingleRouteViewModel(private val routeRepository: RouteRepositoryImpl) : V
             when (val routeData = routeRepository.getRoute(routeId, false)) {
                 is FirebaseResult.Success -> {
                     mutableRoute.postValue(routeData.data)
+                    mutableWayPointList.postValue(routeData.data.wayPoints)
+                    mutableCommentList.postValue(routeData.data.comments)
                 }
             }
         }
     }
 
-    fun getWayPointData(wayPointId: String) {
+    fun addComment(comment: String) {
         viewModelScope.launch {
-            when (val route = routeRepository.getRoute(wayPointId)) {
+            val commentDto = CommentDTO(comment)
+            val routeId = route.value?.id ?: return@launch
+            when (val addComment = routeRepository.addComment(routeId, commentDto)) {
                 is FirebaseResult.Success -> {
-                    mutableWayPointList.value = route.data.wayPoints
-                }
-            }
-        }
-    }
-
-    fun getCommentData(commentId: String) {
-        viewModelScope.launch {
-            when (val route = routeRepository.getRoute(commentId)) {
-                is FirebaseResult.Success -> {
-                    mutableCommentList.value = route.data.comments
-                }
-            }
-        }
-    }
-
-    fun addComment(comment: CommentDTO, routeId: String) {
-        viewModelScope.launch {
-            when (val addComment = routeRepository.addComment(routeId, comment)) {
-                is FirebaseResult.Success -> {
-                    // mutableAddComment.value = addComment.data
+                    getRouteData(routeId)
                 }
             }
         }

@@ -8,11 +8,18 @@ import de.ur.explure.databinding.CommentItemBinding
 import de.ur.explure.model.comment.Comment
 import java.util.*
 
-class CommentAdapter(private val dataSource: LinkedList<Comment>) :
+class CommentAdapter(private val listener: (String, String) -> Unit) :
         RecyclerView.Adapter<CommentAdapter.ViewHolder>() {
 
     // better solution?
     private var firstLoading: Boolean = true
+
+    private var commentList: MutableList<Comment> = mutableListOf()
+
+    fun setItems(comments : List<Comment>){
+        commentList = comments.toMutableList()
+        this.notifyDataSetChanged()
+    }
 
     inner class ViewHolder(binding: CommentItemBinding) : RecyclerView.ViewHolder(binding.root) {
         val commentAuthor = binding.commentAuthor
@@ -24,6 +31,7 @@ class CommentAdapter(private val dataSource: LinkedList<Comment>) :
         val answerAuthor = binding.answerAuthor
         val answerText = binding.answerText
         val answerDate = binding.answerDate
+        val answerButton = binding.addAnswerButton
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -33,7 +41,7 @@ class CommentAdapter(private val dataSource: LinkedList<Comment>) :
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val currentItem = dataSource[position]
+        val currentItem = commentList[position]
         holder.commentAuthor.text = currentItem.authorId
         holder.commentText.text = currentItem.message
         holder.commentDate.text = currentItem.createdAt.toString()
@@ -42,6 +50,9 @@ class CommentAdapter(private val dataSource: LinkedList<Comment>) :
             firstLoading = false
         }
         setOnClickListener(holder, position)
+        holder.answerButton.setOnClickListener {
+            listener("Text", commentList[position].id)
+        }
     }
 
     private fun setOnClickListener(holder: ViewHolder, position: Int) {
@@ -61,7 +72,7 @@ class CommentAdapter(private val dataSource: LinkedList<Comment>) :
     }
 
     private fun setAnswers(holder: ViewHolder, position: Int) {
-        val currentItem = dataSource[position]
+        val currentItem = commentList[position]
         for (i in 0 until currentItem.answers.size) {
             holder.answerAuthor.text = currentItem.answers[i].authorId
             holder.answerText.text = currentItem.answers[i].message
@@ -70,6 +81,6 @@ class CommentAdapter(private val dataSource: LinkedList<Comment>) :
     }
 
     override fun getItemCount(): Int {
-        return dataSource.size
+        return commentList.size
     }
 }

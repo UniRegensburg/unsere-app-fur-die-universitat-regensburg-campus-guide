@@ -14,11 +14,13 @@ import de.ur.explure.R
 import de.ur.explure.adapter.CommentAdapter
 import de.ur.explure.adapter.WayPointAdapter
 import de.ur.explure.databinding.FragmentSingleRouteBinding
+import de.ur.explure.model.comment.Comment
 import de.ur.explure.model.comment.CommentDTO
 import de.ur.explure.viewmodel.SingleRouteViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import java.util.*
 
 class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinComponent {
 
@@ -34,44 +36,54 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinCompon
         super.onViewCreated(view, savedInstanceState)
         val routeId = args.routeID
         singleRouteViewModel.getRouteData(routeId)
-        singleRouteViewModel.getWayPointData(routeId)
-        singleRouteViewModel.getCommentData(routeId)
         initObservers()
-        setOnClickListener(routeId)
+        initAdapters()
+        setOnClickListener()
+    }
+
+    private fun initAdapters() {
+        commentAdapter = CommentAdapter { answerText, commentId ->
+            //viewModel
+        }
+        binding.comments.adapter = commentAdapter
+        binding.comments.layoutManager = LinearLayoutManager(requireContext())
     }
 
     private fun initObservers() {
         observeRouteInformation()
         observeWayPoints()
-        observeComments()
-        setImage()
     }
 
     private fun observeRouteInformation() {
         singleRouteViewModel.route.observe(viewLifecycleOwner, { route ->
-            binding.routeName.text = route.title
-            binding.routeDescription.text = route.description
-            binding.routeDuration.text = getString(R.string.route_item_duration, route.duration.toInt())
-            binding.routeDistance.text = getString(R.string.route_item_distance, route.distance.toInt())
-            binding.routeRating.rating = route.currentRating.toFloat()
-        })
-    }
+            if (route != null){
 
-    private fun setImage() {
-        singleRouteViewModel.route.observe(viewLifecycleOwner, { route ->
-            if (route.thumbnailUrl.isNotEmpty()) {
-                try {
-                    val gsReference = fireStorage.getReferenceFromUrl(route.thumbnailUrl)
-                    GlideApp.with(requireContext())
+                //WayPoints setzen
+
+                //Comments setzen
+                commentAdapter.setItems(route.comments)
+
+                //Routen Info setzen
+                binding.routeName.text = route.title
+                binding.routeDescription.text = route.description
+                binding.routeDuration.text = getString(R.string.route_item_duration, route.duration.toInt())
+                binding.routeDistance.text = getString(R.string.route_item_distance, route.distance.toInt())
+                binding.routeRating.rating = route.currentRating.toFloat()
+                if (route.thumbnailUrl.isNotEmpty()) {
+                    try {
+                        val gsReference = fireStorage.getReferenceFromUrl(route.thumbnailUrl)
+                        GlideApp.with(requireContext())
                             .load(gsReference)
                             .error(R.drawable.map_background)
                             .transition(DrawableTransitionOptions.withCrossFade())
                             .into(binding.routeImage)
-                } catch (_: Exception) {
+                    } catch (_: Exception) {
+                    }
                 }
             }
         })
     }
+
 
     private fun observeWayPoints() {
         singleRouteViewModel.wayPointList.observe(viewLifecycleOwner, { wayPoint ->
@@ -82,36 +94,7 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinCompon
         })
     }
 
-    private fun observeComments() {
-        singleRouteViewModel.commentList.observe(viewLifecycleOwner, { comment ->
-            commentAdapter = CommentAdapter(comment)
-            binding.comments.adapter = commentAdapter
-            binding.comments.layoutManager = LinearLayoutManager(requireContext())
-            commentAdapter.notifyDataSetChanged()
-        })
-    }
-
-    private fun addComment(routeId: String) {
-            // is that allowed?
-            val comment = CommentDTO(binding.commentInput.text.toString())
-            if (comment.toString().isNotEmpty()) {
-                singleRouteViewModel.addComment(comment, routeId)
-                binding.commentInput.text.clear()
-            }
-    }
-
-    private fun enableAddButton(routeId: String) {
-        binding.addCommentButton.setOnClickListener {
-            val commentInput = binding.commentInput.text.toString()
-            if (commentInput.isNotEmpty()) {
-                addComment(routeId)
-            } else {
-                Toast.makeText(context, R.string.empty_comment, Toast.LENGTH_LONG).show()
-            }
-        }
-    }
-
-    private fun setOnClickListener(routeId: String) {
+    private fun setOnClickListener() {
         binding.descriptionButton.setOnClickListener {
             binding.viewFlipper.displayedChild = 0
         }
@@ -127,6 +110,14 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinCompon
         binding.shareRouteButton.setOnClickListener {
             // share Route
         }
-        enableAddButton(routeId)
+        binding.addCommentButton.setOnClickListener {
+            val commentInput = binding.commentInput.text.toString()
+            if (commentInput.isNotEmpty()) {
+                singleRouteViewModel.addComment(commentInput)
+                binding.commentInput.text.clear()
+            } else {
+                Toast.makeText(context, R.string.empty_comment, Toast.LENGTH_LONG).show()
+            }
+        }
     }
 }
