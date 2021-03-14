@@ -42,6 +42,9 @@ class SearchListAdapter(private val onClick: (Route) -> Unit) :
                 } catch (_: Exception) {
                 }
             }
+
+            /*todo: import correct getString method instead of concatenade text*/
+
             binding.tvRouteTitle.text = data.title
             binding.tvRouteDescription.text = data.description
             binding.tvRatingCount.text = "(" + data.rating.size.toString() + ")"

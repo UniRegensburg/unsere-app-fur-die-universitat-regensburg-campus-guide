@@ -36,15 +36,18 @@ class WordSearchViewModel(
 
             val resultIDs = mutableListOf<String>()
 
-            if (resultIDs.isNullOrEmpty()) {
-                noRoutes.postValue(true)
-            }
 
             for (i in resultQuery.indices) {
                 val resultID = resultQuery.get(i).json.get("objectID").toString()
                 val trimResultID = resultID.removePrefix(("\"")).removeSuffix(("\""))
                 resultIDs.add(i, trimResultID)
             }
+
+            if (resultIDs.isEmpty()) {
+                noRoutes.postValue(true)
+            }
+
+
             Timber.d(resultIDs.toString())
             val routeLists = routeRepo.getRoutes(resultIDs, true)
             Timber.d(routeLists.toString())
