@@ -22,11 +22,11 @@
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:background="@drawable/circular_background"
-            android:backgroundTint="@color/lightGey"
+            android:backgroundTint="@color/grey"
             android:padding="7dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:tint="@color/colorPrimary"
+            app:tint="@color/themeColor"
             tools:ignore="ContentDescription" />
 
         <TextView
@@ -35,7 +35,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="1dp"
             android:layout_marginTop="15dp"
-            android:background="@color/lightGey"
+            android:background="@color/grey"
             android:text="@string/middle_text_placeholder"
             android:textAllCaps="true"
             android:textColor="@android:color/transparent"
