@@ -38,4 +38,17 @@ class SingleRouteViewModel(private val routeRepository: RouteRepositoryImpl) : V
             }
         }
     }
+
+    fun addAnswer(commentId: String, answerText: String) {
+        viewModelScope.launch {
+            val commentDto = CommentDTO(answerText)
+            val routeId = route.value?.id ?: return@launch
+            when (routeRepository.addAnswer(routeId, commentId, commentDto)) {
+                is FirebaseResult.Success -> {
+                   // getRouteData(routeId)
+                   // addComment(commentDto.message)
+                }
+            }
+        }
+    }
 }

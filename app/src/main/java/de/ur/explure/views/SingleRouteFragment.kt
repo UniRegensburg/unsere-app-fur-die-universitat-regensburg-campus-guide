@@ -40,8 +40,8 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinCompon
     }
 
     private fun initAdapters() {
-        commentAdapter = CommentAdapter { answerText, commentId ->
-            // viewModel
+        commentAdapter = CommentAdapter { commentId, answerText ->
+            addAnswers(commentId, answerText)
         }
         binding.comments.adapter = commentAdapter
         binding.comments.layoutManager = LinearLayoutManager(requireContext())
@@ -57,16 +57,20 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinCompon
     private fun observeRouteInformation() {
         singleRouteViewModel.route.observe(viewLifecycleOwner, { route ->
             if (route != null) {
-                wayPointAdapter.setItems(route.wayPoints)
-                commentAdapter.setItems(route.comments)
                 binding.routeName.text = route.title
                 binding.routeDescription.text = route.description
                 binding.routeDuration.text = getString(R.string.route_item_duration, route.duration.toInt())
                 binding.routeDistance.text = getString(R.string.route_item_distance, route.distance.toInt())
                 binding.routeRating.rating = route.currentRating.toFloat()
+                setAdapters(route)
                 setImage(route)
             }
         })
+    }
+
+    private fun setAdapters(route: Route) {
+        wayPointAdapter.setItems(route.wayPoints)
+        commentAdapter.setItems(route.comments)
     }
 
     private fun setImage(route: Route) {
@@ -80,6 +84,14 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinCompon
                         .into(binding.routeImage)
             } catch (_: Exception) {
             }
+        }
+    }
+
+    private fun addAnswers(commentId: String, answerText: String) {
+        if (answerText.isNotEmpty()) {
+            singleRouteViewModel.addAnswer(commentId, answerText)
+        } else {
+            Toast.makeText(context, R.string.empty_comment, Toast.LENGTH_LONG).show()
         }
     }
 

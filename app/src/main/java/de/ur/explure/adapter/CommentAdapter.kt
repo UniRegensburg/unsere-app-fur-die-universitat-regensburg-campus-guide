@@ -48,7 +48,8 @@ class CommentAdapter(private val listener: (String, String) -> Unit) :
         }
         setOnClickListener(holder, position)
         holder.answerButton.setOnClickListener {
-            listener(holder.answerInput.toString(), commentList[position].id)
+            listener(commentList[position].id, holder.answerInput.text.toString())
+            holder.answerInput.text.clear()
         }
     }
 

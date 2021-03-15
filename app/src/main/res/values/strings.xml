@@ -92,5 +92,5 @@
     <string name="comment_input">Comment</string>
     <string name="add_comment">Add</string>
     <string name="answer_input">Answer</string>
-    <string name="empty_comment">Ülease enter comment</string>
+    <string name="empty_comment">Please enter comment</string>
 </resources>
