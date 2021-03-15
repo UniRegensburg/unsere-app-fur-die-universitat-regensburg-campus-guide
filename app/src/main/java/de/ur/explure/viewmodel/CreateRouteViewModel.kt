@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import de.ur.explure.model.category.Category
+import de.ur.explure.model.waypoint.WayPointDTO
 import de.ur.explure.navigation.MainAppRouter
 import de.ur.explure.repository.category.CategoryRepositoryImpl
 import de.ur.explure.utils.FirebaseResult
@@ -17,6 +18,8 @@ class CreateRouteViewModel(
 
     val categories: MutableLiveData<List<Category>> = MutableLiveData()
 
+    val wayPointDTOs : MutableLiveData<List<WayPointDTO>> = MutableLiveData()
+
     fun getCategories() {
         viewModelScope.launch {
             when (val categoryCall = categoryRepo.getAllCategories()) {
@@ -24,6 +27,10 @@ class CreateRouteViewModel(
                 else -> Timber.d("Failed to get Categories")
             }
         }
+    }
+
+    fun setWayPointDTOs(wayPointDTOList: List<WayPointDTO>){
+        wayPointDTOs.postValue(wayPointDTOList)
     }
 
 }

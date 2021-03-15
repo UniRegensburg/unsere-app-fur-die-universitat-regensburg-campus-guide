@@ -87,7 +87,7 @@
 
 
         <Spinner
-            android:id="@+id/sCountry"
+            android:id="@+id/spinner_categories"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="20dp"
@@ -97,6 +97,30 @@
             android:spinnerMode="dropdown"
             app:layout_constraintTop_toBottomOf="@+id/tv_spinner_hint"
             tools:listitem="@layout/spinner_category_item" />
+
+        <TextView
+            android:id="@+id/tv_waypoint_list_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="21dp"
+            android:layout_marginTop="15dp"
+            android:text="@string/waypoint_title"
+            android:textColor="@color/textColor"
+            android:textSize="14sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/spinner_categories" />
+
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:layout_marginTop="10dp"
+            tools:listitem="@layout/waypoint_edit_card"
+            android:layout_marginHorizontal="20dp"
+            android:id="@+id/rv_waypoint_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintTop_toBottomOf="@+id/tv_waypoint_list_title" />
+
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

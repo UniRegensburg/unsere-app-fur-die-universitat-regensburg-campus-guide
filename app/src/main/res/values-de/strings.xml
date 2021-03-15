@@ -34,4 +34,6 @@
     <string name="lorem_ipsum">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.  </string>
     <string name="arbeits_button">Arbeiten</string>
     <string name="category_spinner_header">Wähle eine Kategorie</string>
+    <string name="waypoint_title">Wegpunkte</string>
+
 </resources>
