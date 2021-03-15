@@ -1,3 +1,5 @@
+@file:Suppress("MatchingDeclarationName")
+
 package de.ur.explure.utils
 
 import android.app.Activity
@@ -7,15 +9,26 @@ import androidx.annotation.ColorRes
 import androidx.annotation.StringRes
 import com.google.android.material.snackbar.Snackbar
 import de.ur.explure.R
+import de.ur.explure.utils.SnackBarConstants.SNACKBAR_MAX_LINES
+import de.ur.explure.utils.SnackBarConstants.defaultAnchorViewID
+import de.ur.explure.utils.SnackBarConstants.defaultBackgroundColor
 
-const val SNACKBAR_MAX_LINES = 4
+object SnackBarConstants {
+    /**
+     * ViewGroupId of the entire content area of an Activity, see
+     * https://stackoverflow.com/questions/4486034/get-root-view-from-current-activity
+     */
+    const val defaultAnchorViewID = android.R.id.content
+    const val defaultBackgroundColor = R.color.themeColor
+    const val SNACKBAR_MAX_LINES = 4
+}
 
 inline fun showSnackbar(
     context: Activity,
     message: String,
-    anchorViewId: Int = android.R.id.content,
+    anchorViewId: Int = defaultAnchorViewID,
     length: Int = Snackbar.LENGTH_SHORT,
-    @ColorRes colorRes: Int? = null,
+    @ColorRes colorRes: Int? = defaultBackgroundColor,
     f: Snackbar.() -> Unit = {}
 ) {
     val snackbar = Snackbar.make(context.findViewById(anchorViewId), message, length)
@@ -34,7 +47,7 @@ inline fun showSnackbar(
 inline fun showSnackbar(
     context: Activity,
     @StringRes messageRes: Int,
-    anchorViewId: Int = android.R.id.content,
+    anchorViewId: Int = defaultAnchorViewID,
     length: Int = Snackbar.LENGTH_SHORT,
     @ColorRes colorRes: Int? = null,
     f: Snackbar.() -> Unit = {}

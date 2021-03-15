@@ -10,9 +10,9 @@
     android:clickable="true"
     android:focusable="true"
     android:foreground="?android:attr/selectableItemBackground"
-    app:cardBackgroundColor="@color/colorPrimary"
     card_view:cardCornerRadius="@dimen/cardview_corner_radius"
-    card_view:cardElevation="@dimen/cardview_default_elevation">
+    card_view:cardElevation="@dimen/cardview_default_elevation"
+    tools:cardBackgroundColor="@color/themeColor">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/cl_category_card"
@@ -26,12 +26,10 @@
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:background="@drawable/circular_background"
-            android:backgroundTint="@android:color/white"
             android:padding="7dp"
             android:src="@drawable/ic_home"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:tint="@color/colorPrimary"
             tools:ignore="ContentDescription" />
 
         <TextView
@@ -41,7 +39,7 @@
             android:layout_marginStart="1dp"
             android:layout_marginTop="9dp"
             android:textAllCaps="true"
-            android:textColor="@android:color/white"
+            android:textColor="@color/white"
             android:textSize="16sp"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"
