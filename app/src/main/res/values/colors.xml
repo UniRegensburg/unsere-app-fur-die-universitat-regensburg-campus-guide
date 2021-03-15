@@ -10,9 +10,6 @@
 
     <!-- Accent Color -->
     <color name="highlightColor">#960146</color>
-    <color name="versioTwo">#b5306a</color>
-    <color name="versioThree">#C6397C</color>
-
     <color name="highlightColorDark">#cb4571</color>
     <color name="highlightColorLight">#62001f</color>
 
