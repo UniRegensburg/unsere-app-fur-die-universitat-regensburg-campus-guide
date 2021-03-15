@@ -72,4 +72,6 @@
     <string name="route_search_hint">Search</string>
     <string name="category_spinner_header">Set a Category</string>
     <string name="waypoint_title">Waypoints</string>
+    <string name="create_route_descr_hint">Description</string>
+    <string name="create_route_title_hint">Title</string>
 </resources>

@@ -279,7 +279,7 @@ class RouteRepositoryImpl(
         val answerCall = snapshot.reference.collection(ANSWER_COLLECTION_NAME).get().await()
         if (answerCall is FirebaseResult.Success && !answerCall.data.isEmpty) {
             answerCall.data.forEach {
-                val answer = it.toObject(Comment::class.java) ?: return@forEach
+                val answer = it.toObject(Comment::class.java)
                 resultList.add(answer)
             }
         }

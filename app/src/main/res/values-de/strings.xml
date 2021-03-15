@@ -35,5 +35,7 @@
     <string name="arbeits_button">Arbeiten</string>
     <string name="category_spinner_header">Wähle eine Kategorie</string>
     <string name="waypoint_title">Wegpunkte</string>
+    <string name="create_route_descr_hint">Beschreibung</string>
+    <string name="create_route_title_hint">Titel</string>
 
 </resources>

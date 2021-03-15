@@ -54,6 +54,6 @@
     </style>
 
     <style name="TextInputHintStyle" parent="@android:style/TextAppearance">
-        <item name="android:textColor">@color/colorPrimary</item>
+        <item name="android:textColor">@color/themeColor</item>
     </style>
 </resources>

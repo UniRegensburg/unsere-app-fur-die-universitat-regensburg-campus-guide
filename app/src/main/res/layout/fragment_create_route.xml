@@ -27,9 +27,9 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="20dp"
             android:layout_marginTop="10dp"
-            android:textColorHint="@color/lightGey"
+            android:textColorHint="@color/grey"
             app:boxBackgroundColor="@android:color/transparent"
-            app:boxStrokeColor="@color/colorPrimary"
+            app:boxStrokeColor="@color/themeColor"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/mapBox_placeholder">
@@ -38,10 +38,10 @@
                 android:id="@+id/et_route_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Title"
+                android:hint="@string/create_route_title_hint"
                 android:maxLength="35"
                 android:maxLines="1"
-                android:textColor="@color/textColor"
+                android:textColor="@color/textColorGrey"
                 android:textSize="14sp" />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -53,9 +53,9 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="20dp"
             android:layout_marginTop="10dp"
-            android:textColorHint="@color/lightGey"
+            android:textColorHint="@color/grey"
             app:boxBackgroundColor="@android:color/transparent"
-            app:boxStrokeColor="@color/colorPrimary"
+            app:boxStrokeColor="@color/themeColor"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/text_layout_title">
@@ -65,10 +65,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="start"
-                android:hint="Description"
+                android:hint="@string/create_route_descr_hint"
                 android:lines="4"
                 android:maxLength="400"
-                android:textColor="@color/textColor"
+                android:textColor="@color/textColorGrey"
                 android:textSize="14sp" />
 
         </com.google.android.material.textfield.TextInputLayout>
@@ -80,7 +80,7 @@
             android:layout_marginStart="21dp"
             android:layout_marginTop="10dp"
             android:text="@string/category_spinner_header"
-            android:textColor="@color/textColor"
+            android:textColor="@color/textColorGrey"
             android:textSize="14sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/input_layout_description" />
@@ -105,7 +105,7 @@
             android:layout_marginStart="21dp"
             android:layout_marginTop="15dp"
             android:text="@string/waypoint_title"
-            android:textColor="@color/textColor"
+            android:textColor="@color/textColorGrey"
             android:textSize="14sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/spinner_categories" />
