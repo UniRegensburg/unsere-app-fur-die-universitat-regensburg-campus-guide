@@ -12,9 +12,11 @@
     sothree:umanoDragView="@+id/dragView"
     sothree:umanoFadeColor="@android:color/transparent"
     sothree:umanoOverlay="false"
+    sothree:umanoPanelHeight="@dimen/bottom_nav_height"
     sothree:umanoScrollableView="@+id/recycler_waypoint_list"
     sothree:umanoShadowHeight="6dp">
-    <!-- TODO test scrollable view -->
+    <!-- set the panel height to the same size as the bottom navigation bar size
+    per material design guidelines to prevent the buttons from switching their position ! -->
 
     <!-- Main Content -->
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -51,6 +53,23 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/cancelRouteCreationButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:visibility="gone"
+            app:elevation="@dimen/fab_elevation"
+            app:fabSize="mini"
+            app:layout_constraintEnd_toStartOf="@+id/endRouteBuildingButton"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:pressedTranslationZ="12dp"
+            app:backgroundTint="@color/colorError"
+            app:srcCompat="@drawable/ic_baseline_clear_24"
+            tools:ignore="ContentDescription"
+            tools:visibility="visible" />
 
         <com.mapbox.mapboxsdk.maps.MapView
             android:id="@+id/mapView"

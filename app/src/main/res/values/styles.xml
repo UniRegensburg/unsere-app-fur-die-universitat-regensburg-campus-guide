@@ -48,7 +48,7 @@
     <style name="BodyTextStyle" parent="MaterialAlertDialog.MaterialComponents.Body.Text">
         <item name="android:paddingTop">6dp</item>
         <item name="android:paddingBottom">6dp</item>
-        <item name="android:textSize">14sp</item>
+        <item name="android:textSize">16sp</item>
     </style>
 
     <style name="ButtonBarStyle">
@@ -61,9 +61,14 @@
     </style>
 
     <style name="RouteCreationMaterialDialogTheme" parent="CustomMaterialDialogTheme">
+        <item name="materialAlertDialogBodyTextStyle">@style/RouteCreationBodyTextStyle</item>
         <item name="buttonBarPositiveButtonStyle">@style/RouteCreationDialogButtonStyle</item>
         <item name="buttonBarNegativeButtonStyle">@style/RouteCreationDialogButtonStyle</item>
         <item name="buttonBarNeutralButtonStyle">@style/RouteCreationDialogButtonStyle</item>
+    </style>
+
+    <style name="RouteCreationBodyTextStyle" parent="BodyTextStyle">
+        <item name="android:textSize">14sp</item>
     </style>
 
     <style name="RouteCreationDialogButtonStyle" parent="Widget.MaterialComponents.Button">
