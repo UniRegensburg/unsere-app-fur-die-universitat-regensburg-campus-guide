@@ -12,20 +12,27 @@ import android.view.View
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.fragment.app.Fragment
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.crazylegend.viewbinding.viewBinding
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
+import com.google.firebase.storage.FirebaseStorage
+import de.ur.explure.GlideApp
 import de.ur.explure.R
 import de.ur.explure.databinding.FragmentProfileBinding
 import de.ur.explure.extensions.toDp
 import de.ur.explure.viewmodel.ProfileViewModel
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.core.component.inject
 
 class ProfileFragment : Fragment(R.layout.fragment_profile) {
 
     private val binding by viewBinding(FragmentProfileBinding::bind)
 
     private val viewModel: ProfileViewModel by viewModel()
+
+    private val fireStorage: FirebaseStorage by inject()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -41,6 +48,18 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         viewModel.user.observe(viewLifecycleOwner, { user ->
             if (user != null) {
                 binding.userNameTextView.text = user.name
+                if (user.profilePictureUrl.isNotEmpty()) {
+                    try {
+                        val gsReference =
+                            fireStorage.getReferenceFromUrl(user.profilePictureUrl)
+                        GlideApp.with(requireContext())
+                            .load(gsReference)
+                            .error(R.drawable.map_background)
+                            .transition(DrawableTransitionOptions.withCrossFade())
+                            .into(binding.profilePicture)
+                    } catch (_: Exception) {
+                    }
+                }
             }
         })
     }
