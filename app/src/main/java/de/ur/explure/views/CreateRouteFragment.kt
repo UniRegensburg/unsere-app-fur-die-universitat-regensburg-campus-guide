@@ -3,6 +3,9 @@ package de.ur.explure.views
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.crazylegend.viewbinding.viewBinding
 import com.google.firebase.firestore.GeoPoint
@@ -16,6 +19,10 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class CreateRouteFragment : Fragment(R.layout.fragment_create_route) {
 
+    companion object {
+        const val WAYPOINT_EDIT_KEY = "WayPointEdit"
+    }
+
     private val binding by viewBinding(FragmentCreateRouteBinding::bind)
     private val viewModel: CreateRouteViewModel by viewModel()
 
@@ -28,19 +35,20 @@ class CreateRouteFragment : Fragment(R.layout.fragment_create_route) {
         super.onViewCreated(view, savedInstanceState)
         initAdapters()
         setObservers()
+        initWayPointEditObserver()
         val waypoint1 =
             WayPointDTO(
-                "WegPunkt 1",
+                "Mensa",
                 GeoPoint(15.56, 33.2),
-                "Das hier ist ein ziemlich guter Wegpunkt",
+                "Hier gibts the Good Stuff",
                 "nicht null",
                 null,
                 null
             )
         val waypoint2 =
             WayPointDTO(
-                "WegPunkt 2",
-                GeoPoint(15.56, 33.2),
+                "Kugel",
+                GeoPoint(25.56, 33.2),
                 "Das hier ist ein ziemlich guter Wegpunkt",
                 "nicht null",
                 "nicht null",
@@ -48,8 +56,8 @@ class CreateRouteFragment : Fragment(R.layout.fragment_create_route) {
             )
         val waypoint3 =
             WayPointDTO(
-                "WegPunkt 3",
-                GeoPoint(15.56, 33.2),
+                "PT Cafete",
+                GeoPoint(15.56, 53.2),
                 "Das hier ist ein ziemlich guter Wegpunkt",
                 null,
                 null,
@@ -60,14 +68,38 @@ class CreateRouteFragment : Fragment(R.layout.fragment_create_route) {
         viewModel.getCategories()
     }
 
+    private fun initWayPointEditObserver() {
+        val navBackStackEntry = findNavController().getBackStackEntry(R.id.createRouteFragment)
+
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME
+                && navBackStackEntry.savedStateHandle.contains(WAYPOINT_EDIT_KEY)
+            ) {
+                val editedWayPointDTO =
+                    navBackStackEntry.savedStateHandle.get<WayPointDTO>(WAYPOINT_EDIT_KEY)
+                if (editedWayPointDTO != null) {
+                    viewModel.updateWayPointDTO(editedWayPointDTO)
+                }
+            }
+        }
+
+        navBackStackEntry.lifecycle.addObserver(observer)
+
+        viewLifecycleOwner.lifecycle.addObserver(LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_DESTROY) {
+                navBackStackEntry.lifecycle.removeObserver(observer)
+            }
+        })
+    }
+
     private fun initAdapters() {
         initCategoryAdapter()
         initWayPointAdapter()
     }
 
     private fun initWayPointAdapter() {
-        wayPointAdapter = WayPointCreateAdapter {
-            //TODO: Open Waypoint Dialog
+        wayPointAdapter = WayPointCreateAdapter { wayPointDTO ->
+            viewModel.openWayPointDialogFragment(wayPointDTO)
         }
         binding.rvWaypointList.adapter = wayPointAdapter
         binding.rvWaypointList.layoutManager =
@@ -86,9 +118,10 @@ class CreateRouteFragment : Fragment(R.layout.fragment_create_route) {
                 categoryAdapter.notifyDataSetChanged()
             }
         })
-        viewModel.wayPointDTOs.observe(viewLifecycleOwner, {waypointsDTO ->
-            if (waypointsDTO != null){
+        viewModel.wayPointDTOs.observe(viewLifecycleOwner, { waypointsDTO ->
+            if (waypointsDTO != null) {
                 wayPointAdapter.items = waypointsDTO
+                wayPointAdapter.notifyDataSetChanged()
             }
         })
     }

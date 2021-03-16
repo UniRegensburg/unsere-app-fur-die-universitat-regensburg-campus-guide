@@ -38,6 +38,28 @@
     <fragment
         android:id="@+id/createRouteFragment"
         android:name="de.ur.explure.views.CreateRouteFragment"
-        android:label="CreateRouteFragment" />
+        android:label="CreateRouteFragment" >
+        <action
+            android:id="@+id/action_createRouteFragment_to_createWayPointDialog"
+            app:destination="@id/createWayPointDialog" />
+    </fragment>
+    <dialog
+        android:id="@+id/createWayPointDialog"
+        android:name="de.ur.explure.views.CreateWayPointDialogFragment"
+        android:label="CreateWayPointDialogFragment" >
+        <argument
+            android:name="wayPointDTO"
+            app:argType="de.ur.explure.model.waypoint.WayPointDTO"
+            app:nullable="true"
+            android:defaultValue="@null" />
+        <argument
+            android:name="longitude"
+            app:argType="long"
+            android:defaultValue="0L"/>
+        <argument
+            android:name="latitude"
+            app:argType="long"
+            android:defaultValue="0L"/>
+    </dialog>
 
 </navigation>

@@ -74,7 +74,7 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <TextView
-            android:id="@+id/tv_spinner_hint"
+            android:id="@+id/tv_image_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="21dp"
@@ -95,7 +95,7 @@
             android:background="@drawable/grey_outline"
             android:popupBackground="@drawable/green_outline"
             android:spinnerMode="dropdown"
-            app:layout_constraintTop_toBottomOf="@+id/tv_spinner_hint"
+            app:layout_constraintTop_toBottomOf="@+id/tv_image_title"
             tools:listitem="@layout/spinner_category_item" />
 
         <TextView
@@ -112,15 +112,29 @@
 
 
         <androidx.recyclerview.widget.RecyclerView
-            android:layout_marginTop="10dp"
-            tools:listitem="@layout/waypoint_edit_card"
-            android:layout_marginHorizontal="20dp"
             android:id="@+id/rv_waypoint_list"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="10dp"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:layout_constraintTop_toBottomOf="@+id/tv_waypoint_list_title" />
+            app:layout_constraintTop_toBottomOf="@+id/tv_waypoint_list_title"
+            tools:itemCount="3"
+            tools:listitem="@layout/waypoint_edit_card" />
 
+
+        <Button
+            android:id="@+id/btn_save_route"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="20dp"
+            android:backgroundTint="@color/highlightColor"
+            android:text="@string/create_route_save_btn"
+            android:textColor="@color/white"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/rv_waypoint_list" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

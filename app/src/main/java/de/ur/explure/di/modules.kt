@@ -19,6 +19,7 @@ import de.ur.explure.services.FirebaseAuthService
 import de.ur.explure.utils.SharedPreferencesManager
 import de.ur.explure.viewmodel.AuthenticationViewModel
 import de.ur.explure.viewmodel.CreateRouteViewModel
+import de.ur.explure.viewmodel.CreateWayPointViewModel
 import de.ur.explure.viewmodel.MainViewModel
 import de.ur.explure.viewmodel.MapViewModel
 import de.ur.explure.viewmodel.DiscoverViewModel
@@ -65,4 +66,5 @@ val mainModule = module {
     viewModel { MainViewModel(get(), get()) }
     viewModel { MapViewModel(get()) }
     viewModel { CreateRouteViewModel(get(), get()) }
+    viewModel { CreateWayPointViewModel()}
 }
