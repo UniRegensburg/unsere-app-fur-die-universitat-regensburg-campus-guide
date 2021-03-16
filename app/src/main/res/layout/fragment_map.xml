@@ -1,183 +1,167 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.sothree.slidinguppanel.SlidingUpPanelLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:mapbox="http://schemas.android.com/apk/res-auto"
+    xmlns:sothree="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/mapContainer"
+    android:id="@+id/slidingRootLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    app:layout_behavior="@string/appbar_scrolling_view_behavior">
+    android:gravity="bottom"
+    sothree:umanoAnchorPoint="0.4"
+    sothree:umanoDragView="@+id/dragView"
+    sothree:umanoFadeColor="@android:color/transparent"
+    sothree:umanoOverlay="false"
+    sothree:umanoScrollableView="@+id/recycler_waypoint_list"
+    sothree:umanoShadowHeight="6dp">
+    <!-- TODO test scrollable view -->
 
-    <ProgressBar
-        android:id="@+id/route_retrieval_progress_spinner"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:visibility="invisible"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/mapView" />
-
-    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-        android:id="@+id/buildRouteButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/margin_normal"
-        android:text="Route erstellen"
-        app:elevation="16dp"
-        app:icon="@drawable/ic_baseline_follow_the_signs_24"
-        app:iconSize="32dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-        android:id="@+id/endRouteBuildingButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/margin_normal"
-        android:enabled="false"
-        android:text="Route speichern"
-        android:visibility="invisible"
-        app:backgroundTint="@color/mapbox_blue"
-        app:elevation="16dp"
-        app:icon="@drawable/ic_baseline_save_24"
-        app:iconSize="32dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <com.mapbox.mapboxsdk.maps.MapView
-        android:id="@+id/mapView"
+    <!-- Main Content -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/mapContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        mapbox:mapbox_cameraBearing="0"
-        mapbox:mapbox_cameraTargetLat="48.997040"
-        mapbox:mapbox_cameraTargetLng="12.094922"
-        mapbox:mapbox_cameraTilt="0"
-        mapbox:mapbox_cameraZoom="14"
-        mapbox:mapbox_cameraZoomMax="20"
-        mapbox:mapbox_cameraZoomMin="14" />
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/top_guideline"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent=".15" />
-
-    <include
-        android:id="@+id/route_creation_options_layout"
-        layout="@layout/route_creation_options_panel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@id/bottom_guideline"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/top_guideline" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/bottom_guideline"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        app:layout_constraintGuide_percent=".55" />
-
-    <!-- ! the buttons need to be wrapped in a coordinatorLayout so the snackbar won't overlap them when shown -->
-    <androidx.coordinatorlayout.widget.CoordinatorLayout
-        android:id="@+id/map_button_container"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="@+id/mapView"
-        app:layout_constraintTop_toBottomOf="@+id/bottom_guideline"
-        app:layout_dodgeInsetEdges="bottom">
-
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/startNavigationButton"
+        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+            android:id="@+id/buildRouteButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="top|end"
-            android:visibility="gone"
+            android:layout_marginTop="@dimen/margin_normal"
+            android:text="Route erstellen"
+            app:elevation="16dp"
+            app:icon="@drawable/ic_baseline_follow_the_signs_24"
+            app:iconSize="32dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+            android:id="@+id/endRouteBuildingButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/margin_normal"
+            android:enabled="false"
+            android:text="Route speichern"
+            android:visibility="invisible"
             app:backgroundTint="@color/mapbox_blue"
-            app:borderWidth="0dp"
-            app:elevation="@dimen/fab_elevation"
-            app:fabSize="auto"
-            app:layout_anchor="@id/view_placeholder_1"
-            app:pressedTranslationZ="12dp"
-            app:srcCompat="@drawable/ic_navigation_24"
-            tools:visibility="visible"
-            tools:ignore="ContentDescription" />
+            app:elevation="16dp"
+            app:icon="@drawable/ic_baseline_save_24"
+            app:iconSize="32dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-        <!-- invisible placeholder to add some margin between the buttons; normal margins don't work in a coordinatorLayout -->
-        <View
-            android:id="@+id/view_placeholder_1"
-            android:layout_width="0dp"
-            android:layout_height="@dimen/margin_small"
-            android:layout_gravity="top|end"
-            app:layout_anchor="@id/changeStyleButton" />
-
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/changeStyleButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="top|end"
-            app:backgroundTint="@color/mapbox_blue"
-            app:elevation="@dimen/fab_elevation"
-            app:fabSize="auto"
-            app:layout_anchor="@id/view_placeholder_2"
-            app:pressedTranslationZ="12dp"
-            app:srcCompat="@drawable/ic_baseline_layers_24"
-            tools:ignore="ContentDescription" />
-
-        <View
-            android:id="@+id/view_placeholder_2"
-            android:layout_width="0dp"
-            android:layout_height="@dimen/margin_small"
-            android:layout_gravity="top|end"
-            app:layout_anchor="@id/ownLocationButton" />
-
-        <!-- this button is the one that defines the actual margins of all views in the coordinatorLayout above -->
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/ownLocationButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|end"
-            android:layout_marginEnd="@dimen/fab_margin"
-            android:layout_marginBottom="@dimen/fab_margin"
-            app:borderWidth="0dp"
-            app:elevation="@dimen/fab_elevation"
-            app:fabSize="auto"
-            app:pressedTranslationZ="12dp"
-            app:srcCompat="@drawable/ic_baseline_my_location_24"
-            tools:ignore="ContentDescription" />
-
-    </androidx.coordinatorlayout.widget.CoordinatorLayout>
-
-    <!-- TODO vllt auf nestedScrollView oder direkt auf bottomSheet app:layout_insetEdge="bottom" setzen? -->
-
-    <!--
-    TODO app:layout_insetEdge="bottom" does apparently not work on FragmentContainerView
-     -> Nest inside other layout (does not really work right now because to work correctly
-     it needs to be a direct child of a coordinatorlayout with the other view that has dodgeInsets!
-     -->
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_insetEdge="bottom">
-
-        <androidx.fragment.app.FragmentContainerView
-            android:id="@+id/bottomSheetContainer"
+        <com.mapbox.mapboxsdk.maps.MapView
+            android:id="@+id/mapView"
             android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            mapbox:mapbox_cameraBearing="0"
+            mapbox:mapbox_cameraTargetLat="48.997040"
+            mapbox:mapbox_cameraTargetLng="12.094922"
+            mapbox:mapbox_cameraTilt="0"
+            mapbox:mapbox_cameraZoom="14"
+            mapbox:mapbox_cameraZoomMax="20"
+            mapbox:mapbox_cameraZoomMin="14" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/top_guideline"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent=".15" />
+
+        <include
+            android:id="@+id/route_creation_options_layout"
+            layout="@layout/route_creation_options_panel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toTopOf="@id/bottom_guideline"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/top_guideline" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/bottom_guideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent=".55" />
+
+        <!-- ! the buttons need to be wrapped in a coordinatorLayout so the snackbar won't overlap them when shown -->
+        <androidx.coordinatorlayout.widget.CoordinatorLayout
+            android:id="@+id/map_button_container"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/route_creation_options_layout">
+
+            <RelativeLayout
+                android:id="@+id/fab_buttons"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="bottom|end"
+                android:gravity="bottom|end"
+                app:layout_dodgeInsetEdges="bottom">
+
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/startNavigationButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_above="@+id/changeStyleButton"
+                    android:layout_marginBottom="12dp"
+                    android:visibility="gone"
+                    app:backgroundTint="@color/mapbox_blue"
+                    app:elevation="@dimen/fab_elevation"
+                    app:fabSize="auto"
+                    app:pressedTranslationZ="12dp"
+                    app:srcCompat="@drawable/ic_navigation_24"
+                    tools:ignore="ContentDescription"
+                    tools:visibility="visible" />
+
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/changeStyleButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_above="@+id/ownLocationButton"
+                    android:layout_marginBottom="12dp"
+                    app:backgroundTint="@color/mapbox_blue"
+                    app:elevation="@dimen/fab_elevation"
+                    app:fabSize="auto"
+                    app:pressedTranslationZ="12dp"
+                    app:srcCompat="@drawable/ic_baseline_layers_24"
+                    tools:ignore="ContentDescription" />
+
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/ownLocationButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|end"
+                    android:layout_marginEnd="@dimen/fab_margin"
+                    android:layout_marginBottom="@dimen/fab_margin"
+                    app:elevation="@dimen/fab_elevation"
+                    app:fabSize="auto"
+                    app:pressedTranslationZ="12dp"
+                    app:srcCompat="@drawable/ic_baseline_my_location_24"
+                    tools:ignore="ContentDescription" />
+
+            </RelativeLayout>
+        </androidx.coordinatorlayout.widget.CoordinatorLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- Sliding Layout -->
+    <FrameLayout
+        android:id="@+id/dragView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/surfaceColor">
+
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/dragViewFragmentContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 
     </FrameLayout>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</com.sothree.slidinguppanel.SlidingUpPanelLayout>

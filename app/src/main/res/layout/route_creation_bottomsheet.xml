@@ -1,77 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/route_creation_sheet_coordinator"
+    android:id="@+id/waypoint_bottomsheet_layout"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:clickable="true"
+    android:focusable="true">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/waypoint_bottomsheet_layout"
-        style="@style/BottomSheetDialogTheme"
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/waypoint_list_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginVertical="@dimen/margin_normal"
+        android:paddingHorizontal="16dp"
+        android:text="Die Route besteht aktuell aus diesen Wegpunkten:"
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/empty_recycler_waypoint_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/waypoint_list_title"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="@dimen/margin_normal"
+        android:paddingHorizontal="24dp"
+        android:text="Es sind noch keine Wegpunkte vorhanden! Klicke auf die gewünschte Stelle auf der Karte, um neue Wegpunkte anzulegen."
+        android:textSize="16sp"
+        android:textStyle="italic"
+        android:visibility="gone"
+        tools:visibility="visible" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recycler_waypoint_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/background_bottomsheet_dialog"
-        app:behavior_hideable="false"
-        app:behavior_peekHeight="80dp"
-        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+        android:layout_below="@id/waypoint_list_title"
+        android:layout_margin="@dimen/margin_small"
+        android:paddingHorizontal="8dp"
+        tools:listitem="@layout/waypoint_list_item" />
+    <!--
+    android:clipToPadding="false"
+    android:scrollbars="none"
+    android:overScrollMode="always"
+    -->
 
-        <com.google.android.material.textview.MaterialTextView
-            android:id="@+id/waypoint_list_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginVertical="@dimen/margin_normal"
-            android:paddingHorizontal="16dp"
-            android:text="Die Route besteht aktuell aus diesen Wegpunkten:"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toTopOf="@id/recycler_scroll_view"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <!-- TODO does not work: recyclerview shows only first item and not scrollable -->
-        <androidx.core.widget.NestedScrollView
-            android:id="@+id/recycler_scroll_view"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/waypoint_list_title">
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recycler_waypoint_list"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_margin="@dimen/margin_small"
-                android:clipToPadding="false"
-                android:overScrollMode="always"
-                android:paddingHorizontal="8dp"
-                android:scrollbars="none"
-                tools:listitem="@layout/waypoint_list_item" />
-            <!--
-            android:overScrollMode="never"
-            -->
-
-        </androidx.core.widget.NestedScrollView>
-
-        <TextView
-            android:id="@+id/empty_recycler_waypoint_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_normal"
-            android:paddingHorizontal="24dp"
-            android:text="Es sind noch keine Wegpunkte vorhanden! Klicke auf die gewünschte Stelle auf der Karte, um neue Wegpunkte anzulegen."
-            android:textSize="16sp"
-            android:textStyle="italic"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/waypoint_list_title"
-            tools:visibility="visible" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+</RelativeLayout>

@@ -54,6 +54,7 @@ android {
 
 dependencies {
     implementation fileTree(dir: "libs", include: ["*.jar"])
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 
     //Koin (Dependency Injection)
     implementation "org.koin:koin-core:$koin_version"
@@ -131,7 +132,6 @@ dependencies {
     //Facebook Shimmer
     implementation 'com.facebook.shimmer:shimmer:0.5.0'
 
-    // TODO test this:
     // Sliding Up Panel
     implementation 'com.sothree.slidinguppanel:library:3.4.0'
 

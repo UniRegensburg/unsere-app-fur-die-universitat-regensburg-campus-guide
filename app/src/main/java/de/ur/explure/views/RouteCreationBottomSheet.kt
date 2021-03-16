@@ -6,13 +6,9 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.crazylegend.viewbinding.viewBinding
-import com.google.android.material.bottomsheet.BottomSheetBehavior
 import de.ur.explure.R
 import de.ur.explure.adapter.RouteCreationAdapter
 import de.ur.explure.databinding.RouteCreationBottomsheetBinding
-import de.ur.explure.extensions.hide
-import de.ur.explure.extensions.initHidden
-import de.ur.explure.extensions.show
 import de.ur.explure.model.waypoint.WayPoint
 import de.ur.explure.viewmodel.MapViewModel
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
@@ -28,14 +24,8 @@ class RouteCreationBottomSheet : Fragment(R.layout.route_creation_bottomsheet) {
 
     private var routeCreationAdapter: RouteCreationAdapter? = null
 
-    private lateinit var bottomSheetBehavior: BottomSheetBehavior<View>
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        bottomSheetBehavior = BottomSheetBehavior.from(binding.waypointBottomsheetLayout)
-        // init the bottom sheet hidden with zero peekHeight
-        bottomSheetBehavior.initHidden()
 
         observeViewModel()
     }
@@ -49,27 +39,16 @@ class RouteCreationBottomSheet : Fragment(R.layout.route_creation_bottomsheet) {
             }
         })
         mapViewModel.customRouteWaypoints.observe(viewLifecycleOwner, { routeWaypoints ->
-            routeCreationAdapter?.submitList(routeWaypoints)
+            routeCreationAdapter?.waypointList = routeWaypoints
         })
     }
 
     private fun showRouteCreationSheet() {
-        bottomSheetBehavior.isHideable = false // TODO does not work! still hideable!
-        bottomSheetBehavior.show { state ->
-            if (state == BottomSheetBehavior.STATE_COLLAPSED || state == BottomSheetBehavior.STATE_HIDDEN) {
-                // TODO reset content and cleanup on when hidden
-            }
-        }
-
-        setupUI()
+        setupWaypointList()
     }
 
     private fun hideRouteCreationSheet() {
-        bottomSheetBehavior.hide()
-    }
-
-    private fun setupUI() {
-        setupWaypointList()
+        // TODO set viewmodel state variable?
     }
 
     private fun setupWaypointList() {
@@ -86,7 +65,7 @@ class RouteCreationBottomSheet : Fragment(R.layout.route_creation_bottomsheet) {
             adapter = routeCreationAdapter
             layoutManager = linearLayoutManager
             // TODO for smooth scrolling when in nested scroll view
-            isNestedScrollingEnabled = true
+            // isNestedScrollingEnabled = true
 
             addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->
                 // show a text message if the recyclerView is empty

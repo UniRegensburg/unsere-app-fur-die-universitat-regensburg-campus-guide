@@ -13,23 +13,25 @@
 
         <item name="colorError">@color/colorError</item>
         <item name="colorOnError">@color/colorOnError</item>
-        <item name="colorSurface">@color/surfaceColor</item> <!-- e.g. for dialogs, cardviews or bottomsheets -->
+        <item name="colorSurface">@color/surfaceColor
+        </item> <!-- e.g. for dialogs, cardviews, ... -->
         <item name="colorOnSurface">@color/colorOnSurface</item>
         <item name="android:colorBackground">@color/backgroundColor</item> <!-- app background -->
         <item name="colorOnBackground">@color/colorOnBackground</item>
         <!--<item name="android:textColor">@color/textColor</item>-->
 
         <!-- other custom styles -->
-        <item name="materialAlertDialogTheme">@style/MaterialDialogTheme</item>
+        <item name="materialAlertDialogTheme">@style/CustomMaterialDialogTheme</item>
     </style>
 
     <!-- Custom Material Alert Dialog Theme -->
-    <style name="MaterialDialogTheme" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+    <style name="CustomMaterialDialogTheme" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
         <item name="colorSurface">@color/materialDialogSurface</item>
         <item name="materialAlertDialogTitlePanelStyle">@style/TitlePaneStyleCenter</item>
         <item name="materialAlertDialogTitleTextStyle">@style/TitleTextStyle</item>
         <item name="materialAlertDialogBodyTextStyle">@style/BodyTextStyle</item>
         <item name="buttonBarStyle">@style/ButtonBarStyle</item>
+        <item name="shapeAppearance">@style/ShapeAppearance.App.MediumComponent</item>
     </style>
 
     <style name="TitlePaneStyleCenter" parent="MaterialAlertDialog.MaterialComponents.Title.Panel.CenterStacked">
@@ -51,6 +53,27 @@
 
     <style name="ButtonBarStyle">
         <item name="android:paddingTop">8dp</item>
+    </style>
+
+    <style name="ShapeAppearance.App.MediumComponent" parent="ShapeAppearance.MaterialComponents.MediumComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">16dp</item>
+    </style>
+
+    <style name="RouteCreationMaterialDialogTheme" parent="CustomMaterialDialogTheme">
+        <item name="buttonBarPositiveButtonStyle">@style/RouteCreationDialogButtonStyle</item>
+        <item name="buttonBarNegativeButtonStyle">@style/RouteCreationDialogButtonStyle</item>
+        <item name="buttonBarNeutralButtonStyle">@style/RouteCreationDialogButtonStyle</item>
+    </style>
+
+    <style name="RouteCreationDialogButtonStyle" parent="Widget.MaterialComponents.Button">
+        <item name="android:padding">6dp</item>
+        <item name="android:layout_marginBottom">4dp</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="backgroundTint">@color/white</item>
+        <item name="strokeWidth">1dp</item>
+        <item name="rippleColor">@color/highlightColor</item>
+        <item name="strokeColor">@color/highlightColor</item>
     </style>
 
     <!-- Custom Bottom Sheet Theme:

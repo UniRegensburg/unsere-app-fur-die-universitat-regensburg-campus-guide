@@ -41,7 +41,7 @@ class MapViewModel(private val state: SavedStateHandle) : ViewModel() {
         val waypoint = WayPoint(
             UUID.randomUUID().toString(),
             "Marker ${customRouteWaypoints.value?.size}",
-            "Keine Beschreibung; Koordinaten: $coordinates",
+            "Keine Beschreibung",
             GeoPoint(coordinates.latitude, coordinates.longitude),
             null,
             null,

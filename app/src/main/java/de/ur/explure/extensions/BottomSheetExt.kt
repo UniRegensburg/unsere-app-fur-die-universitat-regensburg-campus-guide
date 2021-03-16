@@ -14,7 +14,7 @@ fun BottomSheetBehavior<View>.hide() {
 }
 
 fun BottomSheetBehavior<View>.show(onStateChangedCallback: ((state: Int) -> Unit)? = null) {
-    state = BottomSheetBehavior.STATE_EXPANDED
+    state = BottomSheetBehavior.STATE_HALF_EXPANDED
 
     onStateChangedCallback?.let { callback ->
         addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {

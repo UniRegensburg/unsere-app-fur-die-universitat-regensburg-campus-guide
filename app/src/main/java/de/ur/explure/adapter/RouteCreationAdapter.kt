@@ -3,27 +3,34 @@ package de.ur.explure.adapter
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import de.ur.explure.R
+import de.ur.explure.adapter.RouteCreationAdapter.ViewHolder.Companion.from
 import de.ur.explure.databinding.WaypointListItemBinding
 import de.ur.explure.model.waypoint.WayPoint
 
 typealias onItemClickCallback = (itemView: View, waypoint: WayPoint) -> Unit
 
 class RouteCreationAdapter(private val callback: onItemClickCallback) :
-    ListAdapter<WayPoint, RouteCreationAdapter.ViewHolder>(DiffCallback()) {
+    RecyclerView.Adapter<RouteCreationAdapter.ViewHolder>() {
+
+    var waypointList = emptyList<WayPoint>()
+        set(value) {
+            field = value
+            notifyDataSetChanged()
+        }
+
+    override fun getItemCount(): Int = waypointList.size
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        return ViewHolder.from(parent)
+        return from(parent)
     }
 
     /**
      * Replace the contents of a view (this is invoked by the layout manager)
      */
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
-        val item = getItem(position)
+        val item = waypointList[position]
         viewHolder.bind(item, callback)
     }
 
@@ -70,19 +77,5 @@ class RouteCreationAdapter(private val callback: onItemClickCallback) :
                 return ViewHolder(binding)
             }
         }
-    }
-}
-
-/**
- * This callback efficiently checks which items need to be updated so only these are redrawn
- * instead of the entire list!
- */
-class DiffCallback : DiffUtil.ItemCallback<WayPoint>() {
-    override fun areItemsTheSame(oldItem: WayPoint, newItem: WayPoint): Boolean {
-        return oldItem.id == newItem.id
-    }
-
-    override fun areContentsTheSame(oldItem: WayPoint, newItem: WayPoint): Boolean {
-        return oldItem == newItem
     }
 }

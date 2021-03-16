@@ -10,8 +10,8 @@
 
     <!-- Accent Color -->
     <color name="highlightColor">#960146</color>
-    <color name="highlightColorDark">#cb4571</color>
-    <color name="highlightColorLight">#62001f</color>
+    <color name="highlightColorDark">#62001f</color>
+    <color name="highlightColorLight">#cb4571</color>
 
     <color name="surfaceColor">#FFFFFF</color>
     <color name="colorOnSurface">#000000</color>

@@ -35,6 +35,7 @@ import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
 import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
+import com.sothree.slidinguppanel.SlidingUpPanelLayout
 import de.ur.explure.R
 import de.ur.explure.databinding.FragmentMapBinding
 import de.ur.explure.map.LocationManager
@@ -96,6 +97,9 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
 
     private var backPressedCallback: OnBackPressedCallback? = null
 
+    private lateinit var slidingBottomPanel: SlidingUpPanelLayout
+    private lateinit var slidingPanelListener: SlidingUpPanelLayout.PanelSlideListener
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -111,6 +115,9 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
         setupViewModelObservers()
 
         setupBackButtonClickObserver()
+
+        // setup the sliding panel BEFORE the map!
+        setupSlidingPanel()
 
         // init mapbox map
         mapView = binding.mapView
@@ -153,6 +160,32 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
         })
     }
 
+    private fun setupSlidingPanel() {
+        slidingBottomPanel = binding.slidingRootLayout
+        binding.dragView.visibility = View.GONE
+
+        slidingPanelListener = object : SlidingUpPanelLayout.PanelSlideListener {
+            override fun onPanelSlide(panel: View?, slideOffset: Float) {
+                Timber.i("onPanelSlide, offset $slideOffset")
+            }
+
+            override fun onPanelStateChanged(
+                panel: View?,
+                previousState: SlidingUpPanelLayout.PanelState?,
+                newState: SlidingUpPanelLayout.PanelState?
+            ) {
+                if (newState != SlidingUpPanelLayout.PanelState.HIDDEN) {
+                    binding.dragView.visibility = View.VISIBLE
+                }
+            }
+        }
+        slidingBottomPanel.addPanelSlideListener(slidingPanelListener)
+        /*
+        slidingBottomPanel.setFadeOnClickListener {
+            slidingBottomPanel.panelState = SlidingUpPanelLayout.PanelState.COLLAPSED
+        }*/
+    }
+
     private fun setupInitialUIState() {
         // enable the buttons now that the map is ready
         binding.ownLocationButton.isEnabled = true
@@ -161,16 +194,13 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
 
         // setup bottomSheet for route creation mode
         childFragmentManager.commit {
-            replace<RouteCreationBottomSheet>(R.id.bottomSheetContainer)
+            replace<RouteCreationBottomSheet>(R.id.dragViewFragmentContainer)
             setReorderingAllowed(true)
             addToBackStack(null)
         }
 
         binding.changeStyleButton.setOnClickListener {
             showMapStyleOptions(layoutResource = R.layout.popup_list_item)
-
-            // TODO remove this later:
-            showSnackbar(requireActivity(), "Snackbar Color Test")
         }
 
         binding.ownLocationButton.setOnClickListener {
@@ -210,10 +240,10 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
     private fun showEnterRouteCreationDialog() {
         val activity = activity ?: return
 
-        // TODO should probably have a Cancel - Option as well:
-        MaterialAlertDialogBuilder(activity)
+        MaterialAlertDialogBuilder(activity, R.style.RouteCreationMaterialDialogTheme)
             .setTitle("Route erstellen")
             .setMessage(R.string.route_creation_options)
+            .setCancelable(true)
             .setPositiveButton("Route manuell erstellen") { _, _ ->
                 setupManualRouteCreationMode()
             }
@@ -225,28 +255,19 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
                 ).show()
                 // TODO
                 // startLocationTracking(mapViewModel.getCurrentMapStyle() ?: return@setPositiveButton)
-                // enterRouteRecordingMode()
+                // setupRouteRecordingMode()
             }
             .setNegativeButton("Route einzeichnen") { _, _ ->
-                Toast.makeText(
-                    activity,
-                    "Dieses Feature ist leider auch noch nicht implementiert.",
-                    Toast.LENGTH_SHORT
-                ).show()
-                // enterRouteDrawMode()
+                setupRouteDrawMode()
             }
             .show()
     }
 
     private fun setupManualRouteCreationMode() {
         mapViewModel.setManualRouteCreationModeStatus(isActive = true)
-        /*
-        showSnackbar(
-            "Click on the map to add points and build your route out these. You can see and reorder
-            your waypoints at any time in the menu.",
-            binding.mapContainer,
-            length = Snackbar.LENGTH_LONG
-        )*/
+
+        // show bottom sheet panel
+        slidingBottomPanel.panelState = SlidingUpPanelLayout.PanelState.COLLAPSED
 
         // set default map click listener behaviour in routeCreation-Mode and highlight default mode
         setAddMarkerClickListenerBehavior()
@@ -275,6 +296,10 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
             }
         }
         // TODO add a separate button for dragging markers too ? Would probably word if the other listeners are reset
+    }
+
+    private fun setupRouteDrawMode() {
+        // TODO
     }
 
     private fun highlightCurrentMode(mode: RouteCreationModes) {
@@ -479,43 +504,26 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
         }
     }
 
-    /*
-    private fun drawMapMatched(matchings: List<MapMatchingMatching>, color: String = "#3bb2d0") {
-        val style = map.style
-        if (style != null && matchings.isNotEmpty()) {
-            val routeGeometry = matchings[0].geometry() ?: return
-            style.addSource(
-                GeoJsonSource(
-                    "source_map_matched", Feature.fromGeometry(
-                        LineString.fromPolyline(routeGeometry, PRECISION_6)
-                    )
-                )
-            )
-            style.addLayer(
-                LineLayer("layer_map_matched", "source_map_matched")
-                    .withProperties(
-                        lineColor(ColorUtils.colorToRgbaString(Color.parseColor(color))),
-                        @Suppress("MagicNumber")
-                        lineWidth(6f),
-                        lineOpacity(0.8f)
-                    )
-            )
-        }
-    }*/
-
     // TODO this should only be shown when the user has already seen the route and is happy with it
     //  -> add another button or confirm option somewhere in the layout! Maybe another bottomSheet ?
     private fun confirmManualRouteCreationFinish() {
         with(MaterialAlertDialogBuilder(requireActivity())) {
             setTitle("Erstellte Route speichern?")
             setPositiveButton("Ja") { _, _ ->
-                // TODO save route
-
+                saveCreatedRoute()
                 mapViewModel.setManualRouteCreationModeStatus(isActive = false)
             }
             setNegativeButton("Weiter bearbeiten") { _, _ -> }
             show()
         }
+    }
+
+    private fun saveCreatedRoute() {
+        // TODO:
+        // - make a snapshot of the created route with the Mapbox Snapshotter and save it to firebase storage
+        // - set the snapshot as route thumbnail and save the new route for this user to firebase via viewmodel
+
+        // TODO (optional) give user the option to show the navigation ui with simulated route progress ??
     }
 
     /**
@@ -759,7 +767,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
             R.string.location_permission_explanation,
             binding.mapButtonContainer,
             Snackbar.LENGTH_LONG,
-            colorRes = R.color.colorInfo
+            colorRes = R.color.themeColor
         )
     }
 
@@ -815,6 +823,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
         super.onDestroyView()
         Timber.d("in MapFragment onDestroyView")
 
+        slidingBottomPanel.removePanelSlideListener(slidingPanelListener)
         removeMapListeners()
         backPressedCallback?.remove()
 
