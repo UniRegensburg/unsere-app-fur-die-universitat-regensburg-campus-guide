@@ -271,7 +271,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
                     R.string.gps_not_activated,
                     R.id.mapContainer,
                     Snackbar.LENGTH_LONG,
-                    colorRes = R.color.color_warning
+                    colorRes = R.color.colorWarning
                 )
                 return
             }
@@ -313,7 +313,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
             R.string.location_permission_explanation,
             R.id.mapContainer,
             Snackbar.LENGTH_LONG,
-            colorRes = R.color.color_info
+            colorRes = R.color.colorInfo
         )
     }
 
@@ -327,7 +327,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback, Permiss
                 R.string.location_permission_not_given,
                 R.id.mapContainer,
                 Snackbar.LENGTH_LONG,
-                colorRes = R.color.color_warning
+                colorRes = R.color.colorWarning
             )
         }
     }
