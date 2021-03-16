@@ -35,7 +35,8 @@ class RouteCreationBottomSheet : Fragment(R.layout.route_creation_bottomsheet) {
             if (active) {
                 showRouteCreationSheet()
             } else {
-                hideRouteCreationSheet()
+                // reset adapter when finished
+                routeCreationAdapter?.waypointList = emptyList()
             }
         })
         mapViewModel.customRouteWaypoints.observe(viewLifecycleOwner, { routeWaypoints ->
@@ -45,10 +46,6 @@ class RouteCreationBottomSheet : Fragment(R.layout.route_creation_bottomsheet) {
 
     private fun showRouteCreationSheet() {
         setupWaypointList()
-    }
-
-    private fun hideRouteCreationSheet() {
-        // TODO set viewmodel state variable?
     }
 
     private fun setupWaypointList() {
@@ -64,8 +61,7 @@ class RouteCreationBottomSheet : Fragment(R.layout.route_creation_bottomsheet) {
         binding.recyclerWaypointList.apply {
             adapter = routeCreationAdapter
             layoutManager = linearLayoutManager
-            // TODO for smooth scrolling when in nested scroll view
-            // isNestedScrollingEnabled = true
+            isNestedScrollingEnabled = true
 
             addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->
                 // show a text message if the recyclerView is empty

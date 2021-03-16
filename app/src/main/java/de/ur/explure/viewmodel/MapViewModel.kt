@@ -41,7 +41,7 @@ class MapViewModel(private val state: SavedStateHandle) : ViewModel() {
         val waypoint = WayPoint(
             UUID.randomUUID().toString(),
             "Marker ${customRouteWaypoints.value?.size}",
-            "Keine Beschreibung",
+            "Keine Beschreibung (Position: ${coordinates.latitude}, ${coordinates.longitude})",
             GeoPoint(coordinates.latitude, coordinates.longitude),
             null,
             null,
@@ -49,6 +49,11 @@ class MapViewModel(private val state: SavedStateHandle) : ViewModel() {
         )
         customRouteWaypoints.value?.add(waypoint)
         // assigning to itself is necessary to trigger the observer!
+        customRouteWaypoints.value = customRouteWaypoints.value
+    }
+
+    fun clearCustomWayPoints() {
+        customRouteWaypoints.value?.clear()
         customRouteWaypoints.value = customRouteWaypoints.value
     }
 
