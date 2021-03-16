@@ -31,7 +31,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/createdRoutesHeader"
-        android:background="@color/colorLightGreen"
+        android:background="@color/colorLightGrey"
         tools:listitem="@layout/route_element"
         />
 

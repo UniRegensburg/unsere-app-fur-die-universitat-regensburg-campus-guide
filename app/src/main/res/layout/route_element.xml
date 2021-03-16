@@ -1,43 +1,189 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="4dp"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <RelativeLayout
+    <androidx.cardview.widget.CardView
+        android:id="@+id/route_cardview"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="8dp"
-        android:background="@drawable/button_border">
+        android:layout_height="wrap_content"
+        android:layout_margin="5dp"
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="?android:attr/selectableItemBackground"
+        app:cardBackgroundColor="@android:color/white"
+        app:cardCornerRadius="@dimen/cardview_corner_radius"
+        app:cardElevation="@dimen/cardview_default_elevation">
 
-        <ImageView
-            android:id="@+id/routePicture"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            app:srcCompat="@android:drawable/btn_dialog" />
-
-        <TextView
-            android:id="@+id/routeName"
-            android:layout_width="wrap_content"
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/test_route_example"
-            android:layout_toEndOf="@id/routePicture"
-            android:layout_marginStart="10dp"
-            android:textColor="@android:color/black"
-            android:textSize="20sp"
-            android:textStyle="bold" />
+            android:paddingBottom="10dp"
+            android:background="@android:color/transparent">
 
-        <TextView
-            android:id="@+id/routeTimestamp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/test_route_timestamp"
-            android:layout_toEndOf="@id/routePicture"
-            android:layout_below="@id/routeName"
-            android:layout_marginStart="10dp"
-            android:textSize="16sp"/>
+            <ImageView
+                android:id="@+id/iv_route_thumbnail"
+                android:layout_width="82dp"
+                android:layout_height="55dp"
+                android:adjustViewBounds="true"
+                android:scaleType="centerCrop"
+                android:src="@drawable/map_background"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:ignore="ContentDescription" />
 
-    </RelativeLayout>
 
-</androidx.cardview.widget.CardView>
+            <TextView
+                android:id="@+id/tv_route_title"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="2dp"
+                android:text="@string/route_item_title"
+                android:textColor="@color/textColor"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toEndOf="@id/iv_route_thumbnail"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tv_route_description"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="2dp"
+                android:textColor="@color/textColor"
+                android:textSize="12sp"
+                app:layout_constraintStart_toEndOf="@id/iv_route_thumbnail"
+                app:layout_constraintTop_toBottomOf="@id/rating_bar_route"
+                app:layout_constraintEnd_toEndOf="parent"/>
+
+            <RatingBar
+                android:id="@+id/rating_bar_route"
+                style="?android:attr/ratingBarStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="3dp"
+                android:max="5"
+                android:numStars="5"
+                android:progressTint="@color/duskYellow"
+                android:rating="3.0"
+                android:stepSize="0.0"
+                app:layout_constraintStart_toStartOf="@id/tv_route_title"
+                app:layout_constraintTop_toBottomOf="@+id/tv_route_title" />
+
+            <TextView
+                android:id="@+id/tv_rating_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:text="@string/route_item_rating"
+                android:textSize="12sp"
+                app:layout_constraintBottom_toBottomOf="@+id/rating_bar_route"
+                app:layout_constraintStart_toEndOf="@+id/rating_bar_route"
+                app:layout_constraintTop_toTopOf="@+id/rating_bar_route" />
+
+            <ImageView
+                android:id="@+id/iv_waypoint_icon"
+                android:layout_width="10dp"
+                android:layout_height="10dp"
+                android:layout_marginStart="3dp"
+                android:layout_marginTop="5dp"
+                android:src="@drawable/ic_waypoints"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/iv_route_thumbnail"
+                app:tint="@color/textColor"
+                tools:ignore="ContentDescription" />
+
+            <TextView
+                android:id="@+id/tv_way_point_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="3dp"
+                android:text="@string/route_item_waypoints"
+                android:textSize="10sp"
+                app:layout_constraintBottom_toBottomOf="@+id/iv_waypoint_icon"
+                app:layout_constraintStart_toEndOf="@id/iv_waypoint_icon"
+                app:layout_constraintTop_toTopOf="@+id/iv_waypoint_icon" />
+
+
+            <ImageView
+                android:id="@+id/iv_duration_icon"
+                android:layout_width="10dp"
+                android:layout_height="10dp"
+                android:layout_marginTop="5dp"
+                android:src="@drawable/ic_duration"
+                app:layout_constraintEnd_toEndOf="@+id/iv_route_thumbnail"
+                app:layout_constraintTop_toBottomOf="@+id/iv_route_thumbnail"
+                app:tint="@color/textColor"
+                tools:ignore="ContentDescription" />
+
+            <TextView
+                android:id="@+id/tv_duration"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="3dp"
+                android:text="@string/route_item_duration"
+                android:textSize="10sp"
+                app:layout_constraintBottom_toBottomOf="@+id/iv_duration_icon"
+                app:layout_constraintEnd_toStartOf="@+id/iv_duration_icon"
+                app:layout_constraintTop_toTopOf="@+id/iv_duration_icon" />
+
+            <ImageView
+                android:id="@+id/iv_comment_icon"
+                android:layout_width="10dp"
+                android:layout_height="10dp"
+                android:layout_marginTop="3dp"
+                android:src="@drawable/ic_comment"
+                app:layout_constraintEnd_toEndOf="@+id/tv_duration"
+                app:layout_constraintTop_toBottomOf="@+id/tv_duration"
+                app:tint="@color/textColor"
+                tools:ignore="ContentDescription" />
+
+            <TextView
+                android:id="@+id/tv_comment"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:text="@string/route_item_waypoints"
+                android:textSize="10sp"
+                app:layout_constraintBottom_toBottomOf="@+id/iv_comment_icon"
+                app:layout_constraintEnd_toEndOf="@+id/iv_duration_icon"
+                app:layout_constraintStart_toEndOf="@id/iv_comment_icon"
+                app:layout_constraintTop_toTopOf="@+id/iv_comment_icon" />
+
+            <ImageView
+                android:id="@+id/iv_distance_icon"
+                android:layout_width="10dp"
+                android:layout_height="10dp"
+                android:layout_marginStart="3dp"
+                android:layout_marginTop="5dp"
+                android:src="@drawable/ic_distance"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/iv_waypoint_icon"
+                app:tint="@color/textColor"
+                tools:ignore="ContentDescription" />
+
+            <TextView
+                android:id="@+id/tv_distance"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="3dp"
+                android:text="@string/route_item_distance"
+                android:textSize="10sp"
+                app:layout_constraintBottom_toBottomOf="@+id/iv_distance_icon"
+                app:layout_constraintStart_toEndOf="@id/iv_distance_icon"
+                app:layout_constraintTop_toTopOf="@+id/iv_distance_icon"
+                app:layout_constraintVertical_bias="0.0" />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.cardview.widget.CardView>
+</RelativeLayout>
