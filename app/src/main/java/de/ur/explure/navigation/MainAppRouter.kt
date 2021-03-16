@@ -84,9 +84,8 @@ class MainAppRouter {
         navController.navigate(action)
     }
 
-    fun navigateToCategoryQuery(categoryId: String) {
-        val bundle = Bundle()
-        bundle.putString(CATEGORY_QUERY_KEY, categoryId)
-        navController.navigate(R.id.categoryQueryFragment, bundle)
+    fun navigateToCategoryQuery(categoryQueryKey: String) {
+        val action = DiscoverFragmentDirections.actionDiscoverFragmentToCategoryQueryFragment(categoryQueryKey)
+        navController.navigate(action)
     }
 }

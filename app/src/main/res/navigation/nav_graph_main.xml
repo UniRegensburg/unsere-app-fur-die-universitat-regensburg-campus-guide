@@ -13,6 +13,9 @@
         <action
             android:id="@+id/action_discoverFragment_to_textQueryFragment"
             app:destination="@id/textQueryFragment" />
+        <action
+            android:id="@+id/action_discoverFragment_to_categoryQueryFragment"
+            app:destination="@id/categoryQueryFragment" />
     </fragment>
 
     <fragment
@@ -29,7 +32,11 @@
         android:id="@+id/categoryQueryFragment"
         android:name="de.ur.explure.views.CategoryQueryFragment"
         android:label="Category Search Results"
-        tools:layout="@layout/fragment_category_query" />
+        tools:layout="@layout/fragment_category_query">
+        <argument
+            android:name="categoryQueryKey"
+            app:argType="string" />
+    </fragment>
 
     <fragment
         android:id="@+id/profileFragment"

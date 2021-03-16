@@ -103,8 +103,8 @@ class DiscoverViewModel(
         mainAppRouter.navigateToTextSearchResult(textQueryKey)
     }
 
-    fun startCategoryQuery(categoryId: String) {
-        mainAppRouter.navigateToCategoryQuery(categoryId)
+    fun startCategoryQuery(categoryQueryKey: String) {
+        mainAppRouter.navigateToCategoryQuery(categoryQueryKey)
     }
 
     companion object {

@@ -7,6 +7,7 @@ plugins {
 }
 
 apply plugin: 'com.google.gms.google-services'
+apply plugin: 'kotlin-android'
 
 
 android {
@@ -139,7 +140,12 @@ dependencies {
     implementation 'com.algolia:algoliasearch-client-kotlin:1.4.0'
     //implementation "io.ktor:ktor-server-core:1.5.2"
     implementation 'io.ktor:ktor-client-okhttp:1.5.2'
+    implementation "androidx.core:core-ktx:+"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     //implementation "ch.qos.logback:logback-classic:1.2.3"
 
 
+}
+repositories {
+    mavenCentral()
 }
