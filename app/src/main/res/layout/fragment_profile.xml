@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:background="@color/colorLightGreen">
+        android:background="@color/themeColor">
 
         <ImageView
             android:id="@+id/profilePicture"
@@ -64,7 +64,7 @@
             android:paddingEnd="20dp"
             android:paddingTop="25dp"
             android:paddingBottom="25dp"
-            android:textColor="@color/colorPrimaryDark"
+            android:textColor="@color/highlightColor"
             android:background="@drawable/button_border"
             android:drawableTop="@drawable/own_routes_icon"/>
 
@@ -84,7 +84,7 @@
             android:paddingEnd="20dp"
             android:paddingTop="25dp"
             android:paddingBottom="25dp"
-            android:textColor="@color/colorPrimaryDark"
+            android:textColor="@color/highlightColor"
             android:background="@drawable/button_border"
             android:drawableTop="@drawable/favorite_routes_icon"/>
 
@@ -104,7 +104,7 @@
             android:paddingEnd="20dp"
             android:paddingTop="25dp"
             android:paddingBottom="25dp"
-            android:textColor="@color/colorPrimaryDark"
+            android:textColor="@color/highlightColor"
             android:background="@drawable/button_border"
             android:drawableTop="@drawable/statistics_icon"/>
 
@@ -124,7 +124,7 @@
             android:paddingEnd="20dp"
             android:paddingTop="25dp"
             android:paddingBottom="25dp"
-            android:textColor="@color/colorPrimaryDark"
+            android:textColor="@color/highlightColor"
             android:background="@drawable/button_border"
             android:drawableTop="@drawable/logout_icon" />
 
