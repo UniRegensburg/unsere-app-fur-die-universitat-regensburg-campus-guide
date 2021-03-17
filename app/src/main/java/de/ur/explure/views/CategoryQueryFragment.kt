@@ -22,27 +22,27 @@ class CategoryQueryFragment : Fragment(R.layout.fragment_category_query) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setTitle()
         initializeAdapter()
-        //observeRouteResult()
+        observeRouteResult()
         observeRouteModel()
     }
 
     private fun observeRouteModel() {
         viewModel.categoryRoutes.observe(viewLifecycleOwner, { routes ->
             categoryAdapter.submitList(routes)
-            //binding.progressBar.setVisibility(View.GONE)
-            //binding.titlePageSearchResult.setVisibility(View.VISIBLE)
+            binding.progressBar.setVisibility(View.GONE)
         })
     }
 
-    /*private fun observeRouteResult() {
+    private fun observeRouteResult() {
         viewModel.noRoutes.observe(viewLifecycleOwner, {
             if (it == true) {
                 binding.progressBar.setVisibility(View.GONE)
                 binding.noResults.setVisibility(View.VISIBLE)
             }
         })
-    }*/
+    }
 
     private fun initializeAdapter() {
         // viewModel.setupAlgolia()
@@ -54,9 +54,30 @@ class CategoryQueryFragment : Fragment(R.layout.fragment_category_query) {
             adapter = categoryAdapter
         }
 
-        if (category != null) {
-            viewModel.getCategoryRoutes(category)
+        viewModel.getCategoryRoutes(category)
+    }
+
+    private fun setTitle() {
+        val category = args.categoryQueryKey
+        val workID = Integer.parseInt(category)
+
+        if (category == R.string.work_ID.toString()) {
+            binding.tvTitelCategory.text = R.string.work_title.toString()
+        }
+        if (category == R.string.bib_ID.toString()) {
+            binding.tvTitelCategory.text = R.string.bib_title.toString()
+        }
+        if (category == R.string.chill_ID.toString()) {
+            binding.tvTitelCategory.text = R.string.chill_title.toString()
+        }
+        if (category == R.string.orga_ID.toString()) {
+            binding.tvTitelCategory.text = R.string.orga_title.toString()
+        }
+        if (category == R.string.sport_ID.toString()) {
+            binding.tvTitelCategory.text = R.string.sport_title.toString()
+        }
+        if (category == R.string.coffee_ID.toString()) {
+            binding.tvTitelCategory.text = R.string.coffee_title.toString()
         }
     }
 }
-

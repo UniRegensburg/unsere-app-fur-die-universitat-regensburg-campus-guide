@@ -1,6 +1,5 @@
 package de.ur.explure.adapter
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -46,9 +45,12 @@ class SearchListAdapter(private val onClick: (Route) -> Unit) :
 
             binding.tvRouteTitle.text = data.title
             binding.tvRouteDescription.text = data.description
-            binding.tvRatingCount.text = itemView.context.resources.getString(R.string.route_item_rating, data.rating.size)
-            binding.tvDistance.text = itemView.context.resources.getString(R.string.route_item_distance, data.distance.toInt())
-            binding.tvDuration.text = itemView.context.resources.getString(R.string.route_item_duration, data.duration.toInt())
+            binding.tvRatingCount.text =
+                    itemView.context.resources.getString(R.string.route_item_rating, data.rating.size)
+            binding.tvDistance.text =
+                    itemView.context.resources.getString(R.string.route_item_distance, data.distance.toInt())
+            binding.tvDuration.text =
+                    itemView.context.resources.getString(R.string.route_item_duration, data.duration.toInt())
             binding.tvWayPointCount.text = data.wayPointCount.toString()
             binding.tvComment.text = data.commentCount.toString()
             binding.ratingBarRoute.rating = data.currentRating.toFloat()

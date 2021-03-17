@@ -311,7 +311,7 @@ class RouteRepositoryImpl(
     suspend fun getCategoryRoutes(category: String): FirebaseResult<List<Route>> {
         return try {
             when (val categoryResult =
-                    (fireStore.routeCollection.whereGreaterThanOrEqualTo("category", category).get().await())) {
+                    (fireStore.routeCollection.whereEqualTo("category", category).get().await())) {
                 is FirebaseResult.Success -> {
                     val routeList = categoryResult.data.toObjects(Route::class.java)
                     Timber.d(routeList.toString())

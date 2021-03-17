@@ -23,11 +23,25 @@
 
     <!--Test Strings-->
     <string name="lorem_ipsum">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.  </string>
-    <string name="arbeits_button">Working</string>
 
     <!-- SearchFragment Strings-->
     <string name="title_page_searchresults">Search results</string>
     <string name="no_results">No results</string>
+
+    <!-- Category Strings-->
+    <string name="work_ID">0qQpynTjhXKHjddYAY7Y</string>
+    <string name="bib_ID">3Sdmp2JdyExvwAHDqiwo</string>
+    <string name="sport_ID">4yGlbfeYizWHPfWZVVdv</string>
+    <string name="chill_ID">CVqdsG0qpjmHDjml85p4</string>
+    <string name="orga_ID">SIUNFvPQisJhUzYDskxB</string>
+    <string name="coffee_ID">zoAey7yKspnRfEsD437x</string>
+    <string name="work_title">Category: Work</string>
+    <string name="bib_title">Category: Libraries</string>
+    <string name="sport_title">Category: Sport</string>
+    <string name="chill_title">Category: Chill </string>
+    <string name="orga_title">Category: Administration</string>
+    <string name="coffee_title">Category: Cafeteria</string>
+    <string name="default_title">Category</string>
 
     <string name="login_email">Email</string>
     <string name="login_password">Passwort</string>

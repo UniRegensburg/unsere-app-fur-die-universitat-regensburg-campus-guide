@@ -1,9 +1,7 @@
 package de.ur.explure.navigation
 
-import android.os.Bundle
 import androidx.navigation.NavController
 import de.ur.explure.R
-import de.ur.explure.config.BundleConfig.CATEGORY_QUERY_KEY
 import de.ur.explure.views.DiscoverFragmentDirections
 
 /**

@@ -9,25 +9,23 @@ import de.ur.explure.utils.FirebaseResult
 import kotlinx.coroutines.launch
 
 class CategoryViewModel(
-        private val routeRepo: RouteRepositoryImpl
+    private val routeRepo: RouteRepositoryImpl
 ) : ViewModel() {
 
     var categoryRoutes: MutableLiveData<List<Route>> = MutableLiveData()
-    //var noRoutes = MutableLiveData<Boolean>(false)
+    var noRoutes = MutableLiveData<Boolean>(false)
 
     fun getCategoryRoutes(category: String) {
         viewModelScope.launch {
-
             val routeLists = routeRepo.getCategoryRoutes(category)
-
+            if (routeLists.toString() >= "Success(data=[])") {
+                noRoutes.postValue(true)
+            }
             when (routeLists) {
                 is FirebaseResult.Success -> {
                     categoryRoutes.postValue(routeLists.data!!)
                 }
             }
-            /*if (categoryRoutes.Empty()) {
-                noRoutes.postValue(true)
-            }*/
         }
     }
 }

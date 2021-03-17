@@ -32,9 +32,23 @@
 
     <!--Test Strings-->
     <string name="lorem_ipsum">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.  </string>
-    <string name="arbeits_button">Arbeiten</string>
 
     <!-- SearchFragment Strings-->
     <string name="title_page_searchresults">Ergebnisse deiner Suche</string>
     <string name="no_results">Keine Suchergebnisse</string>
+
+    <!-- Category Strings-->
+    <string name="work_ID">0qQpynTjhXKHjddYAY7</string>
+    <string name="bib_ID">3Sdmp2JdyExvwAHDqiwo</string>
+    <string name="sport_ID">4yGlbfeYizWHPfWZVVdv</string>
+    <string name="chill_ID">CVqdsG0qpjmHDjml85p4</string>
+    <string name="orga_ID">SIUNFvPQisJhUzYDskxB</string>
+    <string name="coffee_ID">zoAey7yKspnRfEsD437x</string>
+    <string name="work_title">Kategorie: Arbeiten</string>
+    <string name="bib_title">Kategorie: Bibliotheken</string>
+    <string name="sport_title">Kategorie: Sport</string>
+    <string name="chill_title">Kategorie: Chillen </string>
+    <string name="orga_title">Kategorie: Verwaltung</string>
+    <string name="coffee_title">Kategorie: Cafeten</string>
+    <string name="default_title">Kategorie</string>
 </resources>
