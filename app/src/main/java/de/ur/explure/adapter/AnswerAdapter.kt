@@ -28,11 +28,9 @@ class AnswerAdapter : RecyclerView.Adapter<AnswerAdapter.ViewHolder>() {
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val currentItem = answerList[position]
-        for (i in 0 until answerList.size) {
-            holder.answerAuthor.text = currentItem.authorId
-            holder.answerText.text = currentItem.message
-            holder.answerDate.text = currentItem.createdAt.toString()
-        }
+        holder.answerAuthor.text = currentItem.authorId
+        holder.answerText.text = currentItem.message
+        holder.answerDate.text = currentItem.createdAt.toString()
     }
 
     override fun getItemCount(): Int {

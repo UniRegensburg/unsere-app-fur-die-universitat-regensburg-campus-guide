@@ -45,8 +45,7 @@ class SingleRouteViewModel(private val routeRepository: RouteRepositoryImpl) : V
             val routeId = route.value?.id ?: return@launch
             when (routeRepository.addAnswer(routeId, commentId, commentDto)) {
                 is FirebaseResult.Success -> {
-                   // getRouteData(routeId)
-                   // addComment(commentDto.message)
+                    getRouteData(routeId)
                 }
             }
         }

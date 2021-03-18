@@ -18,6 +18,7 @@ import de.ur.explure.model.route.Route
 import de.ur.explure.viewmodel.SingleRouteViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.component.KoinComponent
+import org.koin.core.component.bind
 import org.koin.core.component.inject
 
 class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinComponent {
@@ -34,8 +35,7 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinCompon
         super.onViewCreated(view, savedInstanceState)
         val routeId = args.routeID
         singleRouteViewModel.getRouteData(routeId)
-        initObservers()
-        initAdapters()
+        observeRouteInformation()
         setOnClickListener()
     }
 
@@ -50,10 +50,6 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinCompon
         binding.waypoints.layoutManager = LinearLayoutManager(requireContext())
     }
 
-    private fun initObservers() {
-        observeRouteInformation()
-    }
-
     private fun observeRouteInformation() {
         singleRouteViewModel.route.observe(viewLifecycleOwner, { route ->
             if (route != null) {
@@ -62,8 +58,12 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinCompon
                 binding.routeDuration.text = getString(R.string.route_item_duration, route.duration.toInt())
                 binding.routeDistance.text = getString(R.string.route_item_distance, route.distance.toInt())
                 binding.routeRating.rating = route.currentRating.toFloat()
-                setAdapters(route)
                 setImage(route)
+                // needs to init Adapters here because otherwise it won't load new comments and answers correctly
+                initAdapters()
+                setAdapters(route)
+                binding.scrollview.visibility = View.VISIBLE
+                binding.progressBar.visibility = View.GONE
             }
         })
     }

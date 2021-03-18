@@ -11,9 +11,10 @@ import de.ur.explure.model.comment.Comment
 class CommentAdapter(private val listener: (String, String) -> Unit) :
         RecyclerView.Adapter<CommentAdapter.ViewHolder>() {
 
-    private var firstLoading: Boolean = true
     private var commentList: MutableList<Comment> = mutableListOf()
     private val viewPool = RecyclerView.RecycledViewPool()
+    private var firstTimeLoading: Boolean = true
+    private var firstLoading: Int = 0
 
     fun setItems(comments: List<Comment>) {
         commentList = comments.toMutableList()
@@ -42,9 +43,13 @@ class CommentAdapter(private val listener: (String, String) -> Unit) :
         holder.commentAuthor.text = currentItem.authorId
         holder.commentText.text = currentItem.message
         holder.commentDate.text = currentItem.createdAt.toString()
-        if (currentItem.answers.isNotEmpty() && firstLoading) {
+        // checks if current comment has answer and if thats true enables show answers button
+        if (currentItem.answers.isNotEmpty() && firstTimeLoading) {
             holder.showAnswers.visibility = View.VISIBLE
-            firstLoading = false
+            firstLoading++
+            if (firstLoading == commentList.size && firstTimeLoading) {
+                firstTimeLoading = false
+            }
         }
         setOnClickListener(holder, position)
         holder.answerButton.setOnClickListener {
