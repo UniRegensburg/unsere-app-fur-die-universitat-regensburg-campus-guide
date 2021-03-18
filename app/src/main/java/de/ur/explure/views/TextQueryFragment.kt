@@ -30,16 +30,16 @@ class TextQueryFragment : Fragment(R.layout.fragment_text_query) {
     private fun observeRouteModel() {
         viewModel.searchedRoutes.observe(viewLifecycleOwner, { routes ->
             searchAdapter.submitList(routes)
-            binding.progressBar.setVisibility(View.GONE)
-            binding.titlePageSearchResult.setVisibility(View.VISIBLE)
+            binding.progressBar.visibility = View.GONE
+            binding.titlePageSearchResult.visibility = View.VISIBLE
         })
     }
 
     private fun observeRouteResult() {
         viewModel.noRoutes.observe(viewLifecycleOwner, {
             if (it == true) {
-                binding.progressBar.setVisibility(View.GONE)
-                binding.noResults.setVisibility(View.VISIBLE)
+                binding.progressBar.visibility = View.GONE
+                binding.noResults.visibility = View.VISIBLE
             }
         })
     }
