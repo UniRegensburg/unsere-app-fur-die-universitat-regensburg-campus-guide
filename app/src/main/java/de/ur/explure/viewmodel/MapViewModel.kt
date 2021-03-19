@@ -23,8 +23,11 @@ class MapViewModel(private val state: SavedStateHandle) : ViewModel() {
     private val _mapReady = MutableLiveData<Event<Boolean>>()
     val mapReady: LiveData<Event<Boolean>> = _mapReady
 
-    private val _manualRouteCreationModeActive = MutableLiveData<Boolean>(state[MANUAL_ROUTE_CREATION_KEY] ?: false)
+    private val _manualRouteCreationModeActive = MutableLiveData(state[MANUAL_ROUTE_CREATION_KEY] ?: false)
     val manualRouteCreationModeActive: LiveData<Boolean> = _manualRouteCreationModeActive
+
+    private val _routeDrawModeActive = MutableLiveData(state[ROUTE_DRAW_KEY] ?: false)
+    val routeDrawModeActive: LiveData<Boolean> = _routeDrawModeActive
 
     private var currentMapStyle: Style? = null
 
@@ -123,6 +126,11 @@ class MapViewModel(private val state: SavedStateHandle) : ViewModel() {
         state[MANUAL_ROUTE_CREATION_KEY] = isActive
     }
 
+    fun setRouteDrawModeStatus(isActive: Boolean) {
+        _routeDrawModeActive.value = isActive
+        state[ROUTE_DRAW_KEY] = isActive
+    }
+
     companion object {
         val All_MAP_STYLES = mapOf(
             "Streets" to Style.MAPBOX_STREETS,
@@ -138,5 +146,6 @@ class MapViewModel(private val state: SavedStateHandle) : ViewModel() {
         private const val ACTIVE_MARKERS_KEY = "activeMarkers"
         private const val LOCATION_TRACKING_KEY = "locationTracking"
         private const val MANUAL_ROUTE_CREATION_KEY = "manualRouteCreationActive"
+        private const val ROUTE_DRAW_KEY = "routeDrawModeActive"
     }
 }

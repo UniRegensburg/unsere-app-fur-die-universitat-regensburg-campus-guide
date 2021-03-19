@@ -61,7 +61,6 @@ class RouteCreationBottomSheet : Fragment(R.layout.route_creation_bottomsheet) {
         binding.recyclerWaypointList.apply {
             adapter = routeCreationAdapter
             layoutManager = linearLayoutManager
-            isNestedScrollingEnabled = true
 
             addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->
                 // show a text message if the recyclerView is empty

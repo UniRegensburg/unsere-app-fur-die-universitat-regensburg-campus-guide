@@ -46,7 +46,7 @@
             android:enabled="false"
             android:text="Route speichern"
             android:visibility="invisible"
-            app:backgroundTint="@color/mapbox_blue"
+            app:backgroundTint="@color/colorInfo"
             app:elevation="16dp"
             app:icon="@drawable/ic_baseline_save_24"
             app:iconSize="32dp"
@@ -67,7 +67,7 @@
             app:layout_constraintTop_toTopOf="parent"
             app:pressedTranslationZ="12dp"
             app:backgroundTint="@color/colorError"
-            app:srcCompat="@drawable/ic_baseline_clear_24"
+            app:srcCompat="@drawable/ic_baseline_close_24"
             tools:ignore="ContentDescription"
             tools:visibility="visible" />
 
@@ -93,6 +93,15 @@
         <include
             android:id="@+id/route_creation_options_layout"
             layout="@layout/route_creation_options_panel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toTopOf="@id/bottom_guideline"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/top_guideline" />
+
+        <include
+            android:id="@+id/route_draw_options_layout"
+            layout="@layout/route_draw_options_panel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintBottom_toTopOf="@id/bottom_guideline"
@@ -131,7 +140,7 @@
                     android:layout_above="@+id/changeStyleButton"
                     android:layout_marginBottom="12dp"
                     android:visibility="gone"
-                    app:backgroundTint="@color/mapbox_blue"
+                    app:backgroundTint="@color/themeColor"
                     app:elevation="@dimen/fab_elevation"
                     app:fabSize="auto"
                     app:pressedTranslationZ="12dp"
@@ -145,11 +154,11 @@
                     android:layout_height="wrap_content"
                     android:layout_above="@+id/ownLocationButton"
                     android:layout_marginBottom="12dp"
-                    app:backgroundTint="@color/mapbox_blue"
+                    app:backgroundTint="@color/themeColor"
                     app:elevation="@dimen/fab_elevation"
                     app:fabSize="auto"
                     app:pressedTranslationZ="12dp"
-                    app:srcCompat="@drawable/ic_baseline_layers_24"
+                    app:srcCompat="@drawable/ic_layers"
                     tools:ignore="ContentDescription" />
 
                 <com.google.android.material.floatingactionbutton.FloatingActionButton

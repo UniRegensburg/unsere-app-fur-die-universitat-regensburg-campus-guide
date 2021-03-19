@@ -20,7 +20,7 @@ object SnackBarConstants {
      * https://stackoverflow.com/questions/4486034/get-root-view-from-current-activity
      */
     const val defaultAnchorViewID = android.R.id.content
-    const val defaultBackgroundColor = R.color.themeColor
+    const val defaultBackgroundColor = R.color.themeColorDark
     const val SNACKBAR_MAX_LINES = 4
 }
 

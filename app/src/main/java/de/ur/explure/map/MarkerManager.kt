@@ -59,6 +59,10 @@ class MarkerManager(
         symbolManager.delete(marker)
     }
 
+    fun deleteAllMarkers() {
+        symbolManager.deleteAll()
+    }
+
     fun addMarkers(markerCoordinates: List<LatLng>?) {
         markerCoordinates?.forEach { coordinate ->
             createMarker(coordinate)
