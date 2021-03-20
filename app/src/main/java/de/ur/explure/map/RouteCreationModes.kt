@@ -1,13 +1,15 @@
 package de.ur.explure.map
 
-enum class RouteCreationModes {
+// empty interface, used only for polymorphism reasons so the enums can be used more exchangeable
+interface RouteCreationMode
+
+enum class ManualRouteCreationModes : RouteCreationMode {
     MODE_ADD,
     MODE_EDIT,
     MODE_DELETE
 }
 
-// TODO combine them so they can be used everywhere?
-enum class RouteDrawModes {
+enum class RouteDrawModes : RouteCreationMode {
     MODE_DRAW,
     MODE_MOVE,
     MODE_DELETE

@@ -39,10 +39,11 @@ import de.ur.explure.R
 import de.ur.explure.databinding.FragmentMapBinding
 import de.ur.explure.extensions.toLatLng
 import de.ur.explure.map.LocationManager
+import de.ur.explure.map.ManualRouteCreationModes
 import de.ur.explure.map.MapMatchingClient
 import de.ur.explure.map.MarkerManager
 import de.ur.explure.map.PermissionHelper
-import de.ur.explure.map.RouteCreationModes
+import de.ur.explure.map.RouteCreationMode
 import de.ur.explure.map.RouteDrawModes
 import de.ur.explure.map.RouteLineManager
 import de.ur.explure.map.RouteLineManager.Companion.DRAW_LINE_LAYER_ID
@@ -116,12 +117,8 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
         locationManager = get { parametersOf(this::onNewLocationReceived) }
         viewLifecycleOwner.lifecycle.addObserver(locationManager)
 
-        mapMatchingClient.setMapMatchingListener(this)
-
-        setupViewModelObservers()
-
         setupBackButtonClickObserver()
-
+        setupViewModelObservers()
         // setup the sliding panel BEFORE the map!
         setupSlidingPanel()
 
@@ -161,17 +158,21 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
             if (active) {
                 enterManualRouteCreationMode()
             } else {
-                leaveManualRouteCreationMode()
+                exitManualRouteCreationMode()
             }
         })
         mapViewModel.routeDrawModeActive.observe(viewLifecycleOwner, { active ->
             if (active) {
                 enterRouteDrawMode()
             } else {
-                leaveRouteDrawMode()
+                exitRouteDrawMode()
             }
         })
     }
+
+    /**
+     * * UI Setup
+     */
 
     private fun setupSlidingPanel() {
         slidingBottomPanel = binding.slidingRootLayout
@@ -225,7 +226,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
         }
 
         binding.endRouteBuildingButton.setOnClickListener {
-            convertPointsToRoute()
+            confirmManualRouteCreationFinish()
         }
 
         binding.startNavigationButton.setOnClickListener {
@@ -245,440 +246,13 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
             }
         }
 
+        // enable the route creation mode again if it was active when the fragment was destroyed
         if (mapViewModel.manualRouteCreationModeActive.value == true) {
             setupManualRouteCreationMode()
         } else if (mapViewModel.routeDrawModeActive.value == true) {
             setupRouteDrawMode()
         }
     }
-
-    private fun showEnterRouteCreationDialog() {
-        val activity = activity ?: return
-
-        MaterialAlertDialogBuilder(activity, R.style.RouteCreationMaterialDialogTheme)
-            .setTitle("Route erstellen")
-            .setMessage(R.string.route_creation_options)
-            .setCancelable(true)
-            .setPositiveButton("Route aus Wegpunkten erstellen") { _, _ ->
-                // TODO show tutorial with TutorialBuilder and explain mapMatching-Limitations here!
-                setupManualRouteCreationMode()
-            }
-            .setNeutralButton("Route abgehen und aufzeichnen") { _, _ ->
-                Toast.makeText(
-                    activity,
-                    "Dieses Feature ist leider noch nicht implementiert. Wir arbeiten dran!",
-                    Toast.LENGTH_SHORT
-                ).show()
-                // TODO
-                // startLocationTracking(mapViewModel.getCurrentMapStyle() ?: return@setPositiveButton)
-                // setupRouteRecordingMode()
-            }
-            .setNegativeButton("Route auf Karte einzeichnen") { _, _ ->
-                setupRouteDrawMode()
-            }
-            .show()
-    }
-
-    /**
-     * * Route Creation Manual Mode
-     */
-
-    private fun setupManualRouteCreationMode() {
-        mapViewModel.setManualRouteCreationModeStatus(isActive = true)
-
-        // highlight default mode
-        highlightCurrentRouteCreationMode(RouteCreationModes.MODE_ADD)
-
-        binding.cancelRouteCreationButton.setOnClickListener {
-            with(MaterialAlertDialogBuilder(requireActivity())) {
-                setMessage(
-                    "Möchtest du die Routenerstellung abbrechen? Dein bisheriger Fortschritt " +
-                            "geht dabei verloren!"
-                )
-                setPositiveButton("Ja") { _, _ ->
-                    // reset layout and route creation progress
-                    mapViewModel.setManualRouteCreationModeStatus(isActive = false)
-                }
-                setNegativeButton("Nein") { _, _ -> }
-                show()
-            }
-        }
-
-        binding.routeCreationOptionsLayout.addMarkerButton.setOnClickListener {
-            highlightCurrentRouteCreationMode(RouteCreationModes.MODE_ADD)
-            setAddMarkerClickListenerBehavior()
-        }
-        binding.routeCreationOptionsLayout.editMarkerButton.setOnClickListener {
-            highlightCurrentRouteCreationMode(RouteCreationModes.MODE_EDIT)
-            // TODO allow user to edit the markers and their position (e.g. via infowindow ?)
-        }
-        binding.routeCreationOptionsLayout.deleteMarkerButton.setOnClickListener {
-            highlightCurrentRouteCreationMode(RouteCreationModes.MODE_DELETE)
-            // TODO delete markers on click
-            // markerManager.setOnMarkerClickListenerBehavior(delete)
-        }
-        binding.routeCreationOptionsLayout.resetButton.setOnClickListener {
-            with(MaterialAlertDialogBuilder(requireActivity())) {
-                setTitle("Achtung!")
-                setMessage("Möchtest du wirklich alles seit Beginn der Routenerstellung rückgängig machen?")
-                setPositiveButton("Ja") { _, _ -> resetMapOverlays() }
-                setNegativeButton(R.string.cancel) { _, _ -> }
-                show()
-            }
-        }
-        // TODO add a separate button for dragging markers too ? Would probably word if the other listeners are reset
-    }
-
-    private fun highlightCurrentRouteCreationMode(mode: RouteCreationModes) {
-        val activity = activity ?: return
-
-        // reset current highlight
-        binding.routeCreationOptionsLayout.root.children.forEach {
-            it.background = ContextCompat.getDrawable(activity, R.drawable.background_icon_button)
-        }
-
-        // get button for current mode and highlight it
-        val button = when (mode) {
-            RouteCreationModes.MODE_ADD -> binding.routeCreationOptionsLayout.addMarkerButton
-            RouteCreationModes.MODE_EDIT -> binding.routeCreationOptionsLayout.editMarkerButton
-            RouteCreationModes.MODE_DELETE -> binding.routeCreationOptionsLayout.deleteMarkerButton
-        }
-        button.background = ContextCompat.getDrawable(
-            activity,
-            R.drawable.background_icon_button_selected
-        )
-    }
-
-    private fun resetMapOverlays() {
-        routeLineManager?.clearAllLines()
-
-        // TODO this does not always work correctly because some symbols are redrawn at the start!
-        //  -> there shouldn't be two variables for markers in the viewmodel!!
-        mapViewModel.clearActiveMarkers()
-        mapViewModel.getActiveMarkerSymbols().forEach {
-            markerManager.deleteMarker(it)
-        }
-        mapViewModel.clearCustomWayPoints()
-        waypointsController.clear()
-    }
-
-    private fun setAddMarkerClickListenerBehavior() {
-        routeCreationMapClickListenerBehavior = MapboxMap.OnMapClickListener {
-            val symbol = markerManager.addMarker(it)
-            if (symbol != null) {
-                mapViewModel.saveMarker(symbol)
-            }
-            mapViewModel.addCustomWaypoint(it)
-            waypointsController.add(it)
-            true // consume the click
-        }
-
-        routeCreationMapClickListenerBehavior?.let {
-            if (::map.isInitialized) {
-                map.addOnMapClickListener(it)
-            }
-        }
-    }
-
-    // TODO im routeCreation Mode wärs schön wenn zusätzlich noch ein button auftauchen würde mit
-    //  dem man den Tilt einstellen kann für angenehmeres bearbeiten
-    private fun enterManualRouteCreationMode() {
-        // toggle the start/end buttons
-        binding.buildRouteButton.isEnabled = false
-        binding.buildRouteButton.visibility = View.GONE
-        binding.endRouteBuildingButton.visibility = View.VISIBLE
-        binding.endRouteBuildingButton.isEnabled = true
-        // and play an animation
-        @Suppress("MagicNumber")
-        YoYo.with(Techniques.FlipInX)
-            .duration(500)
-            .playOn(binding.endRouteBuildingButton)
-
-        binding.cancelRouteCreationButton.visibility = View.VISIBLE
-
-        // slide in the options panel
-        slideInView(binding.routeCreationOptionsLayout.root)
-
-        // set default map click listener behaviour in manualRouteCreation-Mode
-        setAddMarkerClickListenerBehavior()
-
-        // show bottom sheet panel
-        slidingBottomPanel.panelState = SlidingUpPanelLayout.PanelState.COLLAPSED
-    }
-
-    private fun leaveManualRouteCreationMode() {
-        binding.endRouteBuildingButton.visibility = View.GONE
-        binding.endRouteBuildingButton.isEnabled = false
-        binding.buildRouteButton.visibility = View.VISIBLE
-        binding.buildRouteButton.isEnabled = true
-
-        @Suppress("MagicNumber")
-        YoYo.with(Techniques.FlipInX)
-            .duration(500)
-            .playOn(binding.buildRouteButton)
-
-        binding.cancelRouteCreationButton.visibility = View.GONE
-        binding.startNavigationButton.visibility = View.GONE
-
-        // slide out the options panel
-        slideOutView(binding.routeCreationOptionsLayout.root)
-
-        // Hide bottom sheet panel by setting it to collapsed and its view to invisible.
-        // This is a workaround as setting it to State.Hidden or its View to Gone would cause the
-        // bottom navigation bar that is shown again to overlap the button at the bottom!
-        slidingBottomPanel.panelState = SlidingUpPanelLayout.PanelState.COLLAPSED
-        binding.dragView.visibility = View.INVISIBLE
-
-        // remove the click listener behavior for manual route creation mode
-        routeCreationMapClickListenerBehavior?.let { map.removeOnMapClickListener(it) }
-
-        // reset the map
-        resetMapOverlays()
-    }
-
-    /**
-     * * Route Free Draw Mode
-     */
-
-    private fun setupRouteDrawMode() {
-        mapViewModel.setRouteDrawModeStatus(isActive = true)
-
-        // highlight default mode
-        highlightCurrentDrawMode(RouteDrawModes.MODE_DRAW)
-
-        binding.cancelRouteCreationButton.setOnClickListener {
-            with(MaterialAlertDialogBuilder(requireActivity())) {
-                setMessage(
-                    "Möchtest du die Routenerstellung abbrechen? Dein bisheriger Fortschritt " +
-                            "geht dabei verloren!"
-                )
-                setPositiveButton("Ja") { _, _ ->
-                    // reset layout and route creation progress
-                    mapViewModel.setRouteDrawModeStatus(isActive = false)
-                }
-                setNegativeButton("Nein") { _, _ -> }
-                show()
-            }
-        }
-
-        binding.showMapMatchedButton.setOnClickListener {
-            val allRoutePoints = routeLineManager?.getCompleteRoute()
-
-            if (allRoutePoints != null) {
-                // add markers to the waypoints of the route
-                allRoutePoints.forEach {
-                    markerManager.addMarker(it.toLatLng())
-                }
-                mapMatchingClient.requestMapMatchedRoute(allRoutePoints)
-
-                // TODO if the request failed ask user if he wants to try again and edit the route
-                //  if we get a map matched route ask the user which one he wants to save (map matched or his own)
-            }
-        }
-
-        binding.routeDrawOptionsLayout.drawRouteButton.setOnClickListener {
-            highlightCurrentDrawMode(RouteDrawModes.MODE_DRAW)
-            routeLineManager?.enableMapDrawing()
-        }
-        binding.routeDrawOptionsLayout.moveMapButton.setOnClickListener {
-            highlightCurrentDrawMode(RouteDrawModes.MODE_MOVE)
-            routeLineManager?.enableMapMovement()
-        }
-        binding.routeDrawOptionsLayout.deleteRouteButton.setOnClickListener {
-            highlightCurrentDrawMode(RouteDrawModes.MODE_DELETE)
-            routeLineManager?.enableMapMovement() // reset the touch listener first
-            setRemoveRouteClickListenerBehavior()
-        }
-        binding.routeDrawOptionsLayout.resetButton.setOnClickListener {
-            with(MaterialAlertDialogBuilder(requireActivity())) {
-                setTitle("Achtung!")
-                setMessage("Möchtest du wirklich alle Zeichnungen auf der Karte rückgängig machen?")
-                setPositiveButton("Ja") { _, _ -> resetMapDrawings() }
-                setNegativeButton(R.string.cancel) { _, _ -> }
-                show()
-            }
-        }
-    }
-
-    // TODO combine the two methods!! -> all buttons in one panel? make the enums child enums of another enum?
-    private fun highlightCurrentDrawMode(mode: RouteDrawModes) {
-        val activity = activity ?: return
-
-        // reset current highlight
-        binding.routeDrawOptionsLayout.root.children.forEach {
-            it.background = ContextCompat.getDrawable(activity, R.drawable.background_icon_button)
-        }
-
-        // get button for current mode and highlight it
-        val button = when (mode) {
-            RouteDrawModes.MODE_DRAW -> binding.routeDrawOptionsLayout.drawRouteButton
-            RouteDrawModes.MODE_MOVE -> binding.routeDrawOptionsLayout.moveMapButton
-            RouteDrawModes.MODE_DELETE -> binding.routeDrawOptionsLayout.deleteRouteButton
-        }
-        button.background = ContextCompat.getDrawable(
-            activity,
-            R.drawable.background_icon_button_selected
-        )
-    }
-
-    private fun setRemoveRouteClickListenerBehavior() {
-        routeCreationMapClickListenerBehavior = MapboxMap.OnMapClickListener {
-            // Detect whether a linestring of the draw layer was clicked on
-            val screenPoint = map.projection.toScreenLocation(it)
-
-            @Suppress("MagicNumber")
-            val touchAreaBuffer = 15
-            // make the touch area a little bit bigger to provide a better ux
-            val screenArea = RectF(
-                screenPoint.x - touchAreaBuffer,
-                screenPoint.y - touchAreaBuffer,
-                screenPoint.x + touchAreaBuffer,
-                screenPoint.y + touchAreaBuffer
-            )
-
-            val featureList = map.queryRenderedFeatures(screenArea, DRAW_LINE_LAYER_ID)
-            if (featureList.isNotEmpty()) {
-                // delete the clicked line
-                val clickedFeature = featureList[0]
-                routeLineManager?.removeLineStringFromMap(clickedFeature)
-            }
-
-            true // consume the click
-        }
-
-        routeCreationMapClickListenerBehavior?.let {
-            if (::map.isInitialized) {
-                map.addOnMapClickListener(it)
-            }
-        }
-    }
-
-    // TODO das könnte kombiniert werden bei den click behaviors:
-    /*
-    routeCreationMapClickListenerBehavior = MapboxMap.OnMapClickListener {
-            callback()
-            true // consume the click
-        }
-
-    routeCreationMapClickListenerBehavior?.let {
-        if (::map.isInitialized) {
-            map.addOnMapClickListener(it)
-        }
-    }
-    */
-
-    // TODO combine reset too!
-    private fun resetMapDrawings() {
-        routeLineManager?.clearAllLines()
-
-        if (::markerManager.isInitialized) {
-            markerManager.deleteAllMarkers()
-        }
-        waypointsController.clear()
-    }
-
-    private fun enterRouteDrawMode() {
-        // toggle the start/end buttons
-        binding.buildRouteButton.isEnabled = false
-        binding.buildRouteButton.visibility = View.GONE
-        binding.endRouteBuildingButton.visibility = View.VISIBLE
-        binding.endRouteBuildingButton.isEnabled = true
-        // and play an animation
-        @Suppress("MagicNumber")
-        YoYo.with(Techniques.FlipInX)
-            .duration(500)
-            .playOn(binding.endRouteBuildingButton)
-
-        binding.cancelRouteCreationButton.visibility = View.VISIBLE
-        binding.showMapMatchedButton.visibility = View.VISIBLE
-
-        // slide in the options panel
-        slideInView(binding.routeDrawOptionsLayout.root)
-
-        routeLineManager?.initFreeDrawMode()
-        routeLineManager?.enableMapDrawing()
-        Toast.makeText(
-            requireActivity(),
-            "Move your finger on the map to draw a route",
-            Toast.LENGTH_SHORT
-        ).show()
-    }
-
-    private fun leaveRouteDrawMode() {
-        binding.endRouteBuildingButton.visibility = View.GONE
-        binding.endRouteBuildingButton.isEnabled = false
-        binding.buildRouteButton.visibility = View.VISIBLE
-        binding.buildRouteButton.isEnabled = true
-
-        @Suppress("MagicNumber")
-        YoYo.with(Techniques.FlipInX)
-            .duration(500)
-            .playOn(binding.buildRouteButton)
-
-        binding.cancelRouteCreationButton.visibility = View.GONE
-        binding.showMapMatchedButton.visibility = View.GONE
-        binding.startNavigationButton.visibility = View.GONE
-
-        // slide out the options panel
-        slideOutView(binding.routeDrawOptionsLayout.root)
-
-        // remove the custom touch behavior
-        routeLineManager?.enableMapMovement()
-
-        // reset the click listener behavior if it was changed
-        routeCreationMapClickListenerBehavior?.let { map.removeOnMapClickListener(it) }
-
-        // reset the map
-        resetMapDrawings()
-    }
-
-    // TODO this should be a separate option where a user can click to show the current route and
-    //  not be hidden behind the save route - Button!
-    private fun convertPointsToRoute() {
-        // check first if the user has an internet connection before requesting a route from mapbox
-        if (!hasInternetConnection(requireContext(), R.string.no_internet_map_matching)) {
-            return
-        }
-
-        val wayPoints = waypointsController.getAllWaypoints()
-        if (wayPoints.size < 2) {
-            showSnackbar(
-                "Du musst mindestens 2 Punkte auf der Karte auswählen, damit eine Route erstellt werden kann!",
-                binding.mapButtonContainer,
-                colorRes = R.color.colorError
-            )
-            return
-        }
-
-        // make a request to the Mapbox Map Matching API to get a route from the waypoints
-        mapMatchingClient.requestMapMatchedRoute(wayPoints)
-    }
-
-    // TODO this should only be shown when the user has already seen the route and is happy with it
-    //  -> add another button or confirm option somewhere in the layout! Maybe another bottomSheet ?
-    private fun confirmManualRouteCreationFinish() {
-        with(MaterialAlertDialogBuilder(requireActivity())) {
-            setTitle("Erstellte Route speichern?")
-            setPositiveButton("Ja") { _, _ ->
-                saveCreatedRoute()
-                mapViewModel.setManualRouteCreationModeStatus(isActive = false)
-            }
-            setNegativeButton("Weiter bearbeiten") { _, _ -> }
-            show()
-        }
-    }
-
-    private fun saveCreatedRoute() {
-        // TODO:
-        // - make a snapshot of the created route with the Mapbox Snapshotter and save it to firebase storage
-        // - set the snapshot as route thumbnail and save the new route for this user to firebase via viewmodel
-
-        // TODO (optional) give user the option to show the navigation ui with simulated route progress ??
-    }
-
-    /**
-     * * Finished with route creation
-     */
 
     /**
      * Show a popup window to let the user choose a map style.
@@ -722,23 +296,412 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
         listPopup.show()
     }
 
+    private fun showEnterRouteCreationDialog() {
+        val activity = activity ?: return
+
+        MaterialAlertDialogBuilder(activity, R.style.RouteCreationMaterialDialogTheme)
+            .setTitle("Route erstellen")
+            .setMessage(R.string.route_creation_options)
+            .setCancelable(true)
+            .setPositiveButton("Route aus Wegpunkten erstellen") { _, _ ->
+                // TODO show tutorial with TutorialBuilder and explain mapMatching-Limitations here!
+                setupManualRouteCreationMode()
+            }
+            .setNeutralButton("Route abgehen und aufzeichnen") { _, _ ->
+                Toast.makeText(
+                    activity,
+                    "Dieses Feature ist leider noch nicht implementiert. Wir arbeiten dran!",
+                    Toast.LENGTH_SHORT
+                ).show()
+                // TODO
+                // startLocationTracking(mapViewModel.getCurrentMapStyle() ?: return@setPositiveButton)
+                // setupRouteRecordingMode()
+            }
+            .setNegativeButton("Route auf Karte einzeichnen") { _, _ ->
+                setupRouteDrawMode()
+            }
+            .show()
+    }
+
+    /**
+     * * Route Creation Code
+     */
+
+    /**
+     * Set the state in the viewModel to trigger certain corresponding actions and setup the options
+     * panel and it's buttons for the manual route creation mode.
+     */
+    private fun setupManualRouteCreationMode() {
+        mapViewModel.setManualRouteCreationModeStatus(isActive = true)
+
+        // highlight default mode
+        highlightCurrentRouteCreationMode(ManualRouteCreationModes.MODE_ADD)
+
+        binding.cancelRouteCreationButton.setOnClickListener {
+            showLeaveRouteCreationDialog()
+        }
+        binding.showMapMatchedButton.setOnClickListener {
+            convertPointsToRoute() // TODO
+        }
+
+        binding.routeCreationOptionsLayout.addMarkerButton.setOnClickListener {
+            highlightCurrentRouteCreationMode(ManualRouteCreationModes.MODE_ADD)
+            setAddMarkerClickListenerBehavior()
+        }
+        binding.routeCreationOptionsLayout.editMarkerButton.setOnClickListener {
+            highlightCurrentRouteCreationMode(ManualRouteCreationModes.MODE_EDIT)
+            // TODO allow user to edit the markers and their position (e.g. via infowindow ?)
+        }
+        binding.routeCreationOptionsLayout.deleteMarkerButton.setOnClickListener {
+            highlightCurrentRouteCreationMode(ManualRouteCreationModes.MODE_DELETE)
+            // TODO delete markers on click
+            // setRemoveMarkerClickListenerBehavior()
+            // markerManager.setOnMarkerClickListenerBehavior(delete)
+        }
+        binding.routeCreationOptionsLayout.resetButton.setOnClickListener {
+            showResetMapDialog("Möchtest du wirklich alles seit Beginn der Routenerstellung rückgängig machen?")
+        }
+
+        // TODO add a separate button for dragging markers too ?
+        //  Would probably work if the other listeners are reset
+    }
+
+    /**
+     * Set the state in the viewModel to trigger certain corresponding actions and setup the options
+     * panel and it's buttons for the route draw mode.
+     */
+    private fun setupRouteDrawMode() {
+        mapViewModel.setRouteDrawModeStatus(isActive = true)
+
+        highlightCurrentRouteCreationMode(RouteDrawModes.MODE_DRAW)
+
+        binding.cancelRouteCreationButton.setOnClickListener {
+            showLeaveRouteCreationDialog()
+        }
+        binding.showMapMatchedButton.setOnClickListener {
+            mapMatchDrawnRoute()
+        }
+
+        binding.routeDrawOptionsLayout.drawRouteButton.setOnClickListener {
+            highlightCurrentRouteCreationMode(RouteDrawModes.MODE_DRAW)
+            routeLineManager?.enableMapDrawing()
+        }
+        binding.routeDrawOptionsLayout.moveMapButton.setOnClickListener {
+            highlightCurrentRouteCreationMode(RouteDrawModes.MODE_MOVE)
+            routeLineManager?.enableMapMovement()
+        }
+        binding.routeDrawOptionsLayout.deleteRouteButton.setOnClickListener {
+            highlightCurrentRouteCreationMode(RouteDrawModes.MODE_DELETE)
+            routeLineManager?.enableMapMovement() // reset the touch listener first
+            setRemoveRouteClickListenerBehavior()
+        }
+        binding.routeDrawOptionsLayout.resetButton.setOnClickListener {
+            showResetMapDialog("Möchtest du wirklich alle gezeichneten Routen auf der Karte rückgängig machen?")
+        }
+    }
+
+    private fun highlightCurrentRouteCreationMode(mode: RouteCreationMode) {
+        // get the correct options panel layout based on the given mode
+        val optionsPanelLayout = when {
+            ManualRouteCreationModes.values().contains(mode) -> {
+                binding.routeCreationOptionsLayout.root
+            }
+            RouteDrawModes.values().contains(mode) -> {
+                binding.routeDrawOptionsLayout.root
+            }
+            else -> return
+        }
+
+        // reset current highlight
+        optionsPanelLayout.children.forEach {
+            it.background = ContextCompat.getDrawable(requireActivity(), R.drawable.background_icon_button)
+        }
+
+        // get button for current mode and highlight it
+        val button = when (mode) {
+            ManualRouteCreationModes.MODE_ADD -> binding.routeCreationOptionsLayout.addMarkerButton
+            ManualRouteCreationModes.MODE_EDIT -> binding.routeCreationOptionsLayout.editMarkerButton
+            ManualRouteCreationModes.MODE_DELETE -> binding.routeCreationOptionsLayout.deleteMarkerButton
+
+            RouteDrawModes.MODE_DRAW -> binding.routeDrawOptionsLayout.drawRouteButton
+            RouteDrawModes.MODE_MOVE -> binding.routeDrawOptionsLayout.moveMapButton
+            RouteDrawModes.MODE_DELETE -> binding.routeDrawOptionsLayout.deleteRouteButton
+
+            else -> return
+        }
+        button.background = ContextCompat.getDrawable(
+            requireActivity(),
+            R.drawable.background_icon_button_selected
+        )
+    }
+
+    private fun showLeaveRouteCreationDialog() {
+        with(MaterialAlertDialogBuilder(requireActivity())) {
+            setMessage(
+                "Möchtest du die Routenerstellung abbrechen? Dein bisheriger Fortschritt " +
+                        "geht dabei verloren!"
+            )
+            setPositiveButton("Ja") { _, _ ->
+                // reset layout and route creation progress
+                if (mapViewModel.manualRouteCreationModeActive.value == true) {
+                    mapViewModel.setManualRouteCreationModeStatus(isActive = false)
+                } else if (mapViewModel.routeDrawModeActive.value == true) {
+                    mapViewModel.setRouteDrawModeStatus(isActive = false)
+                }
+            }
+            setNegativeButton("Nein") { _, _ -> }
+            show()
+        }
+    }
+
+    private fun showResetMapDialog(message: String) {
+        with(MaterialAlertDialogBuilder(requireActivity())) {
+            setTitle("Achtung!")
+            setMessage(message)
+            setPositiveButton("Ja") { _, _ ->
+                resetMapOverlays()
+            }
+            setNegativeButton(R.string.cancel) { _, _ -> }
+            show()
+        }
+    }
+
+    private fun performSharedCreationEnterActions() {
+        // toggle the start/end buttons
+        binding.buildRouteButton.isEnabled = false
+        binding.buildRouteButton.visibility = View.GONE
+        binding.endRouteBuildingButton.visibility = View.VISIBLE
+        binding.endRouteBuildingButton.isEnabled = true
+        // and play an animation
+        @Suppress("MagicNumber")
+        YoYo.with(Techniques.FlipInX)
+            .duration(500)
+            .playOn(binding.endRouteBuildingButton)
+
+        binding.cancelRouteCreationButton.visibility = View.VISIBLE
+        binding.showMapMatchedButton.visibility = View.VISIBLE
+    }
+
+    private fun performSharedCreationExitActions() {
+        binding.endRouteBuildingButton.visibility = View.GONE
+        binding.endRouteBuildingButton.isEnabled = false
+        binding.buildRouteButton.visibility = View.VISIBLE
+        binding.buildRouteButton.isEnabled = true
+
+        @Suppress("MagicNumber")
+        YoYo.with(Techniques.FlipInX)
+            .duration(500)
+            .playOn(binding.buildRouteButton)
+
+        binding.cancelRouteCreationButton.visibility = View.GONE
+        binding.showMapMatchedButton.visibility = View.GONE
+        binding.startNavigationButton.visibility = View.GONE
+
+        // reset the map
+        resetMapOverlays()
+    }
+
+    // TODO im routeCreation Mode wärs schön wenn zusätzlich noch ein button auftauchen würde mit
+    //  dem man den Tilt einstellen kann für angenehmeres bearbeiten
+    private fun enterManualRouteCreationMode() {
+        performSharedCreationEnterActions()
+
+        // slide in the options panel
+        slideInView(binding.routeCreationOptionsLayout.root)
+
+        // show bottom sheet panel
+        slidingBottomPanel.panelState = SlidingUpPanelLayout.PanelState.COLLAPSED
+
+        // set default map click listener behaviour in manualRouteCreation-Mode
+        setAddMarkerClickListenerBehavior()
+    }
+
+    private fun exitManualRouteCreationMode() {
+        performSharedCreationExitActions()
+
+        // slide out the options panel
+        slideOutView(binding.routeCreationOptionsLayout.root)
+
+        // Hide bottom sheet panel by setting it to collapsed and its view to invisible.
+        // This is a workaround as setting it to State.Hidden or its View to Gone would cause the
+        // bottom navigation bar that is shown again to overlap the button at the bottom!
+        slidingBottomPanel.panelState = SlidingUpPanelLayout.PanelState.COLLAPSED
+        binding.dragView.visibility = View.INVISIBLE
+
+        // remove the click listener behavior for manual route creation mode
+        routeCreationMapClickListenerBehavior?.let { map.removeOnMapClickListener(it) }
+    }
+
+    private fun enterRouteDrawMode() {
+        performSharedCreationEnterActions()
+
+        // slide in the options panel
+        slideInView(binding.routeDrawOptionsLayout.root)
+
+        routeLineManager?.initFreeDrawMode()
+        routeLineManager?.enableMapDrawing()
+        // Toast.makeText(requireActivity(), "Move your finger on the map to draw a route", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun exitRouteDrawMode() {
+        performSharedCreationExitActions()
+
+        // slide out the options panel
+        slideOutView(binding.routeDrawOptionsLayout.root)
+
+        // remove the custom touch behavior
+        routeLineManager?.enableMapMovement()
+
+        // reset the click listener behavior if it was changed
+        routeCreationMapClickListenerBehavior?.let { map.removeOnMapClickListener(it) }
+    }
+
+    private fun setAddMarkerClickListenerBehavior() {
+        routeCreationMapClickListenerBehavior = MapboxMap.OnMapClickListener {
+            val symbol = markerManager.addMarker(it)
+            if (symbol != null) {
+                mapViewModel.saveMarker(symbol)
+            }
+            mapViewModel.addCustomWaypoint(it)
+            waypointsController.add(it)
+
+            true // consume the click
+        }
+
+        routeCreationMapClickListenerBehavior?.let {
+            if (::map.isInitialized) {
+                map.addOnMapClickListener(it)
+            }
+        }
+    }
+
+    private fun setRemoveRouteClickListenerBehavior() {
+        routeCreationMapClickListenerBehavior = MapboxMap.OnMapClickListener {
+            // Detect whether a linestring of the draw layer was clicked on
+            val screenPoint = map.projection.toScreenLocation(it)
+
+            @Suppress("MagicNumber")
+            val touchAreaBuffer = 15
+            // make the touch area a little bit bigger to provide a better ux
+            val screenArea = RectF(
+                screenPoint.x - touchAreaBuffer,
+                screenPoint.y - touchAreaBuffer,
+                screenPoint.x + touchAreaBuffer,
+                screenPoint.y + touchAreaBuffer
+            )
+
+            val featureList = map.queryRenderedFeatures(screenArea, DRAW_LINE_LAYER_ID)
+            if (featureList.isNotEmpty()) {
+                // delete the clicked line
+                val clickedFeature = featureList[0]
+                routeLineManager?.removeLineStringFromMap(clickedFeature)
+            }
+            true // consume the click
+        }
+
+        routeCreationMapClickListenerBehavior?.let {
+            if (::map.isInitialized) {
+                map.addOnMapClickListener(it)
+            }
+        }
+    }
+    /*
+    private fun createCustomMapClickListener(onClick: (position: LatLng) -> Unit) {
+        routeCreationMapClickListenerBehavior = MapboxMap.OnMapClickListener {
+            onClick(it)
+            true // consume the click
+        }
+
+        routeCreationMapClickListenerBehavior?.let {
+            if (::map.isInitialized) {
+                map.addOnMapClickListener(it)
+            }
+        }
+    }*/
+
+    private fun resetMapOverlays() {
+        // clear lines on the map
+        routeLineManager?.clearAllLines()
+
+        if (::markerManager.isInitialized) {
+            // clear markers on the map and in the viewmodel
+            markerManager.deleteAllMarkers()
+
+            // TODO this does not always work correctly because some symbols are redrawn at the start!
+            //  -> there shouldn't be two variables for markers in the viewmodel!!
+            mapViewModel.clearActiveMarkers()
+            mapViewModel.getActiveMarkerSymbols().forEach {
+                markerManager.deleteMarker(it)
+            }
+        }
+        // clear created waypoints
+        mapViewModel.clearCustomWayPoints()
+
+        // reset the waypointsController
+        waypointsController.clear()
+    }
+
+    private fun convertPointsToRoute() {
+        // check first if the user has an internet connection before requesting a route from mapbox
+        if (!hasInternetConnection(requireContext(), R.string.no_internet_map_matching)) {
+            return
+        }
+
+        val wayPoints = waypointsController.getAllWaypoints()
+        if (wayPoints.size < 2) {
+            showSnackbar(
+                "Du musst mindestens 2 Punkte auf der Karte auswählen, damit eine Route erstellt werden kann!",
+                binding.mapButtonContainer,
+                colorRes = R.color.colorError
+            )
+            return
+        }
+
+        // make a request to the Mapbox Map Matching API to get a route from the waypoints
+        mapMatchingClient.requestMapMatchedRoute(wayPoints)
+    }
+
+    private fun mapMatchDrawnRoute() {
+        val allRoutePoints = routeLineManager?.getCompleteRoute()
+
+        if (allRoutePoints != null) {
+            // add markers to the waypoints of the route
+            allRoutePoints.forEach {
+                markerManager.addMarker(it.toLatLng())
+            }
+            mapMatchingClient.requestMapMatchedRoute(allRoutePoints)
+
+            // TODO if the request failed ask user if he wants to try again and edit the route
+            //  if we get a map matched route ask the user which one he wants to save (map matched or his own)
+        }
+    }
+
+    private fun confirmManualRouteCreationFinish() {
+        with(MaterialAlertDialogBuilder(requireActivity())) {
+            setTitle("Erstellte Route speichern?")
+            setPositiveButton("Ja") { _, _ ->
+                saveCreatedRoute()
+                mapViewModel.setManualRouteCreationModeStatus(isActive = false)
+            }
+            setNegativeButton("Weiter bearbeiten") { _, _ -> }
+            show()
+        }
+    }
+
+    private fun saveCreatedRoute() {
+        // TODO:
+        // - make a snapshot of the created route with the Mapbox Snapshotter and save it to firebase storage
+        // - set the snapshot as route thumbnail and save the new route for this user to firebase via viewmodel
+
+        // TODO (optional) give user the option to show the navigation ui with simulated route progress ??
+    }
+
     /**
      * * Map code
      */
 
     override fun onMapReady(mapboxMap: MapboxMap) {
         this.map = mapboxMap
-
-        // restrict the camera to a given bounding box as the app focuses only on the campus
-        map.setLatLngBoundsForCameraTarget(latLngBounds)
-
-        // don't allow the user to tilt the map because it may confuse some users and
-        // doesn't provide any value here
-        map.uiSettings.isTiltGesturesEnabled = false
-
-        // move the compass to the bottom left corner of the mapview so it doesn't overlap with buttons
-        map.uiSettings.compassGravity = Gravity.BOTTOM or Gravity.START
-        map.uiSettings.setCompassMargins(compassMarginLeft, 0, 0, compassMarginBottom)
 
         if (preferencesManager.isFirstRun()) {
             showFirstRunTutorial()
@@ -747,8 +710,23 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
             preferencesManager.completedFirstRun()
         }
 
+        setupMapUI()
+
         val style = preferencesManager.getCurrentMapStyle()
         setMapStyle(style)
+    }
+
+    private fun setupMapUI() {
+        // restrict the camera to a given bounding box as the app focuses only on the uni campus
+        map.setLatLngBoundsForCameraTarget(latLngBounds)
+
+        // don't allow the user to tilt the map because it may confuse some users and
+        // doesn't provide any value here
+        map.uiSettings.isTiltGesturesEnabled = false
+
+        // move the compass to the bottom left corner of the mapView so it doesn't overlap with buttons
+        map.uiSettings.compassGravity = Gravity.BOTTOM or Gravity.START
+        map.uiSettings.setCompassMargins(compassMarginLeft, 0, 0, compassMarginBottom)
 
         // init the camera at the saved cameraPosition if it is not null
         mapViewModel.getLastKnownCameraPosition()?.let {
@@ -782,6 +760,8 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
 
             // save the current style in the shared preferences
             preferencesManager.setCurrentMapStyle(styleUrl)
+
+            mapMatchingClient.setMapMatchingListener(this)
 
             setupMarkerManager(mapStyle)
             recreateMarkers()
@@ -868,8 +848,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
 
     private fun setupMapListeners() {
         map.addOnCameraIdleListener(this::onCameraMoved)
-        map.addOnMapLongClickListener(this::onMapLongClicked)
-
+        // map.addOnMapLongClickListener(this::onMapLongClicked)
         map.setOnInfoWindowClickListener {
             // TODO
             false
@@ -879,15 +858,17 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
     private fun removeMapListeners() {
         if (this::map.isInitialized) {
             map.removeOnCameraIdleListener(this::onCameraMoved)
-            map.removeOnMapLongClickListener(this::onMapLongClicked)
+            // map.removeOnMapLongClickListener(this::onMapLongClicked)
             routeCreationMapClickListenerBehavior?.let { map.removeOnMapClickListener(it) }
         }
     }
 
     private fun onCameraMoved() {
+        // keep track of the current camera position in case of a configuration change or similar
         mapViewModel.setCurrentCameraPosition(map.cameraPosition)
     }
 
+    // TODO this is not really needed anymore:
     private fun onMapLongClicked(point: LatLng): Boolean {
         Timber.d("in on Long click on map")
 
