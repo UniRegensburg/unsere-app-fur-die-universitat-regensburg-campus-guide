@@ -61,14 +61,21 @@ class MainActivity : AppCompatActivity() {
     }*/
 
     private fun setupViewModelObservers() {
+        // hide the bottom navigation bar when the user enters route creation mode on the map
         mapViewModel.manualRouteCreationModeActive.observe(this, { active ->
-            // hide the bottom navigation bar when the user enters route creation mode on the map
-            if (active) {
-                activityMainBinding.bottomNav.visibility = View.GONE
-            } else {
-                activityMainBinding.bottomNav.visibility = View.VISIBLE
-            }
+            hideBottomNavDuringRouteCreation(active)
         })
+        mapViewModel.routeDrawModeActive.observe(this, { active ->
+            hideBottomNavDuringRouteCreation(active)
+        })
+    }
+
+    private fun hideBottomNavDuringRouteCreation(routeCreationActive: Boolean) {
+        if (routeCreationActive) {
+            activityMainBinding.bottomNav.visibility = View.GONE
+        } else {
+            activityMainBinding.bottomNav.visibility = View.VISIBLE
+        }
     }
 
     private fun setupBottomNavigation() {
