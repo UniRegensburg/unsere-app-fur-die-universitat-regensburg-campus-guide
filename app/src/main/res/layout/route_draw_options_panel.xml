@@ -47,6 +47,7 @@
         android:tint="@color/colorError"
         tools:ignore="ContentDescription" />
 
+    <!--
     <ImageButton
         android:id="@+id/erase_button"
         android:layout_width="wrap_content"
@@ -58,12 +59,13 @@
         android:src="@drawable/ic_eraser_round"
         android:tint="@color/colorError"
         tools:ignore="ContentDescription" />
+        -->
 
     <ImageButton
         android:id="@+id/reset_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/erase_button"
+        android:layout_below="@id/delete_route_button"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="24dp"
         android:layout_marginBottom="8dp"

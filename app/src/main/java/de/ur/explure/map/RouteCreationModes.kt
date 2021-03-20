@@ -10,6 +10,5 @@ enum class RouteCreationModes {
 enum class RouteDrawModes {
     MODE_DRAW,
     MODE_MOVE,
-    MODE_DELETE,
-    MODE_ERASE
+    MODE_DELETE
 }

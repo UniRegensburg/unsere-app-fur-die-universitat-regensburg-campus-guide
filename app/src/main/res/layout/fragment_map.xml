@@ -60,14 +60,31 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:visibility="gone"
+            app:backgroundTint="@color/colorError"
             app:elevation="@dimen/fab_elevation"
             app:fabSize="mini"
             app:layout_constraintEnd_toStartOf="@+id/endRouteBuildingButton"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:pressedTranslationZ="12dp"
-            app:backgroundTint="@color/colorError"
             app:srcCompat="@drawable/ic_baseline_close_24"
+            tools:ignore="ContentDescription"
+            tools:visibility="visible" />
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/showMapMatchedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:visibility="gone"
+            app:backgroundTint="@color/themeColor"
+            app:elevation="@dimen/fab_elevation"
+            app:fabSize="mini"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/endRouteBuildingButton"
+            app:layout_constraintTop_toTopOf="parent"
+            app:pressedTranslationZ="12dp"
+            app:srcCompat="@drawable/ic_baseline_done_24"
             tools:ignore="ContentDescription"
             tools:visibility="visible" />
 

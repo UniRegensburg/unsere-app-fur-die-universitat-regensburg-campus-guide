@@ -2,7 +2,6 @@ package de.ur.explure.map
 
 import android.annotation.SuppressLint
 import android.app.Application
-import android.graphics.Color
 import android.graphics.PointF
 import android.view.MotionEvent
 import android.view.View
@@ -14,6 +13,7 @@ import com.mapbox.geojson.Feature
 import com.mapbox.geojson.FeatureCollection
 import com.mapbox.geojson.LineString
 import com.mapbox.geojson.Point
+import com.mapbox.geojson.utils.PolylineUtils
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
@@ -31,6 +31,7 @@ import com.mapbox.mapboxsdk.style.layers.PropertyFactory.lineOpacity
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory.lineWidth
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
 import com.mapbox.mapboxsdk.utils.ColorUtils
+import de.ur.explure.R
 import de.ur.explure.extensions.toFeature
 import de.ur.explure.extensions.toLatLng
 import de.ur.explure.extensions.toLineString
@@ -44,9 +45,13 @@ class RouteLineManager(
     mapStyle: Style
 ) : DefaultLifecycleObserver {
 
-    private val lineManager: LineManager = LineManager(mapView, map, mapStyle).apply {
-        lineCap = LINE_CAP_ROUND
-    }
+    private val defaultDrawColor = ContextCompat.getColor(context, R.color.colorRouteDraw)
+    private val mapMatchedRouteColor = ContextCompat.getColor(context, R.color.themeColorDark)
+
+    private val lineManager: LineManager =
+        LineManager(mapView, map, mapStyle, MAPBOX_FIRST_LABEL_LAYER).apply {
+            lineCap = LINE_CAP_ROUND
+        }
     private val defaultLineOptions = LineOptions()
         .withLineWidth(DEFAULT_LINE_WIDTH)
         .withLineJoin(LINE_JOIN_ROUND)
@@ -55,15 +60,15 @@ class RouteLineManager(
     // TODO these should probably be saved in the viewModel instead
     //  -> a config or map style change resets all of these right now!
     private var routeDrawFeatureList: MutableList<Feature> = mutableListOf()
-    // private var routeDrawLineList: MutableList<LineString> = mutableListOf()
     private var currentRoutePoints: MutableList<Point> = mutableListOf()
-    private var eraseList = mutableListOf<Point>()
 
     @SuppressLint("ClickableViewAccessibility")
     private val mapDrawListener = View.OnTouchListener { _, motionEvent ->
         // get the touch position on the screen
-        val latLngTouchCoordinate: LatLng = map.projection.fromScreenLocation(PointF(motionEvent.x, motionEvent.y))
-        val screenTouchPoint = Point.fromLngLat(latLngTouchCoordinate.longitude, latLngTouchCoordinate.latitude)
+        val latLngTouchCoordinate: LatLng =
+            map.projection.fromScreenLocation(PointF(motionEvent.x, motionEvent.y))
+        val screenTouchPoint =
+            Point.fromLngLat(latLngTouchCoordinate.longitude, latLngTouchCoordinate.latitude)
 
         currentRoutePoints.add(screenTouchPoint)
         // make a copy as otherwise the references to the old points will be kept and cleared below!
@@ -75,41 +80,8 @@ class RouteLineManager(
 
         // Take certain actions when the drawing is done
         if (motionEvent.action == MotionEvent.ACTION_UP) {
-            // TODO add a marker to the start and end of the route and save in waypointsContoller
-            //  so we can mapmatch the route later
-
-            // TODO listener for markerManager calls to prevent tightly coupling of the managers!
-            // currentRoute.firstOrNull()?.toLatLng()?.let { markerManager.addMarker(it) }
-            // currentRoute.lastOrNull()?.toLatLng()?.let { markerManager.addMarker(it) }
-
             saveRoute(points, routeId)
         }
-        true
-    }
-
-    @SuppressLint("ClickableViewAccessibility")
-    private val eraseDrawListener = View.OnTouchListener { _, motionEvent ->
-        val latLngTouchCoordinate: LatLng = map.projection.fromScreenLocation(PointF(motionEvent.x, motionEvent.y))
-        val screenTouchPoint = Point.fromLngLat(latLngTouchCoordinate.longitude, latLngTouchCoordinate.latitude)
-
-        eraseList.add(screenTouchPoint)
-
-        // TODO
-        /*
-        val completeRoute = mutableListOf<Point>()
-        routeDrawLineList.forEach { lineString ->
-            completeRoute.addAll(lineString.coordinates())
-        }
-
-        completeRoute.removeAll(eraseList)
-
-        routeDrawLineList.forEach { lineString ->
-            if (lineString.coordinates().contains(screenTouchPoint)) {
-                lineString.coordinates().remove(screenTouchPoint)
-            }
-        }*/
-
-        // drawRoute(currentRoutePoints)
         true
     }
 
@@ -127,11 +99,6 @@ class RouteLineManager(
     @SuppressLint("ClickableViewAccessibility")
     fun enableMapDrawing() {
         mapView.setOnTouchListener(mapDrawListener)
-    }
-
-    @SuppressLint("ClickableViewAccessibility")
-    fun enableErasingRoute() {
-        mapView.setOnTouchListener(eraseDrawListener)
     }
 
     // use map sources and layers for free drawing as this increases the performance A LOT
@@ -159,16 +126,27 @@ class RouteLineManager(
                 lineWidth(DEFAULT_LINE_WIDTH),
                 lineJoin(LINE_JOIN_ROUND),
                 lineOpacity(DEFAULT_LINE_OPACITY),
-                lineColor(DEFAULT_LINE_COLOR)
-            ), MAPBOX_ICON_LAYER
+                lineColor(defaultDrawColor)
+            ), MAPBOX_FIRST_LABEL_LAYER
         )
     }
 
     fun getCompleteRoute(): MutableList<Point> {
         val completeRoute = mutableListOf<Point>()
         routeDrawFeatureList.forEach { lineFeature ->
-            completeRoute.addAll(lineFeature.toLineString().coordinates())
+            val coords = lineFeature.toLineString().coordinates()
+            // completeRoute.addAll(arrayOf(coords[0], coords[coords.size - 1]))
+
+            // Simplify the linestring with the Ramer-Douglas-Peucker algorithm to decrease the number
+            // of route points which improves the performance and makes map matching feasible.
+            // A higher tolerance (e.g. 0.1) will take only very few points of the original list
+            // which might result in fuzzier or even completely wrong routes, a very low tolerance
+            // (e.g. 0.000001) will try to take as many points as possible which results in very
+            //  accurate routes but decreases performance and will exceed the map matching api rate limit.
+            val simplifiedPoints = PolylineUtils.simplify(coords, DEFAULT_ROUTE_TOLERANCE, true)
+            completeRoute.addAll(simplifiedPoints)
         }
+
         return completeRoute
     }
 
@@ -202,25 +180,15 @@ class RouteLineManager(
         currentRoutePoints.clear()
     }
 
-    fun addLineToMap(lineCoords: List<LatLng>, @ColorRes color: Int? = null): Line? {
-        val resolvedColor = color?.let { ContextCompat.getColor(context, it) } ?: DEFAULT_LINE_COLOR
-        return createLineFromCoordinates(lineCoords, resolvedColor)
-    }
-
-    @JvmName("addLineToMapPoints")
     fun addLineToMap(linePoints: List<Point>, @ColorRes color: Int? = null): Line? {
-        val resolvedColor = color?.let { ContextCompat.getColor(context, it) } ?: DEFAULT_LINE_COLOR
+        val resolvedColor = color?.let { ContextCompat.getColor(context, it) } ?: mapMatchedRouteColor
         val lineCoords = linePoints.map { it.toLatLng() }
         return createLineFromCoordinates(lineCoords, resolvedColor)
     }
 
     fun addLineToMap(line: LineString, @ColorRes color: Int? = null): Line? {
-        val resolvedColor = color?.let { ContextCompat.getColor(context, it) } ?: DEFAULT_LINE_COLOR
+        val resolvedColor = color?.let { ContextCompat.getColor(context, it) } ?: mapMatchedRouteColor
         return createLineFromGeometry(line, resolvedColor)
-    }
-
-    fun removeLineFromMap(line: Line) {
-        lineManager.delete(line)
     }
 
     fun removeLineStringFromMap(feature: Feature) {
@@ -245,23 +213,21 @@ class RouteLineManager(
     }
 
     fun clearAllLines() {
-        lineManager.deleteAll()
-    }
-
-    fun clearDrawLayer() {
         // Reset lists
         routeDrawFeatureList.clear()
-        // routeDrawLineList.clear()
         currentRoutePoints.clear()
 
-        // Add empty Feature array to the sources to clear the source
+        // clear linemanager
+        lineManager.deleteAll()
+
+        // Add an empty Feature array to the draw source to clear it
         map.style?.getSourceAs<GeoJsonSource>(DRAW_LINE_LAYER_SOURCE_ID)
             ?.setGeoJson(FeatureCollection.fromFeatures(arrayOf<Feature>()))
     }
 
     private fun createLineFromCoordinates(
         lineCoords: List<LatLng>,
-        color: Int = DEFAULT_LINE_COLOR
+        color: Int = defaultDrawColor
     ): Line? {
         return lineManager.create(
             defaultLineOptions
@@ -272,7 +238,7 @@ class RouteLineManager(
 
     private fun createLineFromGeometry(
         lineGeometry: LineString,
-        color: Int = DEFAULT_LINE_COLOR
+        color: Int = defaultDrawColor
     ): Line? {
         return lineManager.create(
             defaultLineOptions
@@ -288,17 +254,18 @@ class RouteLineManager(
     }
 
     companion object {
-
         private const val DEFAULT_LINE_WIDTH = 5.0f
         private const val DEFAULT_LINE_OPACITY = 1.0f
-        private val DEFAULT_LINE_COLOR = Color.parseColor("#00acff")
 
-        private const val MAPBOX_ICON_LAYER = "waterway-label"
+        // The tolerance value used in the douglas - peucker simplification algorithm,
+        // see https://en.wikipedia.org/wiki/Ramer%E2%80%93Douglas%E2%80%93Peucker_algorithm
+        private const val DEFAULT_ROUTE_TOLERANCE = 0.001
 
-        private const val ID_PROPERTY_KEY = "ID_PROPERTY"
-
+        private const val MAPBOX_FIRST_LABEL_LAYER = "road-label"
         const val DRAW_LINE_LAYER_SOURCE_ID = "DRAW_LINE_LAYER_SOURCE_ID"
         const val DRAW_LINE_LAYER_ID = "DRAW_LINE_LAYER_ID"
+
+        private const val ID_PROPERTY_KEY = "ID_PROPERTY"
 
         private val customLineLayers = mutableMapOf(
             DRAW_LINE_LAYER_ID to DRAW_LINE_LAYER_SOURCE_ID

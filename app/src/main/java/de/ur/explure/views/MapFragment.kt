@@ -37,6 +37,7 @@ import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
 import com.sothree.slidinguppanel.SlidingUpPanelLayout
 import de.ur.explure.R
 import de.ur.explure.databinding.FragmentMapBinding
+import de.ur.explure.extensions.toLatLng
 import de.ur.explure.map.LocationManager
 import de.ur.explure.map.MapMatchingClient
 import de.ur.explure.map.MarkerManager
@@ -460,6 +461,21 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
             }
         }
 
+        binding.showMapMatchedButton.setOnClickListener {
+            val allRoutePoints = routeLineManager?.getCompleteRoute()
+
+            if (allRoutePoints != null) {
+                // add markers to the waypoints of the route
+                allRoutePoints.forEach {
+                    markerManager.addMarker(it.toLatLng())
+                }
+                mapMatchingClient.requestMapMatchedRoute(allRoutePoints)
+
+                // TODO if the request failed ask user if he wants to try again and edit the route
+                //  if we get a map matched route ask the user which one he wants to save (map matched or his own)
+            }
+        }
+
         binding.routeDrawOptionsLayout.drawRouteButton.setOnClickListener {
             highlightCurrentDrawMode(RouteDrawModes.MODE_DRAW)
             routeLineManager?.enableMapDrawing()
@@ -472,11 +488,6 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
             highlightCurrentDrawMode(RouteDrawModes.MODE_DELETE)
             routeLineManager?.enableMapMovement() // reset the touch listener first
             setRemoveRouteClickListenerBehavior()
-        }
-        binding.routeDrawOptionsLayout.eraseButton.setOnClickListener {
-            highlightCurrentDrawMode(RouteDrawModes.MODE_ERASE)
-            routeLineManager?.enableMapMovement()
-            routeLineManager?.enableErasingRoute()
         }
         binding.routeDrawOptionsLayout.resetButton.setOnClickListener {
             with(MaterialAlertDialogBuilder(requireActivity())) {
@@ -503,7 +514,6 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
             RouteDrawModes.MODE_DRAW -> binding.routeDrawOptionsLayout.drawRouteButton
             RouteDrawModes.MODE_MOVE -> binding.routeDrawOptionsLayout.moveMapButton
             RouteDrawModes.MODE_DELETE -> binding.routeDrawOptionsLayout.deleteRouteButton
-            RouteDrawModes.MODE_ERASE -> binding.routeDrawOptionsLayout.eraseButton
         }
         button.background = ContextCompat.getDrawable(
             activity,
@@ -559,7 +569,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
 
     // TODO combine reset too!
     private fun resetMapDrawings() {
-        routeLineManager?.clearDrawLayer()
+        routeLineManager?.clearAllLines()
 
         if (::markerManager.isInitialized) {
             markerManager.deleteAllMarkers()
@@ -580,6 +590,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
             .playOn(binding.endRouteBuildingButton)
 
         binding.cancelRouteCreationButton.visibility = View.VISIBLE
+        binding.showMapMatchedButton.visibility = View.VISIBLE
 
         // slide in the options panel
         slideInView(binding.routeDrawOptionsLayout.root)
@@ -605,6 +616,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
             .playOn(binding.buildRouteButton)
 
         binding.cancelRouteCreationButton.visibility = View.GONE
+        binding.showMapMatchedButton.visibility = View.GONE
         binding.startNavigationButton.visibility = View.GONE
 
         // slide out the options panel
@@ -813,7 +825,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
         val bestMatching = allMatchings[0]
 
         Timber.d("Confidence of best match: ${bestMatching.confidence().times(100)} %")
-        Timber.d("First route part: ${bestMatching.legs()?.get(0)}")
+        // Timber.d("First route part: ${bestMatching.legs()?.get(0)}")
 
         // draw the best route match on the map
         showMapMatchedRoute(bestMatching)
@@ -1017,6 +1029,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
         Timber.d("in MapFragment onDestroyView")
 
         slidingBottomPanel.removePanelSlideListener(slidingPanelListener)
+        mapMatchingClient.setMapMatchingListener(null)
         removeMapListeners()
         backPressedCallback?.remove()
 

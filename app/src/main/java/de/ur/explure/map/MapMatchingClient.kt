@@ -12,40 +12,51 @@ import retrofit2.Callback
 import retrofit2.Response
 import timber.log.Timber
 
-class MapMatchingClient(context: Context) {
+class MapMatchingClient(private val context: Context) {
 
     private var mapMatchingListener: MapMatchingListener? = null
-
-    private val mapMatchingConfig = MapboxMapMatching.builder()
-        .accessToken(getMapboxAccessToken(context))
-        .profile(DirectionsCriteria.PROFILE_WALKING)
-        // * optional params: *
-        .tidy(true)
-        .overview(DirectionsCriteria.OVERVIEW_FULL)
-        .geometries("polyline6") // maximal precision
-        .steps(true)
-        .bannerInstructions(false)
-        .voiceInstructions(false)
-        .annotations(
-            DirectionsCriteria.ANNOTATION_DURATION,
-            DirectionsCriteria.ANNOTATION_DISTANCE
-        )
 
     // Todo: auch aus dem MapMatching response obj könnte man die route instructions bekommen!!
     // see https://docs.mapbox.com/help/tutorials/get-started-map-matching-api/#display-the-turn-by-turn-directions
 
     fun requestMapMatchedRoute(coordinates: List<Point>) {
-
         Timber.d("MapMatching request with ${coordinates.size} coordinates.")
+
         if (coordinates.size < 2) {
             // we need at least two points to get a successful match!
+            Timber.e("Map Matching not possible! At least two coordinates are necessary!")
+            return
+        } else if (coordinates.size > 100) {
+            // the api also doesn't accept requests with more than 100 coordinates
+            Timber.e("Map Matching not possible! There can be no more than 100 coordinates!")
             return
         }
 
-        val mapMatchingRequest = mapMatchingConfig
+        // Create a snap radius for every coordinate point; must be a value between 0.0 and 50.0 (meter).
+        // This determines how far the map matching api can snap the point to known routes, that means
+        // higher values will create more often successful but quite fuzzy routes, while low values
+        // (default is 5 meter) will be quite accurate but won't produce results for some routes.
+        // val snapRadiuses = Array(coordinates.size) { return@Array DEFAULT_SNAP_RADIUS }
+
+        val mapMatchingRequest = MapboxMapMatching.builder()
+            .accessToken(getMapboxAccessToken(context))
+            .profile(DirectionsCriteria.PROFILE_WALKING)
             .coordinates(coordinates)
+            // set indices for correct navigation instructions with waypoints
+            // (otherwise every waypoint would be an end point!)
             .waypointIndices(0, coordinates.size - 1)
             // .addWaypointNames(...) // add a name to every waypoint given
+            // .radiuses(*snapRadiuses) // increase default map matching radius to get more routes
+            // * optional params: *
+            .tidy(true)
+            .overview(DirectionsCriteria.OVERVIEW_FULL)
+            .steps(true)
+            .bannerInstructions(true)
+            .voiceInstructions(false)
+            .annotations(
+                DirectionsCriteria.ANNOTATION_DURATION,
+                DirectionsCriteria.ANNOTATION_DISTANCE
+            )
             .build()
 
         mapMatchingRequest.enqueueCall(
@@ -57,15 +68,20 @@ class MapMatchingClient(context: Context) {
                     mapMatchingListener?.onRouteMatchingFailed(t.toString())
                 }
 
-                override fun onResponse(call: Call<MapMatchingResponse>, response: Response<MapMatchingResponse>) {
+                override fun onResponse(
+                    call: Call<MapMatchingResponse>,
+                    response: Response<MapMatchingResponse>
+                ) {
                     if (!response.isSuccessful) {
-                        Timber.e("MapMatching response unsuccessful: ${response.errorBody()}")
+                        Timber.e("MapMatching response unsuccessful with code ${response.code()}")
+                        Timber.e("Errormessage: ${response.errorBody()?.string()}")
                         mapMatchingListener?.onRouteMatchingFailed(response.message())
                         return
                     }
-                    Timber.d("MapMatching request succeeded")
 
                     val allMatchings = response.body()?.matchings()
+                    Timber.d("MapMatching request succeeded! Found ${allMatchings?.size} matchings!")
+
                     if (allMatchings == null || allMatchings.isEmpty()) {
                         Timber.w("Couldn't get any map matchings for the waypoints!")
                         mapMatchingListener?.onNoRouteMatchings()
@@ -79,7 +95,7 @@ class MapMatchingClient(context: Context) {
                     //  - explain how this map matching works and that it is meant for outdoor usage!!
 
                     val allTracePoints = response.body()?.tracepoints()
-                    Timber.d("All Trace Points:\n $allTracePoints")
+                    Timber.d("All ${allTracePoints?.size} Trace Points:\n $allTracePoints")
 
                     mapMatchingListener?.onRouteMatched(allMatchings)
                 }
@@ -87,8 +103,12 @@ class MapMatchingClient(context: Context) {
         )
     }
 
-    fun setMapMatchingListener(listener: MapMatchingListener) {
+    fun setMapMatchingListener(listener: MapMatchingListener?) {
         this.mapMatchingListener = listener
+    }
+
+    companion object {
+        private const val DEFAULT_SNAP_RADIUS = 15.0 // in meter
     }
 
     interface MapMatchingListener {
