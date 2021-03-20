@@ -8,6 +8,7 @@ import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.Style
 import de.ur.explure.map.LocationManager
+import de.ur.explure.map.MapMatchingClient
 import de.ur.explure.map.MarkerManager
 import de.ur.explure.map.PermissionHelper
 import de.ur.explure.map.RouteDrawManager
@@ -52,6 +53,7 @@ val mainModule = module {
     }
     single { PermissionHelper() }
     single { WaypointsController() }
+    single { MapMatchingClient(androidApplication()) }
 
     // navigation router
     single { MainAppRouter() }

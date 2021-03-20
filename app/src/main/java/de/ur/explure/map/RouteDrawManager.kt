@@ -198,7 +198,7 @@ class RouteDrawManager(private val mapView: MapView, map: MapboxMap) {
             .steps(true)
             .bannerInstructions(false)
             .voiceInstructions(false)
-            .profile(DirectionsCriteria.PROFILE_DRIVING)
+            .profile(DirectionsCriteria.PROFILE_WALKING)
             .build()
 
         mapMatching.enqueueCall(

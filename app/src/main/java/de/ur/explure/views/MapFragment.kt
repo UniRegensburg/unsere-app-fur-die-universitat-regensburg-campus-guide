@@ -22,11 +22,8 @@ import com.daimajia.androidanimations.library.YoYo
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.mapbox.android.core.permissions.PermissionsManager
-import com.mapbox.api.directions.v5.DirectionsCriteria
 import com.mapbox.api.directions.v5.models.DirectionsRoute
-import com.mapbox.api.matching.v5.MapboxMapMatching
 import com.mapbox.api.matching.v5.models.MapMatchingMatching
-import com.mapbox.api.matching.v5.models.MapMatchingResponse
 import com.mapbox.core.constants.Constants.PRECISION_6
 import com.mapbox.geojson.LineString
 import com.mapbox.geojson.Point
@@ -41,6 +38,7 @@ import com.sothree.slidinguppanel.SlidingUpPanelLayout
 import de.ur.explure.R
 import de.ur.explure.databinding.FragmentMapBinding
 import de.ur.explure.map.LocationManager
+import de.ur.explure.map.MapMatchingClient
 import de.ur.explure.map.MarkerManager
 import de.ur.explure.map.PermissionHelper
 import de.ur.explure.map.RouteCreationModes
@@ -52,7 +50,6 @@ import de.ur.explure.utils.EventObserver
 import de.ur.explure.utils.Highlight
 import de.ur.explure.utils.SharedPreferencesManager
 import de.ur.explure.utils.TutorialBuilder
-import de.ur.explure.utils.getMapboxAccessToken
 import de.ur.explure.utils.hasInternetConnection
 import de.ur.explure.utils.isGPSEnabled
 import de.ur.explure.utils.measureContentWidth
@@ -66,14 +63,12 @@ import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.scope.emptyState
 import org.koin.core.parameter.parametersOf
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import timber.log.Timber
 import java.util.*
 
 @Suppress("TooManyFunctions")
-class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
+class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
+    MapMatchingClient.MapMatchingListener {
 
     private val binding by viewBinding(FragmentMapBinding::bind)
 
@@ -95,6 +90,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
     // route creation
     private val waypointsController: WaypointsController by inject()
     private var directionsRoute: DirectionsRoute? = null
+    private val mapMatchingClient: MapMatchingClient by inject()
 
     // location tracking
     private lateinit var locationManager: LocationManager
@@ -118,6 +114,8 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
         // init locationManager and sync with fragment lifecycle
         locationManager = get { parametersOf(this::onNewLocationReceived) }
         viewLifecycleOwner.lifecycle.addObserver(locationManager)
+
+        mapMatchingClient.setMapMatchingListener(this)
 
         setupViewModelObservers()
 
@@ -622,10 +620,6 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
         resetMapDrawings()
     }
 
-    /**
-     * * Map Matching Stuff
-     */
-
     // TODO this should be a separate option where a user can click to show the current route and
     //  not be hidden behind the save route - Button!
     private fun convertPointsToRoute() {
@@ -644,110 +638,8 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
             return
         }
 
-        fetchRoute(wayPoints)
-    }
-
-    // Todo: auch aus dem MapMatching response obj könnte man die route instructions bekommen!!
-    // see https://docs.mapbox.com/help/tutorials/get-started-map-matching-api/#display-the-turn-by-turn-directions
-    private fun fetchRoute(coordinates: List<Point>) {
-        Timber.d("MapMatching request with ${coordinates.size} coordinates.")
-
-        val mapMatchingRequest = MapboxMapMatching.builder()
-            .accessToken(getMapboxAccessToken(requireActivity()))
-            .profile(DirectionsCriteria.PROFILE_WALKING)
-            .coordinates(coordinates)
-            // * optional params: *
-            .waypointIndices(0, coordinates.size - 1)
-            // .addWaypointNames()
-            .steps(true)
-            .bannerInstructions(true)
-            // .voiceInstructions(true)
-            .tidy(true)
-            .overview(DirectionsCriteria.OVERVIEW_FULL)
-            .geometries("polyline6") // maximal precision
-            .annotations(
-                DirectionsCriteria.ANNOTATION_DURATION,
-                DirectionsCriteria.ANNOTATION_DISTANCE
-            )
-            // TODO timestamps pro Koordinate in ca. 5 Sekunden Abstand für bessere Ergebnisse ??
-            // .timestamps()
-            .build()
-
-        mapMatchingRequest.enqueueCall(
-            object : Callback<MapMatchingResponse> {
-                override fun onFailure(call: Call<MapMatchingResponse>, t: Throwable) {
-                    Timber.e("MapMatching request failure %s", t.toString())
-                    // TODO check for all exceptions and give appropriate user feedback
-                    //  see https://docs.mapbox.com/api/navigation/map-matching/#map-matching-api-errors
-                }
-
-                override fun onResponse(
-                    call: Call<MapMatchingResponse>,
-                    response: Response<MapMatchingResponse>
-                ) {
-                    Timber.d("MapMatching request succeeded")
-
-                    if (response.isSuccessful) {
-                        val allMatchings = response.body()?.matchings()
-                        if (allMatchings?.isEmpty() == true) {
-                            Timber.w("Couldn't get any map matchings for the waypoints!")
-                            showSnackbar(
-                                requireActivity(),
-                                "Couldn't get any map matchings for the waypoints!",
-                                colorRes = R.color.colorError
-                            )
-                            return
-                        }
-
-                        allMatchings?.let {
-                            showSnackbar(
-                                requireActivity(),
-                                "Successfully mapmatched the given waypoints! Found " +
-                                        "${allMatchings.size} possible route options."
-                            )
-                            showMapMatchedRoute(it)
-                        }
-
-                        // TODO things to do here:
-                        //  - print the confidence and ask the user to provide more/ or more closely
-                        //    aligned points if below threshold -> probably not: confidence is usually quite
-                        //    low but it works not too bad and there are almost never alternatives :(
-                        //  - explain how this map matching works and that it is meant for outdoor usage!!
-
-                        val allTracePoints = response.body()?.tracepoints()
-                        // Timber.d("All Trace Points:\n ${allTracePoints.toString()}")
-
-                        val bestMatching = allMatchings?.get(0)
-                        Timber.d("Confidence: ${bestMatching?.confidence()?.times(100)} %")
-                        bestMatching?.legs()?.get(0)
-
-                        val route = bestMatching?.toDirectionRoute()
-                        if (route != null) {
-                            directionsRoute = route
-
-                            // mapboxNavigation?.setRoutes(listOf(route))
-                            // navigationMapboxMap?.drawRoute(route)
-
-                            binding.startNavigationButton.visibility = View.VISIBLE
-                        } else {
-                            binding.startNavigationButton.visibility = View.GONE
-                        }
-                    } else {
-                        Timber.e("Response unsuccessful: ${response.errorBody()}")
-                    }
-                }
-            }
-        )
-    }
-
-    // TODO this drawn route should be saved and redrawn on config change as well to prevent another
-    //  map matching request!
-    private fun showMapMatchedRoute(matchings: List<MapMatchingMatching>) {
-        if (matchings.isNotEmpty()) {
-            val routeGeometry = matchings[0].geometry() ?: return
-            val lineString = LineString.fromPolyline(routeGeometry, PRECISION_6)
-            routeLineManager?.addLineToMap(lineString)
-        }
+        // make a request to the Mapbox Map Matching API to get a route from the waypoints
+        mapMatchingClient.requestMapMatchedRoute(wayPoints)
     }
 
     // TODO this should only be shown when the user has already seen the route and is happy with it
@@ -907,6 +799,55 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback {
     private fun setupRouteLineManager(mapStyle: Style) {
         routeLineManager = get { parametersOf(mapView, map, mapStyle) }
         routeLineManager?.let { viewLifecycleOwner.lifecycle.addObserver(it) }
+    }
+
+    /**
+     * * Map Matching Callbacks
+     */
+
+    override fun onRouteMatched(allMatchings: MutableList<MapMatchingMatching>) {
+        showSnackbar(
+            requireActivity(),
+            "Successfully mapmatched the given waypoints! Found ${allMatchings.size} possible route options."
+        )
+        val bestMatching = allMatchings[0]
+
+        Timber.d("Confidence of best match: ${bestMatching.confidence().times(100)} %")
+        Timber.d("First route part: ${bestMatching.legs()?.get(0)}")
+
+        // draw the best route match on the map
+        showMapMatchedRoute(bestMatching)
+
+        // convert map matching to a route that can be processed by the mapbox navigation api
+        val route = bestMatching.toDirectionRoute()
+        if (route != null) {
+            directionsRoute = route
+            // mapboxNavigation?.setRoutes(listOf(route))
+
+            binding.startNavigationButton.visibility = View.VISIBLE
+        } else {
+            binding.startNavigationButton.visibility = View.GONE
+        }
+    }
+
+    // TODO this drawn route should be saved and redrawn on config change as well to prevent another
+    //  map matching request!
+    private fun showMapMatchedRoute(matchedRoute: MapMatchingMatching) {
+        val routeGeometry = matchedRoute.geometry() ?: return
+        val lineString = LineString.fromPolyline(routeGeometry, PRECISION_6)
+        routeLineManager?.addLineToMap(lineString)
+    }
+
+    override fun onNoRouteMatchings() {
+        showSnackbar(
+            requireActivity(),
+            "Couldn't get any map matchings for the waypoints!", // TODO in strings auslagern
+            colorRes = R.color.colorError
+        )
+    }
+
+    override fun onRouteMatchingFailed(message: String) {
+        Timber.e("Route map matching failed because: $message")
     }
 
     /**
