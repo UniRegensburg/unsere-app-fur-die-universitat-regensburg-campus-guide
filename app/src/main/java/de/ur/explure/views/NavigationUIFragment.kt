@@ -46,31 +46,28 @@ class NavigationUIFragment : Fragment(R.layout.fragment_navigation_ui), OnNaviga
         val route = currentRoute ?: return
 
         if (!isRunning && !::navigationMapboxMap.isInitialized) {
-            if (navigationView.retrieveNavigationMapboxMap() != null) {
-
-                this.navigationMapboxMap = navigationView.retrieveNavigationMapboxMap() ?: return
-                navigationView.retrieveMapboxNavigation()?.let {
-                    this.mapboxNavigation = it
-                }
-
-                // Disable off-route detection as this would cause Mapbox to generate a new directionsroute
-                // if the user leaves the route but we want to show only the custom route and not the shortest.
-                // see https://docs.mapbox.com/android/navigation/guides/off-route/
-                mapboxNavigation?.setRerouteController(null)
-
-                val navOptions = NavigationViewOptions.builder(requireActivity())
-                    .navigationListener(this)
-                    .directionsRoute(route)
-                    .shouldSimulateRoute(true)
-                    .enableVanishingRouteLine(true)
-                    // .locationObserver(this)
-                    // .routeProgressObserver(this)
-                    .build()
-                navigationView.startNavigation(navOptions)
-
-                // Reset navigationView Camera Position
-                // navigationView.resetCameraPosition()
+            this.navigationMapboxMap = navigationView.retrieveNavigationMapboxMap() ?: return
+            navigationView.retrieveMapboxNavigation()?.let {
+                this.mapboxNavigation = it
             }
+
+            // Disable off-route detection as this would cause Mapbox to generate a new directionsroute
+            // if the user leaves the route but we want to show only the custom route and not the shortest.
+            // see https://docs.mapbox.com/android/navigation/guides/off-route/
+            mapboxNavigation?.setRerouteController(null)
+
+            val navOptions = NavigationViewOptions.builder(requireActivity())
+                .navigationListener(this)
+                .directionsRoute(route)
+                .shouldSimulateRoute(true)
+                .enableVanishingRouteLine(true)
+                // .locationObserver(this)
+                // .routeProgressObserver(this)
+                .build()
+            navigationView.startNavigation(navOptions)
+
+            // Reset navigationView Camera Position
+            // navigationView.resetCameraPosition()
         }
     }
 

@@ -2,7 +2,6 @@ package de.ur.explure.map
 
 import android.app.Application
 import android.graphics.BitmapFactory
-import android.widget.Toast
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import com.mapbox.mapboxsdk.geometry.LatLng
@@ -14,14 +13,16 @@ import com.mapbox.mapboxsdk.plugins.annotation.SymbolManager
 import com.mapbox.mapboxsdk.plugins.annotation.SymbolOptions
 import com.mapbox.mapboxsdk.style.layers.Property
 import de.ur.explure.R
+import de.ur.explure.extensions.moveCameraToPosition
+import de.ur.explure.views.MapFragment.Companion.selectedMarkerZoom
 
 // use the application context instead of the activity context to make sure it doesn't leak memory,
 // see https://proandroiddev.com/everything-you-need-to-know-about-memory-leaks-in-android-d7a59faaf46a
 class MarkerManager(
     private val context: Application,
     mapView: MapView,
-    map: MapboxMap,
-    private var mapStyle: Style
+    private val map: MapboxMap,
+    private val mapStyle: Style
 ) : DefaultLifecycleObserver {
 
     private val symbolManager: SymbolManager = SymbolManager(mapView, map, mapStyle).apply {
@@ -82,11 +83,7 @@ class MarkerManager(
     }
 
     private fun onMarkerClickListener(marker: Symbol): Boolean {
-        Toast.makeText(
-            context,
-            "Clicked on marker ${marker.id}",
-            Toast.LENGTH_SHORT
-        ).show()
+        map.moveCameraToPosition(marker.latLng, selectedMarkerZoom)
         return true
     }
 

@@ -2,10 +2,10 @@ package de.ur.explure.views
 
 import android.os.Bundle
 import android.view.View
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.crazylegend.viewbinding.viewBinding
+import com.mapbox.mapboxsdk.geometry.LatLng
 import de.ur.explure.R
 import de.ur.explure.adapter.RouteCreationAdapter
 import de.ur.explure.databinding.RouteCreationBottomsheetBinding
@@ -52,10 +52,17 @@ class RouteCreationBottomSheet : Fragment(R.layout.route_creation_bottomsheet) {
         val linearLayoutManager = LinearLayoutManager(activity ?: return)
         linearLayoutManager.stackFromEnd = true // insert items at the bottom instead of top
 
-        routeCreationAdapter = RouteCreationAdapter { view: View, wayPoint: WayPoint ->
-            // a item in the recyclerView was clicked
-            Toast.makeText(requireActivity(), "Clicked on ${wayPoint.title}", Toast.LENGTH_SHORT)
-                .show()
+        routeCreationAdapter = RouteCreationAdapter { wayPoint: WayPoint, adapterPosition: Int ->
+            // a item in the recyclerView was clicked, get the marker symbol for this waypoint
+            mapViewModel.getActiveMarkerSymbols().forEach {
+                val geoPoint = wayPoint.geoPoint
+                val wayPointLocation = LatLng(geoPoint.latitude, geoPoint.longitude)
+                // TODO not the best way probably, but should be safe, as there can only be one marker
+                //  at a specific location
+                if (it.latLng == wayPointLocation) {
+                    mapViewModel.selectedMarker.value = it
+                }
+            }
         }
 
         binding.recyclerWaypointList.apply {

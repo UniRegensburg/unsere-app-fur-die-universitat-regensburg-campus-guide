@@ -37,6 +37,7 @@ import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
 import com.sothree.slidinguppanel.SlidingUpPanelLayout
 import de.ur.explure.R
 import de.ur.explure.databinding.FragmentMapBinding
+import de.ur.explure.extensions.moveCameraToPosition
 import de.ur.explure.extensions.toLatLng
 import de.ur.explure.map.LocationManager
 import de.ur.explure.map.ManualRouteCreationModes
@@ -166,6 +167,12 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
                 enterRouteDrawMode()
             } else {
                 exitRouteDrawMode()
+            }
+        })
+        mapViewModel.selectedMarker.observe(viewLifecycleOwner, { marker ->
+            // move the camera to the selected marker
+            if (::map.isInitialized) {
+                map.moveCameraToPosition(marker.latLng, selectedMarkerZoom)
             }
         })
     }
@@ -529,7 +536,13 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
         binding.dragView.visibility = View.INVISIBLE
 
         // remove the click listener behavior for manual route creation mode
-        routeCreationMapClickListenerBehavior?.let { map.removeOnMapClickListener(it) }
+        routeCreationMapClickListenerBehavior?.let {
+            // necessary check as the viewmodel observer fires the first time as well which might be
+            // before the map has been setup
+            if (::map.isInitialized) {
+                map.removeOnMapClickListener(it)
+            }
+        }
     }
 
     private fun enterRouteDrawMode() {
@@ -553,7 +566,11 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
         routeLineManager?.enableMapMovement()
 
         // reset the click listener behavior if it was changed
-        routeCreationMapClickListenerBehavior?.let { map.removeOnMapClickListener(it) }
+        routeCreationMapClickListenerBehavior?.let {
+            if (::map.isInitialized) {
+                map.removeOnMapClickListener(it)
+            }
+        }
     }
 
     private fun setAddMarkerClickListenerBehavior() {
@@ -1015,6 +1032,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
         backPressedCallback?.remove()
 
         mapViewModel.clearActiveMarkerSymbols()
+        // mapViewModel.selectedMarker.value = null
 
         mapView?.onDestroy()
         super.onDestroyView()
@@ -1022,6 +1040,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
 
     companion object {
         private const val ROUTE_MARKER_SOURCE_ID = "ROUTE_MARKER_SOURCE_ID"
+        const val selectedMarkerZoom = 17.0
 
         // custom margins of the mapbox compass
         private const val compassMarginLeft = 10

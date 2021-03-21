@@ -23,10 +23,10 @@ class MapViewModel(private val state: SavedStateHandle) : ViewModel() {
     private val _mapReady = MutableLiveData<Event<Boolean>>()
     val mapReady: LiveData<Event<Boolean>> = _mapReady
 
-    private val _manualRouteCreationModeActive = MutableLiveData(state[MANUAL_ROUTE_CREATION_KEY] ?: false)
+    private val _manualRouteCreationModeActive by lazy { MutableLiveData(state[MANUAL_ROUTE_CREATION_KEY] ?: false) }
     val manualRouteCreationModeActive: LiveData<Boolean> = _manualRouteCreationModeActive
 
-    private val _routeDrawModeActive = MutableLiveData(state[ROUTE_DRAW_KEY] ?: false)
+    private val _routeDrawModeActive by lazy { MutableLiveData(state[ROUTE_DRAW_KEY] ?: false) }
     val routeDrawModeActive: LiveData<Boolean> = _routeDrawModeActive
 
     private var currentMapStyle: Style? = null
@@ -40,15 +40,16 @@ class MapViewModel(private val state: SavedStateHandle) : ViewModel() {
     // TODO save them on config change!!
     val customRouteWaypoints: MutableLiveData<MutableList<WayPoint>> = MutableLiveData(mutableListOf())
 
+    // TODO save markersymbols and waypoints as map so they can be associated!!
+
+    val selectedMarker: MutableLiveData<Symbol> by lazy { MutableLiveData<Symbol>() }
+
     fun addCustomWaypoint(coordinates: LatLng) {
         val waypoint = WayPoint(
             UUID.randomUUID().toString(),
             "Marker ${customRouteWaypoints.value?.size}",
             "Keine Beschreibung (Position: ${coordinates.latitude}, ${coordinates.longitude})",
-            GeoPoint(coordinates.latitude, coordinates.longitude),
-            null,
-            null,
-            null
+            GeoPoint(coordinates.latitude, coordinates.longitude)
         )
         customRouteWaypoints.value?.add(waypoint)
         // assigning to itself is necessary to trigger the observer!

@@ -1,7 +1,6 @@
 package de.ur.explure.adapter
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import de.ur.explure.R
@@ -9,7 +8,7 @@ import de.ur.explure.adapter.RouteCreationAdapter.ViewHolder.Companion.from
 import de.ur.explure.databinding.WaypointListItemBinding
 import de.ur.explure.model.waypoint.WayPoint
 
-typealias onItemClickCallback = (itemView: View, waypoint: WayPoint) -> Unit
+typealias onItemClickCallback = (waypoint: WayPoint, adapterPosition: Int) -> Unit
 
 class RouteCreationAdapter(private val callback: onItemClickCallback) :
     RecyclerView.Adapter<RouteCreationAdapter.ViewHolder>() {
@@ -63,7 +62,7 @@ class RouteCreationAdapter(private val callback: onItemClickCallback) :
 
             itemView.setOnClickListener {
                 // invoke the given callback on item click
-                callback(it, waypoint)
+                callback(waypoint, layoutPosition)
             }
         }
 
