@@ -6,24 +6,47 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".views.CreatedRoutesFragment">
 
-    <TextView
-        android:id="@+id/createdRoutesHeader"
+    <RelativeLayout
+        android:id="@+id/userRepresentationLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:drawableLeft="@drawable/own_routes_icon"
-        android:drawableRight="@drawable/own_routes_icon"
-        android:background="@color/themeColorLight"
-        android:paddingStart="30dp"
-        android:paddingEnd="30dp"
-        android:paddingTop="10dp"
-        android:paddingBottom="10dp"
-        android:text="@string/own_routes"
-        android:textColor="@color/highlightColorDark"
-        android:textAlignment="center"
-        android:textAllCaps="true"
-        android:textSize="24sp"
-        android:textStyle="bold" />
+        android:background="@color/themeColor">
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/profilePictureCardView"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_margin="8dp"
+            android:elevation="12dp"
+            android:innerRadius="0dp"
+            app:cardBackgroundColor="@color/themeColor"
+            android:shape="ring"
+            android:thicknessRatio="1.9"
+            android:orientation="vertical"
+            app:cardCornerRadius="80dp">
+
+            <ImageView
+                android:id="@+id/profilePicture"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                app:srcCompat="@drawable/user_profile_picture" />
+
+        </androidx.cardview.widget.CardView>
+
+        <TextView
+            android:id="@+id/userNameTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@id/profilePictureCardView"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="8dp"
+            android:text="@string/user_name"
+            android:textAlignment="center"
+            android:textColor="#525252"
+            android:textSize="24sp" />
+
+    </RelativeLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/createdRoutesRecyclerView"
@@ -31,7 +54,7 @@
         android:clipToPadding="false"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/createdRoutesHeader"
+        android:layout_below="@id/userRepresentationLayout"
         android:background="@color/colorLightGrey"
         tools:listitem="@layout/route_element"
         />

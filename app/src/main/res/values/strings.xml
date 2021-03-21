@@ -21,21 +21,21 @@
     <!-- Statistics Page -->
     <string name="statistics">Statistics</string>
     <string name="distance">Distance</string>
-    <string name="covered_track">Covered track:</string>
+    <string name="covered_track">Covered track</string>
     <string name="covered_track_value">0m</string>
-    <string name="started_routes">Started routes:</string>
+    <string name="started_routes">Started routes</string>
     <string name="started_routes_value">0</string>
-    <string name="ended_routes">Finished routes:</string>
+    <string name="ended_routes">Finished routes</string>
     <string name="ended_routes_value">0</string>
     <string name="contents">Contents</string>
-    <string name="created_routes">Created routes:</string>
+    <string name="created_routes">Created routes</string>
     <string name="created_routes_value">0</string>
-    <string name="created_landmarks">Created landmarks:</string>
+    <string name="created_landmarks">Created landmarks</string>
     <string name="created_landmarks_value">0</string>
     <string name="interaction">Interaction</string>
-    <string name="comments">Comments:</string>
+    <string name="comments">Comments</string>
     <string name="comments_value">0</string>
-    <string name="ratings">Ratings:</string>
+    <string name="ratings">Ratings</string>
     <string name="ratings_value">0</string>
 
     <!-- Logout Button (Profile) -->
