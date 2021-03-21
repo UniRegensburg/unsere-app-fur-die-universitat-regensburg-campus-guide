@@ -33,21 +33,15 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinCompon
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        observeRouteInformation()
         val routeId = args.routeID
         singleRouteViewModel.getRouteData(routeId)
-        observeRouteInformation()
         setOnClickListener()
     }
 
     private fun initAdapters() {
-        commentAdapter = CommentAdapter { commentId, answerText ->
-            addAnswers(commentId, answerText)
-        }
-        binding.comments.adapter = commentAdapter
-        binding.comments.layoutManager = LinearLayoutManager(requireContext())
-        wayPointAdapter = WayPointAdapter()
-        binding.waypoints.adapter = wayPointAdapter
-        binding.waypoints.layoutManager = LinearLayoutManager(requireContext())
+        initCommentAdapter()
+        initWayPointAdapter()
     }
 
     private fun observeRouteInformation() {
@@ -55,10 +49,10 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinCompon
             if (route != null) {
                 binding.routeName.text = route.title
                 binding.routeDescription.text = route.description
-                binding.routeDuration.text = getString(R.string.route_item_duration, route.duration.toInt())
-                binding.routeDistance.text = getString(R.string.route_item_distance, route.distance.toInt())
+                binding.routeDuration.text = getString(R.string.route_item_duration, route.duration)
+                binding.routeDistance.text = getString(R.string.route_item_distance, route.distance)
                 binding.routeRating.rating = route.currentRating.toFloat()
-                setImage(route)
+                setImage(route.thumbnailUrl)
                 // needs to init Adapters here because otherwise it won't load new comments and answers correctly
                 initAdapters()
                 setAdapters(route)
@@ -73,10 +67,10 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinCompon
         commentAdapter.setItems(route.comments)
     }
 
-    private fun setImage(route: Route) {
-        if (route.thumbnailUrl.isNotEmpty()) {
+    private fun setImage(image: String) {
+        if (image.isNotEmpty()) {
             try {
-                val gsReference = fireStorage.getReferenceFromUrl(route.thumbnailUrl)
+                val gsReference = fireStorage.getReferenceFromUrl(image)
                 GlideApp.with(requireContext())
                         .load(gsReference)
                         .error(R.drawable.map_background)
@@ -93,6 +87,20 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinCompon
         } else {
             Toast.makeText(context, R.string.empty_comment, Toast.LENGTH_LONG).show()
         }
+    }
+
+    private fun initCommentAdapter() {
+        commentAdapter = CommentAdapter { commentId, answerText ->
+            addAnswers(commentId, answerText)
+        }
+        binding.comments.adapter = commentAdapter
+        binding.comments.layoutManager = LinearLayoutManager(requireContext())
+    }
+
+    private fun initWayPointAdapter() {
+        wayPointAdapter = WayPointAdapter()
+        binding.waypoints.adapter = wayPointAdapter
+        binding.waypoints.layoutManager = LinearLayoutManager(requireContext())
     }
 
     private fun setOnClickListener() {
