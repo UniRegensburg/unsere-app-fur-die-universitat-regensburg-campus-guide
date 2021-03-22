@@ -1,19 +1,13 @@
 package de.ur.explure.extensions
 
-import com.mapbox.mapboxsdk.camera.CameraPosition
 import com.mapbox.mapboxsdk.camera.CameraUpdateFactory
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapboxMap
 
 fun MapboxMap.moveCameraToPosition(position: LatLng, zoom: Double? = null) {
-    val newCameraPositionBuilder = CameraPosition.Builder()
-        .target(position)
-
-    val newCameraPosition = if (zoom != null) {
-        newCameraPositionBuilder.zoom(zoom).build()
+    if (zoom != null) {
+        easeCamera(CameraUpdateFactory.newLatLngZoom(position, zoom))
     } else {
-        newCameraPositionBuilder.build()
+        easeCamera(CameraUpdateFactory.newLatLng(position))
     }
-
-    easeCamera(CameraUpdateFactory.newCameraPosition(newCameraPosition))
 }

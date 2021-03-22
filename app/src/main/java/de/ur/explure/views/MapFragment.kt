@@ -172,7 +172,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
         mapViewModel.selectedMarker.observe(viewLifecycleOwner, { marker ->
             // move the camera to the selected marker
             if (::map.isInitialized) {
-                map.moveCameraToPosition(marker.latLng, selectedMarkerZoom)
+                map.moveCameraToPosition(marker.markerPosition, selectedMarkerZoom)
             }
         })
     }
@@ -577,9 +577,8 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
         routeCreationMapClickListenerBehavior = MapboxMap.OnMapClickListener {
             val symbol = markerManager.addMarker(it)
             if (symbol != null) {
-                mapViewModel.saveMarker(symbol)
+                mapViewModel.addNewMapMarker(symbol)
             }
-            mapViewModel.addCustomWaypoint(it)
             waypointsController.add(it)
 
             true // consume the click
@@ -643,16 +642,8 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
         if (::markerManager.isInitialized) {
             // clear markers on the map and in the viewmodel
             markerManager.deleteAllMarkers()
-
-            // TODO this does not always work correctly because some symbols are redrawn at the start!
-            //  -> there shouldn't be two variables for markers in the viewmodel!!
-            mapViewModel.clearActiveMarkers()
-            mapViewModel.getActiveMarkerSymbols().forEach {
-                markerManager.deleteMarker(it)
-            }
+            mapViewModel.removeActiveMarkers()
         }
-        // clear created waypoints
-        mapViewModel.clearCustomWayPoints()
 
         // reset the waypointsController
         waypointsController.clear()
@@ -802,7 +793,8 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
     private fun recreateMarkers() {
         // recreate all markers that were on the map before the config change or process death
         val allActiveMarkers = mapViewModel.getAllActiveMarkers()
-        markerManager.addMarkers(allActiveMarkers)
+        val markerCoords = allActiveMarkers?.map { it.markerPosition }
+        markerManager.addMarkers(markerCoords)
     }
 
     private fun setupRouteLineManager(mapStyle: Style) {
@@ -894,7 +886,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
 
         if (marker != null) {
             // save the marker in the viewmodel
-            mapViewModel.saveMarker(marker)
+            mapViewModel.addNewMapMarker(marker)
         }
 
         // Place the destination marker at the map long click location
@@ -1031,8 +1023,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
         removeMapListeners()
         backPressedCallback?.remove()
 
-        mapViewModel.clearActiveMarkerSymbols()
-        // mapViewModel.selectedMarker.value = null
+        mapViewModel.removeActiveMarkers()
 
         mapView?.onDestroy()
         super.onDestroyView()

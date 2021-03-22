@@ -7,9 +7,9 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import com.google.firebase.firestore.GeoPoint
 import com.mapbox.mapboxsdk.camera.CameraPosition
-import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.mapboxsdk.plugins.annotation.Symbol
+import de.ur.explure.model.MapMarker
 import de.ur.explure.model.waypoint.WayPoint
 import de.ur.explure.utils.Event
 import java.util.*
@@ -23,7 +23,9 @@ class MapViewModel(private val state: SavedStateHandle) : ViewModel() {
     private val _mapReady = MutableLiveData<Event<Boolean>>()
     val mapReady: LiveData<Event<Boolean>> = _mapReady
 
-    private val _manualRouteCreationModeActive by lazy { MutableLiveData(state[MANUAL_ROUTE_CREATION_KEY] ?: false) }
+    private val _manualRouteCreationModeActive by lazy {
+        MutableLiveData(state[MANUAL_ROUTE_CREATION_KEY] ?: false)
+    }
     val manualRouteCreationModeActive: LiveData<Boolean> = _manualRouteCreationModeActive
 
     private val _routeDrawModeActive by lazy { MutableLiveData(state[ROUTE_DRAW_KEY] ?: false) }
@@ -31,59 +33,41 @@ class MapViewModel(private val state: SavedStateHandle) : ViewModel() {
 
     private var currentMapStyle: Style? = null
 
-    // TODO only saving the latlng coords will probably not be enough later but symbol cannot be parcelized
-    // -> probably create an own mapPin parcelize data class ? (e.g. https://github.com/amohnacs15/MeshMap/blob/master/app/src/main/java/com/zhudapps/meshmap/model/MapPin.kt)
-    private val markers: MutableList<LatLng> = state[ACTIVE_MARKERS_KEY] ?: mutableListOf()
+    val mapMarkers: MutableLiveData<MutableList<MapMarker>> by lazy {
+        MutableLiveData(state[ACTIVE_MARKERS_KEY] ?: mutableListOf())
+    }
+    val selectedMarker: MutableLiveData<MapMarker> by lazy { MutableLiveData<MapMarker>() }
 
-    private var activeMarkerSymbols: MutableList<Symbol> = mutableListOf()
-
-    // TODO save them on config change!!
-    val customRouteWaypoints: MutableLiveData<MutableList<WayPoint>> = MutableLiveData(mutableListOf())
-
-    // TODO save markersymbols and waypoints as map so they can be associated!!
-
-    val selectedMarker: MutableLiveData<Symbol> by lazy { MutableLiveData<Symbol>() }
-
-    fun addCustomWaypoint(coordinates: LatLng) {
+    fun addNewMapMarker(symbol: Symbol) {
+        val coordinates = symbol.latLng
         val waypoint = WayPoint(
             UUID.randomUUID().toString(),
-            "Marker ${customRouteWaypoints.value?.size}",
+            "Marker ${mapMarkers.value?.size}",
             "Keine Beschreibung (Position: ${coordinates.latitude}, ${coordinates.longitude})",
             GeoPoint(coordinates.latitude, coordinates.longitude)
         )
-        customRouteWaypoints.value?.add(waypoint)
+
+        val mapMarker = MapMarker(
+            id = UUID.randomUUID().toString(),
+            wayPoint = waypoint,
+            markerPosition = coordinates
+        )
+        mapMarkers.value?.add(mapMarker)
         // assigning to itself is necessary to trigger the observer!
-        customRouteWaypoints.value = customRouteWaypoints.value
+        mapMarkers.value = mapMarkers.value
     }
 
-    fun clearCustomWayPoints() {
-        customRouteWaypoints.value?.clear()
-        customRouteWaypoints.value = customRouteWaypoints.value
-    }
-
-    fun saveMarker(marker: Symbol) {
-        activeMarkerSymbols.add(marker)
-        markers.add(marker.latLng)
-    }
-
-    fun saveActiveMarkers() {
-        state[ACTIVE_MARKERS_KEY] = markers
-    }
-
-    fun getAllActiveMarkers(): List<LatLng>? {
+    fun getAllActiveMarkers(): List<MapMarker>? {
         return state[ACTIVE_MARKERS_KEY]
     }
 
-    fun getActiveMarkerSymbols(): MutableList<Symbol> {
-        return this.activeMarkerSymbols
+    fun saveActiveMarkers() {
+        state[ACTIVE_MARKERS_KEY] = mapMarkers.value
     }
 
-    fun clearActiveMarkerSymbols() {
-        this.activeMarkerSymbols = mutableListOf()
-    }
-
-    fun clearActiveMarkers() {
-        this.markers.clear()
+    fun removeActiveMarkers() {
+        mapMarkers.value?.clear()
+        mapMarkers.value = mapMarkers.value
     }
 
     fun setMapReadyStatus(status: Boolean) {
@@ -133,6 +117,7 @@ class MapViewModel(private val state: SavedStateHandle) : ViewModel() {
     }
 
     companion object {
+        // TODO in strings auslagern, damit auch deutsche Namen!
         val All_MAP_STYLES = mapOf(
             "Streets" to Style.MAPBOX_STREETS,
             "Outdoors" to Style.OUTDOORS,
@@ -145,7 +130,7 @@ class MapViewModel(private val state: SavedStateHandle) : ViewModel() {
         private const val USER_LOCATION_KEY = "userLocation"
         private const val CAMERA_POSITION_KEY = "cameraPosition"
         private const val ACTIVE_MARKERS_KEY = "activeMarkers"
-        private const val LOCATION_TRACKING_KEY = "locationTracking"
+        private const val LOCATION_TRACKING_KEY = "locationTrackingActive"
         private const val MANUAL_ROUTE_CREATION_KEY = "manualRouteCreationActive"
         private const val ROUTE_DRAW_KEY = "routeDrawModeActive"
     }

@@ -6,20 +6,20 @@ import androidx.recyclerview.widget.RecyclerView
 import de.ur.explure.R
 import de.ur.explure.adapter.RouteCreationAdapter.ViewHolder.Companion.from
 import de.ur.explure.databinding.WaypointListItemBinding
-import de.ur.explure.model.waypoint.WayPoint
+import de.ur.explure.model.MapMarker
 
-typealias onItemClickCallback = (waypoint: WayPoint, adapterPosition: Int) -> Unit
+typealias onItemClickCallback = (waypointMarker: MapMarker, adapterPosition: Int) -> Unit
 
 class RouteCreationAdapter(private val callback: onItemClickCallback) :
     RecyclerView.Adapter<RouteCreationAdapter.ViewHolder>() {
 
-    var waypointList = emptyList<WayPoint>()
+    var waypointMarkerList = emptyList<MapMarker>()
         set(value) {
             field = value
             notifyDataSetChanged()
         }
 
-    override fun getItemCount(): Int = waypointList.size
+    override fun getItemCount(): Int = waypointMarkerList.size
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return from(parent)
@@ -29,7 +29,7 @@ class RouteCreationAdapter(private val callback: onItemClickCallback) :
      * Replace the contents of a view (this is invoked by the layout manager)
      */
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
-        val item = waypointList[position]
+        val item = waypointMarkerList[position]
         viewHolder.bind(item, callback)
     }
 
@@ -37,7 +37,8 @@ class RouteCreationAdapter(private val callback: onItemClickCallback) :
     class ViewHolder private constructor(private val binding: WaypointListItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(waypoint: WayPoint, callback: onItemClickCallback) {
+        fun bind(waypointMarker: MapMarker, callback: onItemClickCallback) {
+            val waypoint = waypointMarker.wayPoint
             // setup the view
             binding.waypointTitle.text = waypoint.title
             binding.waypointDescription.text = waypoint.description
@@ -53,16 +54,16 @@ class RouteCreationAdapter(private val callback: onItemClickCallback) :
 
             // TODO allow drag & drop when clicked on the drag_handler_icon !
 
-            enableItemClicks(waypoint, callback)
+            enableItemClicks(waypointMarker, callback)
         }
 
-        private fun enableItemClicks(waypoint: WayPoint, callback: onItemClickCallback) {
+        private fun enableItemClicks(waypointMarker: MapMarker, callback: onItemClickCallback) {
             // set a ripple effect on the background to be shown on click
             binding.markerListItem.setBackgroundResource(R.drawable.ripple_effect)
 
             itemView.setOnClickListener {
                 // invoke the given callback on item click
-                callback(waypoint, layoutPosition)
+                callback(waypointMarker, layoutPosition)
             }
         }
 
