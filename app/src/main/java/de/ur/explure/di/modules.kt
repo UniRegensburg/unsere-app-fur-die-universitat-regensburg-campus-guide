@@ -58,7 +58,7 @@ val mainModule = module {
     // repositories
     single { RatingRepositoryImpl(get(), get()) }
     single { RouteRepositoryImpl(get(), get()) }
-    single { UserRepositoryImpl(get(), get()) }
+    single { UserRepositoryImpl(get(), get(), get()) }
 	single { CategoryRepositoryImpl(get(), get()) }
 
     // viewmodels

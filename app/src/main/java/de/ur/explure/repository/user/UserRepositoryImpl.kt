@@ -1,7 +1,9 @@
 package de.ur.explure.repository.user
 
+import android.graphics.Bitmap
 import com.google.firebase.firestore.FieldValue.arrayRemove
 import com.google.firebase.firestore.FieldValue.arrayUnion
+import com.google.firebase.storage.FirebaseStorage
 import de.ur.explure.config.ErrorConfig.DESERIALIZATION_FAILED_RESULT
 import de.ur.explure.config.ErrorConfig.NO_USER_RESULT
 import de.ur.explure.config.UserDocumentConfig.ACTIVE_ROUTES_KEY
@@ -15,11 +17,13 @@ import de.ur.explure.model.user.UserDTO
 import de.ur.explure.services.FireStoreInstance
 import de.ur.explure.services.FirebaseAuthService
 import de.ur.explure.utils.FirebaseResult
+import java.io.ByteArrayOutputStream
 
 @Suppress("TooGenericExceptionCaught", "UnnecessaryParentheses")
 class UserRepositoryImpl(
     private val firebaseAuth: FirebaseAuthService,
-    private val fireStore: FireStoreInstance
+    private val fireStore: FireStoreInstance,
+    private val fireStorage: FirebaseStorage
 ) : UserRepository {
 
     /**
@@ -245,5 +249,13 @@ class UserRepositoryImpl(
         } catch (exception: Exception) {
             FirebaseResult.Error(exception)
         }
+    }
+
+    override suspend fun uploadImageAndSaveUri(bitmap: Bitmap, qualityValue: Int) {
+        val baos = ByteArrayOutputStream()
+        val storageRef = fireStorage.reference.child("profile_pictures/${firebaseAuth.getCurrentUserId()}")
+        bitmap.compress(Bitmap.CompressFormat.JPEG, qualityValue, baos)
+        val image = baos.toByteArray()
+        storageRef.putBytes(image)
     }
 }

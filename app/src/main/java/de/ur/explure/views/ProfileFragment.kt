@@ -5,7 +5,6 @@ import android.app.AlertDialog
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
-import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.provider.MediaStore.ACTION_IMAGE_CAPTURE
@@ -18,6 +17,7 @@ import android.view.View
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.fragment.app.Fragment
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.crazylegend.viewbinding.viewBinding
 import com.google.android.material.textfield.TextInputEditText
@@ -31,7 +31,6 @@ import de.ur.explure.viewmodel.ProfileViewModel
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.component.inject
-import java.io.ByteArrayOutputStream
 
 class ProfileFragment : Fragment(R.layout.fragment_profile) {
 
@@ -41,9 +40,6 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
 
     private val fireStorage: FirebaseStorage by inject()
 
-    private var userId: String = ""
-    private lateinit var imageUri: Uri
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setHasOptionsMenu(true)
@@ -51,6 +47,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         setOnClickListeners()
 
         observeUserModel()
+        // observeProfilePictureChange()
         viewModel.getUserInfo()
     }
 
@@ -58,19 +55,28 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         viewModel.user.observe(viewLifecycleOwner, { user ->
             if (user != null) {
                 binding.userNameTextView.text = user.name
-                userId = user.id
                 if (user.profilePictureUrl.isNotEmpty()) {
                     try {
                         val gsReference =
                             fireStorage.getReferenceFromUrl(user.profilePictureUrl)
                         GlideApp.with(requireContext())
                             .load(gsReference)
+                                .skipMemoryCache(true)
+                                .diskCacheStrategy(DiskCacheStrategy.NONE)
                             .error(R.drawable.user_profile_picture)
                             .transition(DrawableTransitionOptions.withCrossFade())
                             .into(binding.profilePicture)
                     } catch (_: Exception) {
                     }
                 }
+            }
+        })
+    }
+
+    private fun observeProfilePictureChange() {
+        viewModel.profilePicture.observe(viewLifecycleOwner, { picture ->
+            if (picture != null) {
+                binding.profilePicture.setImageBitmap(picture)
             }
         })
     }
@@ -106,27 +112,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
             val imageBitmap = data?.extras?.get("data") as Bitmap
-            uploadImageAndSaveUri(imageBitmap)
-        }
-    }
-
-    private fun uploadImageAndSaveUri(bitmap: Bitmap) {
-        val baos = ByteArrayOutputStream()
-        val storageRef = fireStorage.reference.child("profile_pictures/$userId")
-        bitmap.compress(Bitmap.CompressFormat.JPEG, QUALITY_VALUE, baos)
-        val image = baos.toByteArray()
-
-        val upload = storageRef.putBytes(image)
-
-        upload.addOnCompleteListener { uploadTask ->
-            if (uploadTask.isSuccessful) {
-                storageRef.downloadUrl.addOnCompleteListener { urlTask ->
-                    urlTask.result?.let {
-                        imageUri = it
-                        binding.profilePicture.setImageBitmap(bitmap)
-                    }
-                }
-            }
+            viewModel.updateProfilePicture(imageBitmap, QUALITY_VALUE)
         }
     }
 

@@ -3,6 +3,7 @@ package de.ur.explure.views
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.crazylegend.viewbinding.viewBinding
 import com.google.firebase.storage.FirebaseStorage
@@ -44,6 +45,8 @@ class StatisticsFragment : Fragment(R.layout.fragment_statistics) {
                                 fireStorage.getReferenceFromUrl(user.profilePictureUrl)
                         GlideApp.with(requireContext())
                                 .load(gsReference)
+                                .skipMemoryCache(true)
+                                .diskCacheStrategy(DiskCacheStrategy.NONE)
                                 .error(R.drawable.user_profile_picture)
                                 .transition(DrawableTransitionOptions.withCrossFade())
                                 .into(binding.profilePicture)

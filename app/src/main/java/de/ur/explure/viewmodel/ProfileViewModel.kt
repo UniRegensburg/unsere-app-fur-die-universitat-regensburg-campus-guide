@@ -1,5 +1,6 @@
 package de.ur.explure.viewmodel
 
+import android.graphics.Bitmap
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -17,6 +18,7 @@ class ProfileViewModel(
 ) : ViewModel() {
 
     var user: MutableLiveData<User> = MutableLiveData()
+    var profilePicture: MutableLiveData<Bitmap> = MutableLiveData()
 
     fun getUserInfo() {
         viewModelScope.launch {
@@ -31,6 +33,13 @@ class ProfileViewModel(
     fun updateUserName(newUserName: String) {
         viewModelScope.launch {
             userRepo.updateUserName(newUserName)
+            getUserInfo()
+        }
+    }
+
+    fun updateProfilePicture(bitmap: Bitmap, qualityValue: Int) {
+        viewModelScope.launch {
+            userRepo.uploadImageAndSaveUri(bitmap, qualityValue)
             getUserInfo()
         }
     }
