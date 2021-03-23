@@ -1,19 +1,18 @@
 package de.ur.explure.views
 
-import android.app.Activity.RESULT_OK
 import android.app.AlertDialog
 import android.content.Context
-import android.content.Intent
-import android.graphics.Bitmap
+import android.graphics.ImageDecoder
+import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
-import android.provider.MediaStore.ACTION_IMAGE_CAPTURE
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.fragment.app.Fragment
@@ -30,7 +29,6 @@ import de.ur.explure.extensions.toDp
 import de.ur.explure.viewmodel.ProfileViewModel
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import org.koin.core.component.inject
 
 class ProfileFragment : Fragment(R.layout.fragment_profile) {
 
@@ -40,6 +38,21 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
 
     private val fireStorage: FirebaseStorage by inject()
 
+    private val pickImages = registerForActivityResult(ActivityResultContracts.GetContent()) { uri ->
+        uri?.let {
+            if (Build.VERSION.SDK_INT >= SDK_VERSION_FOR_IMAGE_DECODER) {
+                val source = ImageDecoder.createSource(requireContext().contentResolver, uri)
+                val bitmap = ImageDecoder.decodeBitmap(source)
+                viewModel.updateProfilePicture(bitmap, QUALITY_VALUE)
+                binding.profilePicture.setImageBitmap(bitmap)
+            } else {
+                val bitmap = MediaStore.Images.Media.getBitmap(requireContext().contentResolver, uri)
+                viewModel.updateProfilePicture(bitmap, QUALITY_VALUE)
+                binding.profilePicture.setImageBitmap(bitmap)
+            }
+        }
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setHasOptionsMenu(true)
@@ -47,7 +60,6 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         setOnClickListeners()
 
         observeUserModel()
-        // observeProfilePictureChange()
         viewModel.getUserInfo()
     }
 
@@ -58,14 +70,14 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
                 if (user.profilePictureUrl.isNotEmpty()) {
                     try {
                         val gsReference =
-                            fireStorage.getReferenceFromUrl(user.profilePictureUrl)
+                                fireStorage.getReferenceFromUrl(user.profilePictureUrl)
                         GlideApp.with(requireContext())
-                            .load(gsReference)
+                                .load(gsReference)
                                 .skipMemoryCache(true)
                                 .diskCacheStrategy(DiskCacheStrategy.NONE)
-                            .error(R.drawable.user_profile_picture)
-                            .transition(DrawableTransitionOptions.withCrossFade())
-                            .into(binding.profilePicture)
+                                .error(R.drawable.user_profile_picture)
+                                .transition(DrawableTransitionOptions.withCrossFade())
+                                .into(binding.profilePicture)
                     } catch (_: Exception) {
                     }
                 }
@@ -73,17 +85,9 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         })
     }
 
-    private fun observeProfilePictureChange() {
-        viewModel.profilePicture.observe(viewLifecycleOwner, { picture ->
-            if (picture != null) {
-                binding.profilePicture.setImageBitmap(picture)
-            }
-        })
-    }
-
     private fun setOnClickListeners() {
         binding.profilePicture.setOnClickListener {
-            takePictureIntent()
+            pickImages.launch("image/*")
         }
 
         binding.ownRoutesButton.setOnClickListener {
@@ -100,19 +104,6 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
 
         binding.logOutButton.setOnClickListener {
             viewModel.signOut()
-        }
-    }
-
-    private fun takePictureIntent() {
-        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-        // intent.type = "image/*"
-        startActivityForResult(intent, REQUEST_IMAGE_CAPTURE)
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            val imageBitmap = data?.extras?.get("data") as Bitmap
-            viewModel.updateProfilePicture(imageBitmap, QUALITY_VALUE)
         }
     }
 
@@ -167,11 +158,11 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
                 if (p0.isNullOrBlank()) {
                     textInputLayout.error = resources.getString(R.string.user_name_needed)
                     dialog.getButton(AlertDialog.BUTTON_POSITIVE)
-                        .isEnabled = false
+                            .isEnabled = false
                 } else {
                     textInputLayout.error = ""
                     dialog.getButton(AlertDialog.BUTTON_POSITIVE)
-                        .isEnabled = true
+                            .isEnabled = true
                 }
             }
         })
@@ -180,8 +171,8 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
     private fun getEditUserNameLayout(context: Context): ConstraintLayout {
         val constraintLayout = ConstraintLayout(context)
         val layoutParams = ConstraintLayout.LayoutParams(
-            ConstraintLayout.LayoutParams.MATCH_PARENT,
-            ConstraintLayout.LayoutParams.WRAP_CONTENT
+                ConstraintLayout.LayoutParams.MATCH_PARENT,
+                ConstraintLayout.LayoutParams.WRAP_CONTENT
         )
         constraintLayout.layoutParams = layoutParams
         constraintLayout.id = View.generateViewId()
@@ -189,10 +180,10 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         val textInputLayout = TextInputLayout(context)
         textInputLayout.boxBackgroundMode = TextInputLayout.BOX_BACKGROUND_OUTLINE
         layoutParams.setMargins(
-            VERTICAL_MARGIN_EDIT_TEXT.toDp(context),
-            HORIZONTAL_MARGIN_EDIT_TEXT.toDp(context),
-            VERTICAL_MARGIN_EDIT_TEXT.toDp(context),
-            HORIZONTAL_MARGIN_EDIT_TEXT.toDp(context)
+                VERTICAL_MARGIN_EDIT_TEXT.toDp(context),
+                HORIZONTAL_MARGIN_EDIT_TEXT.toDp(context),
+                VERTICAL_MARGIN_EDIT_TEXT.toDp(context),
+                HORIZONTAL_MARGIN_EDIT_TEXT.toDp(context)
         )
         textInputLayout.layoutParams = layoutParams
         textInputLayout.hint = resources.getString(R.string.new_user_name_hint)
@@ -216,7 +207,8 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         private const val VERTICAL_MARGIN_EDIT_TEXT = 8
         private const val HORIZONTAL_MARGIN_EDIT_TEXT = 32
 
-        private const val REQUEST_IMAGE_CAPTURE = 100
         private const val QUALITY_VALUE = 100
+
+        private const val SDK_VERSION_FOR_IMAGE_DECODER = 29
     }
 }

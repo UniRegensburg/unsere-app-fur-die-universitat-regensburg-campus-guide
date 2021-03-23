@@ -18,7 +18,6 @@ class ProfileViewModel(
 ) : ViewModel() {
 
     var user: MutableLiveData<User> = MutableLiveData()
-    var profilePicture: MutableLiveData<Bitmap> = MutableLiveData()
 
     fun getUserInfo() {
         viewModelScope.launch {
@@ -40,7 +39,6 @@ class ProfileViewModel(
     fun updateProfilePicture(bitmap: Bitmap, qualityValue: Int) {
         viewModelScope.launch {
             userRepo.uploadImageAndSaveUri(bitmap, qualityValue)
-            getUserInfo()
         }
     }
 
