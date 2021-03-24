@@ -54,7 +54,7 @@ class SearchListAdapter(private val onClick: (Route) -> Unit) :
             binding.tvWayPointCount.text = data.wayPointCount.toString()
             binding.tvComment.text = data.commentCount.toString()
             binding.ratingBarRoute.rating = data.currentRating.toFloat()
-            binding.root.setOnClickListener {
+            binding.routeCardview.setOnClickListener {
                 onClick(data)
             }
         }
