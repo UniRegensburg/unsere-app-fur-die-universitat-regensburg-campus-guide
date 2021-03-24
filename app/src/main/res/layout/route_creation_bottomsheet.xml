@@ -39,6 +39,7 @@
         android:layout_below="@id/waypoint_list_title"
         android:layout_margin="@dimen/margin_small"
         android:paddingHorizontal="8dp"
+        android:orientation="vertical"
         tools:listitem="@layout/waypoint_list_item" />
     <!--
     android:clipToPadding="false"

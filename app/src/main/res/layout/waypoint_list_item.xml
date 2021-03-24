@@ -3,8 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/marker_list_item"
+    android:background="@drawable/ripple_effect"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginBottom="6dp"
     tools:showIn="@layout/route_creation_bottomsheet">
 
     <ImageButton
@@ -13,8 +15,7 @@
         android:layout_height="wrap_content"
         android:background="@android:color/transparent"
         android:padding="12dp"
-        android:scaleX="1.2"
-        android:scaleY="1.2"
+        android:scaleType="center"
         android:src="@drawable/ic_baseline_drag_handle_24"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/waypoint_title"
@@ -89,6 +90,7 @@
         android:scaleX="1.2"
         android:scaleY="1.2"
         android:src="@drawable/ic_baseline_delete_24"
+        android:tint="@color/colorError"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"

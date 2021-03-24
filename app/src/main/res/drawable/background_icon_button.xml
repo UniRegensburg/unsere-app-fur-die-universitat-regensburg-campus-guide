@@ -8,6 +8,6 @@
         android:left="8dp"
         android:right="8dp"
         android:top="8dp" />
-    <corners android:radius="8dp" />
+    <corners android:radius="@dimen/default_corner_radius" />
     <solid android:color="@android:color/white" />
 </shape>
