@@ -49,8 +49,8 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinCompon
             if (route != null) {
                 binding.routeName.text = route.title
                 binding.routeDescription.text = route.description
-                binding.routeDuration.text = getString(R.string.route_item_duration, route.duration)
-                binding.routeDistance.text = getString(R.string.route_item_distance, route.distance)
+                binding.routeDuration.text = getString(R.string.route_item_duration, route.duration.toInt())
+                binding.routeDistance.text = getString(R.string.route_item_distance, route.distance.toInt())
                 binding.routeRating.rating = route.currentRating.toFloat()
                 setImage(route.thumbnailUrl)
                 // needs to init Adapters here because otherwise it won't load new comments and answers correctly
