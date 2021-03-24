@@ -50,7 +50,6 @@ class CategoryQueryFragment : Fragment(R.layout.fragment_category_query) {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = categoryAdapter
         }
-
     }
 
     private fun getRoutes() {
@@ -60,24 +59,6 @@ class CategoryQueryFragment : Fragment(R.layout.fragment_category_query) {
 
     private fun setTitle() {
         val category = args.categoryQueryKey
-
-        if (category == getString(R.string.work_ID)) {
-            binding.tvTitelCategory.text = getString(R.string.work_title)
-        }
-        if (category == getString(R.string.bib_ID)) {
-            binding.tvTitelCategory.text = getString(R.string.bib_title)
-        }
-        if (category == getString(R.string.chill_ID)) {
-            binding.tvTitelCategory.text = getString(R.string.chill_title)
-        }
-        if (category == getString(R.string.orga_ID)) {
-            binding.tvTitelCategory.text = getString(R.string.orga_title)
-        }
-        if (category == getString(R.string.sport_ID)) {
-            binding.tvTitelCategory.text = getString(R.string.sport_title)
-        }
-        if (category == getString(R.string.coffee_ID)) {
-            binding.tvTitelCategory.text = getString(R.string.coffee_title)
-        }
+        binding.tvTitelCategory.text = category.name
     }
 }

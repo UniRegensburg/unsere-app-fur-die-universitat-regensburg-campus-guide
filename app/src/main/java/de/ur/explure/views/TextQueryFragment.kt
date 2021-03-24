@@ -53,10 +53,9 @@ class TextQueryFragment : Fragment(R.layout.fragment_text_query) {
             layoutManager = LinearLayoutManager(requireContext())
             adapter = searchAdapter
         }
-
     }
 
-    private fun getRoutes(){
+    private fun getRoutes() {
         val message = args.textQueryKey
         viewModel.getSearchedRoutes(message)
     }

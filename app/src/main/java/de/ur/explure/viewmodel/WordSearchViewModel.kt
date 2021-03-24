@@ -46,7 +46,7 @@ class WordSearchViewModel(
                 noRoutes.postValue(true)
             }
 
-            when ( val routeLists = routeRepo.getRoutes(resultIDs, true)) {
+            when (val routeLists = routeRepo.getRoutes(resultIDs, true)) {
                 is FirebaseResult.Success -> {
                     searchedRoutes.postValue(routeLists.data)
                     Timber.d(routeLists.toString())

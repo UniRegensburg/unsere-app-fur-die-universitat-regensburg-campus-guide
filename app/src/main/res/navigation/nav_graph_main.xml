@@ -35,7 +35,7 @@
         tools:layout="@layout/fragment_category_query">
         <argument
             android:name="categoryQueryKey"
-            app:argType="string" />
+            app:argType="de.ur.explure.model.category.Category" />
     </fragment>
 
     <fragment

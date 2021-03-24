@@ -210,7 +210,7 @@ class DiscoverFragment : Fragment(R.layout.fragment_discover) {
 
     private fun initCategoryAdapter() {
         categoryAdapter = CategoryDiscoverAdapter {
-            discoverViewModel.startCategoryQuery(it.id)
+            discoverViewModel.startCategoryQuery(it)
         }
         binding.rvCategoryList.adapter = categoryAdapter
         binding.rvCategoryList.layoutManager =

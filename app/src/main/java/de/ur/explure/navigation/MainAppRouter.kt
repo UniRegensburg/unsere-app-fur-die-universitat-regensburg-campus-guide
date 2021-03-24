@@ -2,6 +2,7 @@ package de.ur.explure.navigation
 
 import androidx.navigation.NavController
 import de.ur.explure.R
+import de.ur.explure.model.category.Category
 import de.ur.explure.views.DiscoverFragmentDirections
 
 /**
@@ -82,7 +83,7 @@ class MainAppRouter {
         navController.navigate(action)
     }
 
-    fun navigateToCategoryQuery(categoryQueryKey: String) {
+    fun navigateToCategoryQuery(categoryQueryKey: Category) {
         val action = DiscoverFragmentDirections.actionDiscoverFragmentToCategoryQueryFragment(categoryQueryKey)
         navController.navigate(action)
     }
