@@ -48,9 +48,9 @@ class SearchListAdapter(private val onClick: (Route) -> Unit) :
             binding.tvRatingCount.text =
                     itemView.context.resources.getString(R.string.route_item_rating, data.rating.size)
             binding.tvDistance.text =
-                    itemView.context.resources.getString(R.string.route_item_distance, data.distance.toInt())
+                    itemView.context.resources.getString(R.string.route_item_distance, data.distance.toFloat())
             binding.tvDuration.text =
-                    itemView.context.resources.getString(R.string.route_item_duration, data.duration.toInt())
+                    itemView.context.resources.getString(R.string.route_item_duration, data.duration.toFloat())
             binding.tvWayPointCount.text = data.wayPointCount.toString()
             binding.tvComment.text = data.commentCount.toString()
             binding.ratingBarRoute.rating = data.currentRating.toFloat()

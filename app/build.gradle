@@ -56,14 +56,6 @@ android {
         exclude 'META-INF/ktor-client-serialization.kotlin_module'
         exclude 'META-INF/ktor-client-json.kotlin_module'
         exclude 'META-INF/ktor-client-logging.kotlin_module'
-        exclude 'META-INF/DEPENDENCIES'
-        exclude 'META-INF/LICENSE'
-        exclude 'META-INF/LICENSE.txt'
-        exclude 'META-INF/license.txt'
-        exclude 'META-INF/NOTICE'
-        exclude 'META-INF/NOTICE.txt'
-        exclude 'META-INF/notice.txt'
-        exclude 'META-INF/ASL2.0'
         exclude 'META-INF/kotlinx-serialization-runtime.kotlin_module'
     }
 }
@@ -138,14 +130,7 @@ dependencies {
 
     //Algolia and Ktor
     implementation 'com.algolia:algoliasearch-client-kotlin:1.4.0'
-    //implementation "io.ktor:ktor-server-core:1.5.2"
     implementation 'io.ktor:ktor-client-okhttp:1.5.2'
     implementation "androidx.core:core-ktx:+"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-    //implementation "ch.qos.logback:logback-classic:1.2.3"
-
-
-}
-repositories {
-    mavenCentral()
 }

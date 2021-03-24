@@ -17,12 +17,9 @@ class CategoryViewModel(
 
     fun getCategoryRoutes(category: String) {
         viewModelScope.launch {
-            val routeLists = routeRepo.getCategoryRoutes(category)
-            if (routeLists.toString() >= "Success(data=[])") {
-                noRoutes.postValue(true)
-            }
-            when (routeLists) {
+            when (val routeLists = routeRepo.getCategoryRoutes(category)){
                 is FirebaseResult.Success -> {
+                    noRoutes.postValue(routeLists.data.isEmpty())
                     categoryRoutes.postValue(routeLists.data!!)
                 }
             }
