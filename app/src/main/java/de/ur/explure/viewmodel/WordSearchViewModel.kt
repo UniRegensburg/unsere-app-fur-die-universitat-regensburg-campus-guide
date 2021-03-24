@@ -16,11 +16,10 @@ import timber.log.Timber
 
 @Suppress("UnnecessaryParentheses")
 class WordSearchViewModel(
-    private val routeRepo: RouteRepositoryImpl
+        private val routeRepo: RouteRepositoryImpl
 ) : ViewModel() {
 
     var searchedRoutes: MutableLiveData<List<Route>> = MutableLiveData()
-    var noRoutes = MutableLiveData<Boolean?>(false)
 
     fun getSearchedRoutes(message: String) {
         viewModelScope.launch {
@@ -43,15 +42,16 @@ class WordSearchViewModel(
             }
 
             if (resultIDs.isEmpty()) {
-                noRoutes.postValue(true)
-            }
-
-            when (val routeLists = routeRepo.getRoutes(resultIDs, true)) {
-                is FirebaseResult.Success -> {
-                    searchedRoutes.postValue(routeLists.data)
-                    Timber.d(routeLists.toString())
+                searchedRoutes.postValue(emptyList())
+            } else {
+                when (val routeLists = routeRepo.getRoutes(resultIDs, true)) {
+                    is FirebaseResult.Success -> {
+                        searchedRoutes.postValue(routeLists.data)
+                        Timber.d(routeLists.toString())
+                    }
                 }
             }
+
         }
     }
 

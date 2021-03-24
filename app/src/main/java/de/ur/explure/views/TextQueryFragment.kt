@@ -23,27 +23,25 @@ class TextQueryFragment : Fragment(R.layout.fragment_text_query) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initializeAdapter()
-        observeRouteResult()
         observeRouteModel()
         getRoutes()
     }
 
     private fun observeRouteModel() {
         viewModel.searchedRoutes.observe(viewLifecycleOwner, { routes ->
-            searchAdapter.submitList(routes)
-            binding.progressBar.visibility = View.GONE
-            binding.titlePageSearchResult.visibility = View.VISIBLE
-        })
-    }
-
-    private fun observeRouteResult() {
-        viewModel.noRoutes.observe(viewLifecycleOwner, {
-            if (it == true) {
-                binding.progressBar.visibility = View.GONE
-                binding.noResults.visibility = View.VISIBLE
+            if (routes != null){
+                if (routes.isEmpty()){
+                    binding.progressBar.visibility = View.GONE
+                    binding.noResults.visibility = View.VISIBLE
+                } else {
+                    searchAdapter.submitList(routes)
+                    binding.progressBar.visibility = View.GONE
+                    binding.titlePageSearchResult.visibility = View.VISIBLE
+                }
             }
         })
     }
+
 
     private fun initializeAdapter() {
         // viewModel.setupAlgolia()

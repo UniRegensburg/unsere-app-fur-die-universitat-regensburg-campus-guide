@@ -37,4 +37,7 @@
     <string name="title_page_searchresults">Ergebnisse deiner Suche</string>
     <string name="no_results">Keine Suchergebnisse</string>
 
+    <!-- Category Strings-->
+    <string name="default_title">Kategorie</string>
+
 </resources>
