@@ -1,5 +1,6 @@
 package de.ur.explure.navigation
 
+import android.os.Bundle
 import androidx.navigation.NavController
 import de.ur.explure.R
 import de.ur.explure.model.category.Category
@@ -85,6 +86,11 @@ class MainAppRouter {
 
     fun navigateToCategoryQuery(categoryQueryKey: Category) {
         val action = DiscoverFragmentDirections.actionDiscoverFragmentToCategoryQueryFragment(categoryQueryKey)
+        navController.navigate(action)
+    }
+
+    fun navigateToRouteDetails(routeId: String) {
+        val action = DiscoverFragmentDirections.actionDiscoverFragmentToRouteDetails(routeId)
         navController.navigate(action)
     }
 }

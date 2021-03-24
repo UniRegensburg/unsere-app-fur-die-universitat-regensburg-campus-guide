@@ -108,6 +108,10 @@ class DiscoverViewModel(
         mainAppRouter.navigateToCategoryQuery(categoryQueryKey)
     }
 
+    fun showRouteDetails(routeId: String) {
+        mainAppRouter.navigateToRouteDetails(routeId)
+    }
+
     companion object {
         const val ROUTE_BATCH_SIZE: Long = 10
     }
