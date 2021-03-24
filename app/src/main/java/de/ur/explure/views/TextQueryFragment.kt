@@ -29,8 +29,8 @@ class TextQueryFragment : Fragment(R.layout.fragment_text_query) {
 
     private fun observeRouteModel() {
         viewModel.searchedRoutes.observe(viewLifecycleOwner, { routes ->
-            if (routes != null){
-                if (routes.isEmpty()){
+            if (routes != null) {
+                if (routes.isEmpty()) {
                     binding.progressBar.visibility = View.GONE
                     binding.noResults.visibility = View.VISIBLE
                 } else {
@@ -42,10 +42,11 @@ class TextQueryFragment : Fragment(R.layout.fragment_text_query) {
         })
     }
 
-
     private fun initializeAdapter() {
         // viewModel.setupAlgolia()
-        searchAdapter = SearchListAdapter { }
+        searchAdapter = SearchListAdapter {
+            viewModel.showRouteDetails(it.id)
+        }
 
         binding.recyclerViewSearchResults.apply {
             layoutManager = LinearLayoutManager(requireContext())

@@ -57,8 +57,6 @@
     <string name="wrong_email">Wrong email</string>
     <string name="email_sent">Email sent</string>
     <string name="registration_failed">Registration failed</string>
-    <string name="title_page_searchresults">Ergebnisse deiner Suche</string>
-    <string name="no_results">Zu deiner Suche konnten keine passenden Routen gefunden werden.</string>
 
     <string name="route_item_title">Route Name</string>
     <string name="route_item_rating">(%1d)</string>

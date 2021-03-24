@@ -1,15 +1,17 @@
 package de.ur.explure.navigation
 
-import android.os.Bundle
 import androidx.navigation.NavController
 import de.ur.explure.R
 import de.ur.explure.model.category.Category
+import de.ur.explure.views.CategoryQueryFragmentDirections
 import de.ur.explure.views.DiscoverFragmentDirections
+import de.ur.explure.views.TextQueryFragmentDirections
 
 /**
  * Main router class used for navigation operations with the navigation component.
  */
 
+@Suppress("TooManyFunctions")
 class MainAppRouter {
 
     private lateinit var navController: NavController
@@ -91,6 +93,16 @@ class MainAppRouter {
 
     fun navigateToRouteDetails(routeId: String) {
         val action = DiscoverFragmentDirections.actionDiscoverFragmentToRouteDetails(routeId)
+        navController.navigate(action)
+    }
+
+    fun navigateToRouteDetailsFromCategory(routeId: String) {
+        val action = CategoryQueryFragmentDirections.actionCategoryQueryFragmentToSingleRouteFragment(routeId)
+        navController.navigate(action)
+    }
+
+    fun navigateToRouteDetailsFromQuery(routeId: String) {
+        val action = TextQueryFragmentDirections.actionTextQueryFragmentToSingleRouteFragment(routeId)
         navController.navigate(action)
     }
 }

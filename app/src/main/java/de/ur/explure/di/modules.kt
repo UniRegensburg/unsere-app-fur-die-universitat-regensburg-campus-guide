@@ -61,8 +61,8 @@ val mainModule = module {
 
     // viewmodels
     viewModel { AuthenticationViewModel(get(), get()) }
-    viewModel { WordSearchViewModel(get()) }
-    viewModel { CategoryViewModel(get()) }
+    viewModel { WordSearchViewModel(get(), get()) }
+    viewModel { CategoryViewModel(get(), get()) }
     viewModel { DiscoverViewModel(get(), get(), get()) }
     viewModel { MainViewModel(get(), get()) }
     viewModel { MapViewModel(get()) }

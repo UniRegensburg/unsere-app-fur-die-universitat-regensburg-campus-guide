@@ -9,6 +9,7 @@ import com.algolia.search.model.ApplicationID
 import com.algolia.search.model.IndexName
 import com.algolia.search.model.search.Query
 import de.ur.explure.model.route.Route
+import de.ur.explure.navigation.MainAppRouter
 import de.ur.explure.repository.route.RouteRepositoryImpl
 import de.ur.explure.utils.FirebaseResult
 import kotlinx.coroutines.launch
@@ -16,7 +17,8 @@ import timber.log.Timber
 
 @Suppress("UnnecessaryParentheses")
 class WordSearchViewModel(
-        private val routeRepo: RouteRepositoryImpl
+    private val routeRepo: RouteRepositoryImpl,
+    private val mainAppRouter: MainAppRouter
 ) : ViewModel() {
 
     var searchedRoutes: MutableLiveData<List<Route>> = MutableLiveData()
@@ -51,8 +53,11 @@ class WordSearchViewModel(
                     }
                 }
             }
-
         }
+    }
+
+    fun showRouteDetails(routeId: String) {
+        mainAppRouter.navigateToRouteDetailsFromQuery(routeId)
     }
 
     /*fun setupAlgolia() {

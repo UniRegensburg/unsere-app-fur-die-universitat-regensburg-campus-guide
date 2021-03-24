@@ -44,7 +44,9 @@ class CategoryQueryFragment : Fragment(R.layout.fragment_category_query) {
 
     private fun initializeAdapter() {
         // viewModel.setupAlgolia()
-        categoryAdapter = SearchListAdapter { }
+        categoryAdapter = SearchListAdapter {
+            viewModel.showRouteDetails(it.id)
+        }
 
         binding.recyclerViewCategoryResults.apply {
             layoutManager = LinearLayoutManager(requireContext())

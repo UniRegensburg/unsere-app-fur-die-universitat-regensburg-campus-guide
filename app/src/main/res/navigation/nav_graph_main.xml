@@ -29,6 +29,9 @@
         <argument
             android:name="textQueryKey"
             app:argType="string" />
+        <action
+            android:id="@+id/action_textQueryFragment_to_singleRouteFragment"
+            app:destination="@id/singleRouteFragment" />
     </fragment>
 
     <fragment
@@ -39,6 +42,9 @@
         <argument
             android:name="categoryQueryKey"
             app:argType="de.ur.explure.model.category.Category" />
+        <action
+            android:id="@+id/action_categoryQueryFragment_to_singleRouteFragment"
+            app:destination="@id/singleRouteFragment" />
     </fragment>
 
     <fragment
