@@ -76,7 +76,7 @@
             android:paddingBottom="25dp"
             android:textColor="@color/highlightColor"
             android:background="@drawable/button_border"
-            android:drawableTop="@drawable/own_routes_icon"/>
+            android:drawableTop="@drawable/ic_own_routes_icon"/>
 
         <Button
             android:id="@+id/favoriteRoutesButton"
@@ -96,7 +96,7 @@
             android:paddingBottom="25dp"
             android:textColor="@color/highlightColor"
             android:background="@drawable/button_border"
-            android:drawableTop="@drawable/favorite_routes_icon"/>
+            android:drawableTop="@drawable/ic_favorite_routes_icon"/>
 
         <Button
             android:id="@+id/statisticsButton"
@@ -116,7 +116,7 @@
             android:paddingBottom="25dp"
             android:textColor="@color/highlightColor"
             android:background="@drawable/button_border"
-            android:drawableTop="@drawable/statistics_icon"/>
+            android:drawableTop="@drawable/ic_statistics_icon"/>
 
         <Button
             android:id="@+id/logOutButton"
@@ -136,7 +136,7 @@
             android:paddingBottom="25dp"
             android:textColor="@color/highlightColor"
             android:background="@drawable/button_border"
-            android:drawableTop="@drawable/logout_icon" />
+            android:drawableTop="@drawable/ic_logout_icon" />
 
     </GridLayout>
 
