@@ -24,29 +24,26 @@ class CategoryQueryFragment : Fragment(R.layout.fragment_category_query) {
         super.onViewCreated(view, savedInstanceState)
         setTitle()
         initializeAdapter()
-        observeRouteResult()
+        getRoutes()
         observeRouteModel()
     }
 
     private fun observeRouteModel() {
         viewModel.categoryRoutes.observe(viewLifecycleOwner, { routes ->
-            categoryAdapter.submitList(routes)
-            binding.progressBar.visibility = View.GONE
-        })
-    }
-
-    private fun observeRouteResult() {
-        viewModel.noRoutes.observe(viewLifecycleOwner, {
-            if (it == true) {
-                binding.progressBar.visibility = View.GONE
-                binding.noResults.visibility = View.VISIBLE
+            if (routes != null) {
+                if (routes.isEmpty()) {
+                    binding.progressBar.visibility = View.GONE
+                    binding.noResults.visibility = View.VISIBLE
+                } else {
+                    categoryAdapter.submitList(routes)
+                    binding.progressBar.visibility = View.GONE
+                }
             }
         })
     }
 
     private fun initializeAdapter() {
         // viewModel.setupAlgolia()
-        val category = args.categoryQueryKey
         categoryAdapter = SearchListAdapter { }
 
         binding.recyclerViewCategoryResults.apply {
@@ -54,6 +51,10 @@ class CategoryQueryFragment : Fragment(R.layout.fragment_category_query) {
             adapter = categoryAdapter
         }
 
+    }
+
+    private fun getRoutes() {
+        val category = args.categoryQueryKey
         viewModel.getCategoryRoutes(category)
     }
 

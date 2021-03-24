@@ -25,6 +25,7 @@ class TextQueryFragment : Fragment(R.layout.fragment_text_query) {
         initializeAdapter()
         observeRouteResult()
         observeRouteModel()
+        getRoutes()
     }
 
     private fun observeRouteModel() {
@@ -46,7 +47,6 @@ class TextQueryFragment : Fragment(R.layout.fragment_text_query) {
 
     private fun initializeAdapter() {
         // viewModel.setupAlgolia()
-        val message = args.textQueryKey
         searchAdapter = SearchListAdapter { }
 
         binding.recyclerViewSearchResults.apply {
@@ -54,8 +54,10 @@ class TextQueryFragment : Fragment(R.layout.fragment_text_query) {
             adapter = searchAdapter
         }
 
-        if (message != null) {
-            viewModel.getSearchedRoutes(message)
-        }
+    }
+
+    private fun getRoutes(){
+        val message = args.textQueryKey
+        viewModel.getSearchedRoutes(message)
     }
 }

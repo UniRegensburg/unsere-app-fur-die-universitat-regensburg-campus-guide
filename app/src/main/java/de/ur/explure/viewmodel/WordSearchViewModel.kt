@@ -20,7 +20,7 @@ class WordSearchViewModel(
 ) : ViewModel() {
 
     var searchedRoutes: MutableLiveData<List<Route>> = MutableLiveData()
-    var noRoutes = MutableLiveData<Boolean>(false)
+    var noRoutes = MutableLiveData<Boolean?>(false)
 
     fun getSearchedRoutes(message: String) {
         viewModelScope.launch {
@@ -45,13 +45,10 @@ class WordSearchViewModel(
             if (resultIDs.isEmpty()) {
                 noRoutes.postValue(true)
             }
-            Timber.d(resultIDs.toString())
-            val routeLists = routeRepo.getRoutes(resultIDs, true)
-            Timber.d(routeLists.toString())
 
-            when (routeLists) {
+            when ( val routeLists = routeRepo.getRoutes(resultIDs, true)) {
                 is FirebaseResult.Success -> {
-                    searchedRoutes.postValue(routeLists.data!!)
+                    searchedRoutes.postValue(routeLists.data)
                     Timber.d(routeLists.toString())
                 }
             }

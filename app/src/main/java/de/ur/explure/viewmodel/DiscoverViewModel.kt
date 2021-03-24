@@ -104,6 +104,7 @@ class DiscoverViewModel(
     }
 
     fun startCategoryQuery(categoryQueryKey: String) {
+        
         mainAppRouter.navigateToCategoryQuery(categoryQueryKey)
     }
 

@@ -13,14 +13,12 @@ class CategoryViewModel(
 ) : ViewModel() {
 
     var categoryRoutes: MutableLiveData<List<Route>> = MutableLiveData()
-    var noRoutes = MutableLiveData<Boolean>(false)
 
     fun getCategoryRoutes(category: String) {
         viewModelScope.launch {
             when (val routeLists = routeRepo.getCategoryRoutes(category)){
                 is FirebaseResult.Success -> {
-                    noRoutes.postValue(routeLists.data.isEmpty())
-                    categoryRoutes.postValue(routeLists.data!!)
+                    categoryRoutes.postValue(routeLists.data)
                 }
             }
         }
