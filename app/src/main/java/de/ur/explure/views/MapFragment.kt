@@ -39,6 +39,7 @@ import de.ur.explure.R
 import de.ur.explure.databinding.FragmentMapBinding
 import de.ur.explure.extensions.moveCameraToPosition
 import de.ur.explure.extensions.toLatLng
+import de.ur.explure.extensions.toPoint
 import de.ur.explure.map.LocationManager
 import de.ur.explure.map.ManualRouteCreationModes
 import de.ur.explure.map.MapMatchingClient
@@ -173,6 +174,14 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
             // move the camera to the selected marker
             if (::map.isInitialized) {
                 map.moveCameraToPosition(marker.markerPosition, selectedMarkerZoom)
+            }
+        })
+        mapViewModel.deletedWaypoint.observe(viewLifecycleOwner, { mapMarker ->
+            // check to prevent crashes on config change as marker manager is not setup initially
+            if (::markerManager.isInitialized) {
+                // delete the corresponding marker symbol and remove from waypointscontroller
+                waypointsController.remove(mapMarker.markerPosition.toPoint())
+                markerManager.removeWaypointMarker(mapMarker)
             }
         })
     }
@@ -353,17 +362,30 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
 
         binding.routeCreationOptionsLayout.addMarkerButton.setOnClickListener {
             highlightCurrentRouteCreationMode(ManualRouteCreationModes.MODE_ADD)
+            // (re-)set marker manager click listener behavior
+            markerManager.setDefaultMarkerClickListenerBehavior()
+            // add markers on click
             setAddMarkerClickListenerBehavior()
         }
         binding.routeCreationOptionsLayout.editMarkerButton.setOnClickListener {
             highlightCurrentRouteCreationMode(ManualRouteCreationModes.MODE_EDIT)
+            routeCreationMapClickListenerBehavior?.let { map.removeOnMapClickListener(it) }
+            Toast.makeText(
+                requireContext(),
+                "Diese Funktionalität ist leider noch nicht implementiert!",
+                Toast.LENGTH_SHORT
+            ).show()
             // TODO allow user to edit the markers and their position (e.g. via infowindow ?)
         }
         binding.routeCreationOptionsLayout.deleteMarkerButton.setOnClickListener {
             highlightCurrentRouteCreationMode(ManualRouteCreationModes.MODE_DELETE)
-            // TODO delete markers on click
-            // setRemoveMarkerClickListenerBehavior()
-            // markerManager.setOnMarkerClickListenerBehavior(delete)
+            // delete markers on click
+            routeCreationMapClickListenerBehavior?.let { map.removeOnMapClickListener(it) }
+            markerManager.setDeleteMarkerClickListenerBehavior(onMarkerDeleted = {
+                // remove this marker from waypoints controller and from viewModel
+                waypointsController.remove(it.geometry)
+                mapViewModel.removeMarker(it)
+            })
         }
         binding.routeCreationOptionsLayout.resetButton.setOnClickListener {
             showResetMapDialog("Möchtest du wirklich alles seit Beginn der Routenerstellung rückgängig machen?")
@@ -391,10 +413,14 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
 
         binding.routeDrawOptionsLayout.drawRouteButton.setOnClickListener {
             highlightCurrentRouteCreationMode(RouteDrawModes.MODE_DRAW)
+            // reset click listener behavior if it was set and enable drawing
+            routeCreationMapClickListenerBehavior?.let { map.removeOnMapClickListener(it) }
             routeLineManager?.enableMapDrawing()
         }
         binding.routeDrawOptionsLayout.moveMapButton.setOnClickListener {
             highlightCurrentRouteCreationMode(RouteDrawModes.MODE_MOVE)
+            // reset click listener behavior if it was set and enable map movement
+            routeCreationMapClickListenerBehavior?.let { map.removeOnMapClickListener(it) }
             routeLineManager?.enableMapMovement()
         }
         binding.routeDrawOptionsLayout.deleteRouteButton.setOnClickListener {
@@ -621,19 +647,6 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
             }
         }
     }
-    /*
-    private fun createCustomMapClickListener(onClick: (position: LatLng) -> Unit) {
-        routeCreationMapClickListenerBehavior = MapboxMap.OnMapClickListener {
-            onClick(it)
-            true // consume the click
-        }
-
-        routeCreationMapClickListenerBehavior?.let {
-            if (::map.isInitialized) {
-                map.addOnMapClickListener(it)
-            }
-        }
-    }*/
 
     private fun resetMapOverlays() {
         // clear lines on the map
@@ -1022,8 +1035,6 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
         mapMatchingClient.setMapMatchingListener(null)
         removeMapListeners()
         backPressedCallback?.remove()
-
-        mapViewModel.removeActiveMarkers()
 
         mapView?.onDestroy()
         super.onDestroyView()

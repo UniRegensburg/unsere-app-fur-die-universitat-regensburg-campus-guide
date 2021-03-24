@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.crazylegend.viewbinding.viewBinding
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import de.ur.explure.R
 import de.ur.explure.adapter.RouteCreationAdapter
 import de.ur.explure.databinding.RouteCreationBottomsheetBinding
@@ -15,7 +16,8 @@ import de.ur.explure.viewmodel.MapViewModel
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.scope.emptyState
 
-class RouteCreationBottomSheet : Fragment(R.layout.route_creation_bottomsheet), ItemDragHelper.OnDragStartListener {
+class RouteCreationBottomSheet : Fragment(R.layout.route_creation_bottomsheet),
+    ItemDragHelper.OnDragStartListener, RouteCreationAdapter.OnDeleteItemListener {
 
     private val binding by viewBinding(RouteCreationBottomsheetBinding::bind)
 
@@ -54,7 +56,7 @@ class RouteCreationBottomSheet : Fragment(R.layout.route_creation_bottomsheet), 
         val linearLayoutManager = LinearLayoutManager(activity ?: return)
         linearLayoutManager.stackFromEnd = true // insert items at the bottom instead of top
 
-        routeCreationAdapter = RouteCreationAdapter(this) { wayPointMarker: MapMarker, _ ->
+        routeCreationAdapter = RouteCreationAdapter(this, this) { wayPointMarker: MapMarker, _ ->
             // a item in the recyclerView was clicked
             mapViewModel.selectedMarker.value = wayPointMarker
         }
@@ -79,7 +81,27 @@ class RouteCreationBottomSheet : Fragment(R.layout.route_creation_bottomsheet), 
         itemTouchHelper?.attachToRecyclerView(binding.recyclerWaypointList)
     }
 
+    private fun showDeleteWaypointDialog(marker: MapMarker) {
+        with(MaterialAlertDialogBuilder(requireActivity())) {
+            setMessage("Möchtest du diesen Wegpunkt wirklich löschen?")
+            setPositiveButton("Ja") { _, _ ->
+                mapViewModel.removeWaypoint(marker)
+            }
+            setNegativeButton(R.string.cancel) { _, _ -> }
+            show()
+        }
+    }
+
     override fun onStartDrag(viewHolder: RouteCreationAdapter.ViewHolder) {
         itemTouchHelper?.startDrag(viewHolder)
+    }
+
+    override fun onItemDeleted(waypointMarker: MapMarker, layoutPosition: Int) {
+        showDeleteWaypointDialog(waypointMarker)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        itemTouchHelper?.attachToRecyclerView(null)
     }
 }

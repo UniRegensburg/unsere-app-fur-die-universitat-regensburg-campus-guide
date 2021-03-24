@@ -15,6 +15,7 @@ typealias onItemClickCallback = (waypointMarker: MapMarker, adapterPosition: Int
 
 class RouteCreationAdapter(
     private val onDragListener: ItemDragHelper.OnDragStartListener,
+    private val onDeleteListener: OnDeleteItemListener,
     private val callback: onItemClickCallback
 ) : RecyclerView.Adapter<RouteCreationAdapter.ViewHolder>(), ItemDragHelper.CustomDragListener {
 
@@ -35,7 +36,7 @@ class RouteCreationAdapter(
      */
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
         val item = waypointMarkerList[position]
-        viewHolder.bind(item, callback, onDragListener)
+        viewHolder.bind(item, callback, onDragListener, onDeleteListener)
     }
 
     // defined with a private constructor so it can only be instantiated with the from()-Method!
@@ -46,7 +47,8 @@ class RouteCreationAdapter(
         fun bind(
             waypointMarker: MapMarker,
             callback: onItemClickCallback,
-            dragListener: ItemDragHelper.OnDragStartListener
+            dragListener: ItemDragHelper.OnDragStartListener,
+            deleteListener: OnDeleteItemListener,
         ) {
             val waypoint = waypointMarker.wayPoint
             // setup the view
@@ -71,14 +73,14 @@ class RouteCreationAdapter(
                 true
             }
 
-            // allow removing items by clicking on the delete icon
-            binding.waypointDeleteIcon.setOnClickListener {
-                // TODO
-            }
-
             itemView.setOnClickListener {
                 // invoke the given callback on item click
                 callback(waypointMarker, layoutPosition)
+            }
+
+            // allow removing items by clicking on the delete icon
+            binding.waypointDeleteIcon.setOnClickListener {
+                deleteListener.onItemDeleted(waypointMarker, layoutPosition)
             }
         }
 
@@ -114,5 +116,9 @@ class RouteCreationAdapter(
 
     override fun onRowClear(itemViewHolder: ViewHolder) {
         // not needed
+    }
+
+    interface OnDeleteItemListener {
+        fun onItemDeleted(waypointMarker: MapMarker, layoutPosition: Int)
     }
 }
