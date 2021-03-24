@@ -28,6 +28,8 @@
     <string name="title_page_searchresults">Search results</string>
     <string name="no_results">No results</string>
 
+    <!-- Category Strings-->
+    <string name="default_title">Category</string>
 
     <string name="login_email">Email</string>
     <string name="login_password">Passwort</string>
