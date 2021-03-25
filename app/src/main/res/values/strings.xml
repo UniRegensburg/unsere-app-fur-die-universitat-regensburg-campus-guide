@@ -1,6 +1,52 @@
 <resources>
     <string name="app_name" translatable="false">ExplURe</string>
 
+    <!-- Profile Information -->
+    <string name="user_name" translatable="false">Max Mustermann</string>
+
+    <!-- Created Routes -->
+    <string name="own_routes">Created Routes</string>
+    <string name="delete_route">DELETE ROUTE</string>
+    <string name="delete_route_message">"Are you sure that your route %1$s should be deleted?"</string>
+
+    <!-- Favorite Routes -->
+    <string name="favorite_routes">Favorite Routes</string>
+    <string name="remove_favorite">REMOVE FAVORITE</string>
+    <string name="remove_favorite_message"> Are you sure that the route %1$s should be removed from your favorites?</string>
+
+    <!-- Example Route Information (Placeholder) -->
+    <string name="test_route_example">My Route 001</string>
+    <string name="test_route_timestamp">14.01.2021 15:15</string>
+
+    <!-- Statistics Page -->
+    <string name="statistics">Statistics</string>
+    <string name="distance">Distance</string>
+    <string name="covered_track">Covered track</string>
+    <string name="covered_track_value">0m</string>
+    <string name="started_routes">Started routes</string>
+    <string name="started_routes_value">0</string>
+    <string name="ended_routes">Finished routes</string>
+    <string name="ended_routes_value">0</string>
+    <string name="contents">Contents</string>
+    <string name="created_routes">Created routes</string>
+    <string name="created_routes_value">0</string>
+    <string name="created_landmarks">Created landmarks</string>
+    <string name="created_landmarks_value">0</string>
+    <string name="interaction">Interaction</string>
+    <string name="comments">Comments</string>
+    <string name="comments_value">0</string>
+    <string name="ratings">Ratings</string>
+    <string name="ratings_value">0</string>
+
+    <!-- Logout Button (Profile) -->
+
+    <string name="logout">Logout</string>
+
+    <!-- Statistics Page -->
+    <string name="change_user_name">CHANGE OF USERNAME</string>
+    <string name="user_name_needed">A name is required.</string>
+    <string name="new_user_name_hint">New username</string>
+
     <!-- Bottom Navigation -->
     <string name="menu_profile_title">Profile</string>
     <string name="menu_discover_title">Discover</string>
@@ -44,7 +90,8 @@
     <string name="sign_up_button">Register?</string>
     <string name="register_text">Register</string>
     <string name="new_email">Email</string>
-    <string name="new_password">Password</string>
+
+	<string name="new_password">Password</string>
     <string name="confirm_password">Conform password</string>
     <string name="register_button">Register</string>
     <string name="already_account">Already have an account?</string>
@@ -57,6 +104,15 @@
     <string name="wrong_email">Wrong email</string>
     <string name="email_sent">Email sent</string>
     <string name="registration_failed">Registration failed</string>
+    <string name="changeUserName">Change user name</string>
+
+    <string name="yes">YES</string>
+    <string name="no">NO</string>
+    <string name="confirm">Confirm</string>
+    <string name="abort">Abort</string>
+
+    <string name="title_page_searchresults">Ergebnisse deiner Suche</string>
+    <string name="no_results">Zu deiner Suche konnten keine passenden Routen gefunden werden.</string>
 
     <string name="route_item_title">Route Name</string>
     <string name="route_item_rating">(%1d)</string>
@@ -80,7 +136,6 @@
     <string name="map_button">Map</string>
     <string name="waypoints_button">Waypoints</string>
     <string name="picture_button">Image</string>
-    <string name="comments">Comments</string>
     <string name="route_duration">Duration</string>
     <string name="route_distance">Distance</string>
     <string name="route_rating">Rating</string>
