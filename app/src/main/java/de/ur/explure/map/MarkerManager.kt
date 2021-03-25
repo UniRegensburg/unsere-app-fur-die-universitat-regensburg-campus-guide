@@ -39,7 +39,6 @@ class MarkerManager(
     private var symbolClickListenerBehavior: OnSymbolClickListener? = null
 
     // TODO for testing: this list size should ALWAYS equal the mapMarkers list size in the viewmodel!
-    // TODO but they don't survive a config change ...
     private val activeMarkers: MutableList<Symbol> = mutableListOf()
 
     init {
@@ -120,8 +119,8 @@ class MarkerManager(
             // Hier kann der applicationcontext nicht verwendet werden, da der materialAlertDialogBuilder
             // sonst ein AppCompatTheme als BaseTheme erwartet und crashen würde!
             with(MaterialAlertDialogBuilder(mapView.context)) {
-                setMessage("Möchtest du diese Markierung wirklich löschen?")
-                setPositiveButton("Ja") { _, _ ->
+                setMessage(R.string.delete_marker_confirmation)
+                setPositiveButton(R.string.yes) { _, _ ->
                     deleteMarker(it)
                     onMarkerDeleted(it)
                 }

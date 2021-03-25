@@ -5,7 +5,6 @@
     android:layout_height="wrap_content"
     android:padding="12dp"
     android:textAlignment="textStart"
-    android:textColor="@android:color/background_light"
-    tools:background="@color/mapbox_blue"
+    android:textColor="@color/colorOnBackground"
+    tools:background="@color/themeColor"
     tools:text="Streets" />
-    <!-- TODO use color OnBackground instead of hardcoded colors! -->

@@ -14,7 +14,7 @@
         android:layout_alignParentTop="true"
         android:layout_marginVertical="@dimen/margin_normal"
         android:paddingHorizontal="16dp"
-        android:text="Die Route besteht aktuell aus diesen Wegpunkten:"
+        android:text="@string/current_waypoints"
         android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1"
         android:textStyle="bold" />
 
@@ -26,7 +26,7 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="@dimen/margin_normal"
         android:paddingHorizontal="24dp"
-        android:text="Es sind noch keine Wegpunkte vorhanden! Klicke auf die gewünschte Stelle auf der Karte, um neue Wegpunkte anzulegen."
+        android:text="@string/no_current_waypoints"
         android:textSize="16sp"
         android:textStyle="italic"
         android:visibility="gone"

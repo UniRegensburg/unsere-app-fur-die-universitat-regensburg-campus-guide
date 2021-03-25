@@ -138,13 +138,10 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
         ) {
             // Handle the back button event
             with(MaterialAlertDialogBuilder(requireActivity())) {
-                setTitle("Karte verlassen?")
-                setMessage(
-                    "Dein aktueller Stand geht verloren, wenn du diese Ansicht jetzt verlässt!" +
-                            " Trotzdem zurückgehen?"
-                )
-                setPositiveButton("Ja") { _, _ -> findNavController().navigateUp() }
-                setNegativeButton("Nein") { _, _ -> }
+                setTitle(R.string.leave_map_title)
+                setMessage(R.string.leave_map_warning)
+                setPositiveButton(R.string.yes) { _, _ -> findNavController().navigateUp() }
+                setNegativeButton(R.string.no) { _, _ -> }
                 show()
             }
         }
@@ -316,14 +313,14 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
         val activity = activity ?: return
 
         MaterialAlertDialogBuilder(activity, R.style.RouteCreationMaterialDialogTheme)
-            .setTitle("Route erstellen")
+            .setTitle(R.string.create_route_title)
             .setMessage(R.string.route_creation_options)
             .setCancelable(true)
-            .setPositiveButton("Route aus Wegpunkten erstellen") { _, _ ->
+            .setPositiveButton(R.string.manual_route_creation_option) { _, _ ->
                 // TODO show tutorial with TutorialBuilder and explain mapMatching-Limitations here!
                 setupManualRouteCreationMode()
             }
-            .setNeutralButton("Route abgehen und aufzeichnen") { _, _ ->
+            .setNeutralButton(R.string.route_track_option) { _, _ ->
                 Toast.makeText(
                     activity,
                     "Dieses Feature ist leider noch nicht implementiert. Wir arbeiten dran!",
@@ -333,7 +330,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
                 // startLocationTracking(mapViewModel.getCurrentMapStyle() ?: return@setPositiveButton)
                 // setupRouteRecordingMode()
             }
-            .setNegativeButton("Route auf Karte einzeichnen") { _, _ ->
+            .setNegativeButton(R.string.route_draw_option) { _, _ ->
                 setupRouteDrawMode()
             }
             .show()
@@ -357,7 +354,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
             showLeaveRouteCreationDialog()
         }
         binding.showMapMatchedButton.setOnClickListener {
-            convertPointsToRoute() // TODO
+            convertPointsToRoute()
         }
 
         binding.routeCreationOptionsLayout.addMarkerButton.setOnClickListener {
@@ -388,7 +385,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
             })
         }
         binding.routeCreationOptionsLayout.resetButton.setOnClickListener {
-            showResetMapDialog("Möchtest du wirklich alles seit Beginn der Routenerstellung rückgängig machen?")
+            showResetMapDialog(getString(R.string.reset_manual_route_creation))
         }
 
         // TODO add a separate button for dragging markers too ?
@@ -429,7 +426,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
             setRemoveRouteClickListenerBehavior()
         }
         binding.routeDrawOptionsLayout.resetButton.setOnClickListener {
-            showResetMapDialog("Möchtest du wirklich alle gezeichneten Routen auf der Karte rückgängig machen?")
+            showResetMapDialog(getString(R.string.reset_map_draw))
         }
     }
 
@@ -470,11 +467,8 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
 
     private fun showLeaveRouteCreationDialog() {
         with(MaterialAlertDialogBuilder(requireActivity())) {
-            setMessage(
-                "Möchtest du die Routenerstellung abbrechen? Dein bisheriger Fortschritt " +
-                        "geht dabei verloren!"
-            )
-            setPositiveButton("Ja") { _, _ ->
+            setMessage(R.string.leave_route_creation_warning)
+            setPositiveButton(R.string.yes) { _, _ ->
                 // reset layout and route creation progress
                 if (mapViewModel.manualRouteCreationModeActive.value == true) {
                     mapViewModel.setManualRouteCreationModeStatus(isActive = false)
@@ -482,16 +476,16 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
                     mapViewModel.setRouteDrawModeStatus(isActive = false)
                 }
             }
-            setNegativeButton("Nein") { _, _ -> }
+            setNegativeButton(R.string.no) { _, _ -> }
             show()
         }
     }
 
     private fun showResetMapDialog(message: String) {
         with(MaterialAlertDialogBuilder(requireActivity())) {
-            setTitle("Achtung!")
+            setTitle(R.string.attention)
             setMessage(message)
-            setPositiveButton("Ja") { _, _ ->
+            setPositiveButton(R.string.yes) { _, _ ->
                 resetMapOverlays()
             }
             setNegativeButton(R.string.cancel) { _, _ -> }
@@ -671,7 +665,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
         val wayPoints = waypointsController.getAllWaypoints()
         if (wayPoints.size < 2) {
             showSnackbar(
-                "Du musst mindestens 2 Punkte auf der Karte auswählen, damit eine Route erstellt werden kann!",
+                getString(R.string.too_few_waypoints),
                 binding.mapButtonContainer,
                 colorRes = R.color.colorError
             )
@@ -699,12 +693,12 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
 
     private fun confirmManualRouteCreationFinish() {
         with(MaterialAlertDialogBuilder(requireActivity())) {
-            setTitle("Erstellte Route speichern?")
-            setPositiveButton("Ja") { _, _ ->
+            setTitle(R.string.save_created_route_confirmation)
+            setPositiveButton(R.string.yes) { _, _ ->
                 saveCreatedRoute()
                 mapViewModel.setManualRouteCreationModeStatus(isActive = false)
             }
-            setNegativeButton("Weiter bearbeiten") { _, _ -> }
+            setNegativeButton(R.string.continue_edit) { _, _ -> }
             show()
         }
     }
@@ -822,7 +816,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
     override fun onRouteMatched(allMatchings: MutableList<MapMatchingMatching>) {
         showSnackbar(
             requireActivity(),
-            "Successfully mapmatched the given waypoints! Found ${allMatchings.size} possible route options."
+            R.string.map_matching_succeeded
         )
         val bestMatching = allMatchings[0]
 
@@ -855,7 +849,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
     override fun onNoRouteMatchings() {
         showSnackbar(
             requireActivity(),
-            "Couldn't get any map matchings for the waypoints!", // TODO in strings auslagern
+            R.string.map_matching_failed,
             colorRes = R.color.colorError
         )
     }
@@ -872,7 +866,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
         map.addOnCameraIdleListener(this::onCameraMoved)
         // map.addOnMapLongClickListener(this::onMapLongClicked)
         map.setOnInfoWindowClickListener {
-            // TODO
+            // TODO implement info windows ?
             false
         }
     }

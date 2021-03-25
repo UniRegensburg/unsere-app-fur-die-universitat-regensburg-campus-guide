@@ -146,9 +146,8 @@ class MapViewModel(private val state: SavedStateHandle) : ViewModel() {
     }
 
     companion object {
-        // TODO in strings auslagern, damit auch deutsche Namen!
         val All_MAP_STYLES = mapOf(
-            "Streets" to Style.MAPBOX_STREETS,
+            "Standard" to Style.MAPBOX_STREETS,
             "Outdoors" to Style.OUTDOORS,
             "Satellite" to Style.SATELLITE_STREETS,
             "Night" to Style.TRAFFIC_NIGHT,

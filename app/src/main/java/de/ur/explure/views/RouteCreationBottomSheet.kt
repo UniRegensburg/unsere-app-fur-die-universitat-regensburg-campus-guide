@@ -83,8 +83,8 @@ class RouteCreationBottomSheet : Fragment(R.layout.route_creation_bottomsheet),
 
     private fun showDeleteWaypointDialog(marker: MapMarker) {
         with(MaterialAlertDialogBuilder(requireActivity())) {
-            setMessage("Möchtest du diesen Wegpunkt wirklich löschen?")
-            setPositiveButton("Ja") { _, _ ->
+            setMessage(R.string.delete_waypoint_confirmation)
+            setPositiveButton(R.string.yes) { _, _ ->
                 mapViewModel.removeWaypoint(marker)
             }
             setNegativeButton(R.string.cancel) { _, _ -> }

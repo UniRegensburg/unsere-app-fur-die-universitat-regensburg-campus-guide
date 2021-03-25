@@ -33,16 +33,38 @@
             \n<li>You draw the route manually on the map.</li>
         </ul>
     </string>
+    <string name="manual_route_creation_option">Create route with waypoints</string>
+    <string name="route_draw_option">Draw route on map</string>
+    <string name="route_track_option">Track route while walking</string>
+
+    <string name="current_waypoints">Currently the route consists of these waypoints:</string>
+    <string name="no_current_waypoints">There are no waypoints yet! Click on locations on the map where you want to place waypoints to add some.</string>
+    <string name="map_matching_failed">Couldn\'t find a route on the campus that matches the created waypoints!</string>
+    <string name="map_matching_succeeded">Successfully created a route from the given waypoints!</string>
+    <string name="save_created_route_confirmation">Save created route?</string>
+    <string name="create_route_title">Create Route</string>
 
     <!-- Warnings -->
+    <string name="attention">Attention!</string>
+    <string name="leave_map_warning">Your current progress will be lost if you leave the map now! Leave anyway?</string>
+    <string name="leave_route_creation_warning">Do you want to leave the route creation mode? Your current progress will be lost!</string>
+    <string name="delete_waypoint_confirmation">Do you really want to delete this waypoint?</string>
+    <string name="delete_marker_confirmation">Do you really want to delete this marker?</string>
     <string name="no_internet">No internet connection!</string>
     <string name="no_internet_default_explanation">No internet connection could be established! Please check your connection and try again.</string>
     <string name="no_internet_map_matching">An internet connection is required to create a route from the waypoints!</string>
+    <string name="too_few_waypoints">There must be at least 2 way points on the map to create a route!</string>
 
     <!-- Buttons and Options -->
     <string name="try_again">Try again</string>
+    <string name="continue_edit">Continue edit</string>
     <string name="cancel">Cancel</string>
-
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="create_route">Create Route</string>
+    <string name="save_route">Save Route</string>
+    <string name="reset_manual_route_creation">Do you really want to reset all markers?</string>
+    <string name="reset_map_draw">Do you really want to remove all drawn routes on the map?</string>
 
     <!--Test Strings-->
     <string name="lorem_ipsum">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.  </string>
@@ -92,4 +114,5 @@
     <string name="short_text_placeholder">abcde</string>
     <string name="middle_text_placeholder">ABCDEFGHIJKL</string>
     <string name="route_search_hint">Search</string>
+    <string name="leave_map_title">Leave map?</string>
 </resources>
