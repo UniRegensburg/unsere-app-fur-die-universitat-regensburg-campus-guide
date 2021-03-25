@@ -78,6 +78,7 @@
     <string name="current_waypoints">Die Route besteht aktuell aus diesen Wegpunkten:</string>
     <string name="no_current_waypoints">Es sind noch keine Wegpunkte vorhanden! Klicke einfach auf die Stellen auf der Karte, an denen du Wegpunkte hinzufügen möchtest.</string>
     <string name="map_matching_failed">Für die erstellten Wegpunkte konnte keine passende Route auf dem Campus gefunden werden!</string>
+    <string name="map_matching_request_error">Beim Erstellen einer passenden Route ist leider ein Fehler aufgetreten! Stelle sicher, dass eine Internetverbindung besteht oder verändere ein paar Stellen der Route.</string>
     <string name="map_matching_succeeded">Für die Wegpunkte wurde erfolgreich eine Route erstellt!</string>
     <string name="save_created_route_confirmation">Erstellte Route speichern?</string>
     <string name="create_route_title">Route erstellen</string>

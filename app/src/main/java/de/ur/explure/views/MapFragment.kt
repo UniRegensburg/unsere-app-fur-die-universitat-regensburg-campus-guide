@@ -34,7 +34,6 @@ import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
 import com.mapbox.mapboxsdk.maps.Style
-import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
 import com.sothree.slidinguppanel.SlidingUpPanelLayout
 import de.ur.explure.R
 import de.ur.explure.databinding.FragmentMapBinding
@@ -720,8 +719,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
             return
         }
 
-        // make a request to the Mapbox Map Matching API to get a route from the waypoints
-        mapMatchingClient.requestMapMatchedRoute(wayPoints)
+        makeMatchingRequest(wayPoints)
     }
 
     private fun mapMatchDrawnRoute() {
@@ -732,11 +730,18 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
             allRoutePoints.forEach {
                 markerManager.addMarker(it.toLatLng())
             }
-            mapMatchingClient.requestMapMatchedRoute(allRoutePoints)
+            makeMatchingRequest(allRoutePoints)
 
             // TODO if the request failed ask user if he wants to try again and edit the route
             //  if we get a map matched route ask the user which one he wants to save (map matched or his own)
         }
+    }
+
+    private fun makeMatchingRequest(points: List<Point>) {
+        // show a small progressbar at the top to provide some visual feedback for the user!
+        binding.progressBar.visibility = View.VISIBLE
+        // make a request to the Mapbox Map Matching API to get a route from the waypoints
+        mapMatchingClient.requestMapMatchedRoute(points)
     }
 
     private fun confirmManualRouteCreationFinish() {
@@ -758,7 +763,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
         // - make a snapshot of the created route with the Mapbox Snapshotter and save it to firebase storage
         // - set the snapshot as route thumbnail and save the new route for this user to firebase via viewmodel
 
-        // TODO (optional) give user the option to show the navigation ui with simulated route progress ??
+        // TODO get length and duration of route either via mapMatching or via turf or own calculations!
     }
 
     /**
@@ -888,6 +893,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
      */
 
     override fun onRouteMatched(allMatchings: MutableList<MapMatchingMatching>) {
+        binding.progressBar.visibility = View.GONE
         showSnackbar(
             requireActivity(),
             R.string.map_matching_succeeded
@@ -919,15 +925,24 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
     }
 
     override fun onNoRouteMatchings() {
+        binding.progressBar.visibility = View.GONE
         showSnackbar(
             requireActivity(),
             R.string.map_matching_failed,
-            colorRes = R.color.colorError
+            colorRes = R.color.colorError,
+            length = Snackbar.LENGTH_LONG
         )
     }
 
     override fun onRouteMatchingFailed(message: String) {
+        binding.progressBar.visibility = View.GONE
         Timber.e("Route map matching failed because: $message")
+        showSnackbar(
+            requireActivity(),
+            R.string.map_matching_request_error,
+            colorRes = R.color.colorError,
+            length = Snackbar.LENGTH_LONG
+        )
     }
 
     /**
@@ -936,7 +951,6 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
 
     private fun setupMapListeners() {
         map.addOnCameraIdleListener(this::onCameraMoved)
-        // map.addOnMapLongClickListener(this::onMapLongClicked)
         map.setOnInfoWindowClickListener {
             // TODO implement info windows ?
             false
@@ -946,7 +960,6 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
     private fun removeMapListeners() {
         if (this::map.isInitialized) {
             map.removeOnCameraIdleListener(this::onCameraMoved)
-            // map.removeOnMapLongClickListener(this::onMapLongClicked)
             routeCreationMapClickListenerBehavior?.let { map.removeOnMapClickListener(it) }
         }
     }
@@ -954,33 +967,6 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
     private fun onCameraMoved() {
         // keep track of the current camera position in case of a configuration change or similar
         mapViewModel.setCurrentCameraPosition(map.cameraPosition)
-    }
-
-    // TODO this is not really needed anymore:
-    private fun onMapLongClicked(point: LatLng): Boolean {
-        Timber.d("in on Long click on map")
-
-        // add a symbol to the long-clicked point
-        val marker = markerManager.addMarker(point)
-
-        if (marker != null) {
-            // save the marker in the viewmodel
-            mapViewModel.addNewMapMarker(marker)
-        }
-
-        // Place the destination marker at the map long click location
-        map.getStyle {
-            val clickPointSource = it.getSourceAs<GeoJsonSource>(ROUTE_MARKER_SOURCE_ID)
-            clickPointSource?.setGeoJson(
-                Point.fromLngLat(
-                    point.longitude,
-                    point.latitude
-                )
-            )
-        }
-
-        // If true this click is consumed and not passed to other listeners registered afterwards!
-        return false
     }
 
     /**

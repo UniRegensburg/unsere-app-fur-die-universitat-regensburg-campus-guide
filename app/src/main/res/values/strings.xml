@@ -86,6 +86,7 @@
     <string name="current_waypoints">Currently the route consists of these waypoints:</string>
     <string name="no_current_waypoints">There are no waypoints yet! Click on locations on the map where you want to place waypoints to add some.</string>
     <string name="map_matching_failed">Couldn\'t find a route on the campus that matches the created waypoints!</string>
+    <string name="map_matching_request_error">Unfortunately, an error occurred while generating a suitable route! Make sure you have an internet connection or adjust some points slightly.</string>
     <string name="map_matching_succeeded">Successfully created a route from the given waypoints!</string>
     <string name="save_created_route_confirmation">Save created route?</string>
     <string name="create_route_title">Create Route</string>
