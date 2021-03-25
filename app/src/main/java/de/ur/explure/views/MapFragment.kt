@@ -25,6 +25,7 @@ import com.mapbox.android.core.permissions.PermissionsManager
 import com.mapbox.api.directions.v5.models.DirectionsRoute
 import com.mapbox.api.matching.v5.models.MapMatchingMatching
 import com.mapbox.core.constants.Constants.PRECISION_6
+import com.mapbox.geojson.Feature
 import com.mapbox.geojson.LineString
 import com.mapbox.geojson.Point
 import com.mapbox.mapboxsdk.geometry.LatLng
@@ -72,7 +73,7 @@ import java.util.*
 
 @Suppress("TooManyFunctions")
 class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
-    MapMatchingClient.MapMatchingListener {
+    MapMatchingClient.MapMatchingListener, RouteLineManager.OnRouteDrawListener {
 
     private val binding by viewBinding(FragmentMapBinding::bind)
 
@@ -574,6 +575,10 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
         routeLineManager?.initFreeDrawMode()
         routeLineManager?.enableMapDrawing()
         // Toast.makeText(requireActivity(), "Move your finger on the map to draw a route", Toast.LENGTH_SHORT).show()
+
+        // redraw route lines that were saved in the viewModel's saved state if any
+        // (needs to be done after the free draw mode has be (re-)inited!
+        recreateRouteLines()
     }
 
     private fun exitRouteDrawMode() {
@@ -631,6 +636,8 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
                 // delete the clicked line
                 val clickedFeature = featureList[0]
                 routeLineManager?.removeLineStringFromMap(clickedFeature)
+                // update viewModel list
+                mapViewModel.removeDrawnLine(clickedFeature)
             }
             true // consume the click
         }
@@ -644,7 +651,11 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
 
     private fun resetMapOverlays() {
         // clear lines on the map
-        routeLineManager?.clearAllLines()
+        if (routeLineManager != null) {
+            routeLineManager?.clearAllLines()
+            mapViewModel.resetActiveDrawnLines()
+            mapViewModel.removeActiveMapMatching()
+        }
 
         if (::markerManager.isInitialized) {
             // clear markers on the map and in the viewmodel
@@ -782,6 +793,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
             recreateMarkers()
 
             setupRouteLineManager(mapStyle)
+            recreateMapMatching()
 
             // ! This needs to be called AFTER the MarkerManager is set up because this way clicks
             // ! on the markers will be handled before clicks on the map itself!
@@ -802,11 +814,34 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
         val allActiveMarkers = mapViewModel.getAllActiveMarkers()
         val markerCoords = allActiveMarkers?.map { it.markerPosition }
         markerManager.addMarkers(markerCoords)
+        waypointsController.addAll(markerCoords)
     }
 
     private fun setupRouteLineManager(mapStyle: Style) {
         routeLineManager = get { parametersOf(mapView, map, mapStyle) }
         routeLineManager?.let { viewLifecycleOwner.lifecycle.addObserver(it) }
+        routeLineManager?.setRouteDrawListener(this)
+    }
+
+    override fun onNewRouteDrawn(lineFeature: Feature) {
+        mapViewModel.addActiveLine(lineFeature)
+    }
+
+    private fun recreateRouteLines() {
+        // recreate all lines that were drawn on the map before the config change or process death
+        val allActiveLines = mapViewModel.getActiveDrawnLines()
+        // val allActiveRoutePoints = mapViewModel.getActiveRoutePoints()
+        if (allActiveLines != null) {
+            routeLineManager?.redrawActiveRoutes(allActiveLines)
+        }
+    }
+
+    private fun recreateMapMatching() {
+        // recreate the last map matching too if there is one
+        val activeMapMatching = mapViewModel.getActiveMapMatching()
+        activeMapMatching?.let {
+            routeLineManager?.addLineToMap(it)
+        }
     }
 
     /**
@@ -830,20 +865,18 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
         val route = bestMatching.toDirectionRoute()
         if (route != null) {
             directionsRoute = route
-            // mapboxNavigation?.setRoutes(listOf(route))
-
             binding.startNavigationButton.visibility = View.VISIBLE
         } else {
             binding.startNavigationButton.visibility = View.GONE
         }
     }
 
-    // TODO this drawn route should be saved and redrawn on config change as well to prevent another
-    //  map matching request!
     private fun showMapMatchedRoute(matchedRoute: MapMatchingMatching) {
         val routeGeometry = matchedRoute.geometry() ?: return
         val lineString = LineString.fromPolyline(routeGeometry, PRECISION_6)
         routeLineManager?.addLineToMap(lineString)
+        // save in viewmodel
+        mapViewModel.setActiveMapMatching(lineString)
     }
 
     override fun onNoRouteMatchings() {
@@ -1009,7 +1042,9 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
         super.onStop()
         Timber.d("in MapFragment onStop")
         mapView?.onStop()
+
         mapViewModel.saveActiveMarkers()
+        mapViewModel.saveActiveDrawnLines()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

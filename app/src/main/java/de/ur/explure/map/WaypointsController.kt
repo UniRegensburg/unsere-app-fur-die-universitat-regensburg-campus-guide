@@ -25,6 +25,11 @@ class WaypointsController {
         waypoints.remove(point)
     }
 
+    fun addAll(coordinates: List<LatLng>?) {
+        coordinates ?: return
+        waypoints.addAll(coordinates.map { it.toPoint() })
+    }
+
     /**
      * Clear all waypoints.
      */

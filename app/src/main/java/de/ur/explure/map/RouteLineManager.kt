@@ -48,6 +48,8 @@ class RouteLineManager(
     private val defaultDrawColor = ContextCompat.getColor(context, R.color.colorRouteDraw)
     private val mapMatchedRouteColor = ContextCompat.getColor(context, R.color.themeColorDark)
 
+    private var onRouteDrawListener: OnRouteDrawListener? = null
+
     private val lineManager: LineManager =
         LineManager(mapView, map, mapStyle, MAPBOX_FIRST_LABEL_LAYER).apply {
             lineCap = LINE_CAP_ROUND
@@ -85,6 +87,10 @@ class RouteLineManager(
         true
     }
 
+    fun setRouteDrawListener(listener: OnRouteDrawListener) {
+        onRouteDrawListener = listener
+    }
+
     /**
      * Enable moving the map
      */
@@ -101,7 +107,8 @@ class RouteLineManager(
         mapView.setOnTouchListener(mapDrawListener)
     }
 
-    // use map sources and layers for free drawing as this increases the performance A LOT
+    // use map sources and layers for free drawing instead of the lineManager as this increases the
+    // performance A LOT!
     fun initFreeDrawMode() {
         val mapStyle = map.style
 
@@ -170,11 +177,17 @@ class RouteLineManager(
         drawLineSource?.setGeoJson(lineCollection)
     }
 
+    fun redrawActiveRoutes(currentRoutes: MutableList<Feature>) {
+        routeDrawFeatureList.addAll(currentRoutes)
+        redrawRouteOverlay()
+    }
+
     private fun saveRoute(points: MutableList<Point>, featureID: String) {
         val lineFeature = points.toLineString().toFeature()
         // set the same identifier that was used to draw the route so it can be identified later
         lineFeature.addStringProperty(ID_PROPERTY_KEY, featureID)
         routeDrawFeatureList.add(lineFeature)
+        onRouteDrawListener?.onNewRouteDrawn(lineFeature)
 
         // reset the current route points so they won't be drawn twice
         currentRoutePoints.clear()
@@ -251,6 +264,8 @@ class RouteLineManager(
         super.onDestroy(owner)
         enableMapMovement()
         lineManager.onDestroy() // cleanup to prevent leaks
+
+        onRouteDrawListener = null
     }
 
     companion object {
@@ -265,10 +280,14 @@ class RouteLineManager(
         const val DRAW_LINE_LAYER_SOURCE_ID = "DRAW_LINE_LAYER_SOURCE_ID"
         const val DRAW_LINE_LAYER_ID = "DRAW_LINE_LAYER_ID"
 
-        private const val ID_PROPERTY_KEY = "ID_PROPERTY"
+        const val ID_PROPERTY_KEY = "ID_PROPERTY"
 
         private val customLineLayers = mutableMapOf(
             DRAW_LINE_LAYER_ID to DRAW_LINE_LAYER_SOURCE_ID
         )
+    }
+
+    interface OnRouteDrawListener {
+        fun onNewRouteDrawn(lineFeature: Feature)
     }
 }

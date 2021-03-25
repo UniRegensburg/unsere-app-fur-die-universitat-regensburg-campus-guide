@@ -6,9 +6,12 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import com.google.firebase.firestore.GeoPoint
+import com.mapbox.geojson.Feature
+import com.mapbox.geojson.LineString
 import com.mapbox.mapboxsdk.camera.CameraPosition
 import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.mapboxsdk.plugins.annotation.Symbol
+import de.ur.explure.map.RouteLineManager.Companion.ID_PROPERTY_KEY
 import de.ur.explure.model.MapMarker
 import de.ur.explure.model.waypoint.WayPoint
 import de.ur.explure.utils.Event
@@ -32,6 +35,17 @@ class MapViewModel(private val state: SavedStateHandle) : ViewModel() {
     val routeDrawModeActive: LiveData<Boolean> = _routeDrawModeActive
 
     private var currentMapStyle: Style? = null
+
+    private val activeDrawnLines: MutableLiveData<MutableList<Feature>> by lazy {
+        MutableLiveData(state[ACTIVE_DRAWN_LINES_KEY] ?: mutableListOf())
+    }
+    /*
+    private val currentRouteLinePoints: MutableLiveData<MutableList<Point>> by lazy {
+        MutableLiveData(state[ACTIVE_ROUTE_LINE_POINTS_KEY] ?: mutableListOf())
+    }*/
+    private val activeMapMatching: MutableLiveData<LineString> by lazy {
+        MutableLiveData(state[ACTIVE_MAP_MATCHED_ROUTE_KEY])
+    }
 
     val mapMarkers: MutableLiveData<MutableList<MapMarker>> by lazy {
         MutableLiveData(state[ACTIVE_MARKERS_KEY] ?: mutableListOf())
@@ -99,6 +113,43 @@ class MapViewModel(private val state: SavedStateHandle) : ViewModel() {
         mapMarkers.value = mapMarkers.value
     }
 
+    fun setActiveMapMatching(mapMatchedRoute: LineString) {
+        activeMapMatching.value = mapMatchedRoute
+        state[ACTIVE_MAP_MATCHED_ROUTE_KEY] = activeMapMatching.value
+    }
+
+    fun removeActiveMapMatching() {
+        activeMapMatching.value = null
+        state[ACTIVE_MAP_MATCHED_ROUTE_KEY] = activeMapMatching.value
+    }
+
+    fun getActiveMapMatching(): LineString? {
+        return activeMapMatching.value
+    }
+
+    fun addActiveLine(drawnLine: Feature) {
+        activeDrawnLines.value?.add(drawnLine)
+    }
+
+    fun saveActiveDrawnLines() {
+        state[ACTIVE_DRAWN_LINES_KEY] = activeDrawnLines.value
+    }
+
+    fun removeDrawnLine(line: Feature) {
+        val removedLine = activeDrawnLines.value?.find {
+            it.getStringProperty(ID_PROPERTY_KEY) == line.getStringProperty(ID_PROPERTY_KEY)
+        }
+        activeDrawnLines.value?.remove(removedLine)
+    }
+
+    fun resetActiveDrawnLines() {
+        activeDrawnLines.value?.clear()
+    }
+
+    fun getActiveDrawnLines(): MutableList<Feature>? {
+        return activeDrawnLines.value
+    }
+
     fun setMapReadyStatus(status: Boolean) {
         _mapReady.value = Event(status) // Trigger the event by setting a new Event as a new value
     }
@@ -158,6 +209,9 @@ class MapViewModel(private val state: SavedStateHandle) : ViewModel() {
         private const val USER_LOCATION_KEY = "userLocation"
         private const val CAMERA_POSITION_KEY = "cameraPosition"
         private const val ACTIVE_MARKERS_KEY = "activeMarkers"
+        private const val ACTIVE_DRAWN_LINES_KEY = "activeDrawnLines"
+        private const val ACTIVE_ROUTE_LINE_POINTS_KEY = "activeRouteLinePoints"
+        private const val ACTIVE_MAP_MATCHED_ROUTE_KEY = "activeMapMatchedRoute"
         private const val LOCATION_TRACKING_KEY = "locationTrackingActive"
         private const val MANUAL_ROUTE_CREATION_KEY = "manualRouteCreationActive"
         private const val ROUTE_DRAW_KEY = "routeDrawModeActive"
