@@ -11,6 +11,12 @@
         android:label="DiscoverPage"
         tools:layout="@layout/fragment_discover">
         <action
+            android:id="@+id/action_discoverFragment_to_textQueryFragment"
+            app:destination="@id/textQueryFragment" />
+        <action
+            android:id="@+id/action_discoverFragment_to_categoryQueryFragment"
+            app:destination="@id/categoryQueryFragment" />
+        <action
             android:id="@+id/action_discoverFragment_to_routeDetails"
             app:destination="@id/singleRouteFragment" />
     </fragment>
@@ -19,13 +25,27 @@
         android:id="@+id/textQueryFragment"
         android:name="de.ur.explure.views.TextQueryFragment"
         android:label="Search Results"
-        tools:layout="@layout/fragment_text_query" />
+        tools:layout="@layout/fragment_text_query" >
+        <argument
+            android:name="textQueryKey"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_textQueryFragment_to_singleRouteFragment"
+            app:destination="@id/singleRouteFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/categoryQueryFragment"
         android:name="de.ur.explure.views.CategoryQueryFragment"
         android:label="Category Search Results"
-        tools:layout="@layout/fragment_category_query" />
+        tools:layout="@layout/fragment_category_query">
+        <argument
+            android:name="categoryQueryKey"
+            app:argType="de.ur.explure.model.category.Category" />
+        <action
+            android:id="@+id/action_categoryQueryFragment_to_singleRouteFragment"
+            app:destination="@id/singleRouteFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/profileFragment"

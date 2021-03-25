@@ -50,6 +50,13 @@ android {
         // https://github.com/InsertKoinIO/koin/issues/934
         freeCompilerArgs += "-Xopt-in=org.koin.core.component.KoinApiExtension"
     }
+
+    packagingOptions {
+        exclude 'META-INF/ktor-client-serialization.kotlin_module'
+        exclude 'META-INF/ktor-client-json.kotlin_module'
+        exclude 'META-INF/ktor-client-logging.kotlin_module'
+        exclude 'META-INF/kotlinx-serialization-runtime.kotlin_module'
+    }
 }
 
 dependencies {
@@ -74,8 +81,6 @@ dependencies {
     implementation "androidx.navigation:navigation-ui-ktx:$nav_version"
     implementation 'com.google.firebase:firebase-storage-ktx:19.2.1'
     implementation 'com.google.android.gms:play-services-maps:17.0.0'
-    implementation 'com.google.firebase:firebase-storage-ktx:19.2.1'
-    implementation 'androidx.cardview:cardview:1.0.0'
 
     //Testing
     testImplementation 'junit:junit:4.13.1'
@@ -122,4 +127,10 @@ dependencies {
 
     //Facebook Shimmer
     implementation 'com.facebook.shimmer:shimmer:0.5.0'
+
+    //Algolia and Ktor
+    implementation 'com.algolia:algoliasearch-client-kotlin:1.4.0'
+    implementation 'io.ktor:ktor-client-okhttp:1.5.2'
+    implementation "androidx.core:core-ktx:+"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }

@@ -308,17 +308,17 @@ class RouteRepositoryImpl(
         return batch
     }
 
-    suspend fun getSearchedRoutes(message: String): FirebaseResult<List<Route>> {
+    suspend fun getCategoryRoutes(category: String): FirebaseResult<List<Route>> {
         return try {
-            when (val searchResult =
-                    (fireStore.routeCollection.whereGreaterThanOrEqualTo("description", message).get().await())) {
+            when (val categoryResult =
+                    (fireStore.routeCollection.whereEqualTo("category", category).get().await())) {
                 is FirebaseResult.Success -> {
-                    val routeList = searchResult.data.toObjects(Route::class.java)
+                    val routeList = categoryResult.data.toObjects(Route::class.java)
                     Timber.d(routeList.toString())
                     FirebaseResult.Success(routeList)
                 }
-                is FirebaseResult.Error -> FirebaseResult.Error(searchResult.exception)
-                is FirebaseResult.Canceled -> FirebaseResult.Canceled(searchResult.exception)
+                is FirebaseResult.Error -> FirebaseResult.Error(categoryResult.exception)
+                is FirebaseResult.Canceled -> FirebaseResult.Canceled(categoryResult.exception)
             }
         } catch (exception: Exception) {
             FirebaseResult.Error(exception)
