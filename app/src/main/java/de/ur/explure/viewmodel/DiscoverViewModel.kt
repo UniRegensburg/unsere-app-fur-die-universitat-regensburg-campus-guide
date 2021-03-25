@@ -112,10 +112,6 @@ class DiscoverViewModel(
         mainAppRouter.navigateToRouteDetails(routeId)
     }
 
-    fun moveToCreatePage() {
-        mainAppRouter.navigateToCreateNewRoute()
-    }
-
     companion object {
         const val ROUTE_BATCH_SIZE: Long = 10
     }
