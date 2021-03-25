@@ -70,10 +70,6 @@
     <!--Test Strings-->
     <string name="lorem_ipsum">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.  </string>
 
-    <!-- SearchFragment Strings-->
-    <string name="title_page_searchresults">Search results</string>
-    <string name="no_results">No results</string>
-
     <!-- Category Strings-->
     <string name="default_title">Category</string>
 
