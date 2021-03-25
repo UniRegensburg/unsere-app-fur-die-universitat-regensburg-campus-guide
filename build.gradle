@@ -12,7 +12,7 @@ buildscript {
     repositories {
         google()
         jcenter()
-        maven { url 'https://dl.bintray.com/kotlin/kotlin-eap' }
+        mavenCentral {url "https://dl.bintray.com/algolia/maven"}
     }
 
     dependencies {

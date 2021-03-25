@@ -1,6 +1,8 @@
 package de.ur.explure.model.category
 
+import android.os.Parcelable
 import com.google.firebase.firestore.DocumentId
+import kotlinx.parcelize.Parcelize
 
 /**
  * Data class representing a route category
@@ -11,10 +13,11 @@ import com.google.firebase.firestore.DocumentId
  * @property iconResource [String] with the storage location of the category's icon
  */
 
+@Parcelize
 data class Category(
     @DocumentId
     val id: String = "",
     val name: String = "",
     val color: String = "",
     val iconResource: String = ""
-)
+) : Parcelable

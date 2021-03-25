@@ -1,15 +1,20 @@
 package de.ur.explure.navigation
 
-import android.os.Bundle
 import androidx.navigation.NavController
 import de.ur.explure.R
-import de.ur.explure.config.BundleConfig.CATEGORY_QUERY_KEY
-import de.ur.explure.config.BundleConfig.TEXT_QUERY_KEY
+import de.ur.explure.views.CreatedRoutesFragmentDirections
+import de.ur.explure.views.ProfileFragmentDirections
+import de.ur.explure.model.category.Category
+import de.ur.explure.views.CategoryQueryFragmentDirections
+import de.ur.explure.views.DiscoverFragmentDirections
+import de.ur.explure.views.FavoriteRoutesFragmentDirections
+import de.ur.explure.views.TextQueryFragmentDirections
 
 /**
  * Main router class used for navigation operations with the navigation component.
  */
 
+@Suppress("TooManyFunctions")
 class MainAppRouter {
 
     private lateinit var navController: NavController
@@ -68,6 +73,21 @@ class MainAppRouter {
         navController.navigate(R.id.navigateToRegister)
     }
 
+    fun navigateToCreatedRoutes() {
+        val ownRoutesAction = ProfileFragmentDirections.actionDiscoverFragmentToCreatedRoutes()
+        navController.navigate(ownRoutesAction)
+    }
+
+    fun navigateToFavoriteRoutes() {
+        val favoriteRoutesAction = ProfileFragmentDirections.actionDiscoverFragmentToFavoritesRoutes()
+        navController.navigate(favoriteRoutesAction)
+    }
+
+    fun navigateToStatisticsFragment() {
+        val statisticsAction = ProfileFragmentDirections.actionDiscoverFragmentToStatisticsFragment()
+        navController.navigate(statisticsAction)
+    }
+
     /**
      * Returns the current navigation controller or null if not found.
      */
@@ -79,15 +99,38 @@ class MainAppRouter {
         }
     }
 
-    fun navigateToTextSearchResult(query: String) {
-        val bundle = Bundle()
-        bundle.putString(TEXT_QUERY_KEY, query)
-        navController.navigate(R.id.textQueryFragment, bundle)
+    fun navigateToTextSearchResult(textQueryKey: String) {
+        val action = DiscoverFragmentDirections.actionDiscoverFragmentToTextQueryFragment(textQueryKey)
+        navController.navigate(action)
     }
 
-    fun navigateToCategoryQuery(categoryId: String) {
-        val bundle = Bundle()
-        bundle.putString(CATEGORY_QUERY_KEY, categoryId)
-        navController.navigate(R.id.categoryQueryFragment, bundle)
+    fun navigateToCategoryQuery(categoryQueryKey: Category) {
+        val action = DiscoverFragmentDirections.actionDiscoverFragmentToCategoryQueryFragment(categoryQueryKey)
+        navController.navigate(action)
+    }
+
+    fun navigateToRouteDetails(routeId: String) {
+        val action = DiscoverFragmentDirections.actionDiscoverFragmentToRouteDetails(routeId)
+        navController.navigate(action)
+    }
+
+    fun navigateToRouteDetailsFromCategory(routeId: String) {
+        val action = CategoryQueryFragmentDirections.actionCategoryQueryFragmentToSingleRouteFragment(routeId)
+        navController.navigate(action)
+    }
+
+    fun navigateToRouteDetailsFromQuery(routeId: String) {
+        val action = TextQueryFragmentDirections.actionTextQueryFragmentToSingleRouteFragment(routeId)
+        navController.navigate(action)
+    }
+
+    fun navigateToCreatedRouteDetails(routeId: String) {
+        val action = CreatedRoutesFragmentDirections.actionCreatedRoutesFragmentToRouteDetails(routeId)
+        navController.navigate(action)
+    }
+
+    fun navigateToFavoriteRouteDetails(routeId: String) {
+        val action = FavoriteRoutesFragmentDirections.actionFavoriteRoutesFragmentToRouteDetails(routeId)
+        navController.navigate(action)
     }
 }
