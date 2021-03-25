@@ -54,7 +54,7 @@
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:layout_marginStart="25dp"
-            android:src="@drawable/ic_image"
+            android:src="@drawable/ic_image_small"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/tv_waypoint_title"
             app:layout_constraintTop_toTopOf="parent"

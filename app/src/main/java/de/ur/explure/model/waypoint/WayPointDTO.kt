@@ -6,7 +6,7 @@ import com.google.firebase.firestore.GeoPoint
 
 data class WayPointDTO(
     var title: String,
-    var coordinates: GeoPoint,
+    var geoPoint: GeoPoint,
     var description: String = "",
     var audioURL: String? = null,
     var imageURL: String? = null,
@@ -16,15 +16,15 @@ data class WayPointDTO(
     constructor(parcel: Parcel) : this(
         title = parcel.readString() ?: "",
         description = parcel.readString() ?: "",
-        coordinates = GeoPoint(parcel.readDouble(), parcel.readDouble()),
+        geoPoint = GeoPoint(parcel.readDouble(), parcel.readDouble()),
         audioURL = parcel.readString(),
         imageURL = parcel.readString(),
         videoURL = parcel.readString(),
     )
 
     override fun writeToParcel(parcel: Parcel, i: Int) {
-        parcel.writeDouble(coordinates.latitude)
-        parcel.writeDouble(coordinates.longitude)
+        parcel.writeDouble(geoPoint.latitude)
+        parcel.writeDouble(geoPoint.longitude)
     }
 
     override fun describeContents(): Int {

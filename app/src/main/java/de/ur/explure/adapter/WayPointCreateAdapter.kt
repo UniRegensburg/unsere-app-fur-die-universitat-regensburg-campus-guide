@@ -1,9 +1,6 @@
 package de.ur.explure.adapter
 
-import android.annotation.SuppressLint
-import android.content.res.ColorStateList
 import androidx.core.content.ContextCompat
-import androidx.core.widget.ImageViewCompat
 import androidx.recyclerview.widget.DiffUtil
 import com.hannesdorfmann.adapterdelegates4.AdapterDelegate
 import com.hannesdorfmann.adapterdelegates4.AsyncListDifferDelegationAdapter
@@ -19,7 +16,6 @@ class WayPointCreateAdapter(private val clickListener: (WayPointDTO) -> Unit) :
     init {
         delegatesManager.addDelegate(wayPointDelegate())
     }
-
 
     private fun wayPointDelegate(): AdapterDelegate<List<WayPointDTO>> =
         adapterDelegateViewBinding(
@@ -59,6 +55,6 @@ object WayPointDiffCallback : DiffUtil.ItemCallback<WayPointDTO>() {
     }
 
     override fun areContentsTheSame(oldItem: WayPointDTO, newItem: WayPointDTO): Boolean {
-        return oldItem.coordinates == newItem.coordinates
+        return oldItem.geoPoint == newItem.geoPoint
     }
 }

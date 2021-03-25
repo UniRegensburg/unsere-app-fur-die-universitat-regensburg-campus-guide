@@ -6,74 +6,75 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.navigation.fragment.findNavController
+import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.crazylegend.viewbinding.viewBinding
-import com.google.firebase.firestore.GeoPoint
 import de.ur.explure.R
 import de.ur.explure.adapter.CategorySpinnerAdapter
 import de.ur.explure.adapter.WayPointCreateAdapter
 import de.ur.explure.databinding.FragmentCreateRouteBinding
+import de.ur.explure.model.category.Category
 import de.ur.explure.model.waypoint.WayPointDTO
 import de.ur.explure.viewmodel.CreateRouteViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class CreateRouteFragment : Fragment(R.layout.fragment_create_route) {
 
-    companion object {
-        const val WAYPOINT_EDIT_KEY = "WayPointEdit"
-    }
-
     private val binding by viewBinding(FragmentCreateRouteBinding::bind)
     private val viewModel: CreateRouteViewModel by viewModel()
-
+    private val args: CreateRouteFragmentArgs by navArgs()
 
     private lateinit var categoryAdapter: CategorySpinnerAdapter
     private lateinit var wayPointAdapter: WayPointCreateAdapter
 
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initAdapters()
-        setObservers()
+        initObservers()
+        initClickListeners()
         initWayPointEditObserver()
-        val waypoint1 =
-            WayPointDTO(
-                "Mensa",
-                GeoPoint(15.56, 33.2),
-                "Hier gibts the Good Stuff",
-                "nicht null",
-                null,
-                null
-            )
-        val waypoint2 =
-            WayPointDTO(
-                "Kugel",
-                GeoPoint(25.56, 33.2),
-                "Das hier ist ein ziemlich guter Wegpunkt",
-                "nicht null",
-                "nicht null",
-                null
-            )
-        val waypoint3 =
-            WayPointDTO(
-                "PT Cafete",
-                GeoPoint(15.56, 53.2),
-                "Das hier ist ein ziemlich guter Wegpunkt",
-                null,
-                null,
-                null
-            )
-        val list = listOf(waypoint1, waypoint2, waypoint3)
-        viewModel.setWayPointDTOs(list)
+        setRouteData()
         viewModel.getCategories()
+    }
+
+    private fun setRouteData() {
+        viewModel.setRouteInformation(args.distance.toDouble(), args.duration.toDouble())
+        viewModel.setWayPointDTOs(args.waypoints.toList())
+    }
+
+    private fun initClickListeners() {
+        binding.btnSaveRoute.setOnClickListener {
+            if (setRouteTitle() && setDescription() && setCategoryId()) {
+                viewModel.saveRoute()
+            }
+        }
+    }
+
+    private fun setCategoryId(): Boolean {
+        // TODO: Validate
+        val category = binding.spinnerCategories.selectedItem as Category? ?: return false
+        viewModel.setCategoryId(category.id)
+        return true
+    }
+
+    private fun setDescription(): Boolean {
+        // TODO: Validate
+        viewModel.setDescription(binding.etRouteDescription.text.toString())
+        return true
+    }
+
+    private fun setRouteTitle(): Boolean {
+        // TODO: Validate
+        viewModel.setTitle(binding.etRouteTitle.text.toString())
+        return true
     }
 
     private fun initWayPointEditObserver() {
         val navBackStackEntry = findNavController().getBackStackEntry(R.id.createRouteFragment)
 
         val observer = LifecycleEventObserver { _, event ->
-            if (event == Lifecycle.Event.ON_RESUME
-                && navBackStackEntry.savedStateHandle.contains(WAYPOINT_EDIT_KEY)
+            if (event == Lifecycle.Event.ON_RESUME &&
+                navBackStackEntry.savedStateHandle.contains(WAYPOINT_EDIT_KEY)
             ) {
                 val editedWayPointDTO =
                     navBackStackEntry.savedStateHandle.get<WayPointDTO>(WAYPOINT_EDIT_KEY)
@@ -111,7 +112,7 @@ class CreateRouteFragment : Fragment(R.layout.fragment_create_route) {
         binding.spinnerCategories.adapter = categoryAdapter
     }
 
-    private fun setObservers() {
+    private fun initObservers() {
         viewModel.categories.observe(viewLifecycleOwner, { categories ->
             if (categories != null) {
                 categoryAdapter.addAll(categories)
@@ -126,5 +127,7 @@ class CreateRouteFragment : Fragment(R.layout.fragment_create_route) {
         })
     }
 
-
+    companion object {
+        const val WAYPOINT_EDIT_KEY = "WayPointEdit"
+    }
 }

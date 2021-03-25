@@ -31,5 +31,4 @@ class CreateWayPointViewModel : ViewModel() {
     fun setDescription(description: String) {
         newWayPointDTO.value?.title = description
     }
-
 }

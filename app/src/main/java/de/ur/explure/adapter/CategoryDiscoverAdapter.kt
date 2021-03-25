@@ -44,10 +44,8 @@ class CategoryDiscoverAdapter(private val exportListener: (Category) -> Unit) :
                     .error(R.drawable.circular_background)
                     .transition(withCrossFade())
                     .into(binding.ivCategoryIcon)
-            } catch (_: Exception){
-
+            } catch (_: Exception) {
             }
-
 
             val color = try {
                 Color.parseColor(item.color)

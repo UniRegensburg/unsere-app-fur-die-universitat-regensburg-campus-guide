@@ -1,5 +1,6 @@
 package de.ur.explure.repository.route
 
+import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldPath
 import com.google.firebase.firestore.Query
@@ -34,16 +35,23 @@ class RouteRepositoryImpl(
      * Creates a Route Document in FireStore
      *
      * @param routeDTO [RouteDTO] object holding the routes information
-     * @return On Success: Returns [FirebaseResult.Success] with empty return\
+     * @return On Success: Returns [FirebaseResult.Success] with id of newly created route page\
      * On Failure: Returns [FirebaseResult.Error] with exception\
      * On Cancellation: Returns [FirebaseResult.Canceled] with exception
      */
 
-    override suspend fun createRouteInFireStore(routeDTO: RouteDTO): FirebaseResult<Void> {
+    override suspend fun createRouteInFireStore(routeDTO: RouteDTO): FirebaseResult<String> {
         return try {
             val userId = authService.getCurrentUserId() ?: return ErrorConfig.NO_USER_RESULT
-            val routeCreationBatch = createRouteWriteBatch(userId, routeDTO)
-            routeCreationBatch.commit().await()
+            val routeDocument = fireStore.routeCollection.document()
+            val routeCreationBatch = createRouteWriteBatch(userId, routeDTO, routeDocument)
+            when (val routeBatch = routeCreationBatch.commit().await()) {
+                is FirebaseResult.Success -> {
+                    return FirebaseResult.Success(routeDocument.id)
+                }
+                is FirebaseResult.Error -> FirebaseResult.Error(routeBatch.exception)
+                is FirebaseResult.Canceled -> FirebaseResult.Canceled(routeBatch.exception)
+            }
         } catch (exception: Exception) {
             FirebaseResult.Error(exception)
         }
@@ -66,7 +74,7 @@ class RouteRepositoryImpl(
                 is FirebaseResult.Success -> {
                     if (getAsPreview) {
                         val routeList = routeCall.data.toObject(Route::class.java)
-                                ?: return ErrorConfig.DESERIALIZATION_FAILED_RESULT
+                            ?: return ErrorConfig.DESERIALIZATION_FAILED_RESULT
                         FirebaseResult.Success(routeList)
                     } else {
                         return snapshotToRouteObject(routeCall.data)
@@ -97,7 +105,7 @@ class RouteRepositoryImpl(
     ): FirebaseResult<List<Route>> {
         return try {
             when (val routeCall =
-                    fireStore.routeCollection.whereIn(FieldPath.documentId(), routeIds).get().await()) {
+                fireStore.routeCollection.whereIn(FieldPath.documentId(), routeIds).get().await()) {
                 is FirebaseResult.Success -> {
                     if (getAsPreview) {
                         val routeList = routeCall.data.toObjects(Route::class.java)
@@ -145,9 +153,9 @@ class RouteRepositoryImpl(
         return try {
             val userId = authService.getCurrentUserId() ?: return ErrorConfig.NO_USER_RESULT
             return fireStore.routeCollection.document(routeId)
-                    .collection(COMMENT_COLLECTION_NAME)
-                    .document()
-                    .set(commentDTO.toMap(userId)).await()
+                .collection(COMMENT_COLLECTION_NAME)
+                .document()
+                .set(commentDTO.toMap(userId)).await()
         } catch (exception: Exception) {
             FirebaseResult.Error(exception)
         }
@@ -172,11 +180,11 @@ class RouteRepositoryImpl(
         return try {
             val userId = authService.getCurrentUserId() ?: return ErrorConfig.NO_USER_RESULT
             return fireStore.routeCollection.document(routeId)
-                    .collection(COMMENT_COLLECTION_NAME)
-                    .document(commentId)
-                    .collection(ANSWER_COLLECTION_NAME)
-                    .document()
-                    .set(commentDTO.toMap(userId)).await()
+                .collection(COMMENT_COLLECTION_NAME)
+                .document(commentId)
+                .collection(ANSWER_COLLECTION_NAME)
+                .document()
+                .set(commentDTO.toMap(userId)).await()
         } catch (exception: Exception) {
             FirebaseResult.Error(exception)
         }
@@ -232,11 +240,11 @@ class RouteRepositoryImpl(
 
     private suspend fun snapshotToRouteObject(data: DocumentSnapshot): FirebaseResult<Route> {
         val wayPoints =
-                getWayPoints(data.id) ?: return ErrorConfig.DESERIALIZATION_FAILED_RESULT
+            getWayPoints(data.id) ?: return ErrorConfig.DESERIALIZATION_FAILED_RESULT
         val comments =
-                getComments(data.id) ?: return ErrorConfig.DESERIALIZATION_FAILED_RESULT
+            getComments(data.id) ?: mutableListOf()
         val routeObject =
-                data.toObject(Route::class.java) ?: return ErrorConfig.DESERIALIZATION_FAILED_RESULT
+            data.toObject(Route::class.java) ?: return ErrorConfig.DESERIALIZATION_FAILED_RESULT
         routeObject.fillComments(comments)
         routeObject.fillWayPoints(wayPoints)
         return FirebaseResult.Success(routeObject)
@@ -244,8 +252,8 @@ class RouteRepositoryImpl(
 
     private suspend fun getWayPoints(routeId: String): List<WayPoint>? {
         val wayPointCall =
-                fireStore.routeCollection.document(routeId).collection(WAYPOINT_COLLECTION_NAME).get()
-                        .await()
+            fireStore.routeCollection.document(routeId).collection(WAYPOINT_COLLECTION_NAME).get()
+                .await()
         if (wayPointCall is FirebaseResult.Success) {
             return wayPointCall.data.toObjects(WayPoint::class.java)
         }
@@ -254,9 +262,9 @@ class RouteRepositoryImpl(
 
     private suspend fun getComments(routeId: String): List<Comment>? {
         val commentCall =
-                fireStore.routeCollection.document(routeId).collection(COMMENT_COLLECTION_NAME).get()
-                        .await()
-        if (commentCall is FirebaseResult.Success && !commentCall.data.isEmpty) {
+            fireStore.routeCollection.document(routeId).collection(COMMENT_COLLECTION_NAME).get()
+                .await()
+        if (commentCall is FirebaseResult.Success) {
             val resultList = mutableListOf<Comment>()
             commentCall.data.forEach {
                 val comment = getFullComment(it) ?: return@forEach
@@ -297,9 +305,12 @@ class RouteRepositoryImpl(
         return FirebaseResult.Success(resultList)
     }
 
-    private fun createRouteWriteBatch(userId: String, routeDTO: RouteDTO): WriteBatch {
+    private fun createRouteWriteBatch(
+        userId: String,
+        routeDTO: RouteDTO,
+        routeDocument: DocumentReference
+    ): WriteBatch {
         val batch = fireStore.getWriteBatch()
-        val routeDocument = fireStore.routeCollection.document()
         batch.set(routeDocument, routeDTO.toMap(userId))
         val wayPointCollection = routeDocument.collection(WAYPOINT_COLLECTION_NAME)
         routeDTO.wayPoints.forEach { wayPoint ->
@@ -311,7 +322,7 @@ class RouteRepositoryImpl(
     suspend fun getCategoryRoutes(category: String): FirebaseResult<List<Route>> {
         return try {
             when (val categoryResult =
-                    (fireStore.routeCollection.whereEqualTo("category", category).get().await())) {
+                (fireStore.routeCollection.whereEqualTo("category", category).get().await())) {
                 is FirebaseResult.Success -> {
                     val routeList = categoryResult.data.toObjects(Route::class.java)
                     Timber.d(routeList.toString())

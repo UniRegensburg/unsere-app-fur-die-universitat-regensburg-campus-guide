@@ -15,10 +15,6 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class CreateWayPointDialogFragment : DialogFragment(R.layout.dialog_create_waypoint) {
 
-    companion object {
-        const val COORDINATES_DEFAULT_VALUE: Long = 0L
-    }
-
     private val binding by viewBinding(DialogCreateWaypointBinding::bind)
     private val viewModel: CreateWayPointViewModel by viewModel()
     private val args: CreateWayPointDialogFragmentArgs by navArgs()
@@ -67,7 +63,6 @@ class CreateWayPointDialogFragment : DialogFragment(R.layout.dialog_create_waypo
             if (wayPoint != null) {
                 fillTitleText(wayPoint.title)
                 fillDescriptionText(wayPoint.description)
-                //TODO fill media
             }
         })
     }
@@ -82,19 +77,16 @@ class CreateWayPointDialogFragment : DialogFragment(R.layout.dialog_create_waypo
 
     private fun initAudioMediaButton() {
         binding.ivAddAudio.setOnClickListener {
-            //TODO Get Audio from Mic
         }
     }
 
     private fun initVideoMediaButton() {
         binding.ivAddVideo.setOnClickListener {
-            //TODO Get VIdeo from Device or Camera
         }
     }
 
     private fun initImageMediaButton() {
         binding.ivAddImage.setOnClickListener {
-            //TODO Get Image from Device or Camera
         }
     }
 
@@ -105,12 +97,14 @@ class CreateWayPointDialogFragment : DialogFragment(R.layout.dialog_create_waypo
             val wayPointDTO = viewModel.newWayPointDTO.value
             if (wayPointDTO != null) {
                 findNavController().previousBackStackEntry?.savedStateHandle?.set(
-                    CreateRouteFragment.WAYPOINT_EDIT_KEY,
-                    wayPointDTO
+                    CreateRouteFragment.WAYPOINT_EDIT_KEY, wayPointDTO
                 )
             }
             dismiss()
         }
     }
 
+    companion object {
+        const val COORDINATES_DEFAULT_VALUE: Long = 0L
+    }
 }

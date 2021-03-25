@@ -6,13 +6,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
-import android.widget.ImageView
-import android.widget.TextView
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.google.firebase.storage.FirebaseStorage
 import de.ur.explure.GlideApp
 import de.ur.explure.R
-import de.ur.explure.databinding.SpinnerCategoryHeaderBinding
 import de.ur.explure.databinding.SpinnerCategoryItemBinding
 import de.ur.explure.model.category.Category
 import org.koin.core.component.KoinComponent
@@ -27,7 +24,7 @@ class CategorySpinnerAdapter(context: Context, categories: List<Category> = muta
     private val fireStorage: FirebaseStorage by inject()
 
     private val layoutInflater: LayoutInflater = LayoutInflater.from(context)
-    
+
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         val view: View =
             convertView ?: layoutInflater.inflate(R.layout.spinner_category_item, parent, false)
@@ -75,7 +72,6 @@ class CategorySpinnerAdapter(context: Context, categories: List<Category> = muta
                 .transition(DrawableTransitionOptions.withCrossFade())
                 .into(binding.ivCategoryIcon)
         } catch (_: Exception) {
-
         }
 
         binding.tvCategory.text = category.name
