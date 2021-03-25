@@ -48,8 +48,8 @@ class CreatedRoutesViewModel(
         }
     }
 
-    fun navigateToSinglePage() {
-        // appRouter.getNavController().navigate(R.id.singleRouteFragment)
+    fun navigateToSinglePage(routeId: String) {
+        appRouter.navigateToCreatedRouteDetails(routeId)
     }
 
     fun deleteRoute(route: Route) {

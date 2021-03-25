@@ -5,8 +5,10 @@ import androidx.navigation.NavController
 import de.ur.explure.R
 import de.ur.explure.config.BundleConfig.CATEGORY_QUERY_KEY
 import de.ur.explure.config.BundleConfig.TEXT_QUERY_KEY
+import de.ur.explure.views.CreatedRoutesFragmentDirections
 import de.ur.explure.views.ProfileFragmentDirections
 import de.ur.explure.views.DiscoverFragmentDirections
+import de.ur.explure.views.FavoriteRoutesFragmentDirections
 
 /**
  * Main router class used for navigation operations with the navigation component.
@@ -110,6 +112,16 @@ class MainAppRouter {
 
     fun navigateToRouteDetails(routeId: String) {
         val action = DiscoverFragmentDirections.actionDiscoverFragmentToRouteDetails(routeId)
+        navController.navigate(action)
+    }
+
+    fun navigateToCreatedRouteDetails(routeId: String) {
+        val action = CreatedRoutesFragmentDirections.actionCreatedRoutesFragmentToRouteDetails(routeId)
+        navController.navigate(action)
+    }
+
+    fun navigateToFavoriteRouteDetails(routeId: String) {
+        val action = FavoriteRoutesFragmentDirections.actionFavoriteRoutesFragmentToRouteDetails(routeId)
         navController.navigate(action)
     }
 }

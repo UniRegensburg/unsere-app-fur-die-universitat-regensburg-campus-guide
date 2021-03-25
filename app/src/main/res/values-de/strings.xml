@@ -95,6 +95,7 @@
     <string name="wrong_email">Emailadresse ist falsch</string>
     <string name="email_sent">Email wurde gesendet</string>
     <string name="registration_failed">Registrierung fehlgeschlagen</string>
+    <string name="changeUserName">Benutzernamen ändern</string>
 
     <!-- Single Route -->
     <string name="route_name">Route</string>
@@ -102,7 +103,6 @@
     <string name="map_button">Karte</string>
     <string name="waypoints_button">Wegpunkte</string>
     <string name="picture_button">Bilder</string>
-    <string name="comments">Kommentare</string>
     <string name="route_duration">Dauer</string>
     <string name="route_distance">Strecke</string>
     <string name="route_rating">Bewertung</string>

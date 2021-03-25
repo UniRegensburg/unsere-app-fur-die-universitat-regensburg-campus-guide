@@ -47,13 +47,21 @@
         android:id="@+id/createdRoutesFragment"
         android:name="de.ur.explure.views.CreatedRoutesFragment"
         android:label="Created Routes"
-        tools:layout="@layout/fragment_created_routes" />
+        tools:layout="@layout/fragment_created_routes" >
+        <action
+            android:id="@+id/action_createdRoutesFragment_to_routeDetails"
+            app:destination="@id/singleRouteFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/favoriteRoutesFragment"
         android:name="de.ur.explure.views.FavoriteRoutesFragment"
         android:label="Favorite Routes"
-        tools:layout="@layout/fragment_favorite_routes" />
+        tools:layout="@layout/fragment_favorite_routes" >
+        <action
+            android:id="@+id/action_favoriteRoutesFragment_to_routeDetails"
+            app:destination="@id/singleRouteFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/statisticsFragment"

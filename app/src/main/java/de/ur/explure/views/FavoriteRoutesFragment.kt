@@ -79,7 +79,7 @@ class FavoriteRoutesFragment : Fragment(R.layout.fragment_favorite_routes),
     }
 
     override fun onItemClick(position: Int) {
-        viewModel.navigateToSinglePage()
+        viewModel.navigateToSinglePage(adapter.routeList[position].id)
     }
 
     override fun onItemLongClick(position: Int) {

@@ -48,8 +48,8 @@ class FavoriteRoutesViewModel(
         }
     }
 
-    fun navigateToSinglePage() {
-        // appRouter.getNavController().navigate(R.id.singleRouteFragment)
+    fun navigateToSinglePage(routeId: String) {
+        appRouter.navigateToFavoriteRouteDetails(routeId)
     }
 
     fun removeRouteFromFavoriteRoutes(route: Route) {

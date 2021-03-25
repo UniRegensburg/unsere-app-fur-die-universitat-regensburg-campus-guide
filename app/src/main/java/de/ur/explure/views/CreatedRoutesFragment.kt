@@ -79,7 +79,7 @@ class CreatedRoutesFragment : Fragment(R.layout.fragment_created_routes),
     }
 
     override fun onItemClick(position: Int) {
-        viewModel.navigateToSinglePage()
+        viewModel.navigateToSinglePage(adapter.routeList[position].id)
     }
 
     override fun onItemLongClick(position: Int) {
