@@ -36,13 +36,16 @@ class CategoryDiscoverAdapter(private val exportListener: (Category) -> Unit) :
         binding.categoryCardview.setOnClickListener { exportListener(item) }
 
         bind {
-            val gsReference = fireStorage.getReferenceFromUrl(item.iconResource)
-            GlideApp.with(itemView)
-                .load(gsReference)
-                .fitCenter()
-                .error(R.drawable.circular_background)
-                .transition(withCrossFade())
-                .into(binding.ivCategoryIcon)
+            try {
+                val gsReference = fireStorage.getReferenceFromUrl(item.iconResource)
+                GlideApp.with(itemView)
+                    .load(gsReference)
+                    .fitCenter()
+                    .error(R.drawable.circular_background)
+                    .transition(withCrossFade())
+                    .into(binding.ivCategoryIcon)
+            } catch (_: Exception) {
+            }
 
             val color = try {
                 Color.parseColor(item.color)

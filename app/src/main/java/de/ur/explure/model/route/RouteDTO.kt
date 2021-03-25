@@ -16,19 +16,17 @@ import de.ur.explure.config.RouteDocumentConfig.DURATION_FIELD
 import de.ur.explure.config.RouteDocumentConfig.RATING_LIST_FIELD
 import de.ur.explure.config.RouteDocumentConfig.THUMBNAIL_URL_FIELD
 import de.ur.explure.config.RouteDocumentConfig.TITLE_FIELD
-import de.ur.explure.config.RouteDocumentConfig.WAYPOINT_COUNT_FIELD
 
 @Parcelize
 data class RouteDTO(
-    var category: String,
-    var title: String,
-    var description: String,
-    var distance: Double,
-    var duration: Double,
+    var category: String = "",
+    var title: String = "",
+    var description: String = "",
+    var distance: Double = 0.0,
+    var duration: Double = 0.0,
     var wayPoints: MutableList<WayPointDTO> = mutableListOf(),
     @ServerTimestamp
-    var createdAt: Date? = null,
-    var wayPointCount: Int
+    var createdAt: Date? = null
 ) : Parcelable {
 
     fun addWayPoint(wayPoint: WayPointDTO) {
@@ -46,7 +44,6 @@ data class RouteDTO(
             THUMBNAIL_URL_FIELD to thumbnailUrl,
             DATE_FIELD to FieldValue.serverTimestamp(),
             RATING_LIST_FIELD to emptyList<String>(),
-            WAYPOINT_COUNT_FIELD to wayPoints.size,
             CURRENT_RATING_FIELD to 0
         )
     }

@@ -19,6 +19,9 @@
         <action
             android:id="@+id/action_discoverFragment_to_routeDetails"
             app:destination="@id/singleRouteFragment" />
+        <action
+            android:id="@+id/action_discoverFragment_to_createRouteFragment"
+            app:destination="@id/createRouteFragment" />
     </fragment>
 
     <fragment
@@ -105,5 +108,44 @@
             app:argType="string" />
 
     </fragment>
+
+    <fragment
+        android:id="@+id/createRouteFragment"
+        android:name="de.ur.explure.views.CreateRouteFragment"
+        android:label="CreateRouteFragment" >
+        <action
+            android:id="@+id/action_createRouteFragment_to_createWayPointDialog"
+            app:destination="@id/createWayPointDialog" />
+        <action
+            android:id="@+id/action_createRouteFragment_to_singleRouteFragment"
+            app:destination="@id/singleRouteFragment"
+            app:popUpTo="@id/discoverFragment" />
+        <argument
+            android:name="waypoints"
+            app:argType="de.ur.explure.model.waypoint.WayPointDTO[]" />
+        <argument
+            android:name="distance"
+            app:argType="long" />
+        <argument android:name="duration"
+            app:argType="long" />
+    </fragment>
+    <dialog
+        android:id="@+id/createWayPointDialog"
+        android:name="de.ur.explure.views.CreateWayPointDialogFragment"
+        android:label="CreateWayPointDialogFragment" >
+        <argument
+            android:name="wayPointDTO"
+            app:argType="de.ur.explure.model.waypoint.WayPointDTO"
+            app:nullable="true"
+            android:defaultValue="@null" />
+        <argument
+            android:name="longitude"
+            app:argType="long"
+            android:defaultValue="0L"/>
+        <argument
+            android:name="latitude"
+            app:argType="long"
+            android:defaultValue="0L"/>
+    </dialog>
 
 </navigation>

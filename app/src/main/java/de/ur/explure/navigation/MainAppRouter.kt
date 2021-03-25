@@ -6,6 +6,7 @@ import de.ur.explure.views.CreatedRoutesFragmentDirections
 import de.ur.explure.views.ProfileFragmentDirections
 import de.ur.explure.model.category.Category
 import de.ur.explure.views.CategoryQueryFragmentDirections
+import de.ur.explure.views.CreateRouteFragmentDirections
 import de.ur.explure.views.DiscoverFragmentDirections
 import de.ur.explure.views.FavoriteRoutesFragmentDirections
 import de.ur.explure.views.TextQueryFragmentDirections
@@ -111,6 +112,11 @@ class MainAppRouter {
 
     fun navigateToRouteDetails(routeId: String) {
         val action = DiscoverFragmentDirections.actionDiscoverFragmentToRouteDetails(routeId)
+        navController.navigate(action)
+    }
+
+    fun navigateToRouteDetailsAfterCreation(routeId: String) {
+        val action = CreateRouteFragmentDirections.actionCreateRouteFragmentToSingleRouteFragment(routeId)
         navController.navigate(action)
     }
 

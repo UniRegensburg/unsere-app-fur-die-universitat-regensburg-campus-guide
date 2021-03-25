@@ -18,6 +18,8 @@ import de.ur.explure.services.FireStoreInstance
 import de.ur.explure.services.FirebaseAuthService
 import de.ur.explure.utils.SharedPreferencesManager
 import de.ur.explure.viewmodel.AuthenticationViewModel
+import de.ur.explure.viewmodel.CreateRouteViewModel
+import de.ur.explure.viewmodel.CreateWayPointViewModel
 import de.ur.explure.viewmodel.DiscoverViewModel
 import de.ur.explure.viewmodel.CategoryViewModel
 import de.ur.explure.viewmodel.MainViewModel
@@ -70,6 +72,8 @@ val mainModule = module {
     viewModel { DiscoverViewModel(get(), get(), get()) }
     viewModel { MainViewModel(get(), get()) }
     viewModel { MapViewModel(get()) }
+    viewModel { CreateRouteViewModel(get(), get(), get()) }
+    viewModel { CreateWayPointViewModel() }
 	viewModel { ProfileViewModel(get(), get(), get()) }
     viewModel { CreatedRoutesViewModel(get(), get(), get()) }
     viewModel { FavoriteRoutesViewModel(get(), get(), get()) }

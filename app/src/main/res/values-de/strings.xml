@@ -131,6 +131,20 @@
 
     <!--Test Strings-->
     <string name="lorem_ipsum">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.  </string>
+    <string name="arbeits_button">Arbeiten</string>
+
+
+    <!--Create Route Strings-->
+    <string name="category_spinner_header">Wähle eine Kategorie</string>
+    <string name="waypoint_title">Wegpunkte</string>
+    <string name="create_route_descr_hint">Beschreibung</string>
+    <string name="create_route_title_hint">Titel</string>
+    <string name="create_waypoint_image_title">Bild hinzufügen</string>
+    <string name="create_waypoint_media_title">Add Media</string>
+    <string name="create_waypoint_save_btn">Speichern</string>
+    <string name="create_waypoint_title">Wegpunkt Information</string>
+    <string name="create_route_save_btn">Speichern</string>
+
 
     <!-- SearchFragment Strings-->
     <string name="title_page_searchresults">Ergebnisse deiner Suche</string>

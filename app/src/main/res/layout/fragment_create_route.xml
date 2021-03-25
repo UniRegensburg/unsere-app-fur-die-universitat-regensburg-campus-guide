@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/discover_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="10dp">
+
+        <TextView
+            android:id="@+id/mapBox_placeholder"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:text="Mapbox Placeholder"
+            android:textAlignment="center"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/text_layout_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="10dp"
+            android:textColorHint="@color/grey"
+            app:boxBackgroundColor="@android:color/transparent"
+            app:boxStrokeColor="@color/themeColor"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/mapBox_placeholder">
+
+            <EditText
+                android:id="@+id/et_route_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/create_route_title_hint"
+                android:maxLength="35"
+                android:maxLines="1"
+                android:textColor="@color/textColorGrey"
+                android:textSize="14sp" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/input_layout_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="10dp"
+            android:textColorHint="@color/grey"
+            app:boxBackgroundColor="@android:color/transparent"
+            app:boxStrokeColor="@color/themeColor"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/text_layout_title">
+
+            <EditText
+                android:id="@+id/et_route_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="start"
+                android:hint="@string/create_route_descr_hint"
+                android:lines="4"
+                android:maxLength="400"
+                android:textColor="@color/textColorGrey"
+                android:textSize="14sp" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <TextView
+            android:id="@+id/tv_image_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="21dp"
+            android:layout_marginTop="10dp"
+            android:text="@string/category_spinner_header"
+            android:textColor="@color/textColorGrey"
+            android:textSize="14sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/input_layout_description" />
+
+
+        <Spinner
+            android:id="@+id/spinner_categories"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="10dp"
+            android:background="@drawable/grey_outline"
+            android:popupBackground="@drawable/green_outline"
+            android:spinnerMode="dropdown"
+            app:layout_constraintTop_toBottomOf="@+id/tv_image_title"
+            tools:listitem="@layout/spinner_category_item" />
+
+        <TextView
+            android:id="@+id/tv_waypoint_list_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="21dp"
+            android:layout_marginTop="15dp"
+            android:text="@string/waypoint_title"
+            android:textColor="@color/textColorGrey"
+            android:textSize="14sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/spinner_categories" />
+
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_waypoint_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="10dp"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintTop_toBottomOf="@+id/tv_waypoint_list_title"
+            tools:itemCount="3"
+            tools:listitem="@layout/waypoint_edit_card" />
+
+
+        <Button
+            android:id="@+id/btn_save_route"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="20dp"
+            android:backgroundTint="@color/highlightColor"
+            android:text="@string/create_route_save_btn"
+            android:textColor="@color/white"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/rv_waypoint_list" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</ScrollView>
