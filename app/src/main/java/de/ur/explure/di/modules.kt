@@ -24,10 +24,16 @@ import de.ur.explure.services.FirebaseAuthService
 import de.ur.explure.utils.SharedPreferencesManager
 import de.ur.explure.viewmodel.AuthenticationViewModel
 import de.ur.explure.viewmodel.DiscoverViewModel
+import de.ur.explure.viewmodel.CategoryViewModel
 import de.ur.explure.viewmodel.MainViewModel
 import de.ur.explure.viewmodel.MapViewModel
+import de.ur.explure.viewmodel.SingleRouteViewModel
 import de.ur.explure.viewmodel.WordSearchViewModel
 import org.koin.android.ext.koin.androidApplication
+import de.ur.explure.viewmodel.ProfileViewModel
+import de.ur.explure.viewmodel.CreatedRoutesViewModel
+import de.ur.explure.viewmodel.FavoriteRoutesViewModel
+import de.ur.explure.viewmodel.StatisticsViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
@@ -68,13 +74,19 @@ val mainModule = module {
     // repositories
     single { RatingRepositoryImpl(get(), get()) }
     single { RouteRepositoryImpl(get(), get()) }
-    single { UserRepositoryImpl(get(), get()) }
-    single { CategoryRepositoryImpl(get(), get()) }
+    single { UserRepositoryImpl(get(), get(), get()) }
+	single { CategoryRepositoryImpl(get(), get()) }
 
     // viewmodels
     viewModel { AuthenticationViewModel(get(), get()) }
-    viewModel { WordSearchViewModel(get()) }
+    viewModel { WordSearchViewModel(get(), get()) }
+    viewModel { CategoryViewModel(get(), get()) }
     viewModel { DiscoverViewModel(get(), get(), get()) }
     viewModel { MainViewModel(get(), get()) }
     viewModel { MapViewModel(get()) }
+	viewModel { ProfileViewModel(get(), get(), get()) }
+    viewModel { CreatedRoutesViewModel(get(), get(), get()) }
+    viewModel { FavoriteRoutesViewModel(get(), get(), get()) }
+    viewModel { StatisticsViewModel(get(), get(), get(), get()) }
+    viewModel { SingleRouteViewModel(get()) }
 }

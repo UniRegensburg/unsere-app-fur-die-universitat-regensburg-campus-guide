@@ -9,24 +9,85 @@
         android:id="@+id/discoverFragment"
         android:name="de.ur.explure.views.DiscoverFragment"
         android:label="DiscoverPage"
-        tools:layout="@layout/fragment_discover" />
+        tools:layout="@layout/fragment_discover">
+        <action
+            android:id="@+id/action_discoverFragment_to_textQueryFragment"
+            app:destination="@id/textQueryFragment" />
+        <action
+            android:id="@+id/action_discoverFragment_to_categoryQueryFragment"
+            app:destination="@id/categoryQueryFragment" />
+        <action
+            android:id="@+id/action_discoverFragment_to_routeDetails"
+            app:destination="@id/singleRouteFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/textQueryFragment"
         android:name="de.ur.explure.views.TextQueryFragment"
         android:label="Search Results"
-        tools:layout="@layout/fragment_text_query" />
+        tools:layout="@layout/fragment_text_query" >
+        <argument
+            android:name="textQueryKey"
+            app:argType="string" />
+        <action
+            android:id="@+id/action_textQueryFragment_to_singleRouteFragment"
+            app:destination="@id/singleRouteFragment" />
+    </fragment>
+
     <fragment
         android:id="@+id/categoryQueryFragment"
         android:name="de.ur.explure.views.CategoryQueryFragment"
         android:label="Category Search Results"
-        tools:layout="@layout/fragment_category_query" />
+        tools:layout="@layout/fragment_category_query">
+        <argument
+            android:name="categoryQueryKey"
+            app:argType="de.ur.explure.model.category.Category" />
+        <action
+            android:id="@+id/action_categoryQueryFragment_to_singleRouteFragment"
+            app:destination="@id/singleRouteFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/profileFragment"
         android:name="de.ur.explure.views.ProfileFragment"
         android:label="Profile"
-        tools:layout="@layout/fragment_profile" />
+        tools:layout="@layout/fragment_profile">
+        <action
+            android:id="@+id/action_discoverFragment_to_createdRoutes"
+            app:destination="@id/createdRoutesFragment" />
+        <action
+            android:id="@+id/action_discoverFragment_to_favoritesRoutes"
+            app:destination="@id/favoriteRoutesFragment" />
+        <action
+            android:id="@+id/action_discoverFragment_to_statisticsFragment"
+            app:destination="@id/statisticsFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/createdRoutesFragment"
+        android:name="de.ur.explure.views.CreatedRoutesFragment"
+        android:label="Created Routes"
+        tools:layout="@layout/fragment_created_routes" >
+        <action
+            android:id="@+id/action_createdRoutesFragment_to_routeDetails"
+            app:destination="@id/singleRouteFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/favoriteRoutesFragment"
+        android:name="de.ur.explure.views.FavoriteRoutesFragment"
+        android:label="Favorite Routes"
+        tools:layout="@layout/fragment_favorite_routes" >
+        <action
+            android:id="@+id/action_favoriteRoutesFragment_to_routeDetails"
+            app:destination="@id/singleRouteFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/statisticsFragment"
+        android:name="de.ur.explure.views.StatisticsFragment"
+        android:label="Statistics"
+        tools:layout="@layout/fragment_statistics" />
 
     <fragment
         android:id="@+id/mapFragment"
@@ -47,6 +108,17 @@
             android:name="route"
             app:argType="string"
             app:nullable="false" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/singleRouteFragment"
+        android:name="de.ur.explure.views.SingleRouteFragment"
+        android:label="Route Information"
+        tools:layout="@layout/fragment_single_route" >
+        <argument
+            android:name="routeID"
+            app:argType="string" />
+
     </fragment>
 
 </navigation>

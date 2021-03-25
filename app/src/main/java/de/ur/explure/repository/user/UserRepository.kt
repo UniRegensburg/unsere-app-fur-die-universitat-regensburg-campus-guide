@@ -1,5 +1,6 @@
 package de.ur.explure.repository.user
 
+import android.graphics.Bitmap
 import de.ur.explure.model.user.User
 import de.ur.explure.model.user.UserDTO
 import de.ur.explure.utils.FirebaseResult
@@ -28,4 +29,6 @@ interface UserRepository {
     suspend fun removeRouteFromCreatedRoutes(routeId: String): FirebaseResult<Void>
 
     suspend fun removeRouteFromActiveRoutes(routeId: String): FirebaseResult<Void>
+
+    suspend fun uploadImageAndSaveUri(bitmap: Bitmap, qualityValue: Int)
 }

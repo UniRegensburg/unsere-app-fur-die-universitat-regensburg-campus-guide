@@ -5,11 +5,17 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
+import com.google.firebase.storage.FirebaseStorage
+import de.ur.explure.GlideApp
+import de.ur.explure.R
 import de.ur.explure.databinding.SearchItemBinding
 import de.ur.explure.model.route.Route
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
 class SearchListAdapter(private val onClick: (Route) -> Unit) :
-    ListAdapter<Route, SearchListAdapter.RouteViewHolder>(SearchListDiffCallback) {
+        ListAdapter<Route, SearchListAdapter.RouteViewHolder>(SearchListDiffCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RouteViewHolder {
         return RouteViewHolder.from(parent)
@@ -20,12 +26,35 @@ class SearchListAdapter(private val onClick: (Route) -> Unit) :
     }
 
     class RouteViewHolder private constructor(private val binding: SearchItemBinding) :
-        RecyclerView.ViewHolder(binding.root) {
+            RecyclerView.ViewHolder(binding.root), KoinComponent {
+
+        private val fireStorage: FirebaseStorage by inject()
 
         fun bind(data: Route, onClick: (Route) -> Unit) {
-            binding.searchRouteTitle.text = data.title
-            binding.searchRouteDescription.text = data.description
-            binding.root.setOnClickListener {
+            if (data.thumbnailUrl.isNotEmpty()) {
+                try {
+                    val gsReference = fireStorage.getReferenceFromUrl(data.thumbnailUrl)
+                    GlideApp.with(itemView)
+                            .load(gsReference)
+                            .error(R.drawable.map_background)
+                            .transition(DrawableTransitionOptions.withCrossFade())
+                            .into(binding.ivRouteThumbnail)
+                } catch (_: Exception) {
+                }
+            }
+
+            binding.tvRouteTitle.text = data.title
+            binding.tvRouteDescription.text = data.description
+            binding.tvRatingCount.text =
+                    itemView.context.resources.getString(R.string.route_item_rating, data.rating.size)
+            binding.tvDistance.text =
+                    itemView.context.resources.getString(R.string.route_item_distance, data.distance.toInt())
+            binding.tvDuration.text =
+                    itemView.context.resources.getString(R.string.route_item_duration, data.duration.toInt())
+            binding.tvWayPointCount.text = data.wayPointCount.toString()
+            binding.tvComment.text = data.commentCount.toString()
+            binding.ratingBarRoute.rating = data.currentRating.toFloat()
+            binding.routeCardview.setOnClickListener {
                 onClick(data)
             }
         }
@@ -33,7 +62,7 @@ class SearchListAdapter(private val onClick: (Route) -> Unit) :
         companion object {
             fun from(parent: ViewGroup): RouteViewHolder {
                 val binding =
-                    SearchItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+                        SearchItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
                 return RouteViewHolder(binding)
             }
         }

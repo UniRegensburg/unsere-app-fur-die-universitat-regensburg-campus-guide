@@ -99,12 +99,17 @@ class DiscoverViewModel(
         showRouteError.postValue(true)
     }
 
-    fun startTextQuery(query: String) {
-        mainAppRouter.navigateToTextSearchResult(query)
+    fun startTextQuery(textQueryKey: String) {
+        mainAppRouter.navigateToTextSearchResult(textQueryKey)
     }
 
-    fun startCategoryQuery(categoryId: String) {
-        mainAppRouter.navigateToCategoryQuery(categoryId)
+    fun startCategoryQuery(categoryQueryKey: Category) {
+
+        mainAppRouter.navigateToCategoryQuery(categoryQueryKey)
+    }
+
+    fun showRouteDetails(routeId: String) {
+        mainAppRouter.navigateToRouteDetails(routeId)
     }
 
     companion object {
