@@ -208,10 +208,6 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
             }
         }
         slidingBottomPanel.addPanelSlideListener(slidingPanelListener)
-        /*
-        slidingBottomPanel.setFadeOnClickListener {
-            slidingBottomPanel.panelState = SlidingUpPanelLayout.PanelState.COLLAPSED
-        }*/
     }
 
     private fun setupInitialUIState() {
@@ -348,9 +344,6 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
     private fun setupManualRouteCreationMode() {
         mapViewModel.setManualRouteCreationModeStatus(isActive = true)
 
-        // highlight default mode
-        highlightCurrentRouteCreationMode(ManualRouteCreationModes.MODE_ADD)
-
         binding.cancelRouteCreationButton.setOnClickListener {
             showLeaveRouteCreationDialog()
         }
@@ -360,6 +353,8 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
 
         binding.routeCreationOptionsLayout.addMarkerButton.setOnClickListener {
             highlightCurrentRouteCreationMode(ManualRouteCreationModes.MODE_ADD)
+            mapViewModel.setActiveManualRouteCreationMode(ManualRouteCreationModes.MODE_ADD)
+
             // (re-)set marker manager click listener behavior
             markerManager.setDefaultMarkerClickListenerBehavior()
             // add markers on click
@@ -367,6 +362,8 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
         }
         binding.routeCreationOptionsLayout.editMarkerButton.setOnClickListener {
             highlightCurrentRouteCreationMode(ManualRouteCreationModes.MODE_EDIT)
+            mapViewModel.setActiveManualRouteCreationMode(ManualRouteCreationModes.MODE_EDIT)
+
             routeCreationMapClickListenerBehavior?.let { map.removeOnMapClickListener(it) }
             Toast.makeText(
                 requireContext(),
@@ -377,6 +374,8 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
         }
         binding.routeCreationOptionsLayout.deleteMarkerButton.setOnClickListener {
             highlightCurrentRouteCreationMode(ManualRouteCreationModes.MODE_DELETE)
+            mapViewModel.setActiveManualRouteCreationMode(ManualRouteCreationModes.MODE_DELETE)
+
             // delete markers on click
             routeCreationMapClickListenerBehavior?.let { map.removeOnMapClickListener(it) }
             markerManager.setDeleteMarkerClickListenerBehavior(onMarkerDeleted = {
@@ -400,8 +399,6 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
     private fun setupRouteDrawMode() {
         mapViewModel.setRouteDrawModeStatus(isActive = true)
 
-        highlightCurrentRouteCreationMode(RouteDrawModes.MODE_DRAW)
-
         binding.cancelRouteCreationButton.setOnClickListener {
             showLeaveRouteCreationDialog()
         }
@@ -411,18 +408,24 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
 
         binding.routeDrawOptionsLayout.drawRouteButton.setOnClickListener {
             highlightCurrentRouteCreationMode(RouteDrawModes.MODE_DRAW)
+            mapViewModel.setActiveRouteDrawMode(RouteDrawModes.MODE_DRAW)
+
             // reset click listener behavior if it was set and enable drawing
             routeCreationMapClickListenerBehavior?.let { map.removeOnMapClickListener(it) }
             routeLineManager?.enableMapDrawing()
         }
         binding.routeDrawOptionsLayout.moveMapButton.setOnClickListener {
             highlightCurrentRouteCreationMode(RouteDrawModes.MODE_MOVE)
+            mapViewModel.setActiveRouteDrawMode(RouteDrawModes.MODE_MOVE)
+
             // reset click listener behavior if it was set and enable map movement
             routeCreationMapClickListenerBehavior?.let { map.removeOnMapClickListener(it) }
             routeLineManager?.enableMapMovement()
         }
         binding.routeDrawOptionsLayout.deleteRouteButton.setOnClickListener {
             highlightCurrentRouteCreationMode(RouteDrawModes.MODE_DELETE)
+            mapViewModel.setActiveRouteDrawMode(RouteDrawModes.MODE_DELETE)
+
             routeLineManager?.enableMapMovement() // reset the touch listener first
             setRemoveRouteClickListenerBehavior()
         }
@@ -501,9 +504,8 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
         binding.endRouteBuildingButton.visibility = View.VISIBLE
         binding.endRouteBuildingButton.isEnabled = true
         // and play an animation
-        @Suppress("MagicNumber")
         YoYo.with(Techniques.FlipInX)
-            .duration(500)
+            .duration(ANIMATION_DURATION)
             .playOn(binding.endRouteBuildingButton)
 
         binding.cancelRouteCreationButton.visibility = View.VISIBLE
@@ -516,9 +518,8 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
         binding.buildRouteButton.visibility = View.VISIBLE
         binding.buildRouteButton.isEnabled = true
 
-        @Suppress("MagicNumber")
         YoYo.with(Techniques.FlipInX)
-            .duration(500)
+            .duration(ANIMATION_DURATION)
             .playOn(binding.buildRouteButton)
 
         binding.cancelRouteCreationButton.visibility = View.GONE
@@ -540,8 +541,29 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
         // show bottom sheet panel
         slidingBottomPanel.panelState = SlidingUpPanelLayout.PanelState.COLLAPSED
 
-        // set default map click listener behaviour in manualRouteCreation-Mode
-        setAddMarkerClickListenerBehavior()
+        val currentRouteCreationMode =
+            mapViewModel.getActiveManualRouteCreationMode() ?: ManualRouteCreationModes.MODE_ADD
+        highlightCurrentRouteCreationMode(currentRouteCreationMode)
+
+        when (currentRouteCreationMode) {
+            // TODO call the exact same methods as in the onClickListeners! (extract them before!)
+            ManualRouteCreationModes.MODE_ADD -> {
+                setAddMarkerClickListenerBehavior()
+            }
+            ManualRouteCreationModes.MODE_EDIT -> {
+                Toast.makeText(requireContext(), "Noch nicht implementiert", Toast.LENGTH_SHORT)
+                    .show()
+            }
+            ManualRouteCreationModes.MODE_DELETE -> {
+                if (!::markerManager.isInitialized) return
+
+                markerManager.setDeleteMarkerClickListenerBehavior(onMarkerDeleted = {
+                    // remove this marker from waypoints controller and from viewModel
+                    waypointsController.remove(it.geometry)
+                    mapViewModel.removeMarker(it)
+                })
+            }
+        }
     }
 
     private fun exitManualRouteCreationMode() {
@@ -573,7 +595,22 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
         slideInView(binding.routeDrawOptionsLayout.root)
 
         routeLineManager?.initFreeDrawMode()
-        routeLineManager?.enableMapDrawing()
+
+        val currentRouteDrawMode = mapViewModel.getActiveRouteDrawMode() ?: RouteDrawModes.MODE_DRAW
+        highlightCurrentRouteCreationMode(currentRouteDrawMode)
+        when (currentRouteDrawMode) {
+            // TODO call the exact same methods as in the onClickListeners! (extract them before!)
+            RouteDrawModes.MODE_DRAW -> {
+                routeLineManager?.enableMapDrawing()
+            }
+            RouteDrawModes.MODE_MOVE -> {
+                routeLineManager?.enableMapMovement()
+            }
+            RouteDrawModes.MODE_DELETE -> {
+                setRemoveRouteClickListenerBehavior()
+            }
+        }
+
         // Toast.makeText(requireActivity(), "Move your finger on the map to draw a route", Toast.LENGTH_SHORT).show()
 
         // redraw route lines that were saved in the viewModel's saved state if any
@@ -715,6 +752,8 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
     }
 
     private fun saveCreatedRoute() {
+        Toast.makeText(requireContext(), "Speichern ist noch nicht möglich :(", Toast.LENGTH_SHORT)
+            .show()
         // TODO:
         // - make a snapshot of the created route with the Mapbox Snapshotter and save it to firebase storage
         // - set the snapshot as route thumbnail and save the new route for this user to firebase via viewmodel
@@ -1072,6 +1111,8 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
     companion object {
         private const val ROUTE_MARKER_SOURCE_ID = "ROUTE_MARKER_SOURCE_ID"
         const val selectedMarkerZoom = 17.0
+
+        private const val ANIMATION_DURATION = 500L // in ms
 
         // custom margins of the mapbox compass
         private const val compassMarginLeft = 10

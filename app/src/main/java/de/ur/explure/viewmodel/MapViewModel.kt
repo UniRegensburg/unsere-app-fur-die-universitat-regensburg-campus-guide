@@ -11,6 +11,8 @@ import com.mapbox.geojson.LineString
 import com.mapbox.mapboxsdk.camera.CameraPosition
 import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.mapboxsdk.plugins.annotation.Symbol
+import de.ur.explure.map.ManualRouteCreationModes
+import de.ur.explure.map.RouteDrawModes
 import de.ur.explure.map.RouteLineManager.Companion.ID_PROPERTY_KEY
 import de.ur.explure.model.MapMarker
 import de.ur.explure.model.waypoint.WayPoint
@@ -186,6 +188,22 @@ class MapViewModel(private val state: SavedStateHandle) : ViewModel() {
         state[LOCATION_TRACKING_KEY] = isEnabled
     }
 
+    fun setActiveManualRouteCreationMode(mode: ManualRouteCreationModes) {
+        state[ACTIVE_MANUAL_ROUTE_CREATION_MODE] = mode
+    }
+
+    fun getActiveManualRouteCreationMode(): ManualRouteCreationModes? {
+        return state[ACTIVE_MANUAL_ROUTE_CREATION_MODE]
+    }
+
+    fun setActiveRouteDrawMode(mode: RouteDrawModes) {
+        state[ACTIVE_ROUTE_DRAW_MODE] = mode
+    }
+
+    fun getActiveRouteDrawMode(): RouteDrawModes? {
+        return state[ACTIVE_ROUTE_DRAW_MODE]
+    }
+
     fun setManualRouteCreationModeStatus(isActive: Boolean) {
         _manualRouteCreationModeActive.value = isActive
         state[MANUAL_ROUTE_CREATION_KEY] = isActive
@@ -208,11 +226,15 @@ class MapViewModel(private val state: SavedStateHandle) : ViewModel() {
         // saved state keys
         private const val USER_LOCATION_KEY = "userLocation"
         private const val CAMERA_POSITION_KEY = "cameraPosition"
+        private const val LOCATION_TRACKING_KEY = "locationTrackingActive"
+
         private const val ACTIVE_MARKERS_KEY = "activeMarkers"
         private const val ACTIVE_DRAWN_LINES_KEY = "activeDrawnLines"
         private const val ACTIVE_ROUTE_LINE_POINTS_KEY = "activeRouteLinePoints"
         private const val ACTIVE_MAP_MATCHED_ROUTE_KEY = "activeMapMatchedRoute"
-        private const val LOCATION_TRACKING_KEY = "locationTrackingActive"
+        private const val ACTIVE_MANUAL_ROUTE_CREATION_MODE = "activeManualRouteMode"
+        private const val ACTIVE_ROUTE_DRAW_MODE = "activeRouteDrawMode"
+
         private const val MANUAL_ROUTE_CREATION_KEY = "manualRouteCreationActive"
         private const val ROUTE_DRAW_KEY = "routeDrawModeActive"
     }
