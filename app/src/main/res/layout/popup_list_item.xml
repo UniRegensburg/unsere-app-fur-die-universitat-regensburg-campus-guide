@@ -5,6 +5,6 @@
     android:layout_height="wrap_content"
     android:padding="12dp"
     android:textAlignment="textStart"
-    android:textColor="@color/colorOnBackground"
-    tools:background="@color/themeColor"
+    android:textColor="@color/white"
+    tools:background="@color/themeColorDark"
     tools:text="Streets" />

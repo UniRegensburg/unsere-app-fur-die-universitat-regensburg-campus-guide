@@ -28,9 +28,9 @@
         <ProgressBar
             android:id="@+id/progressBar"
             style="@style/Widget.AppCompat.ProgressBar.Horizontal"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="-7dp"
+            android:elevation="2dp"
             android:indeterminate="true"
             android:indeterminateTint="@color/highlightColor"
             android:visibility="gone"
@@ -46,61 +46,11 @@
             android:layout_marginTop="@dimen/margin_normal"
             android:text="@string/create_route"
             app:elevation="16dp"
-            app:icon="@drawable/ic_baseline_follow_the_signs_24"
+            app:icon="@drawable/ic_baseline_construction_24"
             app:iconSize="32dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
-
-        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-            android:id="@+id/endRouteBuildingButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/margin_normal"
-            android:enabled="false"
-            android:text="@string/save_route"
-            android:visibility="invisible"
-            app:backgroundTint="@color/colorInfo"
-            app:elevation="16dp"
-            app:icon="@drawable/ic_baseline_save_24"
-            app:iconSize="32dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/cancelRouteCreationButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:visibility="gone"
-            app:backgroundTint="@color/colorError"
-            app:elevation="@dimen/fab_elevation"
-            app:fabSize="mini"
-            app:layout_constraintEnd_toStartOf="@+id/endRouteBuildingButton"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:pressedTranslationZ="12dp"
-            app:srcCompat="@drawable/ic_baseline_close_24"
-            tools:ignore="ContentDescription"
-            tools:visibility="visible" />
-
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/showMapMatchedButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:visibility="gone"
-            app:backgroundTint="@color/themeColor"
-            app:elevation="@dimen/fab_elevation"
-            app:fabSize="mini"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/endRouteBuildingButton"
-            app:layout_constraintTop_toTopOf="parent"
-            app:pressedTranslationZ="12dp"
-            app:srcCompat="@drawable/ic_baseline_done_24"
-            tools:ignore="ContentDescription"
-            tools:visibility="visible" />
 
         <com.mapbox.mapboxsdk.maps.MapView
             android:id="@+id/mapView"
@@ -165,27 +115,12 @@
                 app:layout_dodgeInsetEdges="bottom">
 
                 <com.google.android.material.floatingactionbutton.FloatingActionButton
-                    android:id="@+id/startNavigationButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_above="@+id/changeStyleButton"
-                    android:layout_marginBottom="12dp"
-                    android:visibility="gone"
-                    app:backgroundTint="@color/themeColor"
-                    app:elevation="@dimen/fab_elevation"
-                    app:fabSize="auto"
-                    app:pressedTranslationZ="12dp"
-                    app:srcCompat="@drawable/ic_navigation_24"
-                    tools:ignore="ContentDescription"
-                    tools:visibility="visible" />
-
-                <com.google.android.material.floatingactionbutton.FloatingActionButton
                     android:id="@+id/changeStyleButton"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_above="@+id/ownLocationButton"
                     android:layout_marginBottom="12dp"
-                    app:backgroundTint="@color/themeColor"
+                    app:backgroundTint="@color/themeColorDark"
                     app:elevation="@dimen/fab_elevation"
                     app:fabSize="auto"
                     app:pressedTranslationZ="12dp"

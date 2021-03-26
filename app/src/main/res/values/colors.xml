@@ -8,11 +8,13 @@
     <color name="themeColor">#95bf74</color>
     <color name="themeColorDark">#668f47</color>
     <color name="themeColorLight">#c7f2a3</color>
+    <color name="colorOnTheme">#000000</color>
 
     <!-- Accent Color -->
     <color name="highlightColor">#960146</color>
     <color name="highlightColorDark">#62001f</color>
     <color name="highlightColorLight">#cb4571</color>
+    <color name="colorOnHighlight">#FFFFFF</color>
 
     <color name="surfaceColor">#FFFFFF</color>
     <color name="colorOnSurface">#000000</color>

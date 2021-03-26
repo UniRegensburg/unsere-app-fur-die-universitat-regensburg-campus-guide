@@ -5,11 +5,11 @@
         <item name="colorPrimary">@color/themeColor</item>
         <item name="colorPrimaryDark">@color/themeColorDark</item>
         <item name="colorPrimaryVariant">@color/themeColorLight</item>
-        <item name="colorOnPrimary">@color/black</item>
+        <item name="colorOnPrimary">@color/colorOnTheme</item>
         <item name="colorAccent">@color/highlightColor</item>
         <item name="colorSecondary">@color/highlightColor</item>
         <item name="colorSecondaryVariant">@color/highlightColorDark</item>
-        <item name="colorOnSecondary">@color/white</item>
+        <item name="colorOnSecondary">@color/colorOnHighlight</item>
 
         <item name="colorError">@color/colorError</item>
         <item name="colorOnError">@color/colorOnError</item>
@@ -22,6 +22,12 @@
 
         <!-- other custom styles -->
         <item name="materialAlertDialogTheme">@style/CustomMaterialDialogTheme</item>
+        <item name="actionButtonStyle">@style/ActionButton</item>
+    </style>
+
+    <!-- styling for the action buttons in the app toolbar -->
+    <style name="ActionButton" parent="@android:style/Widget.ActionButton">
+        <item name="android:paddingEnd">12dp</item>
     </style>
 
     <!-- Custom Material Alert Dialog Theme -->

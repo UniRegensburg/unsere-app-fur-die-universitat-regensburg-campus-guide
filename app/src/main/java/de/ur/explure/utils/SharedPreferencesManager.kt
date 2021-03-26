@@ -24,6 +24,13 @@ class SharedPreferencesManager constructor(context: Application) {
         editor.apply()
     }
 
+    fun isFirstTimeRouteCreation() = sharedPreferences.getBoolean(FIRST_ROUTE_CREATION, true)
+
+    fun completedRouteCreationTutorial() {
+        editor.putBoolean(FIRST_ROUTE_CREATION, false)
+        editor.apply()
+    }
+
     /**
      * Get the map style that the user had set the last time or the Mapbox Streets - Style as default.
      */
@@ -37,6 +44,7 @@ class SharedPreferencesManager constructor(context: Application) {
     companion object {
         private const val PREFERENCE_CONFIGURATION_NAME = "configuration"
         private const val FIRST_LAUNCH = "isFirstRun"
+        private const val FIRST_ROUTE_CREATION = "isFirstRouteCreation"
         private const val MAP_STYLE = "currentMapStyle"
     }
 }

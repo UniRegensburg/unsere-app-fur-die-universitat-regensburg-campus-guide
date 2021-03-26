@@ -11,6 +11,7 @@ import com.mapbox.geojson.LineString
 import com.mapbox.mapboxsdk.camera.CameraPosition
 import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.mapboxsdk.plugins.annotation.Symbol
+import de.ur.explure.extensions.combineWith
 import de.ur.explure.map.ManualRouteCreationModes
 import de.ur.explure.map.RouteDrawModes
 import de.ur.explure.map.RouteLineManager.Companion.ID_PROPERTY_KEY
@@ -35,6 +36,12 @@ class MapViewModel(private val state: SavedStateHandle) : ViewModel() {
 
     private val _routeDrawModeActive by lazy { MutableLiveData(state[ROUTE_DRAW_KEY] ?: false) }
     val routeDrawModeActive: LiveData<Boolean> = _routeDrawModeActive
+
+    private val _inRouteCreationMode: LiveData<Boolean> =
+        _manualRouteCreationModeActive.combineWith(_routeDrawModeActive) { mode1, mode2 ->
+            mode1 == true || mode2 == true
+        }
+    val inRouteCreationMode = _inRouteCreationMode
 
     private var currentMapStyle: Style? = null
 

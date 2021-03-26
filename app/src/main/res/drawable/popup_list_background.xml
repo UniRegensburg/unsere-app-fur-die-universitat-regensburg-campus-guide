@@ -6,7 +6,7 @@
         <size
             android:width="206dp"
             android:height="76dp" />
-        <solid android:color="@color/themeColor" />
+        <solid android:color="@color/themeColorDark" />
         <corners android:radius="@dimen/default_corner_radius" />
     </shape>
 </item>
@@ -21,7 +21,7 @@
             <size
                 android:width="24dp"
                 android:height="24dp" />
-            <solid android:color="@color/themeColor" />
+            <solid android:color="@color/themeColorDark" />
         </shape>
     </rotate>
 </item>

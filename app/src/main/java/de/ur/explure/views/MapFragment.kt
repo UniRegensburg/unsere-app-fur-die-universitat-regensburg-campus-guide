@@ -4,6 +4,9 @@ import android.graphics.RectF
 import android.location.Location
 import android.os.Bundle
 import android.view.Gravity
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.Toast
@@ -15,7 +18,6 @@ import androidx.core.view.children
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
-import androidx.navigation.fragment.findNavController
 import com.crazylegend.viewbinding.viewBinding
 import com.daimajia.androidanimations.library.Techniques
 import com.daimajia.androidanimations.library.YoYo
@@ -30,6 +32,7 @@ import com.mapbox.geojson.LineString
 import com.mapbox.geojson.Point
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.geometry.LatLngBounds
+import com.mapbox.mapboxsdk.location.LocationUpdate
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
@@ -107,8 +110,14 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
     private lateinit var slidingBottomPanel: SlidingUpPanelLayout
     private lateinit var slidingPanelListener: SlidingUpPanelLayout.PanelSlideListener
 
+    // action menu items
+    private var cancelRouteCreationButton: MenuItem? = null
+    private var showMapMatchingButton: MenuItem? = null
+    private var saveRouteButton: MenuItem? = null
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setHasOptionsMenu(true)
 
         // disable the buttons until the map has finished loading
         binding.ownLocationButton.isEnabled = false
@@ -134,16 +143,10 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
         // This callback will show an alert dialog when the back button is pressed
         backPressedCallback = activity?.onBackPressedDispatcher?.addCallback(
             viewLifecycleOwner,
-            enabled = true
+            enabled = false // set the observer but don't enable it yet!
         ) {
-            // Handle the back button event
-            with(MaterialAlertDialogBuilder(requireActivity())) {
-                setTitle(R.string.leave_map_title)
-                setMessage(R.string.leave_map_warning)
-                setPositiveButton(R.string.yes) { _, _ -> findNavController().navigateUp() }
-                setNegativeButton(R.string.no) { _, _ -> }
-                show()
-            }
+            // show an alert dialog on the back button event
+            showLeaveRouteCreationDialog()
         }
     }
 
@@ -153,34 +156,67 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
             Timber.d("Map has finished loading and can be used now!")
             setupInitialUIState()
         })
-        mapViewModel.manualRouteCreationModeActive.observe(viewLifecycleOwner, { active ->
+        mapViewModel.inRouteCreationMode.observe(viewLifecycleOwner) { inRouteCreationMode ->
+            if (inRouteCreationMode) {
+                // enable the observer on the back button and show some menu actions
+                backPressedCallback?.isEnabled = true
+                setMenuItemsVisibility(true)
+
+                // also show a tutorial for the menu actions the first time the user creates a route
+                if (preferencesManager.isFirstTimeRouteCreation()) {
+                    TutorialBuilder.highlightMapActionMenu(
+                        requireActivity(),
+                        requireActivity().findViewById(R.id.toolbar),
+                        Highlight(
+                            requireActivity().findViewById(R.id.saveRouteButton),
+                            title = getString(R.string.action_menu_tutorial_title),
+                            description = getString(R.string.action_menu_tutorial_description),
+                            radius = Highlight.HIGHLIGHT_RADIUS_LARGE
+                        )
+                    )
+                    preferencesManager.completedRouteCreationTutorial()
+                }
+            } else {
+                // disable the observer on the back button and hide the menu actions
+                backPressedCallback?.isEnabled = false
+                setMenuItemsVisibility(false)
+            }
+        }
+        mapViewModel.manualRouteCreationModeActive.observe(viewLifecycleOwner) { active ->
             if (active) {
                 enterManualRouteCreationMode()
             } else {
                 exitManualRouteCreationMode()
             }
-        })
-        mapViewModel.routeDrawModeActive.observe(viewLifecycleOwner, { active ->
+        }
+        mapViewModel.routeDrawModeActive.observe(viewLifecycleOwner) { active ->
             if (active) {
                 enterRouteDrawMode()
             } else {
                 exitRouteDrawMode()
             }
-        })
-        mapViewModel.selectedMarker.observe(viewLifecycleOwner, { marker ->
+        }
+        mapViewModel.selectedMarker.observe(viewLifecycleOwner) { marker ->
             // move the camera to the selected marker
             if (::map.isInitialized) {
                 map.moveCameraToPosition(marker.markerPosition, selectedMarkerZoom)
             }
-        })
-        mapViewModel.deletedWaypoint.observe(viewLifecycleOwner, { mapMarker ->
+        }
+        mapViewModel.deletedWaypoint.observe(viewLifecycleOwner) { mapMarker ->
             // check to prevent crashes on config change as marker manager is not setup initially
             if (::markerManager.isInitialized) {
                 // delete the corresponding marker symbol and remove from waypointscontroller
                 waypointsController.remove(mapMarker.markerPosition.toPoint())
                 markerManager.removeWaypointMarker(mapMarker)
             }
-        })
+        }
+    }
+
+    private fun setMenuItemsVisibility(visible: Boolean) {
+        // show the menu items if in route creation mode and hide them if not
+        cancelRouteCreationButton?.isVisible = visible
+        showMapMatchingButton?.isVisible = visible
+        saveRouteButton?.isVisible = visible
     }
 
     /**
@@ -226,25 +262,13 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
             showMapStyleOptions(layoutResource = R.layout.popup_list_item)
         }
 
+        // TODO: click auf diesen button zeigt wieder die bottom navigation an aus irgendeinem Grund!
         binding.ownLocationButton.setOnClickListener {
             mapViewModel.getCurrentMapStyle()?.let { style -> startLocationTracking(style) }
         }
 
         binding.buildRouteButton.setOnClickListener {
             showEnterRouteCreationDialog()
-        }
-
-        binding.endRouteBuildingButton.setOnClickListener {
-            confirmManualRouteCreationFinish()
-        }
-
-        binding.startNavigationButton.setOnClickListener {
-            // convert directionsRoute to json so it can be passed as a string via safe args
-            val routeJson = directionsRoute?.toJson() ?: return@setOnClickListener
-            val action = MapFragmentDirections.actionMapFragmentToNavigationFragment(
-                route = routeJson
-            )
-            findNavController().navigate(action)
         }
 
         // if location tracking was enabled before, start it again to prevent forcing the user to
@@ -313,7 +337,6 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
             .setMessage(R.string.route_creation_options)
             .setCancelable(true)
             .setPositiveButton(R.string.manual_route_creation_option) { _, _ ->
-                // TODO show tutorial with TutorialBuilder and explain mapMatching-Limitations here!
                 setupManualRouteCreationMode()
             }
             .setNeutralButton(R.string.route_track_option) { _, _ ->
@@ -342,13 +365,6 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
      */
     private fun setupManualRouteCreationMode() {
         mapViewModel.setManualRouteCreationModeStatus(isActive = true)
-
-        binding.cancelRouteCreationButton.setOnClickListener {
-            showLeaveRouteCreationDialog()
-        }
-        binding.showMapMatchedButton.setOnClickListener {
-            convertPointsToRoute()
-        }
 
         binding.routeCreationOptionsLayout.addMarkerButton.setOnClickListener {
             highlightCurrentRouteCreationMode(ManualRouteCreationModes.MODE_ADD)
@@ -388,7 +404,6 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
         }
 
         // TODO add a separate button for dragging markers too ?
-        //  Would probably work if the other listeners are reset
     }
 
     /**
@@ -397,13 +412,6 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
      */
     private fun setupRouteDrawMode() {
         mapViewModel.setRouteDrawModeStatus(isActive = true)
-
-        binding.cancelRouteCreationButton.setOnClickListener {
-            showLeaveRouteCreationDialog()
-        }
-        binding.showMapMatchedButton.setOnClickListener {
-            mapMatchDrawnRoute()
-        }
 
         binding.routeDrawOptionsLayout.drawRouteButton.setOnClickListener {
             highlightCurrentRouteCreationMode(RouteDrawModes.MODE_DRAW)
@@ -497,33 +505,21 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
     }
 
     private fun performSharedCreationEnterActions() {
-        // toggle the start/end buttons
+        // hide the start route building button
         binding.buildRouteButton.isEnabled = false
         binding.buildRouteButton.visibility = View.GONE
-        binding.endRouteBuildingButton.visibility = View.VISIBLE
-        binding.endRouteBuildingButton.isEnabled = true
-        // and play an animation
-        YoYo.with(Techniques.FlipInX)
+        YoYo.with(Techniques.FadeOut)
             .duration(ANIMATION_DURATION)
-            .playOn(binding.endRouteBuildingButton)
-
-        binding.cancelRouteCreationButton.visibility = View.VISIBLE
-        binding.showMapMatchedButton.visibility = View.VISIBLE
+            .playOn(binding.buildRouteButton)
     }
 
     private fun performSharedCreationExitActions() {
-        binding.endRouteBuildingButton.visibility = View.GONE
-        binding.endRouteBuildingButton.isEnabled = false
+        // show the start route building button with an animation
         binding.buildRouteButton.visibility = View.VISIBLE
         binding.buildRouteButton.isEnabled = true
-
-        YoYo.with(Techniques.FlipInX)
+        YoYo.with(Techniques.FadeIn)
             .duration(ANIMATION_DURATION)
             .playOn(binding.buildRouteButton)
-
-        binding.cancelRouteCreationButton.visibility = View.GONE
-        binding.showMapMatchedButton.visibility = View.GONE
-        binding.startNavigationButton.visibility = View.GONE
 
         // reset the map
         resetMapOverlays()
@@ -598,7 +594,6 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
         val currentRouteDrawMode = mapViewModel.getActiveRouteDrawMode() ?: RouteDrawModes.MODE_DRAW
         highlightCurrentRouteCreationMode(currentRouteDrawMode)
         when (currentRouteDrawMode) {
-            // TODO call the exact same methods as in the onClickListeners! (extract them before!)
             RouteDrawModes.MODE_DRAW -> {
                 routeLineManager?.enableMapDrawing()
             }
@@ -609,8 +604,6 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
                 setRemoveRouteClickListenerBehavior()
             }
         }
-
-        // Toast.makeText(requireActivity(), "Move your finger on the map to draw a route", Toast.LENGTH_SHORT).show()
 
         // redraw route lines that were saved in the viewModel's saved state if any
         // (needs to be done after the free draw mode has be (re-)inited!
@@ -725,6 +718,8 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
     private fun mapMatchDrawnRoute() {
         val allRoutePoints = routeLineManager?.getCompleteRoute()
 
+        // TODO: these points should probably be added as waypoints!
+        //  -> this would also allow us to delete them with the deleted route part !!!
         if (allRoutePoints != null) {
             // add markers to the waypoints of the route
             allRoutePoints.forEach {
@@ -809,13 +804,18 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
         TutorialBuilder.showTutorialFor(
             requireActivity(),
             Highlight(
-                binding.changeStyleButton,
-                title = getString(R.string.map_style_button_title),
-                description = getString(R.string.map_style_button_description)
-            ), Highlight(
                 binding.ownLocationButton,
-                title = getString(R.string.location_tracking_button_title),
-                description = getString(R.string.location_tracking_button_description)
+                title = getString(R.string.location_tracking_button_tutorial_title),
+                description = getString(R.string.location_tracking_button_tutorial_description)
+            ), Highlight(
+                binding.changeStyleButton,
+                title = getString(R.string.map_style_button_tutorial_title),
+                description = getString(R.string.map_style_button_tutorial_description)
+            ), Highlight(
+                binding.buildRouteButton,
+                title = getString(R.string.build_route_tutorial_title),
+                description = getString(R.string.build_route_tutorial_description),
+                radius = Highlight.HIGHLIGHT_RADIUS_LARGE
             )
         )
     }
@@ -881,7 +881,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
     }
 
     private fun recreateMapMatching() {
-        // recreate the last map matching too if there is one
+        // recreate the last map matching if there is one
         val activeMapMatching = mapViewModel.getActiveMapMatching()
         activeMapMatching?.let {
             routeLineManager?.addLineToMap(it)
@@ -892,6 +892,9 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
      * * Map Matching Callbacks
      */
 
+    /**
+     * Called when the map matching api successfully matched a route on the campus.
+     */
     override fun onRouteMatched(allMatchings: MutableList<MapMatchingMatching>) {
         binding.progressBar.visibility = View.GONE
         showSnackbar(
@@ -907,13 +910,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
         showMapMatchedRoute(bestMatching)
 
         // convert map matching to a route that can be processed by the mapbox navigation api
-        val route = bestMatching.toDirectionRoute()
-        if (route != null) {
-            directionsRoute = route
-            binding.startNavigationButton.visibility = View.VISIBLE
-        } else {
-            binding.startNavigationButton.visibility = View.GONE
-        }
+        directionsRoute = bestMatching.toDirectionRoute()
     }
 
     private fun showMapMatchedRoute(matchedRoute: MapMatchingMatching) {
@@ -924,6 +921,9 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
         mapViewModel.setActiveMapMatching(lineString)
     }
 
+    /**
+     * Called when the map matching api couldn't get a suitable route on the campus.
+     */
     override fun onNoRouteMatchings() {
         binding.progressBar.visibility = View.GONE
         showSnackbar(
@@ -934,6 +934,11 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
         )
     }
 
+    // TODO: hier entsteht unten irgendwie bei der bottom nav bar auch ein visual bug, wo nur der
+    //  hintergrund zu sehen ist??
+    /**
+     * Called when the map matching request failed due to some error.
+     */
     override fun onRouteMatchingFailed(message: String) {
         binding.progressBar.visibility = View.GONE
         Timber.e("Route map matching failed because: $message")
@@ -1034,9 +1039,54 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
 
     private fun onNewLocationReceived(location: Location) {
         // Pass the new location to the Maps SDK's LocationComponent
-        map.locationComponent.forceLocationUpdate(location)
+        // TODO test this:
+        val locationUpdate = LocationUpdate.Builder().location(location).build()
+        map.locationComponent.forceLocationUpdate(locationUpdate)
         // save the new location
         mapViewModel.setCurrentUserPosition(location)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.map_menu, menu)
+
+        cancelRouteCreationButton = menu.findItem(R.id.cancelRouteCreationButton)
+        showMapMatchingButton = menu.findItem(R.id.showMapMatchedButton)
+        saveRouteButton = menu.findItem(R.id.saveRouteButton)
+        // startNavigationButton = menu.findItem(R.id.startNavigationButton)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.cancelRouteCreationButton -> {
+                showLeaveRouteCreationDialog()
+                true
+            }
+            R.id.showMapMatchedButton -> {
+                // TODO show tutorial with TutorialBuilder to explain mapMatching-Limitations
+                //  and functionality the first time this button is clicked!
+                if (mapViewModel.manualRouteCreationModeActive.value == true) {
+                    convertPointsToRoute()
+                } else if (mapViewModel.routeDrawModeActive.value == true) {
+                    mapMatchDrawnRoute()
+                }
+                true
+            }
+            R.id.saveRouteButton -> {
+                confirmManualRouteCreationFinish()
+                true
+            }
+            /*
+            R.id.startNavigationButton -> {
+                // convert directionsRoute to json so it can be passed as a string via safe args
+                val routeJson = directionsRoute?.toJson() ?: return false
+                val action = MapFragmentDirections.actionMapFragmentToNavigationFragment(
+                    route = routeJson
+                )
+                findNavController().navigate(action)
+                true
+            }*/
+            else -> super.onOptionsItemSelected(item)
+        }
     }
 
     /**
@@ -1095,7 +1145,6 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
     }
 
     companion object {
-        private const val ROUTE_MARKER_SOURCE_ID = "ROUTE_MARKER_SOURCE_ID"
         const val selectedMarkerZoom = 17.0
 
         private const val ANIMATION_DURATION = 500L // in ms
@@ -1113,7 +1162,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
             .build()
 
         // Testing routes for map matching etc.:
-
+        /*
         // Busbahnhof -> Mensa -> vor Zentralbib -> Unisee -> Weg unter Mensa -> Botanischer Garten
         val routePoints = listOf<Point>(
             Point.fromLngLat(12.091897088615497, 48.9986755276432),
@@ -1143,6 +1192,6 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
             Point.fromLngLat(12.095448, 48.995758),
             Point.fromLngLat(12.095244, 48.997110),
             Point.fromLngLat(12.095153, 48.998243)
-        )
+        )*/
     }
 }
