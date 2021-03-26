@@ -99,8 +99,9 @@
     <string name="delete_marker_confirmation">Möchtest du diese Markierung wirklich löschen?</string>
     <string name="no_internet">Keine Internetverbindung!</string>
     <string name="no_internet_default_explanation">Es konnte keine Internetverbindung hergestellt werden! Überprüfe bitte deine Verbindung und versuch es dann erneut.</string>
-    <string name="no_internet_map_matching">Um aus den Wegpunkten eine Route zu erstellen, wird eine Internetverbindung benötigt!</string>
+    <string name="no_internet_map_matching">Um eine Route erstellen zu können, wird eine Internetverbindung benötigt!</string>
     <string name="too_few_waypoints">Es müssen sich mindestens 2 Wegpunkte auf der Karte befinden, damit eine Route erstellt werden kann!</string>
+    <string name="too_many_waypoints">Leider kann aktuell keine Route mit so vielen Wegpunkten erstellt werden! Bitte versuche ein paar unnötige Punkte zu entfernen.</string>
 
     <!-- Buttons and Options -->
     <string name="try_again">Erneut versuchen</string>

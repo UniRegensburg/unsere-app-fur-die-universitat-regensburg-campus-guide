@@ -107,8 +107,9 @@
     <string name="delete_marker_confirmation">Do you really want to delete this marker?</string>
     <string name="no_internet">No internet connection!</string>
     <string name="no_internet_default_explanation">No internet connection could be established! Please check your connection and try again.</string>
-    <string name="no_internet_map_matching">An internet connection is required to create a route from the waypoints!</string>
+    <string name="no_internet_map_matching">An internet connection is required to create a route!</string>
     <string name="too_few_waypoints">There must be at least 2 way points on the map to create a route!</string>
+    <string name="too_many_waypoints">Unfortunately, a route with so many waypoints cannot be created! Please try to remove some unnecessary points.</string>
 
     <!-- Buttons and Options -->
     <string name="try_again">Try again</string>

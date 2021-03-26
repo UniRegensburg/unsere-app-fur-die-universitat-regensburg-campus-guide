@@ -22,16 +22,6 @@ class MapMatchingClient(private val context: Context) {
     fun requestMapMatchedRoute(coordinates: List<Point>) {
         Timber.d("MapMatching request with ${coordinates.size} coordinates.")
 
-        if (coordinates.size < 2) {
-            // we need at least two points to get a successful match!
-            Timber.e("Map Matching not possible! At least two coordinates are necessary!")
-            return
-        } else if (coordinates.size > 100) {
-            // the api also doesn't accept requests with more than 100 coordinates
-            Timber.e("Map Matching not possible! There can be no more than 100 coordinates!")
-            return
-        }
-
         // Create a snap radius for every coordinate point; must be a value between 0.0 and 50.0 (meter).
         // This determines how far the map matching api can snap the point to known routes, that means
         // higher values will create more often successful but quite fuzzy routes, while low values
@@ -63,8 +53,7 @@ class MapMatchingClient(private val context: Context) {
             object : Callback<MapMatchingResponse> {
                 override fun onFailure(call: Call<MapMatchingResponse>, t: Throwable) {
                     Timber.e("MapMatching request failure %s", t.toString())
-                    // TODO check for all exceptions and give appropriate user feedback
-                    //  see https://docs.mapbox.com/api/navigation/map-matching/#map-matching-api-errors
+                    // for errors see https://docs.mapbox.com/api/navigation/map-matching/#map-matching-api-errors
                     mapMatchingListener?.onRouteMatchingFailed(t.toString())
                 }
 
@@ -87,12 +76,6 @@ class MapMatchingClient(private val context: Context) {
                         mapMatchingListener?.onNoRouteMatchings()
                         return
                     }
-
-                    // TODO things to do here:
-                    //  - print the confidence and ask the user to provide more/ or more closely
-                    //    aligned points if below threshold -> probably not: confidence is usually quite
-                    //    low but it works not too bad and there are almost never alternatives :(
-                    //  - explain how this map matching works and that it is meant for outdoor usage!!
 
                     val allTracePoints = response.body()?.tracepoints()
                     Timber.d("All ${allTracePoints?.size} Trace Points:\n $allTracePoints")

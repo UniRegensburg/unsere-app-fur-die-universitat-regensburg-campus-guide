@@ -68,7 +68,6 @@ fun hasInternetConnection(
 ): Boolean {
     val message = context.getString(noInternetMessage)
 
-    // check if device is connected to a network first
     if (!isNetworkAvailable(context)) {
         showConnectionAlert(context, message)
         return false

@@ -696,25 +696,6 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
         waypointsController.clear()
     }
 
-    private fun convertPointsToRoute() {
-        // check first if the user has an internet connection before requesting a route from mapbox
-        if (!hasInternetConnection(requireContext(), R.string.no_internet_map_matching)) {
-            return
-        }
-
-        val wayPoints = waypointsController.getAllWaypoints()
-        if (wayPoints.size < 2) {
-            showSnackbar(
-                getString(R.string.too_few_waypoints),
-                binding.mapButtonContainer,
-                colorRes = R.color.colorError
-            )
-            return
-        }
-
-        makeMatchingRequest(wayPoints)
-    }
-
     private fun mapMatchDrawnRoute() {
         val allRoutePoints = routeLineManager?.getCompleteRoute()
 
@@ -733,10 +714,35 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
     }
 
     private fun makeMatchingRequest(points: List<Point>) {
-        // show a small progressbar at the top to provide some visual feedback for the user!
-        binding.progressBar.visibility = View.VISIBLE
-        // make a request to the Mapbox Map Matching API to get a route from the waypoints
-        mapMatchingClient.requestMapMatchedRoute(points)
+        // some sanity checks before trying to request a map matched route from the mapbox api
+        if (points.size < 2) {
+            // we need at least two points to get a successful match!
+            Timber.e("Map Matching not possible! At least two coordinates are necessary!")
+            showSnackbar(
+                getString(R.string.too_few_waypoints),
+                binding.mapButtonContainer,
+                colorRes = R.color.colorError
+            )
+            return
+        } else if (points.size > 100) {
+            // the api also doesn't accept requests with more than 100 coordinates
+            Timber.e("Map Matching not possible! There can be no more than 100 coordinates!")
+            showSnackbar(
+                getString(R.string.too_many_waypoints),
+                binding.mapButtonContainer,
+                colorRes = R.color.colorError
+            )
+            return
+        }
+
+        // check if the user has an internet connection
+        if (hasInternetConnection(requireContext(), R.string.no_internet_map_matching)) {
+            // show a small progressbar at the top to provide some visual feedback for the user!
+            binding.progressBar.visibility = View.VISIBLE
+
+            // make a request to the Mapbox Map Matching API to get a route from the waypoints
+            mapMatchingClient.requestMapMatchedRoute(points)
+        }
     }
 
     private fun confirmManualRouteCreationFinish() {
@@ -899,7 +905,8 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
         binding.progressBar.visibility = View.GONE
         showSnackbar(
             requireActivity(),
-            R.string.map_matching_succeeded
+            R.string.map_matching_succeeded,
+            binding.mapButtonContainer
         )
         val bestMatching = allMatchings[0]
 
@@ -929,6 +936,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
         showSnackbar(
             requireActivity(),
             R.string.map_matching_failed,
+            binding.mapButtonContainer,
             colorRes = R.color.colorError,
             length = Snackbar.LENGTH_LONG
         )
@@ -945,6 +953,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
         showSnackbar(
             requireActivity(),
             R.string.map_matching_request_error,
+            binding.mapButtonContainer,
             colorRes = R.color.colorError,
             length = Snackbar.LENGTH_LONG
         )
@@ -1063,9 +1072,10 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
             }
             R.id.showMapMatchedButton -> {
                 // TODO show tutorial with TutorialBuilder to explain mapMatching-Limitations
-                //  and functionality the first time this button is clicked!
+                //  and functionality (e.g. only outdoor) the first time this button is clicked!
                 if (mapViewModel.manualRouteCreationModeActive.value == true) {
-                    convertPointsToRoute()
+                    val wayPoints = waypointsController.getAllWaypoints()
+                    makeMatchingRequest(wayPoints)
                 } else if (mapViewModel.routeDrawModeActive.value == true) {
                     mapMatchDrawnRoute()
                 }

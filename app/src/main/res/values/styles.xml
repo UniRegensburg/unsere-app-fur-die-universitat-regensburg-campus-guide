@@ -34,6 +34,7 @@
     <style name="CustomMaterialDialogTheme" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
         <item name="colorSurface">@color/materialDialogSurface</item>
         <item name="materialAlertDialogTitlePanelStyle">@style/TitlePaneStyleCenter</item>
+        <item name="materialAlertDialogTitleIconStyle">@style/TitleIconStyleCenter</item>
         <item name="materialAlertDialogTitleTextStyle">@style/TitleTextStyle</item>
         <item name="materialAlertDialogBodyTextStyle">@style/BodyTextStyle</item>
         <item name="buttonBarStyle">@style/ButtonBarStyle</item>
@@ -41,8 +42,12 @@
     </style>
 
     <style name="TitlePaneStyleCenter" parent="MaterialAlertDialog.MaterialComponents.Title.Panel.CenterStacked">
-        <item name="android:background">#FAF6D7</item>
+        <item name="android:background">@color/materialDialogTitlePanel</item>
         <item name="android:padding">16dp</item>
+    </style>
+
+    <style name="TitleIconStyleCenter" parent="MaterialAlertDialog.MaterialComponents.Title.Icon">
+        <item name="android:layout_gravity">center</item>
     </style>
 
     <style name="TitleTextStyle" parent="MaterialAlertDialog.MaterialComponents.Title.Text">
