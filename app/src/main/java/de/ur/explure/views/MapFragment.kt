@@ -38,6 +38,8 @@ import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
 import com.mapbox.mapboxsdk.maps.Style
+import com.mapbox.turf.TurfConstants
+import com.mapbox.turf.TurfMeasurement
 import com.sothree.slidinguppanel.SlidingUpPanelLayout
 import de.ur.explure.R
 import de.ur.explure.databinding.FragmentMapBinding
@@ -759,8 +761,8 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
         with(MaterialAlertDialogBuilder(requireActivity())) {
             setTitle(R.string.save_created_route_confirmation)
             setPositiveButton(R.string.yes) { _, _ ->
-                mapViewModel.exitCurrentRouteCreationMode()
                 saveCreatedRoute()
+                mapViewModel.exitCurrentRouteCreationMode()
             }
             setNegativeButton(R.string.continue_edit) { _, _ -> }
             show()
@@ -768,13 +770,31 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
     }
 
     private fun saveCreatedRoute() {
-        Toast.makeText(requireContext(), "Speichern ist noch nicht möglich :(", Toast.LENGTH_SHORT)
-            .show()
         // TODO:
         // - make a snapshot of the created route with the Mapbox Snapshotter and save it to firebase storage
         // - set the snapshot as route thumbnail and save the new route for this user to firebase via viewmodel
 
-        // TODO get length and duration of route either via mapMatching or via turf or own calculations!
+        // TODO get length and duration of route directly from mapMatching when saving it!
+        // -> only use turf if the user saved his own route instead of the mapMatching!
+        val route = mapViewModel.getActiveMapMatching()
+
+        // TODO error handling
+        if (route == null) {
+            showSnackbar(
+                "Keine Route gefunden! Du musst erst eine Route erstellen bevor du speichern kannst!",
+                binding.mapButtonContainer,
+                colorRes = R.color.colorError
+            )
+            return
+        }
+        val routeLength = TurfMeasurement.length(route.coordinates(), TurfConstants.UNIT_METERS)
+        Toast.makeText(
+            requireContext(),
+            "Länge der erstellten Route: $routeLength m",
+            Toast.LENGTH_SHORT
+        ).show()
+
+        // TODO navigate to route editing and allow user to place (additional) markers on the route!
     }
 
     /**
@@ -922,6 +942,8 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
 
         Timber.d("Confidence of best match: ${bestMatching.confidence().times(100)} %")
         // Timber.d("First route part: ${bestMatching.legs()?.get(0)}")
+        Timber.d("MapMatch Duration: ${bestMatching.duration() / 60} minutes")
+        Timber.d("MapMatch Length: ${bestMatching.distance()} meters")
 
         // draw the best route match on the map
         showMapMatchedRoute(bestMatching)
