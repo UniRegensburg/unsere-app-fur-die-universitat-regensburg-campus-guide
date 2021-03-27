@@ -7,4 +7,9 @@
         android:icon="@android:drawable/ic_dialog_info"
         android:title="@string/changeUserName" />
 
+    <item
+        android:id="@+id/logOut"
+        android:icon="@android:drawable/ic_dialog_info"
+        android:title="@string/logout" />
+
 </menu>

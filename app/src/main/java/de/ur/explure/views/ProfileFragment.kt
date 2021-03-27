@@ -103,7 +103,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         }
 
         binding.logOutButton.setOnClickListener {
-            viewModel.signOut()
+            // viewModel.signOut()
         }
     }
 
@@ -114,6 +114,9 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return if (item.itemId == R.id.changeUserName) {
             showDialog()
+            true
+        } else if (item.itemId == R.id.logOut) {
+            viewModel.signOut()
             true
         } else {
             super.onOptionsItemSelected(item)
