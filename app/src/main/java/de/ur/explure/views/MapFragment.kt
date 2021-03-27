@@ -755,12 +755,16 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
         }
     }
 
-    private fun confirmManualRouteCreationFinish() {
+    private fun confirmSavingRoute() {
         with(MaterialAlertDialogBuilder(requireActivity())) {
             setTitle(R.string.save_created_route_confirmation)
             setPositiveButton(R.string.yes) { _, _ ->
+                if (mapViewModel.manualRouteCreationModeActive.value == true) {
+                    mapViewModel.setManualRouteCreationModeStatus(isActive = false)
+                } else if (mapViewModel.routeDrawModeActive.value == true) {
+                    mapViewModel.setRouteDrawModeStatus(isActive = false)
+                }
                 saveCreatedRoute()
-                mapViewModel.setManualRouteCreationModeStatus(isActive = false)
             }
             setNegativeButton(R.string.continue_edit) { _, _ -> }
             show()
@@ -1026,7 +1030,6 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
                 onPermissionsResultCallback = this::onLocationPermissionsResult,
                 onPermissionsExplanationNeededCallback = this::onLocationPermissionExplanation
             )
-            // TOdo if in route creation mode hide the bottom nav again!
         }
     }
 
@@ -1043,9 +1046,6 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
                 colorRes = R.color.colorWarning
             )
         }
-        // oder hier:
-        // TOdo if in route creation mode hide the bottom nav again!
-        // e.g. by setting in route creation mode variable again
     }
 
     private fun onLocationPermissionExplanation() {
@@ -1095,7 +1095,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
                 true
             }
             R.id.saveRouteButton -> {
-                confirmManualRouteCreationFinish()
+                confirmSavingRoute()
                 true
             }
             /*
