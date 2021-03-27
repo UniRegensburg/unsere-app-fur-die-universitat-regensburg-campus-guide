@@ -104,6 +104,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
 
     // permission handling
     private val permissionHelper: PermissionHelper by inject()
+    private var permissionExplanationSnackbar: Snackbar? = null
 
     private var backPressedCallback: OnBackPressedCallback? = null
 
@@ -488,11 +489,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
             setMessage(R.string.leave_route_creation_warning)
             setPositiveButton(R.string.yes) { _, _ ->
                 // reset layout and route creation progress
-                if (mapViewModel.manualRouteCreationModeActive.value == true) {
-                    mapViewModel.setManualRouteCreationModeStatus(isActive = false)
-                } else if (mapViewModel.routeDrawModeActive.value == true) {
-                    mapViewModel.setRouteDrawModeStatus(isActive = false)
-                }
+                mapViewModel.exitCurrentRouteCreationMode()
             }
             setNegativeButton(R.string.no) { _, _ -> }
             show()
@@ -731,7 +728,8 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
             showSnackbar(
                 getString(R.string.too_few_waypoints),
                 binding.mapButtonContainer,
-                colorRes = R.color.colorError
+                colorRes = R.color.colorError,
+                length = Snackbar.LENGTH_LONG
             )
             return
         } else if (points.size > 100) {
@@ -740,7 +738,8 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
             showSnackbar(
                 getString(R.string.too_many_waypoints),
                 binding.mapButtonContainer,
-                colorRes = R.color.colorError
+                colorRes = R.color.colorError,
+                length = Snackbar.LENGTH_LONG
             )
             return
         }
@@ -759,11 +758,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
         with(MaterialAlertDialogBuilder(requireActivity())) {
             setTitle(R.string.save_created_route_confirmation)
             setPositiveButton(R.string.yes) { _, _ ->
-                if (mapViewModel.manualRouteCreationModeActive.value == true) {
-                    mapViewModel.setManualRouteCreationModeStatus(isActive = false)
-                } else if (mapViewModel.routeDrawModeActive.value == true) {
-                    mapViewModel.setRouteDrawModeStatus(isActive = false)
-                }
+                mapViewModel.exitCurrentRouteCreationMode()
                 saveCreatedRoute()
             }
             setNegativeButton(R.string.continue_edit) { _, _ -> }
@@ -1035,6 +1030,8 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
 
     private fun onLocationPermissionsResult(granted: Boolean) {
         if (granted) {
+            // dismiss the permission explanation
+            permissionExplanationSnackbar?.dismiss()
             // try to find the device location and enable location tracking
             map.style?.let { startLocationTracking(it) }
         } else {
@@ -1049,11 +1046,11 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
     }
 
     private fun onLocationPermissionExplanation() {
-        showSnackbar(
+        permissionExplanationSnackbar = showSnackbar(
             requireActivity(),
             R.string.location_permission_explanation,
             binding.mapButtonContainer,
-            Snackbar.LENGTH_LONG,
+            Snackbar.LENGTH_INDEFINITE,
             colorRes = R.color.themeColor
         )
     }
@@ -1064,6 +1061,39 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
         map.locationComponent.forceLocationUpdate(locationUpdate)
         // save the new location
         mapViewModel.setCurrentUserPosition(location)
+    }
+
+    private fun prepareMapMatching() {
+        if (mapViewModel.manualRouteCreationModeActive.value == true) {
+            val wayPoints = waypointsController.getAllWaypoints()
+            // TODO the polylineUtils could be used on these points as well!
+            //  -> maybe this would improve map matching here ??
+            makeMatchingRequest(wayPoints)
+        } else if (mapViewModel.routeDrawModeActive.value == true) {
+            mapMatchDrawnRoute()
+        }
+    }
+
+    private fun explainMapMatchingFunctionality() {
+        // TODO showing an info button somewhere to re-trigger this explanation would probably improve
+        //  the user experience!
+        with(MaterialAlertDialogBuilder(requireActivity())) {
+            setMessage(R.string.map_matching_explanation_confirmation)
+            setPositiveButton(R.string.yes) { _, _ ->
+                // change the dialog to show an explanation for the map matching functionality
+                setTitle(R.string.map_matching_explanation_title)
+                setMessage(R.string.map_matching_explanation_message)
+                setPositiveButton(R.string.got_it) { _, _ ->
+                    prepareMapMatching()
+                }
+                setNegativeButton(null, null)
+                show()
+            }
+            setNegativeButton(R.string.no) { _, _ ->
+                prepareMapMatching()
+            }
+            show()
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -1082,15 +1112,11 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
                 true
             }
             R.id.showMapMatchedButton -> {
-                // TODO show tutorial with TutorialBuilder to explain mapMatching-Limitations
-                //  and functionality (e.g. only outdoor) the first time this button is clicked!
-                if (mapViewModel.manualRouteCreationModeActive.value == true) {
-                    val wayPoints = waypointsController.getAllWaypoints()
-                    // TODO the polylineUtils could be used on these points as well!
-                    //  -> maybe this would improve map matching here ??
-                    makeMatchingRequest(wayPoints)
-                } else if (mapViewModel.routeDrawModeActive.value == true) {
-                    mapMatchDrawnRoute()
+                if (preferencesManager.isFirstTimeMapMatching()) {
+                    explainMapMatchingFunctionality()
+                    preferencesManager.finishedMapMatchingExplanation()
+                } else {
+                    prepareMapMatching()
                 }
                 true
             }

@@ -63,7 +63,7 @@
     <!-- Location Permissions -->
     <string name="location_permission_not_given">Without the permission your current location can\'t be displayed or used!</string>
     <string name="location_permission_explanation">
-        The permission for your location is needed to display your current location on the map and for navigation!
+        The permission for your location is needed to display and track your current location on the map and to use it during navigation!
     </string>
 
     <!-- Tutorial Information -->
@@ -91,6 +91,15 @@
     <string name="manual_route_creation_option">Create route with waypoints</string>
     <string name="route_draw_option">Draw route on map</string>
     <string name="route_track_option">Track route while walking</string>
+    <string name="map_matching_explanation_confirmation">Hey, looks like this is the first time you are using this feature! Do you want to see an explanation of the functionality?</string>
+    <string name="map_matching_explanation_title">MapMatching</string>
+    <string name="map_matching_explanation_message">Here you can use so-called \"MapMatching\" to automatically match your created routes and markers to known footpaths on the university campus and thus create a more accurate route.
+        \nHowever, <b>there are some restrictions</b>:
+        \n<ul>
+            \n<li>Because only footpaths can be used, routes can also <b>only be found in the exterior of the university</b>, which may cause problems if the created route goes through a building. Markers should therefore not be placed inside buildings.</li>
+            \n<li>In addition, it is possible that no suitable route can be created if route points are too far (about 10-15m) away from known footpaths. In this case, it can help to align certain parts of the route a little closer to paths on the map.</li>
+        </ul>
+    </string>
 
     <string name="current_waypoints">Currently the route consists of these waypoints:</string>
     <string name="no_current_waypoints">There are no waypoints yet! Click on locations on the map where you want to place waypoints to add some.</string>
@@ -117,6 +126,7 @@
     <string name="cancel">Cancel</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
+    <string name="got_it">Got it</string>
     <string name="create_route">Create Route</string>
     <string name="save_route">Save Route</string>
     <string name="reset_manual_route_creation">Do you really want to reset all markers?</string>

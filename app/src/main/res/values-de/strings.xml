@@ -59,7 +59,7 @@
     <!-- Location Permissions -->
     <string name="location_permission_not_given">Ohne die Berechtigung kann dein aktueller Standort nicht angezeigt oder verwendet werden!</string>
     <string name="location_permission_explanation">
-        Die Berechtigung für den Standortzugriff wird benötigt, um deine aktuelle Position auf der Karte anzeigen und für die Navigation verwenden zu können!
+        Die Berechtigung für den Standortzugriff wird benötigt, um deine aktuelle Position auf der Karte anzeigen, verfolgen und für die Navigation verwenden zu können!
     </string>
 
     <!-- Tutorial Information -->
@@ -83,6 +83,15 @@
     <string name="manual_route_creation_option">Route aus Wegpunkten erstellen</string>
     <string name="route_draw_option">Route auf Karte einzeichnen</string>
     <string name="route_track_option">Route abgehen und aufzeichnen</string>
+    <string name="map_matching_explanation_confirmation">Hey, sieht aus als wäre es das erste Mal, dass du diese Funktion benutzt! Möchtest du eine kurze Erklärung der Funktionsweise angezeigt bekommen?</string>
+    <string name="map_matching_explanation_title">MapMatching</string>
+    <string name="map_matching_explanation_message">Hier kannst du mithilfe von sogenanntem \"MapMatching\" deine erstellten Routen und Marker an bekannte Fußwege auf dem Universitätscampus automatisch anpassen und so eine genauere Route erstellen.
+        \nDabei sind allerdings <b>folgende Limitierungen</b> zu beachten:
+        \n<ul>
+            \n<li>Da nur Fußwege benutzt werden können, können auch <b>nur Routen im Außenbereich der Universität</b> gefunden werden, wodurch sich möglicherweise Probleme ergeben, wenn die erstellte Route durch ein Gebäude führt. Marker sollten deshalb nicht in Gebäuden platziert werden.</li>
+            \n<li>Zudem ist es möglich, dass keine geeignete Route erstellt werden kann, wenn Routenpunkte zu weit (ca. 10-15m) von bekannten Fußwegen entfernt sind. In diesem Fall kann es helfen, bestimmte Teile der Route nochmal etwas näher an eingezeichnete Wege anzugleichen.</li>
+        </ul>
+    </string>
 
     <string name="current_waypoints">Die Route besteht aktuell aus diesen Wegpunkten:</string>
     <string name="no_current_waypoints">Es sind noch keine Wegpunkte vorhanden! Klicke einfach auf die Stellen auf der Karte, an denen du Wegpunkte hinzufügen möchtest.</string>
@@ -109,6 +118,7 @@
     <string name="cancel">Abbrechen</string>
     <string name="yes">Ja</string>
     <string name="no">Nein</string>
+    <string name="got_it">Ok, verstanden</string>
     <string name="create_route">Route erstellen</string>
     <string name="save_route">Route speichern</string>
     <string name="reset_manual_route_creation">Möchtest du wirklich alles seit Beginn der Routenerstellung rückgängig machen?</string>

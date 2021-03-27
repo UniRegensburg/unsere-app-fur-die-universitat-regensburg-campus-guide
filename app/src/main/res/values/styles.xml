@@ -42,7 +42,7 @@
     </style>
 
     <style name="TitlePaneStyleCenter" parent="MaterialAlertDialog.MaterialComponents.Title.Panel.CenterStacked">
-        <item name="android:background">@color/materialDialogTitlePanel</item>
+        <item name="android:background">@color/themeColor</item>
         <item name="android:padding">16dp</item>
     </style>
 

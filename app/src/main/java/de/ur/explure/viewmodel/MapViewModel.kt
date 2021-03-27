@@ -221,6 +221,14 @@ class MapViewModel(private val state: SavedStateHandle) : ViewModel() {
         state[ROUTE_DRAW_KEY] = isActive
     }
 
+    fun exitCurrentRouteCreationMode() {
+        if (manualRouteCreationModeActive.value == true) {
+            setManualRouteCreationModeStatus(isActive = false)
+        } else if (routeDrawModeActive.value == true) {
+            setRouteDrawModeStatus(isActive = false)
+        }
+    }
+
     companion object {
         val All_MAP_STYLES = mapOf(
             "Standard" to Style.MAPBOX_STREETS,
