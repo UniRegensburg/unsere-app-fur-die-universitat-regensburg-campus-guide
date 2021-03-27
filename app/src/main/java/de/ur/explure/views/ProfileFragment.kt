@@ -101,10 +101,6 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         binding.statisticsButton.setOnClickListener {
             viewModel.showStatisticsFragment()
         }
-
-        binding.logOutButton.setOnClickListener {
-            // viewModel.signOut()
-        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
