@@ -59,8 +59,6 @@ class RouteLineManager(
         .withLineJoin(LINE_JOIN_ROUND)
         .withLineOpacity(DEFAULT_LINE_OPACITY)
 
-    // TODO these should probably be saved in the viewModel instead
-    //  -> a config or map style change resets all of these right now!
     private var routeDrawFeatureList: MutableList<Feature> = mutableListOf()
     private var currentRoutePoints: MutableList<Point> = mutableListOf()
 

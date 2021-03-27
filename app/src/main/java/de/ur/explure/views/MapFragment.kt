@@ -210,6 +210,12 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
                 markerManager.removeWaypointMarker(mapMarker)
             }
         }
+        /*
+        mapViewModel.mapMarkers.observe(viewLifecycleOwner) { markers ->
+            if (markers.size > 0) {
+                slidingBottomPanel.panelState = SlidingUpPanelLayout.PanelState.COLLAPSED
+            }
+        }*/
     }
 
     private fun setMenuItemsVisibility(visible: Boolean) {
@@ -238,7 +244,9 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
                 newState: SlidingUpPanelLayout.PanelState?
             ) {
                 if (previousState == SlidingUpPanelLayout.PanelState.HIDDEN) {
-                    binding.dragView.visibility = View.VISIBLE
+                    // workaround for visual bug that occurs when setting to collapsed while hiding
+                    // the bottom navigation which would move this panel higher than it should!
+                    slidingBottomPanel.panelState = SlidingUpPanelLayout.PanelState.COLLAPSED
                 }
             }
         }
@@ -262,7 +270,6 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
             showMapStyleOptions(layoutResource = R.layout.popup_list_item)
         }
 
-        // TODO: click auf diesen button zeigt wieder die bottom navigation an aus irgendeinem Grund!
         binding.ownLocationButton.setOnClickListener {
             mapViewModel.getCurrentMapStyle()?.let { style -> startLocationTracking(style) }
         }
@@ -699,11 +706,14 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
     private fun mapMatchDrawnRoute() {
         val allRoutePoints = routeLineManager?.getCompleteRoute()
 
-        // TODO: these points should probably be added as waypoints!
+        // TODO: these points should probably be added as waypoints ??
+        //  (even though they are not really the waypoints needed later! These have to be added separately later)
         //  -> this would also allow us to delete them with the deleted route part !!!
+        //  -> in this case they would need to be saved in a map with the route part as the key to delete them
         if (allRoutePoints != null) {
             // add markers to the waypoints of the route
             allRoutePoints.forEach {
+                // TODO should these be show at all to the user ?
                 markerManager.addMarker(it.toLatLng())
             }
             makeMatchingRequest(allRoutePoints)
@@ -942,8 +952,6 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
         )
     }
 
-    // TODO: hier entsteht unten irgendwie bei der bottom nav bar auch ein visual bug, wo nur der
-    //  hintergrund zu sehen ist??
     /**
      * Called when the map matching request failed due to some error.
      */
@@ -1018,6 +1026,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
                 onPermissionsResultCallback = this::onLocationPermissionsResult,
                 onPermissionsExplanationNeededCallback = this::onLocationPermissionExplanation
             )
+            // TOdo if in route creation mode hide the bottom nav again!
         }
     }
 
@@ -1034,6 +1043,9 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
                 colorRes = R.color.colorWarning
             )
         }
+        // oder hier:
+        // TOdo if in route creation mode hide the bottom nav again!
+        // e.g. by setting in route creation mode variable again
     }
 
     private fun onLocationPermissionExplanation() {
@@ -1048,7 +1060,6 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
 
     private fun onNewLocationReceived(location: Location) {
         // Pass the new location to the Maps SDK's LocationComponent
-        // TODO test this:
         val locationUpdate = LocationUpdate.Builder().location(location).build()
         map.locationComponent.forceLocationUpdate(locationUpdate)
         // save the new location
@@ -1075,6 +1086,8 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
                 //  and functionality (e.g. only outdoor) the first time this button is clicked!
                 if (mapViewModel.manualRouteCreationModeActive.value == true) {
                     val wayPoints = waypointsController.getAllWaypoints()
+                    // TODO the polylineUtils could be used on these points as well!
+                    //  -> maybe this would improve map matching here ??
                     makeMatchingRequest(wayPoints)
                 } else if (mapViewModel.routeDrawModeActive.value == true) {
                     mapMatchDrawnRoute()

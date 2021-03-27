@@ -18,6 +18,7 @@ import de.ur.explure.viewmodel.MapViewModel
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.androidx.viewmodel.scope.emptyState
+import timber.log.Timber
 
 /**
  * Main activity of the single activity application.
@@ -62,12 +63,9 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupViewModelObservers() {
         // hide the bottom navigation bar when the user enters route creation mode on the map
-        mapViewModel.manualRouteCreationModeActive.observe(this, { active ->
-            hideBottomNavDuringRouteCreation(active)
-        })
-        mapViewModel.routeDrawModeActive.observe(this, { active ->
-            hideBottomNavDuringRouteCreation(active)
-        })
+        mapViewModel.inRouteCreationMode.observe(this) {
+            hideBottomNavDuringRouteCreation(it)
+        }
     }
 
     private fun hideBottomNavDuringRouteCreation(routeCreationActive: Boolean) {
@@ -145,17 +143,31 @@ class MainActivity : AppCompatActivity() {
         return item.onNavDestinationSelected(controller)
     }
 
-    override fun onResume() {
-        super.onResume()
+    override fun onStart() {
+        super.onStart()
+        Timber.d("in MainActivity onStart")
         setUpNavDestinationChangeListener()
     }
 
+    override fun onResume() {
+        super.onResume()
+        Timber.d("in MainActivity onResume")
+        // ! This onResume is always called after a permission request in any of the fragments!
+        //  -> because of this the navDestinationChangeListener MUST NOT be setup in here!
+    }
+
     override fun onPause() {
+        super.onPause()
+        Timber.d("in MainActivity onPause")
+    }
+
+    override fun onStop() {
+        Timber.d("in MainActivity onStop")
         // remove the destinationChangeListener to prevent memory leaks
         destinationChangeListener?.let {
             navController.removeOnDestinationChangedListener(it)
         }
-        super.onPause()
+        super.onStop()
     }
 
     override fun onRequestPermissionsResult(
