@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_centerInParent="true"
+    android:layout_marginHorizontal="40dp"
+    android:background="@color/colorContentBackground"
+    android:elevation="5dp"
+    android:paddingHorizontal="15dp"
+    android:paddingVertical="20dp">
+
+    <TextView
+        android:id="@+id/tv_create_waypoint_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/create_waypoint_title"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/text_layout_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="10dp"
+        android:layout_marginTop="20dp"
+        android:textColorHint="@color/grey"
+        app:boxBackgroundColor="@android:color/transparent"
+        app:boxStrokeColor="@color/themeColor"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_create_waypoint_title">
+
+        <EditText
+            android:id="@+id/et_wayPoint_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/create_route_title_hint"
+            android:maxLength="25"
+            android:maxLines="1"
+            android:textColor="@color/textColorGrey"
+            android:textSize="14sp" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/input_layout_description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="10dp"
+        android:layout_marginTop="10dp"
+        android:textColorHint="@color/grey"
+        app:boxBackgroundColor="@android:color/transparent"
+        app:boxStrokeColor="@color/themeColor"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/text_layout_title">
+
+        <EditText
+            android:id="@+id/et_wayPoint_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="start"
+            android:hint="@string/create_route_descr_hint"
+            android:lines="4"
+            android:maxLength="400"
+            android:textColor="@color/textColorGrey"
+            android:textSize="14sp" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <ImageView
+        android:id="@+id/iv_add_image"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_marginTop="30dp"
+        android:layout_marginEnd="25dp"
+        android:background="@drawable/circular_background"
+        android:backgroundTint="@color/themeColor"
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="?android:attr/selectableItemBackground"
+        android:padding="7dp"
+        android:src="@drawable/ic_image_small"
+        app:layout_constraintEnd_toStartOf="@+id/iv_add_video"
+        app:layout_constraintTop_toBottomOf="@+id/input_layout_description"
+        app:tint="@color/white" />
+
+    <ImageView
+        android:id="@+id/iv_add_video"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_marginTop="30dp"
+        android:background="@drawable/circular_background"
+        android:backgroundTint="@color/themeColor"
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="?android:attr/selectableItemBackground"
+        android:padding="7dp"
+        android:src="@drawable/ic_videocam"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/input_layout_description"
+        app:tint="@color/white" />
+
+
+    <ImageView
+        android:id="@+id/iv_add_audio"
+        android:layout_width="35dp"
+        android:layout_height="35dp"
+        android:layout_marginStart="25dp"
+        android:layout_marginTop="30dp"
+        android:background="@drawable/circular_background"
+        android:backgroundTint="@color/themeColor"
+        android:clickable="true"
+        android:focusable="true"
+        android:foreground="?android:attr/selectableItemBackground"
+        android:padding="7dp"
+        android:src="@drawable/ic_mic"
+        app:layout_constraintStart_toEndOf="@+id/iv_add_video"
+        app:layout_constraintTop_toBottomOf="@+id/input_layout_description"
+        app:tint="@color/white" />
+
+    <Button
+        android:id="@+id/btn_save_waypoint"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:backgroundTint="@color/highlightColor"
+        android:text="@string/create_waypoint_save_btn"
+        android:textColor="@color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/iv_add_video" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

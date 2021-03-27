@@ -128,4 +128,7 @@
         <item name="navigationViewAccent">@color/mapboxPink</item>
     </style>
 
+    <style name="TextInputHintStyle" parent="@android:style/TextAppearance">
+        <item name="android:textColor">@color/themeColor</item>
+    </style>
 </resources>
