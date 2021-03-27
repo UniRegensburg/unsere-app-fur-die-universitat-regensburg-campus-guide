@@ -44,7 +44,6 @@ import com.sothree.slidinguppanel.SlidingUpPanelLayout
 import de.ur.explure.R
 import de.ur.explure.databinding.FragmentMapBinding
 import de.ur.explure.extensions.moveCameraToPosition
-import de.ur.explure.extensions.toLatLng
 import de.ur.explure.extensions.toPoint
 import de.ur.explure.map.CustomBuildingPlugin
 import de.ur.explure.map.LocationManager
@@ -710,20 +709,15 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
     private fun mapMatchDrawnRoute() {
         val allRoutePoints = routeLineManager?.getCompleteRoute()
 
-        // TODO: these points should probably be added as waypoints ??
-        //  (even though they are not really the waypoints needed later! These have to be added separately later)
-        //  -> this would also allow us to delete them with the deleted route part !!!
-        //  -> in this case they would need to be saved in a map with the route part as the key to delete them
         if (allRoutePoints != null) {
-            // add markers to the waypoints of the route
+            /*
+            // show markers at the automatically generated waypoints of the route
             allRoutePoints.forEach {
-                // TODO should these be show at all to the user ?
                 markerManager.addMarker(it.toLatLng())
-            }
+            }*/
             makeMatchingRequest(allRoutePoints)
 
-            // TODO if the request failed ask user if he wants to try again and edit the route
-            //  if we get a map matched route ask the user which one he wants to save (map matched or his own)
+            // TODO if we get a map matched route ask the user which one he wants to save (map matched or his own)
         }
     }
 

@@ -52,6 +52,7 @@
     <string name="menu_cancel_route_creation">Routenerstellung abbrechen</string>
     <string name="menu_save_created_route">Route speichern</string>
     <string name="menu_align_created_route">Route automatisch anpassen</string>
+    <string name="menu_show_buildings_extrusion">3D Gebäude anzeigen</string>
 
     <!-- Location Tracking -->
     <string name="gps_not_activated">GPS ist nicht aktiviert! Bitte aktiviere die Standortfreigabe in den Geräteeinstellungen, um diese Funktion zu nutzen!</string>

@@ -60,7 +60,6 @@
         android:tint="@color/colorError"
         tools:ignore="ContentDescription" />
 
-    <!-- TODO schöneren ripple effekt als das machen! -->
     <ImageButton
         android:id="@+id/reset_button"
         android:layout_width="wrap_content"

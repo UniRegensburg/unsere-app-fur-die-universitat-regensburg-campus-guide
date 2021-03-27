@@ -56,6 +56,7 @@
     <string name="menu_cancel_route_creation">Cancel route creation</string>
     <string name="menu_save_created_route">Save created route</string>
     <string name="menu_align_created_route">Align created route</string>
+    <string name="menu_show_buildings_extrusion">Show 3D buildings</string>
 
     <!-- Location Tracking -->
     <string name="gps_not_activated">GPS doesn\'t seem to be enabled! Please enable it in the device settings to continue!</string>
@@ -210,5 +211,5 @@
     <string name="add_comment">Add</string>
     <string name="answer_input">Answer</string>
     <string name="empty_comment">Please enter comment</string>
-    <string name="menu_show_buildings_extrusion">Show 3D buildings</string>
+
 </resources>

@@ -140,7 +140,6 @@ class RouteLineManager(
         val completeRoute = mutableListOf<Point>()
         routeDrawFeatureList.forEach { lineFeature ->
             val coords = lineFeature.toLineString().coordinates()
-            // completeRoute.addAll(arrayOf(coords[0], coords[coords.size - 1]))
 
             // Simplify the linestring with the Ramer-Douglas-Peucker algorithm to decrease the number
             // of route points which improves the performance and makes map matching feasible.
