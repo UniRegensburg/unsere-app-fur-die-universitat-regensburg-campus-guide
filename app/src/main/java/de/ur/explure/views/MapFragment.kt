@@ -30,6 +30,7 @@ import com.mapbox.core.constants.Constants.PRECISION_6
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.LineString
 import com.mapbox.geojson.Point
+import com.mapbox.geojson.utils.PolylineUtils
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.geometry.LatLngBounds
 import com.mapbox.mapboxsdk.location.LocationUpdate
@@ -668,7 +669,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
             if (featureList.isNotEmpty()) {
                 // delete the clicked line
                 val clickedFeature = featureList[0]
-                routeLineManager?.removeLineStringFromMap(clickedFeature)
+                routeLineManager?.removeDrawnLineStringFromMap(clickedFeature)
                 // update viewModel list
                 mapViewModel.removeDrawnLine(clickedFeature)
             }
@@ -904,7 +905,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
     }
 
     /**
-     * * Map Matching Callbacks
+     * * Map Matching
      */
 
     /**
@@ -931,6 +932,13 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
 
     private fun showMapMatchedRoute(matchedRoute: MapMatchingMatching) {
         val routeGeometry = matchedRoute.geometry() ?: return
+        // remove old map matching if there is one
+        val oldMapMatching = mapViewModel.getActiveMapMatching()
+        if (oldMapMatching != null) {
+            routeLineManager?.removeMapMatching()
+        }
+
+        // draw map matched line
         val lineString = LineString.fromPolyline(routeGeometry, PRECISION_6)
         routeLineManager?.addLineToMap(lineString)
         // save in viewmodel
@@ -964,6 +972,38 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
             colorRes = R.color.colorError,
             length = Snackbar.LENGTH_LONG
         )
+    }
+
+    private fun prepareMapMatching() {
+        if (mapViewModel.manualRouteCreationModeActive.value == true) {
+            val wayPoints = waypointsController.getAllWaypoints()
+            val simplifiedPoints = PolylineUtils.simplify(wayPoints, SIMPLIFICATION_TOLERANCE, true)
+            makeMatchingRequest(simplifiedPoints)
+        } else if (mapViewModel.routeDrawModeActive.value == true) {
+            mapMatchDrawnRoute()
+        }
+    }
+
+    private fun explainMapMatchingFunctionality() {
+        // TODO showing an info button somewhere to re-trigger this explanation would probably improve
+        //  the user experience!
+        with(MaterialAlertDialogBuilder(requireActivity())) {
+            setMessage(R.string.map_matching_explanation_confirmation)
+            setPositiveButton(R.string.yes) { _, _ ->
+                // change the dialog to show an explanation for the map matching functionality
+                setTitle(R.string.map_matching_explanation_title)
+                setMessage(R.string.map_matching_explanation_message)
+                setPositiveButton(R.string.got_it) { _, _ ->
+                    prepareMapMatching()
+                }
+                setNegativeButton(null, null)
+                show()
+            }
+            setNegativeButton(R.string.no) { _, _ ->
+                prepareMapMatching()
+            }
+            show()
+        }
     }
 
     /**
@@ -1061,39 +1101,6 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
         map.locationComponent.forceLocationUpdate(locationUpdate)
         // save the new location
         mapViewModel.setCurrentUserPosition(location)
-    }
-
-    private fun prepareMapMatching() {
-        if (mapViewModel.manualRouteCreationModeActive.value == true) {
-            val wayPoints = waypointsController.getAllWaypoints()
-            // TODO the polylineUtils could be used on these points as well!
-            //  -> maybe this would improve map matching here ??
-            makeMatchingRequest(wayPoints)
-        } else if (mapViewModel.routeDrawModeActive.value == true) {
-            mapMatchDrawnRoute()
-        }
-    }
-
-    private fun explainMapMatchingFunctionality() {
-        // TODO showing an info button somewhere to re-trigger this explanation would probably improve
-        //  the user experience!
-        with(MaterialAlertDialogBuilder(requireActivity())) {
-            setMessage(R.string.map_matching_explanation_confirmation)
-            setPositiveButton(R.string.yes) { _, _ ->
-                // change the dialog to show an explanation for the map matching functionality
-                setTitle(R.string.map_matching_explanation_title)
-                setMessage(R.string.map_matching_explanation_message)
-                setPositiveButton(R.string.got_it) { _, _ ->
-                    prepareMapMatching()
-                }
-                setNegativeButton(null, null)
-                show()
-            }
-            setNegativeButton(R.string.no) { _, _ ->
-                prepareMapMatching()
-            }
-            show()
-        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -1196,6 +1203,11 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
     companion object {
         const val selectedMarkerZoom = 17.0
 
+        // Tolerance for the douglas-peucker-simplification algorithm for manual route creation mode.
+        // Needs to be a bit lower than for free draw as we have generally less points here so
+        // results tend to be more fuzzy.
+        private const val SIMPLIFICATION_TOLERANCE = 0.00001
+
         private const val ANIMATION_DURATION = 500L // in ms
 
         // custom margins of the mapbox compass
@@ -1209,38 +1221,5 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
             .include(southWestCorner)
             .include(northEastCorner)
             .build()
-
-        // Testing routes for map matching etc.:
-        /*
-        // Busbahnhof -> Mensa -> vor Zentralbib -> Unisee -> Weg unter Mensa -> Botanischer Garten
-        val routePoints = listOf<Point>(
-            Point.fromLngLat(12.091897088615497, 48.9986755276432),
-            Point.fromLngLat(12.093398779683042, 48.99790078797133),
-            Point.fromLngLat(12.095176764949287, 48.99759573694382),
-            Point.fromLngLat(12.095045596693524, 48.99696500867813),
-            Point.fromLngLat(12.092009249797059, 48.996774307308414),
-            Point.fromLngLat(12.091600540864277, 48.99278790637206),
-        )
-
-        // Vielberthgebäude -> Unisee -> Botanischer Garten
-        val routePointsSimple = listOf<Point>(
-            Point.fromLngLat(12.095577, 49.000083),
-            Point.fromLngLat(12.095153, 48.998243),
-            Point.fromLngLat(12.091600540864277, 48.99278790637206)
-        )
-
-        // Vielberthgebäude -> PT-Cafete -> vor Zentralbib -> Mensa -> Weg unter Mensa
-        // -> Botanischer Garten -> außen vor H51 -> Chemie-Cafete -> Unisee -> Kugel
-        val routePointsComplicated = listOf<Point>(
-            Point.fromLngLat(12.095577, 49.000083),
-            Point.fromLngLat(12.095873, 48.999174),
-            Point.fromLngLat(12.095224, 48.998051),
-            Point.fromLngLat(12.093412, 48.997994),
-            Point.fromLngLat(12.091575, 48.993578),
-            Point.fromLngLat(12.094713, 48.994392),
-            Point.fromLngLat(12.095448, 48.995758),
-            Point.fromLngLat(12.095244, 48.997110),
-            Point.fromLngLat(12.095153, 48.998243)
-        )*/
     }
 }

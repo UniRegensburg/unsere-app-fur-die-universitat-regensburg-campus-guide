@@ -202,7 +202,7 @@ class RouteLineManager(
         return createLineFromGeometry(line, resolvedColor)
     }
 
-    fun removeLineStringFromMap(feature: Feature) {
+    fun removeDrawnLineStringFromMap(feature: Feature) {
         routeDrawFeatureList.forEach {
             if (it.getStringProperty(ID_PROPERTY_KEY) == feature.getStringProperty(ID_PROPERTY_KEY)) {
                 routeDrawFeatureList.remove(it)
@@ -234,6 +234,11 @@ class RouteLineManager(
         // Add an empty Feature array to the draw source to clear it
         map.style?.getSourceAs<GeoJsonSource>(DRAW_LINE_LAYER_SOURCE_ID)
             ?.setGeoJson(FeatureCollection.fromFeatures(arrayOf<Feature>()))
+    }
+
+    fun removeMapMatching() {
+        // ! the lineManager is only used to create the map matching so it's safe to simply delete all
+        lineManager.deleteAll()
     }
 
     private fun createLineFromCoordinates(
