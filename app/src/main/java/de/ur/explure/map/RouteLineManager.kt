@@ -279,7 +279,7 @@ class RouteLineManager(
         // see https://en.wikipedia.org/wiki/Ramer%E2%80%93Douglas%E2%80%93Peucker_algorithm
         private const val DEFAULT_ROUTE_TOLERANCE = 0.001
 
-        private const val MAPBOX_FIRST_LABEL_LAYER = "road-label"
+        const val MAPBOX_FIRST_LABEL_LAYER = "road-label"
         const val DRAW_LINE_LAYER_SOURCE_ID = "DRAW_LINE_LAYER_SOURCE_ID"
         const val DRAW_LINE_LAYER_ID = "DRAW_LINE_LAYER_ID"
 

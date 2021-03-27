@@ -48,11 +48,19 @@ class SharedPreferencesManager constructor(context: Application) {
         editor.apply()
     }
 
+    fun getBuildingExtrusionShown() = sharedPreferences.getBoolean(BUILDING_EXTRUSION, true)
+
+    fun setBuildingExtrusionShown(isActive: Boolean) {
+        editor.putBoolean(BUILDING_EXTRUSION, isActive)
+        editor.apply()
+    }
+
     companion object {
         private const val PREFERENCE_CONFIGURATION_NAME = "configuration"
         private const val FIRST_LAUNCH = "isFirstRun"
         private const val FIRST_ROUTE_CREATION = "isFirstRouteCreation"
         private const val FIRST_TIME_MAP_MATCHING = "isFirstTimeMapMatching"
         private const val MAP_STYLE = "currentMapStyle"
+        private const val BUILDING_EXTRUSION = "buildingExtrusionShown"
     }
 }

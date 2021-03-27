@@ -45,6 +45,8 @@ class MapViewModel(private val state: SavedStateHandle) : ViewModel() {
 
     private var currentMapStyle: Style? = null
 
+    val buildingExtrusionActive by lazy { MutableLiveData(state[BUILDING_EXTRUSION_KEY] ?: true) }
+
     private val activeDrawnLines: MutableLiveData<MutableList<Feature>> by lazy {
         MutableLiveData(state[ACTIVE_DRAWN_LINES_KEY] ?: mutableListOf())
     }
@@ -229,6 +231,11 @@ class MapViewModel(private val state: SavedStateHandle) : ViewModel() {
         }
     }
 
+    fun setBuildingExtrusionStatus(active: Boolean) {
+        buildingExtrusionActive.value = active
+        state[BUILDING_EXTRUSION_KEY] = active
+    }
+
     companion object {
         val All_MAP_STYLES = mapOf(
             "Standard" to Style.MAPBOX_STREETS,
@@ -242,6 +249,7 @@ class MapViewModel(private val state: SavedStateHandle) : ViewModel() {
         private const val USER_LOCATION_KEY = "userLocation"
         private const val CAMERA_POSITION_KEY = "cameraPosition"
         private const val LOCATION_TRACKING_KEY = "locationTrackingActive"
+        private const val BUILDING_EXTRUSION_KEY = "buildingExtrusionActive"
 
         private const val ACTIVE_MARKERS_KEY = "activeMarkers"
         private const val ACTIVE_DRAWN_LINES_KEY = "activeDrawnLines"

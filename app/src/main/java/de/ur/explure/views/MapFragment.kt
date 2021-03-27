@@ -46,6 +46,7 @@ import de.ur.explure.databinding.FragmentMapBinding
 import de.ur.explure.extensions.moveCameraToPosition
 import de.ur.explure.extensions.toLatLng
 import de.ur.explure.extensions.toPoint
+import de.ur.explure.map.CustomBuildingPlugin
 import de.ur.explure.map.LocationManager
 import de.ur.explure.map.ManualRouteCreationModes
 import de.ur.explure.map.MapMatchingClient
@@ -55,6 +56,7 @@ import de.ur.explure.map.RouteCreationMode
 import de.ur.explure.map.RouteDrawModes
 import de.ur.explure.map.RouteLineManager
 import de.ur.explure.map.RouteLineManager.Companion.DRAW_LINE_LAYER_ID
+import de.ur.explure.map.RouteLineManager.Companion.MAPBOX_FIRST_LABEL_LAYER
 import de.ur.explure.map.WaypointsController
 import de.ur.explure.utils.EventObserver
 import de.ur.explure.utils.Highlight
@@ -94,6 +96,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
     private lateinit var map: MapboxMap
     private lateinit var markerManager: MarkerManager
     private var routeLineManager: RouteLineManager? = null
+    private var buildingPlugin: CustomBuildingPlugin? = null
 
     private var routeCreationMapClickListenerBehavior: MapboxMap.OnMapClickListener? = null
 
@@ -199,6 +202,9 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
             } else {
                 exitRouteDrawMode()
             }
+        }
+        mapViewModel.buildingExtrusionActive.observe(viewLifecycleOwner) { extrusionsActive ->
+            buildingPlugin?.setVisibility(extrusionsActive)
         }
         mapViewModel.selectedMarker.observe(viewLifecycleOwner) { marker ->
             // move the camera to the selected marker
@@ -532,8 +538,6 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
         resetMapOverlays()
     }
 
-    // TODO im routeCreation Mode wärs schön wenn zusätzlich noch ein button auftauchen würde mit
-    //  dem man den Tilt einstellen kann für angenehmeres bearbeiten
     private fun enterManualRouteCreationMode() {
         performSharedCreationEnterActions()
 
@@ -821,10 +825,6 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
         // restrict the camera to a given bounding box as the app focuses only on the uni campus
         map.setLatLngBoundsForCameraTarget(latLngBounds)
 
-        // don't allow the user to tilt the map because it may confuse some users and
-        // doesn't provide any value here
-        map.uiSettings.isTiltGesturesEnabled = false
-
         // move the compass to the bottom left corner of the mapView so it doesn't overlap with buttons
         map.uiSettings.compassGravity = Gravity.BOTTOM or Gravity.START
         map.uiSettings.setCompassMargins(compassMarginLeft, 0, 0, compassMarginBottom)
@@ -879,8 +879,19 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
             // ! on the markers will be handled before clicks on the map itself!
             setupMapListeners()
 
+            // setup building plugin
+            setupBuildingExtrusions(mapStyle)
+
             mapViewModel.setMapReadyStatus(true)
         }
+    }
+
+    private fun setupBuildingExtrusions(mapStyle: Style) {
+        // setup the building plugin below the map labels so map click events are not consumed here!
+        buildingPlugin = CustomBuildingPlugin(mapStyle, MAPBOX_FIRST_LABEL_LAYER)
+
+        val visibility = preferencesManager.getBuildingExtrusionShown()
+        buildingPlugin?.setVisibility(visibility)
     }
 
     private fun setupMarkerManager(mapStyle: Style) {
@@ -1132,6 +1143,8 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
         showMapMatchingButton = menu.findItem(R.id.showMapMatchedButton)
         saveRouteButton = menu.findItem(R.id.saveRouteButton)
         // startNavigationButton = menu.findItem(R.id.startNavigationButton)
+
+        menu.findItem(R.id.show3DSwitch).isChecked = preferencesManager.getBuildingExtrusionShown()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -1163,6 +1176,13 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
                 findNavController().navigate(action)
                 true
             }*/
+            R.id.show3DSwitch -> {
+                // toggle checkmark and update viewModel & shared preferences state
+                item.isChecked = !item.isChecked
+                mapViewModel.setBuildingExtrusionStatus(item.isChecked)
+                preferencesManager.setBuildingExtrusionShown(item.isChecked)
+                true
+            }
             else -> super.onOptionsItemSelected(item)
         }
     }
