@@ -112,7 +112,7 @@ class MapViewModel(private val state: SavedStateHandle) : ViewModel() {
     }
 
     fun getAllActiveMarkers(): List<MapMarker>? {
-        return state[ACTIVE_MARKERS_KEY]
+        return mapMarkers.value
     }
 
     fun saveActiveMarkers() {
@@ -126,12 +126,14 @@ class MapViewModel(private val state: SavedStateHandle) : ViewModel() {
 
     fun setActiveMapMatching(mapMatchedRoute: LineString) {
         activeMapMatching.value = mapMatchedRoute
+    }
+
+    fun saveActiveMapMatching() {
         state[ACTIVE_MAP_MATCHED_ROUTE_KEY] = activeMapMatching.value
     }
 
     fun removeActiveMapMatching() {
         activeMapMatching.value = null
-        state[ACTIVE_MAP_MATCHED_ROUTE_KEY] = activeMapMatching.value
     }
 
     fun getActiveMapMatching(): LineString? {

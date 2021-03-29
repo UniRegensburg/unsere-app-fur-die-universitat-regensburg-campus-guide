@@ -107,6 +107,7 @@
     <string name="leave_route_creation_warning">Möchtest du die Routenerstellung abbrechen? Dein bisheriger Fortschritt geht dabei verloren!</string>
     <string name="delete_waypoint_confirmation">Möchtest du diesen Wegpunkt wirklich löschen?</string>
     <string name="delete_marker_confirmation">Möchtest du diese Markierung wirklich löschen?</string>
+    <string name="delete_route_confirmation">Möchtest du diesen Routenabschnitt wirklich löschen?</string>
     <string name="no_internet">Keine Internetverbindung!</string>
     <string name="no_internet_default_explanation">Es konnte keine Internetverbindung hergestellt werden! Überprüfe bitte deine Verbindung und versuch es dann erneut.</string>
     <string name="no_internet_map_matching">Um eine Route erstellen zu können, wird eine Internetverbindung benötigt!</string>

@@ -43,7 +43,6 @@ class MarkerManager(
 
     init {
         initMapSymbols()
-        setDefaultMarkerClickListenerBehavior()
     }
 
     private fun initMapSymbols() {

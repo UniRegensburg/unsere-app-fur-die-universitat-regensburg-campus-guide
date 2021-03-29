@@ -115,6 +115,7 @@
     <string name="leave_route_creation_warning">Do you want to leave the route creation mode? Your current progress will be lost!</string>
     <string name="delete_waypoint_confirmation">Do you really want to delete this waypoint?</string>
     <string name="delete_marker_confirmation">Do you really want to delete this marker?</string>
+    <string name="delete_route_confirmation">Do you really want to delete this route part?</string>
     <string name="no_internet">No internet connection!</string>
     <string name="no_internet_default_explanation">No internet connection could be established! Please check your connection and try again.</string>
     <string name="no_internet_map_matching">An internet connection is required to create a route!</string>
