@@ -105,6 +105,7 @@
     <!-- Warnings -->
     <string name="attention">Achtung!</string>
     <string name="leave_route_creation_warning">Möchtest du die Routenerstellung abbrechen? Dein bisheriger Fortschritt geht dabei verloren!</string>
+    <string name="change_style_during_route_creation">Während der Routenerstellung kann der Kartenstil leider nicht geändert werden!</string>
     <string name="delete_waypoint_confirmation">Möchtest du diesen Wegpunkt wirklich löschen?</string>
     <string name="delete_marker_confirmation">Möchtest du diese Markierung wirklich löschen?</string>
     <string name="delete_route_confirmation">Möchtest du diesen Routenabschnitt wirklich löschen?</string>

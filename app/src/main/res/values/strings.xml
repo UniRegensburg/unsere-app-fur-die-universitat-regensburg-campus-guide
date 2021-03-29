@@ -113,6 +113,7 @@
     <!-- Warnings -->
     <string name="attention">Attention!</string>
     <string name="leave_route_creation_warning">Do you want to leave the route creation mode? Your current progress will be lost!</string>
+    <string name="change_style_during_route_creation">Unfortunately, it isn\'t possible to change the map style during route creation!</string>
     <string name="delete_waypoint_confirmation">Do you really want to delete this waypoint?</string>
     <string name="delete_marker_confirmation">Do you really want to delete this marker?</string>
     <string name="delete_route_confirmation">Do you really want to delete this route part?</string>

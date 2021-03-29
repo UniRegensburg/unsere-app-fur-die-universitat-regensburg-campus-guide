@@ -276,6 +276,18 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
         }
 
         binding.changeStyleButton.setOnClickListener {
+            if (mapViewModel.inRouteCreationMode.value == true) {
+                // Changing the mapstyle during route creation breaks a lot of things as the style is tied
+                // internally to the symbol and the lineManager from Mapbox. So for now we just disable
+                // changing it during route creation.
+                showSnackbar(
+                    requireActivity(),
+                    R.string.change_style_during_route_creation,
+                    binding.mapButtonContainer,
+                    colorRes = R.color.colorWarning
+                )
+                return@setOnClickListener
+            }
             showMapStyleOptions(layoutResource = R.layout.popup_list_item)
         }
 
