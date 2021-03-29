@@ -18,10 +18,10 @@ class CustomBuildingPlugin(private val style: Style, belowLayer: String? = null)
 
     private var fillExtrusionLayer: FillExtrusionLayer? = null
     private var color = Color.LTGRAY
-    private var opacity = 0.6f
-    private var minZoomLevel = 15.0f
+    private var opacity = 0.9f
+    private var minZoomLevel = 15.0f // extrusions are not shown below this zoom level
 
-    var isVisible = false
+    private var isVisible = false
 
     init {
         initLayer(belowLayer)
@@ -38,29 +38,44 @@ class CustomBuildingPlugin(private val style: Style, belowLayer: String? = null)
             style.removeLayer(BUILDING_EXTRUSION_LAYER_ID)
         }
 
-        fillExtrusionLayer = FillExtrusionLayer(BUILDING_EXTRUSION_LAYER_ID, "composite")
-        fillExtrusionLayer?.sourceLayer = "building"
+        fillExtrusionLayer = FillExtrusionLayer(BUILDING_EXTRUSION_LAYER_ID, EXTRUSION_SOURCE_ID)
+        fillExtrusionLayer?.sourceLayer = EXTRUSION_SOURCE
         fillExtrusionLayer?.minZoom = minZoomLevel
+
         fillExtrusionLayer?.setProperties(
             PropertyFactory.visibility(if (isVisible) Property.VISIBLE else Property.NONE),
             PropertyFactory.fillExtrusionColor(color),
+            PropertyFactory.fillExtrusionBase(Expression.get("min_height")),
             PropertyFactory.fillExtrusionHeight(
+                // extrude based on the current zoom level (i.e. extrude more if we zoom in)
                 Expression.interpolate(
-                    Expression.exponential(1f),
-                    Expression.zoom(),
+                    Expression.exponential(1f), Expression.zoom(),
                     Expression.stop(15, Expression.literal(0)),
-                    Expression.stop(16, Expression.get("height"))
+                    Expression.stop(17, Expression.get("height"))
                 )
             ),
-            PropertyFactory.fillExtrusionOpacity(opacity)
+            // Use a runtime styling property to make the opacity
+            // dependent on the camera zoom value
+            PropertyFactory.fillExtrusionOpacity(
+                Expression.interpolate(
+                    Expression.linear(), Expression.zoom(),
+                    Expression.stop(15, .1),
+                    Expression.stop(17, opacity)
+                )
+            )
         )
         fillExtrusionLayer?.let { addLayer(it, belowLayer) }
     }
 
+    /**
+     * Add the extrusion layer to the map
+     */
     private fun addLayer(fillExtrusionLayer: FillExtrusionLayer, belowLayer: String?) {
         if (belowLayer != null && belowLayer.isNotEmpty()) {
             style.addLayerBelow(fillExtrusionLayer, belowLayer)
-        } else style.addLayer(fillExtrusionLayer)
+        } else {
+            style.addLayer(fillExtrusionLayer)
+        }
     }
 
     /**
@@ -91,6 +106,8 @@ class CustomBuildingPlugin(private val style: Style, belowLayer: String? = null)
     }
 
     companion object {
-        const val BUILDING_EXTRUSION_LAYER_ID = "mapbox-android-plugin-3d-buildings"
+        private const val BUILDING_EXTRUSION_LAYER_ID = "3d-buildings-extrusion-layer"
+        private const val EXTRUSION_SOURCE_ID = "composite" // the tileset source
+        private const val EXTRUSION_SOURCE = "building" // the tileset layer we want to extrude
     }
 }
