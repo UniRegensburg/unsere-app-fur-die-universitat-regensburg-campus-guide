@@ -34,7 +34,6 @@ class CommentAdapter(private val listener: (String, String) -> Unit) :
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-
         val binding =
                 CommentItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return ViewHolder(binding)
@@ -49,7 +48,7 @@ class CommentAdapter(private val listener: (String, String) -> Unit) :
         if (currentItem.answers.isNotEmpty() && firstTimeLoading) {
             holder.showAnswers.visibility = View.VISIBLE
             firstLoading++
-            if (firstLoading < commentList.size && firstTimeLoading) {
+            if (firstLoading >= commentList.size && firstTimeLoading) {
                 firstTimeLoading = false
             }
         }
@@ -76,7 +75,7 @@ class CommentAdapter(private val listener: (String, String) -> Unit) :
             notifyDataSetChanged()
         }
     }
-
+    // Fehler!!!! bei Antwortposten wird Löschendialog gezeigt
     private fun setOnLongClickListener(holder: ViewHolder, position: Int) {
         holder.commentItem.setOnLongClickListener {
             holder.commentItem.isLongClickable = true
