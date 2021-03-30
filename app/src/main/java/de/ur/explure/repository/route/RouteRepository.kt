@@ -18,6 +18,8 @@ interface RouteRepository {
 
     suspend fun addComment(routeId: String, commentDTO: CommentDTO): FirebaseResult<Void>
 
+    suspend fun deleteComment(commentId: String, routeId: String): FirebaseResult<Void>
+
     suspend fun addAnswer(routeId: String, commentId: String, commentDTO: CommentDTO): FirebaseResult<Void>
 
     suspend fun getLatestRoutes(lastVisibleDate: Date?, batchSize: Long): FirebaseResult<List<Route>>

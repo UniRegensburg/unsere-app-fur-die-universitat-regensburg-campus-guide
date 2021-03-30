@@ -162,6 +162,27 @@ class RouteRepositoryImpl(
     }
 
     /**
+     * Deletes a comment document in FireStore
+     *
+     * @param commentId [String] of the comments's ID
+     * @param routeId [String] of the routes's ID
+     * @return On Success: Returns [FirebaseResult.Success] with empty return\
+     * On Failure: Returns [FirebaseResult.Error] with exception\
+     * On Cancellation: Returns [FirebaseResult.Canceled] with exception
+     */
+
+    override suspend fun deleteComment(commentId: String, routeId: String): FirebaseResult<Void> {
+        return try {
+            return fireStore.routeCollection.document(routeId)
+                    .collection(COMMENT_COLLECTION_NAME)
+                    .document(commentId)
+                    .delete().await()
+        } catch (exception: Exception) {
+            FirebaseResult.Error(exception)
+        }
+    }
+
+    /**
      * Adds a new answer to a comment.
      *
      * @param routeId [String] of the route's ID

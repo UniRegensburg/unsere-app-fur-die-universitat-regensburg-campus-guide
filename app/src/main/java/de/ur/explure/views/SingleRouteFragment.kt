@@ -1,5 +1,6 @@
 package de.ur.explure.views
 
+import android.app.AlertDialog
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
@@ -18,7 +19,6 @@ import de.ur.explure.model.route.Route
 import de.ur.explure.viewmodel.SingleRouteViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.component.KoinComponent
-import org.koin.core.component.bind
 import org.koin.core.component.inject
 
 class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinComponent {
@@ -81,20 +81,21 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinCompon
         }
     }
 
+    private fun initCommentAdapter() {
+        commentAdapter = CommentAdapter { commentId, commentText ->
+            addAnswers(commentId, commentText)
+            deleteComment(commentId)
+        }
+        binding.comments.adapter = commentAdapter
+        binding.comments.layoutManager = LinearLayoutManager(requireContext())
+    }
+
     private fun addAnswers(commentId: String, answerText: String) {
         if (answerText.isNotEmpty()) {
             singleRouteViewModel.addAnswer(commentId, answerText)
         } else {
-            Toast.makeText(context, R.string.empty_comment, Toast.LENGTH_LONG).show()
+            Toast.makeText(context, R.string.empty_answer, Toast.LENGTH_LONG).show()
         }
-    }
-
-    private fun initCommentAdapter() {
-        commentAdapter = CommentAdapter { commentId, answerText ->
-            addAnswers(commentId, answerText)
-        }
-        binding.comments.adapter = commentAdapter
-        binding.comments.layoutManager = LinearLayoutManager(requireContext())
     }
 
     private fun initWayPointAdapter() {
@@ -128,5 +129,16 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinCompon
                 Toast.makeText(context, R.string.empty_comment, Toast.LENGTH_LONG).show()
             }
         }
+    }
+
+    private fun deleteComment(commentId: String) {
+        AlertDialog.Builder(requireContext())
+            .setTitle(R.string.delete_comment)
+            .setPositiveButton(R.string.delete_button) { _, _ ->
+                singleRouteViewModel.deleteComment(commentId)
+                Toast.makeText(context, R.string.password_deleted, Toast.LENGTH_LONG).show()
+            }
+            .setNegativeButton(R.string.back_button) { _, _ -> }
+            .show()
     }
 }

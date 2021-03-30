@@ -30,9 +30,11 @@ class CommentAdapter(private val listener: (String, String) -> Unit) :
         val answerItem = binding.answerItem
         val answerInput = binding.answerInput
         val answerButton = binding.addAnswerButton
+        val commentItem = binding.commentItem
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+
         val binding =
                 CommentItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return ViewHolder(binding)
@@ -47,11 +49,12 @@ class CommentAdapter(private val listener: (String, String) -> Unit) :
         if (currentItem.answers.isNotEmpty() && firstTimeLoading) {
             holder.showAnswers.visibility = View.VISIBLE
             firstLoading++
-            if (firstLoading == commentList.size && firstTimeLoading) {
+            if (firstLoading < commentList.size && firstTimeLoading) {
                 firstTimeLoading = false
             }
         }
         setOnClickListener(holder, position)
+        setOnLongClickListener(holder, position)
         holder.answerButton.setOnClickListener {
             listener(commentList[position].id, holder.answerInput.text.toString())
             holder.answerInput.text.clear()
@@ -71,6 +74,15 @@ class CommentAdapter(private val listener: (String, String) -> Unit) :
             holder.answerItem.visibility = View.GONE
             holder.showAnswers.visibility = View.VISIBLE
             notifyDataSetChanged()
+        }
+    }
+
+    private fun setOnLongClickListener(holder: ViewHolder, position: Int) {
+        holder.commentItem.setOnLongClickListener {
+            holder.commentItem.isLongClickable = true
+            listener(commentList[position].id, holder.commentText.text.toString())
+            // clickData(commentList[position].id)
+            return@setOnLongClickListener true
         }
     }
 
