@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import de.ur.explure.databinding.AnswerItemBinding
 import de.ur.explure.model.comment.Comment
 
-class AnswerAdapter : RecyclerView.Adapter<AnswerAdapter.ViewHolder>() {
+class AnswerAdapter(private val listener: (String) -> Unit) : RecyclerView.Adapter<AnswerAdapter.ViewHolder>() {
     private var answerList: MutableList<Comment> = mutableListOf()
 
     fun setItems(answers: List<Comment>) {
@@ -18,6 +18,7 @@ class AnswerAdapter : RecyclerView.Adapter<AnswerAdapter.ViewHolder>() {
         val answerAuthor = binding.answerAuthor
         val answerText = binding.answerText
         val answerDate = binding.answerDate
+        val answerItem = binding.answer
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -31,7 +32,12 @@ class AnswerAdapter : RecyclerView.Adapter<AnswerAdapter.ViewHolder>() {
         holder.answerAuthor.text = currentItem.authorId
         holder.answerText.text = currentItem.message
         holder.answerDate.text = currentItem.createdAt.toString()
+        holder.answerItem.setOnLongClickListener {
+            listener(answerList[position].id)
+            return@setOnLongClickListener true
+        }
     }
+
 
     override fun getItemCount(): Int {
         return answerList.size

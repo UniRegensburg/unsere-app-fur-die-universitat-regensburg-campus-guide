@@ -211,6 +211,30 @@ class RouteRepositoryImpl(
         }
     }
 
+    /**
+     * Adds a new answer to a comment.
+     *
+     * @param routeId [String] of the route's ID
+     * @param commentId [String] of the comment's ID
+     * @param answerId [String] of the answers's ID
+     * @return On Success: Returns [FirebaseResult.Success] with empty return\
+     * On Failure: Returns [FirebaseResult.Error] with exception\
+     * On Cancellation: Returns [FirebaseResult.Canceled] with exception
+     */
+
+    override suspend fun deleteAnswer(answerId: String, commentId: String, routeId: String): FirebaseResult<Void> {
+        return try {
+            return fireStore.routeCollection.document(routeId)
+                    .collection(COMMENT_COLLECTION_NAME)
+                    .document(commentId)
+                    .collection(ANSWER_COLLECTION_NAME)
+                    .document(answerId)
+                    .delete().await()
+        } catch (exception: Exception) {
+            FirebaseResult.Error(exception)
+        }
+    }
+
     override suspend fun getLatestRoutes(
         lastVisibleDate: Date?,
         batchSize: Long

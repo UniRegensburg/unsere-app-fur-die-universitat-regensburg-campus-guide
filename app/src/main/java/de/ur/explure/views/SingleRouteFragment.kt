@@ -11,6 +11,7 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.crazylegend.viewbinding.viewBinding
 import com.google.firebase.storage.FirebaseStorage
 import de.ur.explure.GlideApp
+import de.ur.explure.`interface`.CommentInterface
 import de.ur.explure.R
 import de.ur.explure.adapter.CommentAdapter
 import de.ur.explure.adapter.WayPointAdapter
@@ -21,7 +22,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
-class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinComponent {
+class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinComponent, CommentInterface {
 
     private val binding by viewBinding(FragmentSingleRouteBinding::bind)
     private val args: SingleRouteFragmentArgs by navArgs()
@@ -82,20 +83,9 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinCompon
     }
 
     private fun initCommentAdapter() {
-        commentAdapter = CommentAdapter { commentId, commentText ->
-            addAnswers(commentId, commentText)
-            deleteComment(commentId)
-        }
+        commentAdapter = CommentAdapter(this)
         binding.comments.adapter = commentAdapter
         binding.comments.layoutManager = LinearLayoutManager(requireContext())
-    }
-
-    private fun addAnswers(commentId: String, answerText: String) {
-        if (answerText.isNotEmpty()) {
-            singleRouteViewModel.addAnswer(commentId, answerText)
-        } else {
-            Toast.makeText(context, R.string.empty_answer, Toast.LENGTH_LONG).show()
-        }
     }
 
     private fun initWayPointAdapter() {
@@ -131,14 +121,33 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinCompon
         }
     }
 
-    private fun deleteComment(commentId: String) {
+    override fun addAnswer(commentId: String, answerText: String) {
+        if (answerText.isNotEmpty()) {
+            singleRouteViewModel.addAnswer(commentId, answerText)
+        } else {
+            Toast.makeText(context, R.string.empty_answer, Toast.LENGTH_LONG).show()
+        }
+    }
+
+    override fun deleteComment(commentId: String) {
         AlertDialog.Builder(requireContext())
             .setTitle(R.string.delete_comment)
             .setPositiveButton(R.string.delete_button) { _, _ ->
                 singleRouteViewModel.deleteComment(commentId)
-                Toast.makeText(context, R.string.password_deleted, Toast.LENGTH_LONG).show()
+                Toast.makeText(context, R.string.comment_deleted, Toast.LENGTH_LONG).show()
             }
             .setNegativeButton(R.string.back_button) { _, _ -> }
             .show()
+    }
+
+    override fun deleteAnswer(answerId: String, commentId: String) {
+        AlertDialog.Builder(requireContext())
+                .setTitle(R.string.delete_answer)
+                .setPositiveButton(R.string.delete_button) { _, _ ->
+                    singleRouteViewModel.deleteAnswer(answerId, commentId)
+                    Toast.makeText(context, R.string.answer_deleted, Toast.LENGTH_LONG).show()
+                }
+                .setNegativeButton(R.string.back_button) { _, _ -> }
+                .show()
     }
 }

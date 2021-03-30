@@ -5,12 +5,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import de.ur.explure.`interface`.CommentInterface
 import de.ur.explure.databinding.CommentItemBinding
 import de.ur.explure.model.comment.Comment
 
-class CommentAdapter(private val listener: (String, String) -> Unit) :
+class CommentAdapter(private val listener: CommentInterface) :
         RecyclerView.Adapter<CommentAdapter.ViewHolder>() {
 
+    // private val commentData: (String) -> Unit, private val answerData: (String) -> Unit,
     private var commentList: MutableList<Comment> = mutableListOf()
     private val viewPool = RecyclerView.RecycledViewPool()
     private var firstTimeLoading: Boolean = true
@@ -55,7 +57,7 @@ class CommentAdapter(private val listener: (String, String) -> Unit) :
         setOnClickListener(holder, position)
         setOnLongClickListener(holder, position)
         holder.answerButton.setOnClickListener {
-            listener(commentList[position].id, holder.answerInput.text.toString())
+            listener.addAnswer(commentList[position].id, holder.answerInput.text.toString())
             holder.answerInput.text.clear()
         }
     }
@@ -75,12 +77,11 @@ class CommentAdapter(private val listener: (String, String) -> Unit) :
             notifyDataSetChanged()
         }
     }
-    // Fehler!!!! bei Antwortposten wird Löschendialog gezeigt
+
     private fun setOnLongClickListener(holder: ViewHolder, position: Int) {
         holder.commentItem.setOnLongClickListener {
             holder.commentItem.isLongClickable = true
-            listener(commentList[position].id, holder.commentText.text.toString())
-            // clickData(commentList[position].id)
+            listener.deleteComment(commentList[position].id)
             return@setOnLongClickListener true
         }
     }
@@ -88,7 +89,9 @@ class CommentAdapter(private val listener: (String, String) -> Unit) :
     private fun initAdapter(holder: ViewHolder, position: Int) {
         val layoutManager = LinearLayoutManager(holder.answerItem.context, RecyclerView.VERTICAL, false)
         layoutManager.initialPrefetchItemCount = commentList[position].answers.size
-        val answerAdapter = AnswerAdapter()
+        val answerAdapter = AnswerAdapter { answerId ->
+            listener.deleteAnswer(answerId, commentList[position].id)
+        }
         holder.answerItem.layoutManager = layoutManager
         holder.answerItem.adapter = answerAdapter
         holder.answerItem.setRecycledViewPool(viewPool)

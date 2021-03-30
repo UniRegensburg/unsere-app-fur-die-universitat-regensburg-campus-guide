@@ -127,7 +127,9 @@
     <string name="empty_comment">Bitte Kommentar eingeben</string>
     <string name="empty_answer">Bitte Antwort eingeben</string>
     <string name="delete_comment">Kommentar löschen?</string>
-    <string name="password_deleted">Kommentar wurde gelöscht</string>
+    <string name="delete_answer">Antwort löschen?</string>
+    <string name="comment_deleted">Kommentar wurde gelöscht</string>
+    <string name="answer_deleted">Antwort wurde gelöscht</string>
     <string name="delete_button">Löschen</string>
     <string name="back_button">Zurück</string>
 

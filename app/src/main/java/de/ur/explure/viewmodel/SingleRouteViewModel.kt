@@ -61,4 +61,15 @@ class SingleRouteViewModel(private val routeRepository: RouteRepositoryImpl) : V
             }
         }
     }
+
+    fun deleteAnswer(answerId: String, commentId: String) {
+        viewModelScope.launch {
+            val routeId = route.value?.id ?: return@launch
+            when (routeRepository.deleteAnswer(answerId, commentId, routeId)) {
+                is FirebaseResult.Success -> {
+                    getRouteData(routeId)
+                }
+            }
+        }
+    }
 }

@@ -22,6 +22,8 @@ interface RouteRepository {
 
     suspend fun addAnswer(routeId: String, commentId: String, commentDTO: CommentDTO): FirebaseResult<Void>
 
+    suspend fun deleteAnswer(answerId: String, commentId: String, routeId: String): FirebaseResult<Void>
+
     suspend fun getLatestRoutes(lastVisibleDate: Date?, batchSize: Long): FirebaseResult<List<Route>>
 
     suspend fun getMostPopularRoutes(lastRating: Double?, batchSize: Long): FirebaseResult<List<Route>>
