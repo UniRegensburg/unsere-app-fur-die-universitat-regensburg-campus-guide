@@ -5,18 +5,19 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import de.ur.explure.`interface`.CommentInterface
+import de.ur.explure.Interface.CommentInterface
 import de.ur.explure.databinding.CommentItemBinding
 import de.ur.explure.model.comment.Comment
+import java.text.SimpleDateFormat
 
 class CommentAdapter(private val listener: CommentInterface) :
         RecyclerView.Adapter<CommentAdapter.ViewHolder>() {
 
-    // private val commentData: (String) -> Unit, private val answerData: (String) -> Unit,
     private var commentList: MutableList<Comment> = mutableListOf()
-    private val viewPool = RecyclerView.RecycledViewPool()
     private var firstTimeLoading: Boolean = true
     private var firstLoading: Int = 0
+    private val viewPool = RecyclerView.RecycledViewPool()
+    private val dateFormat: SimpleDateFormat = SimpleDateFormat("dd. MMM yyyy  HH:mm")
 
     fun setItems(comments: List<Comment>) {
         commentList = comments.toMutableList()
@@ -45,8 +46,9 @@ class CommentAdapter(private val listener: CommentInterface) :
         val currentItem = commentList[position]
         holder.commentAuthor.text = currentItem.authorId
         holder.commentText.text = currentItem.message
-        holder.commentDate.text = currentItem.createdAt.toString()
-        // checks if current comment has answer and if thats true enables show answers button
+        val date = dateFormat.format(currentItem.createdAt)
+        holder.commentDate.text = date.toString()
+        // checks if current comment has answer and if that's true enables show answers button
         if (currentItem.answers.isNotEmpty() && firstTimeLoading) {
             holder.showAnswers.visibility = View.VISIBLE
             firstLoading++
@@ -82,7 +84,7 @@ class CommentAdapter(private val listener: CommentInterface) :
         holder.commentItem.setOnLongClickListener {
             holder.commentItem.isLongClickable = true
             listener.deleteComment(commentList[position].id)
-            return@setOnLongClickListener true
+            true
         }
     }
 

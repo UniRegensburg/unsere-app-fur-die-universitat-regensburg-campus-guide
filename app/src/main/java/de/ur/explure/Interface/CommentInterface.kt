@@ -1,4 +1,4 @@
-package de.ur.explure.`interface`
+package de.ur.explure.Interface
 
 interface CommentInterface {
 

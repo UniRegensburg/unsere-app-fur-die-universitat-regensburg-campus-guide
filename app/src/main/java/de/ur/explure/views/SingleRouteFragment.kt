@@ -11,7 +11,7 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.crazylegend.viewbinding.viewBinding
 import com.google.firebase.storage.FirebaseStorage
 import de.ur.explure.GlideApp
-import de.ur.explure.`interface`.CommentInterface
+import de.ur.explure.Interface.CommentInterface
 import de.ur.explure.R
 import de.ur.explure.adapter.CommentAdapter
 import de.ur.explure.adapter.WayPointAdapter
