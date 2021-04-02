@@ -22,19 +22,19 @@
         tools:visible="true"
         tools:ignore="AlwaysShowAction" />
 
+    <item
+        android:id="@+id/showMapMatchedButton"
+        android:icon="@drawable/ic_magnet"
+        android:title="@string/menu_align_created_route"
+        android:visible="false"
+        app:showAsAction="always"
+        tools:visible="true" />
+
     <!-- TODO string -->
     <item
         android:id="@+id/confirmRouteButton"
         android:icon="@drawable/ic_baseline_done_24"
         android:title="Route bestätigen"
-        android:visible="false"
-        app:showAsAction="always"
-        tools:visible="true" />
-
-    <item
-        android:id="@+id/showMapMatchedButton"
-        android:icon="@drawable/ic_magnet"
-        android:title="@string/menu_align_created_route"
         android:visible="false"
         app:showAsAction="always"
         tools:visible="true" />
