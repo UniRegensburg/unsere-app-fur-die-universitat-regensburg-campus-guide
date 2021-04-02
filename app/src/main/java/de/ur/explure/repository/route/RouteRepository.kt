@@ -1,5 +1,7 @@
 package de.ur.explure.repository.route
 
+import android.graphics.Bitmap
+import com.google.firebase.storage.UploadTask
 import de.ur.explure.model.comment.CommentDTO
 import de.ur.explure.model.route.Route
 import de.ur.explure.model.route.RouteDTO
@@ -23,4 +25,6 @@ interface RouteRepository {
     suspend fun getLatestRoutes(lastVisibleDate: Date?, batchSize: Long): FirebaseResult<List<Route>>
 
     suspend fun getMostPopularRoutes(lastRating: Double?, batchSize: Long): FirebaseResult<List<Route>>
+
+    suspend fun uploadRouteThumbnail(bitmap: Bitmap): FirebaseResult<UploadTask.TaskSnapshot>
 }

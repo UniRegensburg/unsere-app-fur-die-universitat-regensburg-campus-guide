@@ -1,6 +1,7 @@
 package de.ur.explure.utils
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.view.View
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
@@ -8,6 +9,8 @@ import android.widget.FrameLayout
 import android.widget.ListAdapter
 import androidx.fragment.app.Fragment
 import de.ur.explure.R
+import timber.log.Timber
+import java.nio.ByteBuffer
 
 /**
  * Returns the width of the longest item in a list.
@@ -64,4 +67,49 @@ fun Fragment.slideInView(v: View) {
     v.startAnimation(slideInAnim)
     v.visibility = View.VISIBLE
     v.clearAnimation()
+}
+
+/**
+ * Convert bitmap to byte array using ByteBuffer.
+ */
+fun Bitmap.convertToByteArray(): ByteArray {
+    // minimum number of bytes that can be used to store this bitmap's pixels
+    val size = this.byteCount
+
+    // allocate new instances which will hold bitmap
+    val buffer = ByteBuffer.allocate(size)
+    val bytes = ByteArray(size)
+
+    // copy the bitmap's pixels into the specified buffer
+    this.copyPixelsToBuffer(buffer)
+
+    // rewinds buffer (buffer position is set to zero and the mark is discarded)
+    buffer.rewind()
+
+    // transfer bytes from buffer into the given destination array
+    buffer.get(bytes)
+
+    // return bitmap's pixels
+    return bytes
+}
+
+/**
+ * Util-Function-Wrapper to measure execution time of a function in milliseconds.
+ *
+ * Can be called like this:
+ * ```
+ * val result = measureTimeFor("uploading route snapshot") {
+ *      mapViewModel.uploadRouteSnapshot(routeBitmap)
+ * }
+ * ```
+ * or with a proper function:
+ * ```
+ * val result = measureTimeFor("uploading route snapshot", function = uploadSnapshot())
+ * ```
+ */
+inline fun <T> measureTimeFor(tag: String = "Execution of function", function: () -> T): T {
+    val startTime = System.currentTimeMillis()
+    val result: T = function.invoke()
+    Timber.d("$tag took ${System.currentTimeMillis() - startTime} ms.")
+    return result
 }

@@ -12,17 +12,17 @@ import com.crazylegend.viewbinding.viewBinding
 import de.ur.explure.R
 import de.ur.explure.adapter.CategorySpinnerAdapter
 import de.ur.explure.adapter.WayPointCreateAdapter
-import de.ur.explure.databinding.FragmentCreateRouteBinding
+import de.ur.explure.databinding.FragmentSaveRouteBinding
 import de.ur.explure.model.category.Category
 import de.ur.explure.model.waypoint.WayPointDTO
-import de.ur.explure.viewmodel.CreateRouteViewModel
+import de.ur.explure.viewmodel.SaveRouteViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class CreateRouteFragment : Fragment(R.layout.fragment_create_route) {
+class SaveRouteFragment : Fragment(R.layout.fragment_save_route) {
 
-    private val binding by viewBinding(FragmentCreateRouteBinding::bind)
-    private val viewModel: CreateRouteViewModel by viewModel()
-    private val args: CreateRouteFragmentArgs by navArgs()
+    private val binding by viewBinding(FragmentSaveRouteBinding::bind)
+    private val viewModel: SaveRouteViewModel by viewModel()
+    private val args: SaveRouteFragmentArgs by navArgs()
 
     private lateinit var categoryAdapter: CategorySpinnerAdapter
     private lateinit var wayPointAdapter: WayPointCreateAdapter
@@ -70,7 +70,7 @@ class CreateRouteFragment : Fragment(R.layout.fragment_create_route) {
     }
 
     private fun initWayPointEditObserver() {
-        val navBackStackEntry = findNavController().getBackStackEntry(R.id.createRouteFragment)
+        val navBackStackEntry = findNavController().getBackStackEntry(R.id.saveRouteFragment)
 
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_RESUME &&

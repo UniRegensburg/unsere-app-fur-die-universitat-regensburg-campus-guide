@@ -38,8 +38,6 @@ import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
 import com.mapbox.mapboxsdk.maps.Style
-import com.mapbox.turf.TurfConstants
-import com.mapbox.turf.TurfMeasurement
 import com.sothree.slidinguppanel.SlidingUpPanelLayout
 import de.ur.explure.R
 import de.ur.explure.databinding.FragmentMapBinding
@@ -119,7 +117,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
     // action menu items
     private var cancelRouteCreationButton: MenuItem? = null
     private var showMapMatchingButton: MenuItem? = null
-    private var saveRouteButton: MenuItem? = null
+    private var confirmRouteButton: MenuItem? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -231,7 +229,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
         // show the menu items if in route creation mode and hide them if not
         cancelRouteCreationButton?.isVisible = visible
         showMapMatchingButton?.isVisible = visible
-        saveRouteButton?.isVisible = visible
+        confirmRouteButton?.isVisible = visible
     }
 
     /**
@@ -791,13 +789,14 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
         }
     }
 
-    private fun confirmSavingRoute() {
+    private fun confirmRoute() {
         with(MaterialAlertDialogBuilder(requireActivity())) {
-            setTitle(R.string.save_created_route_confirmation)
+            // TODO
+            setMessage("Wenn du zum nächsten Schritt der Routenerstellung übergehst, kannst du nicht" +
+                    " mehr in diesen Modus zurückkehren! Möchtest du trotzdem diese Ansicht verlassen?")
             setPositiveButton(R.string.yes) { _, _ ->
                 // TODO auch hier automatisch erst einen MapMatching Request versuchen?
                 saveCreatedRoute()
-                mapViewModel.exitCurrentRouteCreationMode()
             }
             setNegativeButton(R.string.continue_edit) { _, _ -> }
             show()
@@ -805,12 +804,11 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
     }
 
     private fun saveCreatedRoute() {
-        // TODO:
-        // - make a snapshot of the created route with the Mapbox Snapshotter and save it to firebase storage
-        // - set the snapshot as route thumbnail and save the new route for this user to firebase via viewmodel
+        // TODO ?
+        // prepareMapMatching()
 
         // TODO get length and duration of route directly from mapMatching when saving it!
-        // -> only use turf if the user saved his own route instead of the mapMatching!
+        //  -> only use turf if the user saved his own route instead of the mapMatching!
         val route = mapViewModel.getActiveMapMatching()
 
         // TODO more error handling
@@ -822,14 +820,15 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
             )
             return
         }
-        val routeLength = TurfMeasurement.length(route.coordinates(), TurfConstants.UNIT_METERS)
-        Toast.makeText(
-            requireContext(),
-            "Länge der erstellten Route: $routeLength m",
-            Toast.LENGTH_SHORT
-        ).show()
 
-        // TODO navigate to route editing and allow user to place (additional) markers on the route!
+        mapViewModel.exitCurrentRouteCreationMode()
+
+        // navigate to route editing and allow user to place (additional) markers on the route
+        if (mapViewModel.manualRouteCreationModeActive.value == true) {
+            mapViewModel.navigateToEditScreen(route, mapViewModel.getAllActiveMarkers())
+        } else {
+            mapViewModel.navigateToEditScreen(route)
+        }
     }
 
     /**
@@ -1168,11 +1167,11 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.map_menu, menu)
+        inflater.inflate(R.menu.menu_map, menu)
 
         cancelRouteCreationButton = menu.findItem(R.id.cancelRouteCreationButton)
         showMapMatchingButton = menu.findItem(R.id.showMapMatchedButton)
-        saveRouteButton = menu.findItem(R.id.saveRouteButton)
+        confirmRouteButton = menu.findItem(R.id.confirmRouteButton)
         // startNavigationButton = menu.findItem(R.id.startNavigationButton)
 
         menu.findItem(R.id.show3DSwitch).isChecked = preferencesManager.getBuildingExtrusionShown()
@@ -1193,8 +1192,8 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
                 }
                 true
             }
-            R.id.saveRouteButton -> {
-                confirmSavingRoute()
+            R.id.confirmRouteButton -> {
+                confirmRoute()
                 true
             }
             /*
@@ -1283,6 +1282,9 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
         private const val SIMPLIFICATION_TOLERANCE = 0.00001
 
         private const val ANIMATION_DURATION = 500L // in ms
+
+        // TODO move things below to mapUtil to share some code with editRouteFragment
+        //  (oder gleich einen eigenen MapManager?)
 
         // custom margins of the mapbox compass
         private const val compassMarginLeft = 10

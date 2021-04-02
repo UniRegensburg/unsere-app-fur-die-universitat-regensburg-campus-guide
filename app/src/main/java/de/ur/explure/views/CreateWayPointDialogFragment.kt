@@ -97,7 +97,7 @@ class CreateWayPointDialogFragment : DialogFragment(R.layout.dialog_create_waypo
             val wayPointDTO = viewModel.newWayPointDTO.value
             if (wayPointDTO != null) {
                 findNavController().previousBackStackEntry?.savedStateHandle?.set(
-                    CreateRouteFragment.WAYPOINT_EDIT_KEY, wayPointDTO
+                    SaveRouteFragment.WAYPOINT_EDIT_KEY, wayPointDTO
                 )
             }
             dismiss()

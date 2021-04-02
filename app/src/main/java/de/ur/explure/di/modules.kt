@@ -23,19 +23,20 @@ import de.ur.explure.services.FireStoreInstance
 import de.ur.explure.services.FirebaseAuthService
 import de.ur.explure.utils.SharedPreferencesManager
 import de.ur.explure.viewmodel.AuthenticationViewModel
-import de.ur.explure.viewmodel.CreateRouteViewModel
-import de.ur.explure.viewmodel.CreateWayPointViewModel
-import de.ur.explure.viewmodel.DiscoverViewModel
 import de.ur.explure.viewmodel.CategoryViewModel
+import de.ur.explure.viewmodel.CreateWayPointViewModel
+import de.ur.explure.viewmodel.CreatedRoutesViewModel
+import de.ur.explure.viewmodel.DiscoverViewModel
+import de.ur.explure.viewmodel.EditRouteViewModel
+import de.ur.explure.viewmodel.FavoriteRoutesViewModel
 import de.ur.explure.viewmodel.MainViewModel
 import de.ur.explure.viewmodel.MapViewModel
+import de.ur.explure.viewmodel.ProfileViewModel
+import de.ur.explure.viewmodel.SaveRouteViewModel
 import de.ur.explure.viewmodel.SingleRouteViewModel
+import de.ur.explure.viewmodel.StatisticsViewModel
 import de.ur.explure.viewmodel.WordSearchViewModel
 import org.koin.android.ext.koin.androidApplication
-import de.ur.explure.viewmodel.ProfileViewModel
-import de.ur.explure.viewmodel.CreatedRoutesViewModel
-import de.ur.explure.viewmodel.FavoriteRoutesViewModel
-import de.ur.explure.viewmodel.StatisticsViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
@@ -75,7 +76,7 @@ val mainModule = module {
 
     // repositories
     single { RatingRepositoryImpl(get(), get()) }
-    single { RouteRepositoryImpl(get(), get()) }
+    single { RouteRepositoryImpl(get(), get(), get()) }
     single { UserRepositoryImpl(get(), get(), get()) }
 	single { CategoryRepositoryImpl(get(), get()) }
 
@@ -85,8 +86,9 @@ val mainModule = module {
     viewModel { CategoryViewModel(get(), get()) }
     viewModel { DiscoverViewModel(get(), get(), get()) }
     viewModel { MainViewModel(get(), get()) }
-    viewModel { MapViewModel(get()) }
-    viewModel { CreateRouteViewModel(get(), get(), get()) }
+    viewModel { MapViewModel(get(), get()) }
+    viewModel { EditRouteViewModel(get()) }
+    viewModel { SaveRouteViewModel(get(), get(), get()) }
     viewModel { CreateWayPointViewModel() }
 	viewModel { ProfileViewModel(get(), get(), get()) }
     viewModel { CreatedRoutesViewModel(get(), get(), get()) }

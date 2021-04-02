@@ -1,5 +1,6 @@
 package de.ur.explure.repository.route
 
+import android.graphics.Bitmap
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldPath
@@ -7,6 +8,8 @@ import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.QueryDocumentSnapshot
 import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.WriteBatch
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.UploadTask
 import de.ur.explure.config.ErrorConfig
 import de.ur.explure.config.FirebaseCollections.ANSWER_COLLECTION_NAME
 import de.ur.explure.config.FirebaseCollections.COMMENT_COLLECTION_NAME
@@ -22,13 +25,15 @@ import de.ur.explure.model.waypoint.WayPoint
 import de.ur.explure.services.FireStoreInstance
 import de.ur.explure.services.FirebaseAuthService
 import de.ur.explure.utils.FirebaseResult
+import de.ur.explure.utils.convertToByteArray
 import timber.log.Timber
-import java.util.Date
+import java.util.*
 
 @Suppress("TooGenericExceptionCaught", "UnnecessaryParentheses", "ReturnCount")
 class RouteRepositoryImpl(
     private val authService: FirebaseAuthService,
-    private val fireStore: FireStoreInstance
+    private val fireStore: FireStoreInstance,
+    private val fireStorage: FirebaseStorage
 ) : RouteRepository {
 
     /**
@@ -331,6 +336,48 @@ class RouteRepositoryImpl(
                 is FirebaseResult.Error -> FirebaseResult.Error(categoryResult.exception)
                 is FirebaseResult.Canceled -> FirebaseResult.Canceled(categoryResult.exception)
             }
+        } catch (exception: Exception) {
+            FirebaseResult.Error(exception)
+        }
+    }
+
+    override suspend fun uploadRouteThumbnail(bitmap: Bitmap): FirebaseResult<UploadTask.TaskSnapshot> {
+        return try {
+            val userId = authService.getCurrentUserId() ?: return ErrorConfig.NO_USER_RESULT
+            val secretId = UUID.randomUUID().toString()
+            val storageRef = fireStorage.reference.child("route_thumbnails/$userId-$secretId")
+
+            Timber.d("Downloadurl in route repo: ${storageRef.downloadUrl}")
+
+            /*
+            // convert bitmap to stream
+            val byteSize: Int = bitmap.rowBytes * bitmap.height
+            val byteBuffer: ByteBuffer = ByteBuffer.allocate(byteSize)
+            bitmap.copyPixelsToBuffer(byteBuffer)
+            // Get the byteArray.
+            val byteArray: ByteArray = byteBuffer.array()
+            // TODO test this:
+            // val byteArray = bitmap.convertToByteArray()
+
+            // Get the ByteArrayInputStream.
+            val bs = ByteArrayInputStream(byteArray)
+
+            val uploadTask = storageRef.putStream(bs)
+*/
+
+            /*
+            val baos = ByteArrayOutputStream()
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
+            val byteArray = baos.toByteArray()
+            //val byteArray = bitmap.convertToByteArray()
+            bitmap.recycle()
+            val uploadTask = storageRef.putBytes(byteArray)
+*/
+            val byteArray = bitmap.convertToByteArray()
+            bitmap.recycle()
+            val uploadTask = storageRef.putBytes(byteArray)
+
+            uploadTask.await()
         } catch (exception: Exception) {
             FirebaseResult.Error(exception)
         }

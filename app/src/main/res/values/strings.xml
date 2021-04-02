@@ -120,6 +120,7 @@
     <string name="no_internet">No internet connection!</string>
     <string name="no_internet_default_explanation">No internet connection could be established! Please check your connection and try again.</string>
     <string name="no_internet_map_matching">An internet connection is required to create a route!</string>
+    <string name="no_internet_save_route">To save the route an internet connection is required!</string>
     <string name="too_few_waypoints">There must be at least 2 way points on the map to create a route!</string>
     <string name="too_many_waypoints">Unfortunately, a route with so many waypoints cannot be created! Please try to remove some unnecessary points.</string>
 

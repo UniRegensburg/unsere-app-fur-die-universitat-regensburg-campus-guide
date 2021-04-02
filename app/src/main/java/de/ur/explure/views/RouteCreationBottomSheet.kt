@@ -75,6 +75,9 @@ class RouteCreationBottomSheet : Fragment(R.layout.route_creation_bottomsheet),
             }
         }
 
+        // TODO: drag and drop MUST also update the viewmodel marker list and the waypointsController
+        //  to change the route!! => maybe use drag & drop not here but later during route editing ?
+
         // enable drag & drop on this recyclerview
         val callback: ItemTouchHelper.Callback = ItemDragHelper(routeCreationAdapter ?: return)
         itemTouchHelper = ItemTouchHelper(callback)

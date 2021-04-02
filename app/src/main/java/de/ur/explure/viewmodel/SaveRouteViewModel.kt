@@ -10,11 +10,11 @@ import de.ur.explure.navigation.MainAppRouter
 import de.ur.explure.repository.category.CategoryRepositoryImpl
 import de.ur.explure.repository.route.RouteRepositoryImpl
 import de.ur.explure.utils.FirebaseResult
-import de.ur.explure.views.CreateRouteFragmentDirections
+import de.ur.explure.views.SaveRouteFragmentDirections
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-class CreateRouteViewModel(
+class SaveRouteViewModel(
     private val appRouter: MainAppRouter,
     private val categoryRepo: CategoryRepositoryImpl,
     private val routeRepository: RouteRepositoryImpl
@@ -43,7 +43,7 @@ class CreateRouteViewModel(
 
     fun openWayPointDialogFragment(wayPointDTO: WayPointDTO) {
         val directions =
-            CreateRouteFragmentDirections.actionCreateRouteFragmentToCreateWayPointDialog(
+            SaveRouteFragmentDirections.actionSaveRouteFragmentToCreateWayPointDialog(
                 wayPointDTO
             )
         appRouter.getNavController()?.navigate(

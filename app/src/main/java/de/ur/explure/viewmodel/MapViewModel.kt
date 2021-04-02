@@ -17,6 +17,7 @@ import de.ur.explure.map.RouteDrawModes
 import de.ur.explure.map.RouteLineManager.Companion.ID_PROPERTY_KEY
 import de.ur.explure.model.MapMarker
 import de.ur.explure.model.waypoint.WayPoint
+import de.ur.explure.navigation.MainAppRouter
 import de.ur.explure.utils.Event
 import java.util.*
 
@@ -24,7 +25,7 @@ import java.util.*
  * Map Viewmodel to handle and preserve map state.
  */
 @Suppress("TooManyFunctions")
-class MapViewModel(private val state: SavedStateHandle) : ViewModel() {
+class MapViewModel(private val state: SavedStateHandle, private val appRouter: MainAppRouter) : ViewModel() {
 
     private val _mapReady = MutableLiveData<Event<Boolean>>()
     val mapReady: LiveData<Event<Boolean>> = _mapReady
@@ -236,6 +237,10 @@ class MapViewModel(private val state: SavedStateHandle) : ViewModel() {
     fun setBuildingExtrusionStatus(active: Boolean) {
         buildingExtrusionActive.value = active
         state[BUILDING_EXTRUSION_KEY] = active
+    }
+
+    fun navigateToEditScreen(route: LineString, routeMarkers: List<MapMarker>? = null) {
+        appRouter.navigateToRouteEditFragment(route, routeMarkers)
     }
 
     companion object {
