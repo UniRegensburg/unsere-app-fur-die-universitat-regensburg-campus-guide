@@ -1,5 +1,6 @@
 package de.ur.explure.views
 
+import android.content.Context
 import android.graphics.RectF
 import android.location.Location
 import android.os.Bundle
@@ -81,6 +82,8 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
 
     private val binding by viewBinding(FragmentMapBinding::bind)
 
+    private var activityCallback: MapFragmentListener? = null
+
     // Setting the state as emptyState as a workaround for this issue: https://github.com/InsertKoinIO/koin/issues/963
     // private val mapViewModel: MapViewModel by viewModel(state = emptyState())
     private val mapViewModel: MapViewModel by sharedViewModel(state = emptyState())
@@ -154,6 +157,11 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
         }
     }
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        activityCallback = context as? MapFragmentListener
+    }
+
     private fun setupViewModelObservers() {
         mapViewModel.mapReady.observe(viewLifecycleOwner, EventObserver {
             // this should only get called if the event has never been handled before because of the EventObserver
@@ -161,6 +169,8 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
             setupInitialUIState()
         })
         mapViewModel.inRouteCreationMode.observe(viewLifecycleOwner) { inRouteCreationMode ->
+            activityCallback?.onRouteCreationActive(inRouteCreationMode) // inform the observers
+
             if (inRouteCreationMode) {
                 // enable the observer on the back button and show some menu actions
                 backPressedCallback?.isEnabled = true
@@ -507,7 +517,10 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
 
         // reset current highlight
         optionsPanelLayout.children.forEach {
-            it.background = ContextCompat.getDrawable(requireActivity(), R.drawable.background_icon_button)
+            it.background = ContextCompat.getDrawable(
+                requireActivity(),
+                R.drawable.background_icon_button
+            )
         }
 
         // get button for current mode and highlight it
@@ -792,8 +805,10 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
     private fun confirmRoute() {
         with(MaterialAlertDialogBuilder(requireActivity())) {
             // TODO
-            setMessage("Wenn du zum nächsten Schritt der Routenerstellung übergehst, kannst du nicht" +
-                    " mehr in diesen Modus zurückkehren! Möchtest du trotzdem diese Ansicht verlassen?")
+            setMessage(
+                "Wenn du zum nächsten Schritt der Routenerstellung übergehst, kannst du nicht" +
+                        " mehr in diesen Modus zurückkehren! Möchtest du trotzdem diese Ansicht verlassen?"
+            )
             setPositiveButton(R.string.yes) { _, _ ->
                 // TODO auch hier automatisch erst einen MapMatching Request versuchen?
                 saveCreatedRoute()
@@ -1297,5 +1312,9 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
             .include(southWestCorner)
             .include(northEastCorner)
             .build()
+    }
+
+    interface MapFragmentListener {
+        fun onRouteCreationActive(active: Boolean)
     }
 }

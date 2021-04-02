@@ -14,22 +14,20 @@ import de.ur.explure.databinding.ActivityMainBinding
 import de.ur.explure.map.PermissionHelper
 import de.ur.explure.navigation.MainAppRouter
 import de.ur.explure.viewmodel.MainViewModel
-import de.ur.explure.viewmodel.MapViewModel
+import de.ur.explure.views.MapFragment
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
-import org.koin.androidx.viewmodel.scope.emptyState
 import timber.log.Timber
 
 /**
  * Main activity of the single activity application.
  */
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), MapFragment.MapFragmentListener {
 
     // Uses this library to reduce viewbinding boilerplate code: https://github.com/FunkyMuse/KAHelpers/tree/master/viewbinding
     private val activityMainBinding by viewBinder(ActivityMainBinding::inflate)
 
-    private val mapViewModel: MapViewModel by viewModel(state = emptyState())
     private val mainViewModel: MainViewModel by viewModel()
     private val mainAppRouter: MainAppRouter by inject()
 
@@ -45,34 +43,10 @@ class MainActivity : AppCompatActivity() {
 
         setupBottomNavigation()
         setupToolbar()
-        setupViewModelObservers()
 
         // only set the auth state observer if the activity is created from scratch
         if (savedInstanceState == null) {
             mainViewModel.observeAuthState(this)
-        }
-    }
-
-    /*
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        super.onRestoreInstanceState(savedInstanceState)
-        // restore the old state
-        setupBottomNavigation()
-        setupToolbar()
-    }*/
-
-    private fun setupViewModelObservers() {
-        // hide the bottom navigation bar when the user enters route creation mode on the map
-        mapViewModel.inRouteCreationMode.observe(this) {
-            hideBottomNavDuringRouteCreation(it)
-        }
-    }
-
-    private fun hideBottomNavDuringRouteCreation(routeCreationActive: Boolean) {
-        if (routeCreationActive) {
-            activityMainBinding.bottomNav.visibility = View.GONE
-        } else {
-            activityMainBinding.bottomNav.visibility = View.VISIBLE
         }
     }
 
@@ -109,7 +83,7 @@ class MainActivity : AppCompatActivity() {
                 // Hide the bottom navigation bar in all views except the top level ones.
                 // Also hide the appbar in the login and register fragment as well.
                 when (destination.id) {
-                    in topLevelDestinations -> {
+                    in bottomNavDestinations -> {
                         activityMainBinding.bottomNav.visibility = View.VISIBLE
                         activityMainBinding.appBar.visibility = View.VISIBLE
                     }
@@ -117,12 +91,27 @@ class MainActivity : AppCompatActivity() {
                         activityMainBinding.appBar.visibility = View.GONE
                         activityMainBinding.bottomNav.visibility = View.GONE
                     }
+                    in nestedTopLevelDestinations -> {
+                        activityMainBinding.bottomNav.visibility = View.GONE
+                        supportActionBar?.setHomeButtonEnabled(false) // hide 'up'-button
+                    }
                     else -> {
                         activityMainBinding.bottomNav.visibility = View.GONE
                     }
                 }
             }
         navController.addOnDestinationChangedListener(destinationChangeListener ?: return)
+    }
+
+    override fun onRouteCreationActive(active: Boolean) {
+        // hide the bottom navigation bar when the user enters route creation mode on the map
+        // and show it again after leaving it; using a listener here is better than a shared viewModel
+        // as this prevents bugs when rotating the phone
+        if (active) {
+            activityMainBinding.bottomNav.visibility = View.GONE
+        } else {
+            activityMainBinding.bottomNav.visibility = View.VISIBLE
+        }
     }
 
     /**
@@ -181,12 +170,19 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
 
-        // The top level views of the app
-        val topLevelDestinations = setOf(
+        // The bottom navigation tabs
+        val bottomNavDestinations = setOf(
             R.id.discoverFragment,
             R.id.mapFragment,
             R.id.profileFragment
         )
+        // no 'Up'-Button and no bottom navigation in these
+        // (normal nested views only have the bottom nav hidden but do have an up - button)
+        val nestedTopLevelDestinations = setOf(
+            R.id.editRouteFragment
+        )
+
+        val topLevelDestinations = bottomNavDestinations.plus(nestedTopLevelDestinations)
 
         // The views in the authentication process
         val authGraphDestinations = setOf(
