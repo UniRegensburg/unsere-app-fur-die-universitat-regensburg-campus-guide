@@ -1,15 +1,16 @@
 package de.ur.explure.adapter
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import de.ur.explure.Interface.CommentInterface
 import de.ur.explure.databinding.CommentItemBinding
 import de.ur.explure.model.comment.Comment
 import java.text.SimpleDateFormat
 
+@SuppressLint("SimpleDateFormat")
 class CommentAdapter(private val listener: CommentInterface) :
         RecyclerView.Adapter<CommentAdapter.ViewHolder>() {
 
@@ -21,6 +22,7 @@ class CommentAdapter(private val listener: CommentInterface) :
 
     fun setItems(comments: List<Comment>) {
         commentList = comments.toMutableList()
+        sortComments()
         this.notifyDataSetChanged()
     }
 
@@ -98,6 +100,13 @@ class CommentAdapter(private val listener: CommentInterface) :
         holder.answerItem.adapter = answerAdapter
         holder.answerItem.setRecycledViewPool(viewPool)
         answerAdapter.setItems(commentList[position].answers)
+    }
+
+    // sorts comments by Date and puts newest comment on the top
+    private fun sortComments() {
+        commentList.sortWith { o1, o2 ->
+                o2.createdAt.compareTo(o1.createdAt)
+        }
     }
 
     override fun getItemCount(): Int {

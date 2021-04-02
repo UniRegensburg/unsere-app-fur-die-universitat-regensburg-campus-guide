@@ -1,5 +1,6 @@
 package de.ur.explure.adapter
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -7,6 +8,7 @@ import de.ur.explure.databinding.AnswerItemBinding
 import de.ur.explure.model.comment.Comment
 import java.text.SimpleDateFormat
 
+@SuppressLint("SimpleDateFormat")
 class AnswerAdapter(private val listener: (String) -> Unit) : RecyclerView.Adapter<AnswerAdapter.ViewHolder>() {
 
     private var answerList: MutableList<Comment> = mutableListOf()
@@ -14,7 +16,8 @@ class AnswerAdapter(private val listener: (String) -> Unit) : RecyclerView.Adapt
 
     fun setItems(answers: List<Comment>) {
         answerList = answers.toMutableList()
-        this.notifyDataSetChanged()
+        sortAnswers()
+        // this.notifyDataSetChanged()
     }
 
     inner class ViewHolder(binding: AnswerItemBinding) : RecyclerView.ViewHolder(binding.root) {
@@ -39,6 +42,13 @@ class AnswerAdapter(private val listener: (String) -> Unit) : RecyclerView.Adapt
         holder.answerItem.setOnLongClickListener {
             listener(answerList[position].id)
             return@setOnLongClickListener true
+        }
+    }
+
+    // sorts answers by Date and puts newest answer on the top
+    private fun sortAnswers() {
+        answerList.sortWith { o1, o2 ->
+            o2.createdAt.compareTo(o1.createdAt)
         }
     }
 
