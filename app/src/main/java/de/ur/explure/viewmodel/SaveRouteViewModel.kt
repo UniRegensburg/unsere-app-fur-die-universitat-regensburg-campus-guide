@@ -78,6 +78,7 @@ class SaveRouteViewModel(
         routeDTO.duration = duration
     }
 
+    // TODO only update the route here! saving it has already happened!
     fun saveRoute() {
         routeDTO.wayPoints = wayPointDTOs.value ?: mutableListOf()
         viewModelScope.launch {

@@ -13,6 +13,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.crazylegend.viewbinding.viewBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.android.material.snackbar.Snackbar
 import com.mapbox.core.constants.Constants.PRECISION_6
 import com.mapbox.geojson.LineString
 import com.mapbox.geojson.Point
@@ -22,27 +23,29 @@ import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
 import com.mapbox.mapboxsdk.maps.Style
-import com.mapbox.mapboxsdk.snapshotter.MapSnapshotter
 import com.mapbox.turf.TurfConstants
 import com.mapbox.turf.TurfMeasurement
 import de.ur.explure.R
 import de.ur.explure.databinding.FragmentEditRouteBinding
+import de.ur.explure.extensions.toLatLng
 import de.ur.explure.map.MarkerManager
 import de.ur.explure.map.RouteLineManager
 import de.ur.explure.utils.SharedPreferencesManager
 import de.ur.explure.utils.hasInternetConnection
 import de.ur.explure.utils.measureTimeFor
+import de.ur.explure.utils.showSnackbar
 import de.ur.explure.viewmodel.EditRouteViewModel
 import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.androidx.viewmodel.scope.emptyState
 import org.koin.core.parameter.parametersOf
 import timber.log.Timber
 
 class EditRouteFragment : Fragment(R.layout.fragment_edit_route), OnMapReadyCallback {
 
     private val binding by viewBinding(FragmentEditRouteBinding::bind)
-    private val editRouteViewModel: EditRouteViewModel by viewModel()
+    private val editRouteViewModel: EditRouteViewModel by viewModel(state = emptyState())
 
     private val args: EditRouteFragmentArgs by navArgs()
 
@@ -55,22 +58,21 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route), OnMapReadyCall
     private lateinit var markerManager: MarkerManager
     private var routeLineManager: RouteLineManager? = null
 
-    private var mapSnapshotter: MapSnapshotter? = null
-
     private var mapClickListener: MapboxMap.OnMapClickListener? = null
     private var backPressedCallback: OnBackPressedCallback? = null
+
+    private var uploadSnackbar: Snackbar? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setHasOptionsMenu(true)
 
-        editRouteViewModel.route = LineString.fromPolyline(args.routePolyline, PRECISION_6)
+        editRouteViewModel.saveRoute(LineString.fromPolyline(args.routePolyline, PRECISION_6))
         Timber.d("Route: ${editRouteViewModel.route}")
-        editRouteViewModel.routeMarkers = args.routeMarkers?.toList()
+        editRouteViewModel.saveMapMarkers(args.routeMarkers?.toList())
 
         setupBackButtonClickObserver()
         setupViewModelObservers()
-        // setupUI()
 
         // TODO sliding panel hier statt in mapFragment?
         // setup the sliding panel BEFORE the map!
@@ -88,52 +90,103 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route), OnMapReadyCall
             viewLifecycleOwner,
             enabled = true
         ) {
-            with(MaterialAlertDialogBuilder(requireActivity())) {
-                setTitle(R.string.attention)
-                setMessage("Wenn du jetzt abbrichst, wird diese Route nicht gespeichert und dein bisheriger " +
-                        "Fortschritt geht verloren! Möchtest du wirklich zurückgehen?")
-                setPositiveButton(R.string.yes) { _, _ -> findNavController().navigateUp() }
-                setNegativeButton(R.string.continue_edit) { _, _ -> }
-                show()
-            }
+            showCancelRouteEditingDialog()
+        }
+    }
+
+    private fun showCancelRouteEditingDialog() {
+        with(MaterialAlertDialogBuilder(requireActivity())) {
+            setTitle(R.string.attention)
+            setMessage(
+                "Wenn du jetzt abbrichst, wird diese Route nicht gespeichert und dein bisheriger " +
+                        "Fortschritt geht verloren! Möchtest du wirklich zurückgehen?"
+            )
+            setPositiveButton(R.string.yes) { _, _ -> findNavController().navigateUp() }
+            setNegativeButton(R.string.continue_edit) { _, _ -> }
+            show()
         }
     }
 
     private fun setupViewModelObservers() {
         editRouteViewModel.snapshotUploadSuccessful.observe(viewLifecycleOwner) { successful ->
-            if (successful) {
-                // TODO cleanup and navigate to save route fragment
+            uploadSnackbar?.dismiss()
 
-                val routeWaypoints = editRouteViewModel.routeWaypoints.value
+            if (successful) {
+                val routeWaypoints = editRouteViewModel.getWaypoints()
+                val routeWaypointArray = routeWaypoints?.toTypedArray() // ?: return@observe
+                if (routeWaypointArray == null) {
+                    // TODO for debugging only
+                    showSnackbar(
+                        requireActivity(),
+                        "Fehler: Keine Waypoints im Viewmodel gefunden!",
+                        colorRes = R.color.colorError
+                    )
+                    return@observe
+                }
 
                 val route: LineString? = editRouteViewModel.route
-                val routeCoordinates: MutableList<Point>? = route?.coordinates()
+                if (route == null) {
+                    // TODO for debugging only
+                    showSnackbar(
+                        requireActivity(),
+                        "Fehler: Keine Route im Viewmodel gefunden!",
+                        colorRes = R.color.colorError
+                    )
+                    return@observe
+                }
+
+                val routeCoordinates: MutableList<Point> = route.coordinates()
                 val routeLength = TurfMeasurement.length(routeCoordinates, TurfConstants.UNIT_METERS)
-                /*
+                val routeDuration = routeLength * WALKING_SPEED / 60
+
+                // TODO duration müsste mit übergeben werden falls mapMatching- / directions - Route!
+                //  -> alternativ kann sie auch einfach selbst berechnet werden!
+
                 val action = EditRouteFragmentDirections.actionEditRouteFragmentToSaveRouteFragment(
-                    waypoints = routeCoordinates.toTypedArray(),
-                    distance = routeLength,
-                    duration = 0L // TODO
+                    // TODO stattdessen lieber die id der erstellten Route übergeben?
+                    route = route.toPolyline(PRECISION_6),
+                    waypoints = routeWaypointArray,
+                    distance = routeLength.toFloat(),
+                    duration = routeDuration.toFloat()
                 )
-                */
+                findNavController().navigate(action)
             } else {
                 // TODO show warning!
+                showSnackbar(
+                    requireActivity(),
+                    "Die Route konnte nicht erfolgreich hochgeladen und gespeichert werden!",
+                    colorRes = R.color.colorError
+                )
             }
         }
     }
 
     override fun onMapReady(mapboxMap: MapboxMap) {
         this.map = mapboxMap
-
         setupMapUI()
-        val style = preferencesManager.getCurrentMapStyle()
-        setMapStyle(style)
 
-        mapClickListener = MapboxMap.OnMapClickListener {
-            val symbol = markerManager.addMarker(it)
-            if (symbol != null) {
-                editRouteViewModel.addNewWaypoint(symbol)
+        val style = preferencesManager.getCurrentMapStyle()
+        map.setStyle(style) { mapStyle ->
+            setupMarkerManager(mapStyle)
+            setupRouteLineManager(mapStyle)
+
+            // recreate all markers if any
+            val routeMarkers = editRouteViewModel.routeMarkers
+            val routeWaypoints = editRouteViewModel.getWaypoints()
+            markerManager.addMarkers(routeMarkers?.map { it.markerPosition })
+            markerManager.addMarkers(routeWaypoints?.map { it.geoPoint.toLatLng() })
+
+            // recreate all route lines
+            val routeLine = editRouteViewModel.route
+            if (routeLine != null) {
+                routeLineManager?.addLineToMap(routeLine)
             }
+        }
+
+        // allow users to add markers to the map on click
+        mapClickListener = MapboxMap.OnMapClickListener {
+            val waypointTitle = editRouteViewModel.addNewWaypoint(it)
+            markerManager.addWaypoint(it, waypointTitle)
             true
         }
         mapClickListener?.let { map.addOnMapClickListener(it) }
@@ -142,13 +195,6 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route), OnMapReadyCall
     private fun setupMapUI() {
         // restrict the camera to a given bounding box as the app focuses only on the uni campus
         map.setLatLngBoundsForCameraTarget(latLngBounds)
-
-        // setup the map snapshotter with the map bounds and disable the mapbox logo for snapshots
-        // val mapViewWidth = mapView?.measuredWidth ?: return
-        // val mapViewHeight = mapView?.measuredHeight ?: return
-        val snapShotOptions = MapSnapshotter.Options(SNAPSHOT_IMAGE_SIZE, SNAPSHOT_IMAGE_SIZE)
-        snapShotOptions.withRegion(latLngBounds).withLogo(false)
-        mapSnapshotter = MapSnapshotter(requireContext(), snapShotOptions)
 
         // move the compass to the bottom left corner of the mapView so it doesn't overlap with buttons
         map.uiSettings.compassGravity = Gravity.BOTTOM or Gravity.START
@@ -162,28 +208,6 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route), OnMapReadyCall
         editRouteViewModel.getLastKnownCameraPosition()?.let {
             map.cameraPosition = it
         }*/
-    }
-
-    private fun setMapStyle(styleUrl: String?) {
-        styleUrl ?: return
-        map.setStyle(styleUrl) { mapStyle ->
-            // editRouteViewModel.setCurrentMapStyle(mapStyle)
-            setupMarkerManager(mapStyle)
-            setupRouteLineManager(mapStyle)
-
-            // recreate all markers if any
-            val allActiveMarkers = editRouteViewModel.routeMarkers
-            val markerCoords = allActiveMarkers?.map { it.markerPosition }
-            markerManager.addMarkers(markerCoords)
-
-            // recreate all route lines
-            val routeLine = editRouteViewModel.route
-            if (routeLine != null) {
-                routeLineManager?.addLineToMap(routeLine)
-            }
-
-            // editRouteViewModel.setMapReadyStatus(true)
-        }
     }
 
     private fun setupMarkerManager(mapStyle: Style) {
@@ -201,25 +225,15 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route), OnMapReadyCall
             return
         }
 
-        // TODO ganz am Ende?
-        // - make a snapshot of the created route with the Mapbox Snapshotter and save it to firebase storage
-        // - set the snapshot as route thumbnail and save the new route for this user to firebase via viewmodel
-
-        /*
-        val mapStyle = editRouteViewModel.getCurrentMapStyle()
-        // set the current map style // TODO or use always default style?
-        mapSnapshotter?.setStyleUrl(mapStyle?.uri)
-        mapSnapshotter?.start { snapshot ->
-            val routeBitmap = snapshot.bitmap
+        map.snapshot { mapSnapshot ->
+            uploadSnackbar = showSnackbar(
+                requireActivity(),
+                "Die Route wird gespeichert. Bitte warten ...",
+                colorRes = R.color.colorInfo,
+                length = Snackbar.LENGTH_INDEFINITE
+            )
             measureTimeFor("uploading route snapshot") {
-                editRouteViewModel.uploadRouteSnapshot(routeBitmap)
-            }
-        }*/
-
-        // TODO option2: (diesmal auch mit annotations)
-        measureTimeFor("uploading route snapshot alternative") {
-            map.snapshot {
-                editRouteViewModel.uploadRouteSnapshot(it)
+                editRouteViewModel.uploadRouteSnapshot(mapSnapshot)
             }
         }
 
@@ -234,7 +248,7 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route), OnMapReadyCall
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.cancelRouteEditButton -> {
-                // TODO
+                showCancelRouteEditingDialog()
                 true
             }
             R.id.saveRouteButton -> {
@@ -265,13 +279,12 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route), OnMapReadyCall
     override fun onPause() {
         super.onPause()
         mapView?.onPause()
-        // Make sure to stop the snapshotter on pause if it exists
-        mapSnapshotter?.cancel()
     }
 
     override fun onStop() {
         super.onStop()
         mapView?.onStop()
+        editRouteViewModel.saveWaypoints()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -288,11 +301,15 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route), OnMapReadyCall
         backPressedCallback?.remove()
         mapClickListener?.let { map.removeOnMapClickListener(it) }
         mapView?.onDestroy()
+
+        uploadSnackbar?.dismiss()
         super.onDestroyView()
     }
 
     companion object {
-        private const val SNAPSHOT_IMAGE_SIZE = 400 // in px
+        // in m/s, see https://en.wikipedia.org/wiki/Preferred_walking_speed
+        private const val WALKING_SPEED = 1.4
+        // private const val WALKING_SPEED = 0.83 // Spaziergang
 
         // TODO duplicate:
 

@@ -25,8 +25,8 @@ import de.ur.explure.model.waypoint.WayPoint
 import de.ur.explure.services.FireStoreInstance
 import de.ur.explure.services.FirebaseAuthService
 import de.ur.explure.utils.FirebaseResult
-import de.ur.explure.utils.convertToByteArray
 import timber.log.Timber
+import java.io.ByteArrayOutputStream
 import java.util.*
 
 @Suppress("TooGenericExceptionCaught", "UnnecessaryParentheses", "ReturnCount")
@@ -349,31 +349,10 @@ class RouteRepositoryImpl(
 
             Timber.d("Downloadurl in route repo: ${storageRef.downloadUrl}")
 
-            /*
-            // convert bitmap to stream
-            val byteSize: Int = bitmap.rowBytes * bitmap.height
-            val byteBuffer: ByteBuffer = ByteBuffer.allocate(byteSize)
-            bitmap.copyPixelsToBuffer(byteBuffer)
-            // Get the byteArray.
-            val byteArray: ByteArray = byteBuffer.array()
-            // TODO test this:
-            // val byteArray = bitmap.convertToByteArray()
-
-            // Get the ByteArrayInputStream.
-            val bs = ByteArrayInputStream(byteArray)
-
-            val uploadTask = storageRef.putStream(bs)
-*/
-
-            /*
             val baos = ByteArrayOutputStream()
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
             val byteArray = baos.toByteArray()
-            //val byteArray = bitmap.convertToByteArray()
-            bitmap.recycle()
-            val uploadTask = storageRef.putBytes(byteArray)
-*/
-            val byteArray = bitmap.convertToByteArray()
+            // val byteArray = bitmap.convertToByteArray()
             bitmap.recycle()
             val uploadTask = storageRef.putBytes(byteArray)
 

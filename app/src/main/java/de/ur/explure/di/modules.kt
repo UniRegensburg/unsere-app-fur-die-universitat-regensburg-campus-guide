@@ -87,7 +87,7 @@ val mainModule = module {
     viewModel { DiscoverViewModel(get(), get(), get()) }
     viewModel { MainViewModel(get(), get()) }
     viewModel { MapViewModel(get(), get()) }
-    viewModel { EditRouteViewModel(get()) }
+    viewModel { EditRouteViewModel(get(), get(), get()) }
     viewModel { SaveRouteViewModel(get(), get(), get()) }
     viewModel { CreateWayPointViewModel() }
 	viewModel { ProfileViewModel(get(), get(), get()) }

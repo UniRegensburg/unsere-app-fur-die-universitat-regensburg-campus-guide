@@ -157,15 +157,18 @@
             app:destination="@id/singleRouteFragment"
             app:popUpTo="@id/discoverFragment" />
         <argument
+            android:name="route"
+            app:argType="string"
+            app:nullable="false" />
+        <argument
             android:name="waypoints"
             app:argType="de.ur.explure.model.waypoint.WayPointDTO[]" />
         <argument
             android:name="distance"
-            app:argType="long" />
+            app:argType="float" />
         <argument
             android:name="duration"
-            android:defaultValue="0L"
-            app:argType="long" />
+            app:argType="float" />
     </fragment>
     <dialog
         android:id="@+id/createWayPointDialog"

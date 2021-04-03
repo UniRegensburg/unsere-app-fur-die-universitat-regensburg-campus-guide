@@ -56,6 +56,7 @@ import de.ur.explure.map.RouteLineManager
 import de.ur.explure.map.RouteLineManager.Companion.DRAW_LINE_LAYER_ID
 import de.ur.explure.map.RouteLineManager.Companion.MAPBOX_FIRST_LABEL_LAYER
 import de.ur.explure.map.WaypointsController
+import de.ur.explure.model.MapMarker
 import de.ur.explure.utils.EventObserver
 import de.ur.explure.utils.Highlight
 import de.ur.explure.utils.SharedPreferencesManager
@@ -122,6 +123,15 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
     private var showMapMatchingButton: MenuItem? = null
     private var confirmRouteButton: MenuItem? = null
 
+    /**
+     * Called when this fragment is first attached to it's parent context.
+     */
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        // set the parent as a listener for this fragment
+        activityCallback = context as? MapFragmentListener
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setHasOptionsMenu(true)
@@ -157,11 +167,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
         }
     }
 
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        activityCallback = context as? MapFragmentListener
-    }
-
+    @Suppress("LongMethod")
     private fun setupViewModelObservers() {
         mapViewModel.mapReady.observe(viewLifecycleOwner, EventObserver {
             // this should only get called if the event has never been handled before because of the EventObserver
@@ -225,6 +231,12 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
                 // delete the corresponding marker symbol and remove from waypointscontroller
                 waypointsController.remove(mapMarker.markerPosition.toPoint())
                 markerManager.removeWaypointMarker(mapMarker)
+            }
+        }
+        mapViewModel.activeMapMatching.observe(viewLifecycleOwner) {
+            if (mapViewModel.shouldGoToEditing()) {
+                mapViewModel.shouldGoToEditing(false) // reset flag
+                moveToNextStep()
             }
         }
         /*
@@ -740,6 +752,8 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
         if (routeLineManager != null) {
             routeLineManager?.clearAllLines()
             mapViewModel.resetActiveDrawnLines()
+
+            // TODO this should be cleared everytime? but then on rotation it is removed ????
             mapViewModel.removeActiveMapMatching()
         }
 
@@ -810,21 +824,28 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
                         " mehr in diesen Modus zurückkehren! Möchtest du trotzdem diese Ansicht verlassen?"
             )
             setPositiveButton(R.string.yes) { _, _ ->
-                // TODO auch hier automatisch erst einen MapMatching Request versuchen?
-                saveCreatedRoute()
+                mapViewModel.shouldGoToEditing(true)
+                prepareMapMatching()
             }
             setNegativeButton(R.string.continue_edit) { _, _ -> }
             show()
         }
     }
 
-    private fun saveCreatedRoute() {
-        // TODO ?
-        // prepareMapMatching()
+    private fun moveToNextStep() {
+        var route: LineString? = null
+        var markers: List<MapMarker>? = null
 
-        // TODO get length and duration of route directly from mapMatching when saving it!
-        //  -> only use turf if the user saved his own route instead of the mapMatching!
-        val route = mapViewModel.getActiveMapMatching()
+        // get route and markers based on mode
+        if (mapViewModel.routeDrawModeActive.value == true) {
+            // TODO mapMatching or own Route ?
+            //  -> let user decide which he wants !!!
+            route = mapViewModel.getActiveMapMatching()
+        } else if (mapViewModel.manualRouteCreationModeActive.value == true) {
+            route = mapViewModel.getActiveMapMatching()
+            // make a copy with toMutableList() as otherwise leaving the route creation mode would reset the markers!
+            markers = mapViewModel.getAllActiveMarkers()?.toMutableList()
+        }
 
         // TODO more error handling
         if (route == null) {
@@ -836,14 +857,10 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
             return
         }
 
+        // leave route creation BEFORE navigating to the next step
         mapViewModel.exitCurrentRouteCreationMode()
-
         // navigate to route editing and allow user to place (additional) markers on the route
-        if (mapViewModel.manualRouteCreationModeActive.value == true) {
-            mapViewModel.navigateToEditScreen(route, mapViewModel.getAllActiveMarkers())
-        } else {
-            mapViewModel.navigateToEditScreen(route)
-        }
+        mapViewModel.navigateToEditScreen(route, markers)
     }
 
     /**

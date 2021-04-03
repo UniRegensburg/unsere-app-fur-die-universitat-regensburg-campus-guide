@@ -1,14 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:mapbox="http://schemas.android.com/apk/res-auto"
     android:id="@+id/mapEditContainer"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/editRouteTitle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:background="@color/materialDialogSurface"
+        android:elevation="6dp"
+        android:paddingHorizontal="@dimen/margin_normal"
+        android:paddingVertical="@dimen/margin_small"
+        android:text="Du kannst deiner Route durch Klicken Wegpunkte hinzufügen und diese bearbeiten. Sobald du fertig bist, klicke auf das &quot;Speichern&quot;-Symbol oben rechts."
+        android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+        app:layout_constraintBottom_toTopOf="@+id/editMapView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <com.mapbox.mapboxsdk.maps.MapView
         android:id="@+id/editMapView"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editRouteTitle"
         mapbox:mapbox_cameraBearing="0"
         mapbox:mapbox_cameraTargetLat="48.997040"
         mapbox:mapbox_cameraTargetLng="12.094922"

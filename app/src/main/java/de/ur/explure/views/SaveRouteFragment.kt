@@ -37,9 +37,14 @@ class SaveRouteFragment : Fragment(R.layout.fragment_save_route) {
         viewModel.getCategories()
     }
 
+    // TODO route duration is in minutes and route length is in meter! Fix this here!
     private fun setRouteData() {
+        val routeLine = args.route // TODO save coords in viewmodel and in firestore when creating the route!
         viewModel.setRouteInformation(args.distance.toDouble(), args.duration.toDouble())
         viewModel.setWayPointDTOs(args.waypoints.toList())
+
+        // TODO if duration is not given allow the user to specify it!
+        //   -> even better: allow it anyway, just set it as an EditTextInput!
     }
 
     private fun initClickListeners() {

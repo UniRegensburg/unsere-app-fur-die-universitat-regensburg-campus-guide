@@ -16,7 +16,9 @@ import com.mapbox.mapboxsdk.plugins.annotation.SymbolOptions
 import com.mapbox.mapboxsdk.style.layers.Property
 import de.ur.explure.R
 import de.ur.explure.extensions.moveCameraToPosition
+import de.ur.explure.extensions.toLatLng
 import de.ur.explure.model.MapMarker
+import de.ur.explure.model.waypoint.WayPointDTO
 import de.ur.explure.views.MapFragment.Companion.selectedMarkerZoom
 
 // use the application context instead of the activity context to make sure it doesn't leak memory,
@@ -38,8 +40,10 @@ class MarkerManager(
 
     private var symbolClickListenerBehavior: OnSymbolClickListener? = null
 
-    // TODO for testing: this list size should ALWAYS equal the mapMarkers list size in the viewmodel!
+    // TODO for testing: this list size should ALWAYS equal the mapMarkers list size in the mapViewmodel!
     private val activeMarkers: MutableList<Symbol> = mutableListOf()
+    // TODO for testing: this list size should ALWAYS equal the routeWaypoints list size in the editViewmodel!
+    private val activeWaypoints: MutableList<Symbol> = mutableListOf()
 
     init {
         initMapSymbols()
@@ -49,12 +53,69 @@ class MarkerManager(
         BitmapFactory.decodeResource(context.resources, R.drawable.mapbox_marker_icon_default)
             ?.let {
                 // add a marker icon to the style
-                mapStyle.addImage(ID_ICON, it)
+                mapStyle.addImage(MARKER_ICON, it)
             }
+        // TODO better symbol for waypoints!
+        BitmapFactory.decodeResource(context.resources, R.drawable.mapbox_ic_map_marker_dark)
+            ?.let {
+                // add a marker icon to the style
+                mapStyle.addImage(WAYPOINT_ICON, it)
+            }
+    }
+
+    fun addWaypoint(coordinate: LatLng, waypointName: String): Symbol? {
+        return createWaypoint(coordinate, waypointName)
+    }
+
+    fun addWaypoints(waypoints: List<WayPointDTO>?) {
+        waypoints?.forEach { waypoint ->
+            val coordinates = waypoint.geoPoint.toLatLng()
+            createWaypoint(coordinates, waypoint.title)
+        }
+    }
+
+    private fun createWaypoint(coordinate: LatLng, waypointName: String): Symbol? {
+        val waypoint = symbolManager.create(
+            SymbolOptions()
+                .withLatLng(coordinate)
+                .withIconImage(WAYPOINT_ICON)
+                .withIconAnchor(Property.ICON_ANCHOR_BOTTOM)
+                .withTextAnchor(Property.ICON_ANCHOR_TOP)
+                .withTextField(waypointName)
+                .withIconSize(1.0f)
+                // TODO right now draggable=true spawns a new marker; this seems to be an open issue
+                .withDraggable(true)
+        )
+        activeWaypoints.add(waypoint)
+        return waypoint
+    }
+
+    fun deleteWaypoint(waypoint: Symbol) {
+        symbolManager.delete(waypoint)
+        activeWaypoints.remove(waypoint)
     }
 
     fun addMarker(coordinate: LatLng): Symbol? {
         return createMarker(coordinate)
+    }
+
+    fun addMarkers(markerCoordinates: List<LatLng>?) {
+        markerCoordinates?.forEach { coordinate ->
+            createMarker(coordinate)
+        }
+    }
+
+    private fun createMarker(coordinate: LatLng): Symbol? {
+        val newMarker = symbolManager.create(
+            SymbolOptions()
+                .withLatLng(coordinate)
+                .withIconImage(MARKER_ICON)
+                .withIconAnchor(Property.ICON_ANCHOR_BOTTOM)
+                .withIconSize(1.0f)
+                .withDraggable(false)
+        )
+        activeMarkers.add(newMarker)
+        return newMarker
     }
 
     fun deleteMarker(marker: Symbol) {
@@ -76,26 +137,7 @@ class MarkerManager(
     fun deleteAllMarkers() {
         symbolManager.deleteAll()
         activeMarkers.clear()
-    }
-
-    fun addMarkers(markerCoordinates: List<LatLng>?) {
-        markerCoordinates?.forEach { coordinate ->
-            createMarker(coordinate)
-        }
-    }
-
-    private fun createMarker(coordinate: LatLng): Symbol? {
-        val newMarker = symbolManager.create(
-            SymbolOptions()
-                .withLatLng(coordinate)
-                .withIconImage(ID_ICON)
-                .withIconAnchor(Property.ICON_ANCHOR_BOTTOM)
-                .withIconSize(1.0f)
-                // TODO right now draggable=true spawns a new marker; this seems to be an open issue
-                .withDraggable(false)
-        )
-        activeMarkers.add(newMarker)
-        return newMarker
+        activeWaypoints.clear()
     }
 
     fun setDefaultMarkerClickListenerBehavior() {
@@ -139,6 +181,7 @@ class MarkerManager(
     }
 
     companion object {
-        private const val ID_ICON = "id-icon"
+        private const val MARKER_ICON = "marker-icon"
+        private const val WAYPOINT_ICON = "waypoint-icon"
     }
 }
