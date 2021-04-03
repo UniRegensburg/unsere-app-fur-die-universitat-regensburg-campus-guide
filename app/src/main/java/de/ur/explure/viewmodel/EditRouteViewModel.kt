@@ -8,7 +8,6 @@ import androidx.lifecycle.viewModelScope
 import com.mapbox.geojson.LineString
 import com.mapbox.mapboxsdk.geometry.LatLng
 import de.ur.explure.extensions.toGeoPoint
-import de.ur.explure.model.MapMarker
 import de.ur.explure.model.waypoint.WayPointDTO
 import de.ur.explure.navigation.MainAppRouter
 import de.ur.explure.repository.route.RouteRepositoryImpl
@@ -23,36 +22,41 @@ class EditRouteViewModel(
     private val routeRepository: RouteRepositoryImpl
 ) : ViewModel() {
 
-    var route: LineString? = state[ROUTE_KEY]
-    var routeMarkers: List<MapMarker>? = state[ROUTE_MARKERS_KEY]
+    private var route: LineString? = state[ROUTE_KEY]
 
     var uploadedRouteUri: String? = state[SNAPSHOT_URI_KEY]
     var routeId: String? = null // TODO save the id of the newly created route here!
 
-    private val routeWaypoints: MutableLiveData<MutableList<WayPointDTO>> by lazy {
-        MutableLiveData(state[ROUTE_WAYPOINTS_KEY] ?: mutableListOf())
+    private val routeWayPoints: MutableLiveData<MutableList<WayPointDTO>> by lazy {
+        MutableLiveData(state[ROUTE_WayPointS_KEY] ?: mutableListOf())
     }
 
     private val _snapshotUploadSuccessful: MutableLiveData<Boolean> by lazy { MutableLiveData() }
     val snapshotUploadSuccessful = _snapshotUploadSuccessful
 
-    // TODO größtenteils duplicate code (siehe MapViewmodel)
-    fun addNewWaypoint(coordinates: LatLng): String {
-        val waypoint = WayPointDTO(
+    fun setInitialWayPoints(wayPoints: List<WayPointDTO>?) {
+        if (wayPoints != null) {
+            routeWayPoints.value?.addAll(wayPoints)
+        }
+    }
+
+    fun addNewWayPoint(coordinates: LatLng): String {
+        val wayPoint = WayPointDTO(
             title = UUID.randomUUID().toString(),
             geoPoint = coordinates.toGeoPoint()
         )
-        routeWaypoints.value?.add(waypoint)
-        routeWaypoints.value = routeWaypoints.value
-        return waypoint.title
+        routeWayPoints.value?.add(wayPoint)
+        routeWayPoints.value = routeWayPoints.value
+
+        return wayPoint.title
     }
 
-    fun saveWaypoints() {
-        state[ROUTE_WAYPOINTS_KEY] = routeWaypoints.value
+    fun saveWayPoints() {
+        state[ROUTE_WayPointS_KEY] = routeWayPoints.value
     }
 
-    fun getWaypoints(): MutableList<WayPointDTO>? {
-        return routeWaypoints.value
+    fun getWayPoints(): MutableList<WayPointDTO>? {
+        return routeWayPoints.value
     }
 
     fun saveRoute(routeLine: LineString) {
@@ -60,9 +64,8 @@ class EditRouteViewModel(
         state[ROUTE_KEY] = routeLine
     }
 
-    fun saveMapMarkers(mapMarkers: List<MapMarker>?) {
-        routeMarkers = mapMarkers
-        state[ROUTE_MARKERS_KEY] = mapMarkers
+    fun getRoute(): LineString? {
+        return route
     }
 
     fun uploadRouteSnapshot(routeBitmap: Bitmap) {
@@ -96,8 +99,7 @@ class EditRouteViewModel(
 
     companion object {
         private const val ROUTE_KEY = "recreatedRoute"
-        private const val ROUTE_MARKERS_KEY = "recreatedRouteMarkers"
-        private const val ROUTE_WAYPOINTS_KEY = "routeWaypoints"
+        private const val ROUTE_WayPointS_KEY = "routeWayPoints"
         private const val SNAPSHOT_URI_KEY = "snapshotUri"
     }
 }

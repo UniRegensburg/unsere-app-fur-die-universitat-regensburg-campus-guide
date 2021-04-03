@@ -16,7 +16,7 @@ import de.ur.explure.map.ManualRouteCreationModes
 import de.ur.explure.map.RouteDrawModes
 import de.ur.explure.map.RouteLineManager.Companion.ID_PROPERTY_KEY
 import de.ur.explure.model.MapMarker
-import de.ur.explure.model.waypoint.WayPoint
+import de.ur.explure.model.waypoint.WayPointDTO
 import de.ur.explure.navigation.MainAppRouter
 import de.ur.explure.utils.Event
 import java.util.*
@@ -81,17 +81,16 @@ class MapViewModel(private val state: SavedStateHandle, private val appRouter: M
     fun addNewMapMarker(symbol: Symbol) {
         val coordinates = symbol.latLng
 
-        // TODO bessere default-Werte!
-        val waypoint = WayPoint(
-            UUID.randomUUID().toString(),
-            "Marker ${mapMarkers.value?.size}",
-            "Keine Beschreibung (Position: ${coordinates.latitude}, ${coordinates.longitude})",
-            coordinates.toGeoPoint()
+        val wayPoint = WayPointDTO(
+            title = UUID.randomUUID().toString(),
+            geoPoint = coordinates.toGeoPoint(),
+            // TODO auslagern in strings!
+            description = "Keine Beschreibung (Position: ${coordinates.latitude}, ${coordinates.longitude})"
         )
 
         val mapMarker = MapMarker(
             id = UUID.randomUUID().toString(),
-            wayPoint = waypoint,
+            wayPoint = wayPoint,
             markerPosition = coordinates
         )
         mapMarkers.value?.add(mapMarker)

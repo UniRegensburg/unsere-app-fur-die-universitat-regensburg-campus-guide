@@ -27,7 +27,6 @@ import com.mapbox.turf.TurfConstants
 import com.mapbox.turf.TurfMeasurement
 import de.ur.explure.R
 import de.ur.explure.databinding.FragmentEditRouteBinding
-import de.ur.explure.extensions.toLatLng
 import de.ur.explure.map.MarkerManager
 import de.ur.explure.map.RouteLineManager
 import de.ur.explure.utils.SharedPreferencesManager
@@ -40,7 +39,6 @@ import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.androidx.viewmodel.scope.emptyState
 import org.koin.core.parameter.parametersOf
-import timber.log.Timber
 
 class EditRouteFragment : Fragment(R.layout.fragment_edit_route), OnMapReadyCallback {
 
@@ -67,9 +65,11 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route), OnMapReadyCall
         super.onViewCreated(view, savedInstanceState)
         setHasOptionsMenu(true)
 
-        editRouteViewModel.saveRoute(LineString.fromPolyline(args.routePolyline, PRECISION_6))
-        Timber.d("Route: ${editRouteViewModel.route}")
-        editRouteViewModel.saveMapMarkers(args.routeMarkers?.toList())
+        // get nav arguments and save them in the viewModel
+        val routeLine = LineString.fromPolyline(args.routePolyline, PRECISION_6)
+        editRouteViewModel.saveRoute(routeLine)
+        val existingWaypoints = args.routeMarkers?.toList()?.map { it.wayPoint }
+        editRouteViewModel.setInitialWayPoints(existingWaypoints)
 
         setupBackButtonClickObserver()
         setupViewModelObservers()
@@ -112,7 +112,7 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route), OnMapReadyCall
             uploadSnackbar?.dismiss()
 
             if (successful) {
-                val routeWaypoints = editRouteViewModel.getWaypoints()
+                val routeWaypoints = editRouteViewModel.getWayPoints()
                 val routeWaypointArray = routeWaypoints?.toTypedArray() // ?: return@observe
                 if (routeWaypointArray == null) {
                     // TODO for debugging only
@@ -124,7 +124,7 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route), OnMapReadyCall
                     return@observe
                 }
 
-                val route: LineString? = editRouteViewModel.route
+                val route: LineString? = editRouteViewModel.getRoute()
                 if (route == null) {
                     // TODO for debugging only
                     showSnackbar(
@@ -138,9 +138,6 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route), OnMapReadyCall
                 val routeCoordinates: MutableList<Point> = route.coordinates()
                 val routeLength = TurfMeasurement.length(routeCoordinates, TurfConstants.UNIT_METERS)
                 val routeDuration = routeLength * WALKING_SPEED / 60
-
-                // TODO duration müsste mit übergeben werden falls mapMatching- / directions - Route!
-                //  -> alternativ kann sie auch einfach selbst berechnet werden!
 
                 val action = EditRouteFragmentDirections.actionEditRouteFragmentToSaveRouteFragment(
                     // TODO stattdessen lieber die id der erstellten Route übergeben?
@@ -171,25 +168,31 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route), OnMapReadyCall
             setupRouteLineManager(mapStyle)
 
             // recreate all markers if any
-            val routeMarkers = editRouteViewModel.routeMarkers
-            val routeWaypoints = editRouteViewModel.getWaypoints()
-            markerManager.addMarkers(routeMarkers?.map { it.markerPosition })
-            markerManager.addMarkers(routeWaypoints?.map { it.geoPoint.toLatLng() })
+            val routeWaypoints = editRouteViewModel.getWayPoints()
+            markerManager.addWaypoints(routeWaypoints)
 
             // recreate all route lines
-            val routeLine = editRouteViewModel.route
+            val routeLine = editRouteViewModel.getRoute()
             if (routeLine != null) {
                 routeLineManager?.addLineToMap(routeLine)
             }
         }
 
+        // TODO use an onLongClicklistener here instead and update instruction?
+        // -> should this be setup before or after the markerManager DragListener ??
+
         // allow users to add markers to the map on click
         mapClickListener = MapboxMap.OnMapClickListener {
-            val waypointTitle = editRouteViewModel.addNewWaypoint(it)
+            val waypointTitle = editRouteViewModel.addNewWayPoint(it)
             markerManager.addWaypoint(it, waypointTitle)
             true
         }
         mapClickListener?.let { map.addOnMapClickListener(it) }
+
+        map.setOnInfoWindowClickListener {
+            // TODO implement info windows ?
+            false
+        }
     }
 
     private fun setupMapUI() {
@@ -284,7 +287,7 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route), OnMapReadyCall
     override fun onStop() {
         super.onStop()
         mapView?.onStop()
-        editRouteViewModel.saveWaypoints()
+        editRouteViewModel.saveWayPoints()
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
