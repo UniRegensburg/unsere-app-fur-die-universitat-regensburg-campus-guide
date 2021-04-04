@@ -25,7 +25,7 @@ class EditRouteViewModel(
     private var route: LineString? = state[ROUTE_KEY]
 
     var uploadedRouteUri: String? = state[SNAPSHOT_URI_KEY]
-    var routeId: String? = null // TODO save the id of the newly created route here!
+    // var routeId: String? = null // TODO save the id of the newly created route here!
 
     private val routeWayPoints: MutableLiveData<MutableList<WayPointDTO>> by lazy {
         MutableLiveData(state[ROUTE_WayPointS_KEY] ?: mutableListOf())
@@ -40,7 +40,7 @@ class EditRouteViewModel(
         }
     }
 
-    fun addNewWayPoint(coordinates: LatLng): String {
+    fun addNewWayPoint(coordinates: LatLng): WayPointDTO {
         val wayPoint = WayPointDTO(
             title = UUID.randomUUID().toString(),
             geoPoint = coordinates.toGeoPoint()
@@ -48,7 +48,7 @@ class EditRouteViewModel(
         routeWayPoints.value?.add(wayPoint)
         routeWayPoints.value = routeWayPoints.value
 
-        return wayPoint.title
+        return wayPoint
     }
 
     fun saveWayPoints() {

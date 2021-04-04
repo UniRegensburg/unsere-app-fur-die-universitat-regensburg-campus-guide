@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.mapbox.mapboxsdk.annotations.BubbleLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="8dp"
+    app:mapbox_bl_arrowDirection="bottom"
+    app:mapbox_bl_arrowHeight="8dp"
+    app:mapbox_bl_arrowPosition="15dp"
+    app:mapbox_bl_arrowWidth="8dp"
+    app:mapbox_bl_bubbleColor="@android:color/white"
+    app:mapbox_bl_cornersRadius="6dp"
+    app:mapbox_bl_strokeColor="@android:color/darker_gray"
+    app:mapbox_bl_strokeWidth="1dp">
+
+    <RelativeLayout
+        android:id="@+id/infoWindowContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/waypointTitleIW"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginVertical="8dp"
+            android:maxWidth="200dp"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            tools:text="Botanischer Garten" />
+
+        <LinearLayout
+            android:id="@+id/buttonContainerIW"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/waypointTitleIW"
+            android:layout_centerHorizontal="true"
+            android:layout_marginVertical="4dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/editWaypointButtonIW"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="12dp"
+                android:background="@drawable/background_icon_button"
+                android:foreground="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_pencil"
+                android:tint="@color/colorInfo"
+                tools:ignore="ContentDescription" />
+
+            <ImageButton
+                android:id="@+id/deleteWaypointButtonIW"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="12dp"
+                android:background="@drawable/background_icon_button"
+                android:foreground="?attr/selectableItemBackgroundBorderless"
+                android:src="@drawable/ic_baseline_delete_24"
+                android:tint="@color/colorError"
+                tools:ignore="ContentDescription" />
+
+        </LinearLayout>
+    </RelativeLayout>
+</com.mapbox.mapboxsdk.annotations.BubbleLayout>

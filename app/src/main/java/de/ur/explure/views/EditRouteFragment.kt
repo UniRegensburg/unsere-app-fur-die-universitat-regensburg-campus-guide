@@ -1,11 +1,16 @@
 package de.ur.explure.views
 
+import android.graphics.drawable.BitmapDrawable
 import android.os.Bundle
 import android.view.Gravity
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
+import android.view.WindowManager
+import android.widget.ImageButton
+import android.widget.PopupWindow
+import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.addCallback
 import androidx.fragment.app.Fragment
@@ -56,7 +61,7 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route), OnMapReadyCall
     private lateinit var markerManager: MarkerManager
     private var routeLineManager: RouteLineManager? = null
 
-    private var mapClickListener: MapboxMap.OnMapClickListener? = null
+    private var mapClickListener: MapboxMap.OnMapLongClickListener? = null
     private var backPressedCallback: OnBackPressedCallback? = null
 
     private var uploadSnackbar: Snackbar? = null
@@ -112,41 +117,7 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route), OnMapReadyCall
             uploadSnackbar?.dismiss()
 
             if (successful) {
-                val routeWaypoints = editRouteViewModel.getWayPoints()
-                val routeWaypointArray = routeWaypoints?.toTypedArray() // ?: return@observe
-                if (routeWaypointArray == null) {
-                    // TODO for debugging only
-                    showSnackbar(
-                        requireActivity(),
-                        "Fehler: Keine Waypoints im Viewmodel gefunden!",
-                        colorRes = R.color.colorError
-                    )
-                    return@observe
-                }
-
-                val route: LineString? = editRouteViewModel.getRoute()
-                if (route == null) {
-                    // TODO for debugging only
-                    showSnackbar(
-                        requireActivity(),
-                        "Fehler: Keine Route im Viewmodel gefunden!",
-                        colorRes = R.color.colorError
-                    )
-                    return@observe
-                }
-
-                val routeCoordinates: MutableList<Point> = route.coordinates()
-                val routeLength = TurfMeasurement.length(routeCoordinates, TurfConstants.UNIT_METERS)
-                val routeDuration = routeLength * WALKING_SPEED / 60
-
-                val action = EditRouteFragmentDirections.actionEditRouteFragmentToSaveRouteFragment(
-                    // TODO stattdessen lieber die id der erstellten Route übergeben?
-                    route = route.toPolyline(PRECISION_6),
-                    waypoints = routeWaypointArray,
-                    distance = routeLength.toFloat(),
-                    duration = routeDuration.toFloat()
-                )
-                findNavController().navigate(action)
+                onSuccessfulSnapshot()
             } else {
                 // TODO show warning!
                 showSnackbar(
@@ -176,22 +147,53 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route), OnMapReadyCall
             if (routeLine != null) {
                 routeLineManager?.addLineToMap(routeLine)
             }
-        }
 
-        // TODO use an onLongClicklistener here instead and update instruction?
-        // -> should this be setup before or after the markerManager DragListener ??
+            markerManager.setEditingMarkerClickBehavior { wayPoint, symbol ->
+                val popup = PopupWindow(context)
+                val layout = layoutInflater.inflate(R.layout.waypoint_info_window, binding.root, false)
+                val title = layout.findViewById<TextView>(R.id.waypointTitleIW)
+                title.text = wayPoint.title
 
-        // allow users to add markers to the map on click
-        mapClickListener = MapboxMap.OnMapClickListener {
-            val waypointTitle = editRouteViewModel.addNewWayPoint(it)
-            markerManager.addWaypoint(it, waypointTitle)
-            true
-        }
-        mapClickListener?.let { map.addOnMapClickListener(it) }
+                popup.apply {
+                    contentView = layout
+                    width = WindowManager.LayoutParams.WRAP_CONTENT
+                    height = WindowManager.LayoutParams.WRAP_CONTENT
+                    isOutsideTouchable = true
+                    isFocusable = true
+                }
+                popup.setBackgroundDrawable(BitmapDrawable()) // reset the background
+                val clickedPoint = mapboxMap.projection.toScreenLocation(symbol.latLng)
+                @Suppress("MagicNumber")
+                val xOffset = 20
+                popup.showAtLocation(
+                    binding.mapEditContainer,
+                    Gravity.NO_GRAVITY,
+                    clickedPoint.x.toInt() + xOffset,
+                    clickedPoint.y.toInt()
+                )
 
-        map.setOnInfoWindowClickListener {
-            // TODO implement info windows ?
-            false
+                val deleteButton = layout.findViewById<ImageButton>(R.id.deleteWaypointButtonIW)
+                deleteButton.setOnClickListener {
+                    showSnackbar(requireActivity(), "Sicher?")
+                    popup.dismiss()
+                }
+                popup.showAsDropDown(binding.editMapView)
+            }
+
+            map.setOnInfoWindowClickListener {
+                // TODO implement info windows ?
+                false
+            }
+
+            // TODO should this be setup before or after the markerManager DragListener ??
+
+            // allow users to add markers to the map on long click
+            mapClickListener = MapboxMap.OnMapLongClickListener {
+                val createdWaypoint = editRouteViewModel.addNewWayPoint(it)
+                markerManager.addWaypoint(it, createdWaypoint)
+                true
+            }
+            mapClickListener?.let { map.addOnMapLongClickListener(it) }
         }
     }
 
@@ -241,6 +243,44 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route), OnMapReadyCall
         }
 
         // TODO oder static image api am besten statt einfachem snapshot ??
+    }
+
+    private fun onSuccessfulSnapshot() {
+        val routeWaypoints = editRouteViewModel.getWayPoints()
+        val routeWaypointArray = routeWaypoints?.toTypedArray() // ?: return@observe
+        if (routeWaypointArray == null) {
+            // TODO for debugging only
+            showSnackbar(
+                requireActivity(),
+                "Fehler: Keine Waypoints im Viewmodel gefunden!",
+                colorRes = R.color.colorError
+            )
+            return
+        }
+
+        val route: LineString? = editRouteViewModel.getRoute()
+        if (route == null) {
+            // TODO for debugging only
+            showSnackbar(
+                requireActivity(),
+                "Fehler: Keine Route im Viewmodel gefunden!",
+                colorRes = R.color.colorError
+            )
+            return
+        }
+
+        val routeCoordinates: MutableList<Point> = route.coordinates()
+        val routeLength = TurfMeasurement.length(routeCoordinates, TurfConstants.UNIT_METERS)
+        val routeDuration = routeLength * WALKING_SPEED / 60
+
+        val action = EditRouteFragmentDirections.actionEditRouteFragmentToSaveRouteFragment(
+            // TODO stattdessen lieber die id der erstellten Route übergeben?
+            route = route.toPolyline(PRECISION_6),
+            waypoints = routeWaypointArray,
+            distance = routeLength.toFloat(),
+            duration = routeDuration.toFloat()
+        )
+        findNavController().navigate(action)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -302,7 +342,7 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route), OnMapReadyCall
 
     override fun onDestroyView() {
         backPressedCallback?.remove()
-        mapClickListener?.let { map.removeOnMapClickListener(it) }
+        mapClickListener?.let { map.removeOnMapLongClickListener(it) }
         mapView?.onDestroy()
 
         uploadSnackbar?.dismiss()

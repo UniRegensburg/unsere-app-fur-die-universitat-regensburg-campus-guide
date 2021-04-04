@@ -179,7 +179,8 @@ class MainActivity : AppCompatActivity(), MapFragment.MapFragmentListener {
         // no 'Up'-Button and no bottom navigation in these
         // (normal nested views only have the bottom nav hidden but do have an up - button)
         val nestedTopLevelDestinations = setOf(
-            R.id.editRouteFragment
+            R.id.editRouteFragment,
+            R.id.saveRouteFragment
         )
 
         val topLevelDestinations = bottomNavDestinations.plus(nestedTopLevelDestinations)

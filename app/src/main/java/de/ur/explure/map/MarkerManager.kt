@@ -43,7 +43,7 @@ class MarkerManager(
     // TODO for testing: this list size should ALWAYS equal the mapMarkers list size in the mapViewmodel!
     private val activeMarkers: MutableList<Symbol> = mutableListOf()
     // TODO for testing: this list size should ALWAYS equal the routeWaypoints list size in the editViewmodel!
-    private val activeWaypoints: MutableList<Symbol> = mutableListOf()
+    private val activeWaypoints: MutableMap<Symbol, WayPointDTO> = mutableMapOf()
 
     init {
         initMapSymbols()
@@ -55,45 +55,67 @@ class MarkerManager(
                 // add a marker icon to the style
                 mapStyle.addImage(MARKER_ICON, it)
             }
-        // TODO better symbol for waypoints!
-        BitmapFactory.decodeResource(context.resources, R.drawable.mapbox_ic_map_marker_dark)
+        // TODO own symbols for waypoints ??
+        /*
+        BitmapFactory.decodeResource(context.resources, R.drawable.mapbox_ic_map_marker_light)
             ?.let {
                 // add a marker icon to the style
                 mapStyle.addImage(WAYPOINT_ICON, it)
-            }
+            }*/
     }
 
-    fun addWaypoint(coordinate: LatLng, waypointName: String): Symbol? {
-        return createWaypoint(coordinate, waypointName)
+    /**
+     * Methods for route editing:
+     */
+
+    fun addWaypoint(coordinate: LatLng, waypoint: WayPointDTO): Symbol? {
+        return createWaypoint(coordinate, waypoint)
     }
 
     fun addWaypoints(waypoints: List<WayPointDTO>?) {
         waypoints?.forEach { waypoint ->
             val coordinates = waypoint.geoPoint.toLatLng()
-            createWaypoint(coordinates, waypoint.title)
+            createWaypoint(coordinates, waypoint)
         }
     }
 
-    private fun createWaypoint(coordinate: LatLng, waypointName: String): Symbol? {
-        val waypoint = symbolManager.create(
+    private fun createWaypoint(coordinate: LatLng, waypoint: WayPointDTO): Symbol? {
+        val waypointSymbol = symbolManager.create(
             SymbolOptions()
                 .withLatLng(coordinate)
-                .withIconImage(WAYPOINT_ICON)
+                .withIconImage(MARKER_ICON)
                 .withIconAnchor(Property.ICON_ANCHOR_BOTTOM)
-                .withTextAnchor(Property.ICON_ANCHOR_TOP)
-                .withTextField(waypointName)
+                .withIconOffset(markerIconOffset)
+                // .withTextField(waypointName)
                 .withIconSize(1.0f)
-                // TODO right now draggable=true spawns a new marker; this seems to be an open issue
-                .withDraggable(true)
+                // .withDraggable(true) // TODO
         )
-        activeWaypoints.add(waypoint)
-        return waypoint
+        activeWaypoints[waypointSymbol] = waypoint
+        return waypointSymbol
     }
 
-    fun deleteWaypoint(waypoint: Symbol) {
-        symbolManager.delete(waypoint)
-        activeWaypoints.remove(waypoint)
+    fun deleteWaypoint(waypointSymbol: Symbol) {
+        symbolManager.delete(waypointSymbol)
+        activeWaypoints.remove(waypointSymbol)
     }
+
+    fun setEditingMarkerClickBehavior(onMarkerClicked: (waypoint: WayPointDTO, symbol: Symbol) -> Unit) {
+        symbolClickListenerBehavior?.let { symbolManager.removeClickListener(it) }
+
+        symbolClickListenerBehavior = OnSymbolClickListener {
+            val wayPoint = activeWaypoints[it]
+            if (wayPoint != null) {
+                onMarkerClicked(wayPoint, it)
+            }
+            // TODO toggle info window visibility!
+            true
+        }
+        symbolClickListenerBehavior?.let { symbolManager.addClickListener(it) }
+    }
+
+    /**
+     * Methods for route creation:
+     */
 
     fun addMarker(coordinate: LatLng): Symbol? {
         return createMarker(coordinate)
@@ -177,11 +199,12 @@ class MarkerManager(
         super.onDestroy(owner)
         // cleanup to prevent leaks (removes click listeners and the annotation manager)
         symbolManager.onDestroy()
-        // activeMarkers.clear()
     }
 
     companion object {
         private const val MARKER_ICON = "marker-icon"
-        private const val WAYPOINT_ICON = "waypoint-icon"
+
+        // moves the marker icon offset a little bit down so it feels closer to the actual touch point
+        private val markerIconOffset = arrayOf(0f, 12f)
     }
 }
