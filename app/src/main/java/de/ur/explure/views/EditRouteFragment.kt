@@ -119,10 +119,7 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route), OnMapReadyCall
     private fun showCancelRouteEditingDialog() {
         with(MaterialAlertDialogBuilder(requireActivity())) {
             setTitle(R.string.attention)
-            setMessage(
-                "Wenn du jetzt abbrichst, wird diese Route nicht gespeichert und dein bisheriger " +
-                        "Fortschritt geht verloren! Möchtest du wirklich zurückgehen?"
-            )
+            setMessage(R.string.leave_route_editing_warning)
             setPositiveButton(R.string.yes) { _, _ -> findNavController().navigateUp() }
             setNegativeButton(R.string.continue_edit) { _, _ -> }
             show()
@@ -136,10 +133,10 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route), OnMapReadyCall
             if (successful) {
                 onSuccessfulSnapshot()
             } else {
-                // TODO show warning!
+                // inform user that something went horribly wrong...
                 showSnackbar(
                     requireActivity(),
-                    "Die Route konnte nicht erfolgreich hochgeladen und gespeichert werden!",
+                    getString(R.string.error_saving_route_snapshot),
                     colorRes = R.color.colorError
                 )
             }
@@ -379,13 +376,6 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route), OnMapReadyCall
         val calloutView = infoWindowMap[feature.getStringProperty(PROPERTY_ID)] ?: return
         val deleteButton = calloutView.findViewById<ImageButton>(R.id.deleteWaypointButtonIW)
         val editButton = calloutView.findViewById<ImageButton>(R.id.editWaypointButtonIW)
-        /*
-        val px = TypedValue.applyDimension(
-            TypedValue.COMPLEX_UNIT_DIP,
-            -45f,
-            resources.displayMetrics
-        )
-        */
 
         // create hitboxes for the info window buttons
         val hitRectDeleteButton = Rect()
@@ -449,7 +439,7 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route), OnMapReadyCall
         map.snapshot { mapSnapshot ->
             uploadSnackbar = showSnackbar(
                 requireActivity(),
-                "Die Route wird gespeichert. Bitte warten ...",
+                getString(R.string.saving_route),
                 colorRes = R.color.colorInfo,
                 length = Snackbar.LENGTH_INDEFINITE
             )
@@ -499,6 +489,10 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route), OnMapReadyCall
         findNavController().navigate(action)
     }
 
+    /**
+     * * Menu
+     */
+
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         menu.clear() // clear the old menu
         inflater.inflate(R.menu.menu_edit_route, menu)
@@ -524,6 +518,10 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route), OnMapReadyCall
             else -> super.onOptionsItemSelected(item)
         }
     }
+
+    /**
+     * * Lifecycle
+     */
 
     override fun onStart() {
         super.onStart()

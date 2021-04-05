@@ -75,7 +75,7 @@
     <string name="build_route_tutorial_title">Route Creation</string>
     <string name="build_route_tutorial_description">Here you can start to create your own route.</string>
     <string name="action_menu_tutorial_title">Actions during route creation</string>
-    <string name="action_menu_tutorial_description">You can find useful options during the route creation process here. You can cancel the route creation (x - symbol), try to align your created route and waypoints to existing ways on the campus (magnet symbol) and save your route (disk symbol).</string>
+    <string name="action_menu_tutorial_description">You can find useful options during the route creation process here. You can cancel the route creation (x - symbol), try to align your created route and waypoints to existing ways on the campus (magnet symbol) or confirm your route and continue (checkmark symbol).</string>
 
     <string name="no_routes">No available routes to that destination</string>
     <string name="steps_in_route">There are %1$d steps in the route</string>
@@ -109,10 +109,13 @@
     <string name="map_matching_succeeded">Successfully created a route from the given waypoints!</string>
     <string name="save_created_route_confirmation">Save created route?</string>
     <string name="create_route_title">Create Route</string>
+    <string name="saving_route">Saving route. Please wait …</string>
+    <string name="error_saving_route_snapshot">Unfortunately, an error occurred while saving the route!</string>
 
     <!-- Warnings -->
     <string name="attention">Attention!</string>
     <string name="leave_route_creation_warning">Do you want to leave the route creation mode? Your current progress will be lost!</string>
+    <string name="leave_route_editing_warning">If you leave now, this route will not be saved and you lose your progress! Do you really want to go back?</string>
     <string name="change_style_during_route_creation">Unfortunately, it isn\'t possible to change the map style during route creation!</string>
     <string name="delete_waypoint_confirmation">Do you really want to delete this waypoint?</string>
     <string name="delete_marker_confirmation">Do you really want to delete this marker?</string>
@@ -123,6 +126,8 @@
     <string name="no_internet_save_route">To save the route an internet connection is required!</string>
     <string name="too_few_waypoints">There must be at least 2 way points on the map to create a route!</string>
     <string name="too_many_waypoints">Unfortunately, a route with so many waypoints cannot be created! Please try to remove some unnecessary points.</string>
+    <string name="no_route_found">No route was found! You have to create a route first before you can continue!</string>
+    <string name="confirm_route_creation_warning">If you go to the next step of route creation and then return, you have to start route creation from the beginning! Continue anyway?</string>
 
     <!-- Buttons and Options -->
     <string name="try_again">Try again</string>

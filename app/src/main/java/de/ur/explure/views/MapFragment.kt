@@ -129,7 +129,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
      */
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        // set the parent as a listener for this fragment
+        // set the parent activity as a listener for this fragment
         activityCallback = context as? MapFragmentListener
     }
 
@@ -193,8 +193,6 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
                         Highlight(
                             highlightView,
                             title = getString(R.string.action_menu_tutorial_title),
-                            // TODO:
-                            // ! string anpassen, jetzt wo speichern nicht mehr hier ist!!
                             description = getString(R.string.action_menu_tutorial_description),
                             radius = Highlight.HIGHLIGHT_RADIUS_LARGE
                         )
@@ -244,12 +242,6 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
                 moveToNextStep()
             }
         }
-        /*
-        mapViewModel.mapMarkers.observe(viewLifecycleOwner) { markers ->
-            if (markers.size > 0) {
-                slidingBottomPanel.panelState = SlidingUpPanelLayout.PanelState.COLLAPSED
-            }
-        }*/
     }
 
     private fun setMenuItemsVisibility(visible: Boolean) {
@@ -395,10 +387,10 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
             .setNeutralButton(R.string.route_track_option) { _, _ ->
                 Toast.makeText(
                     activity,
-                    "Dieses Feature ist leider noch nicht implementiert. Wir arbeiten dran!",
+                    "Dieses Feature ist leider noch nicht implementiert!",
                     Toast.LENGTH_SHORT
                 ).show()
-                // TODO
+                // TODO route tracking mode
                 // mapViewModel.getCurrentMapStyle()?.let { style -> startLocationTracking(style) }
                 // setupRouteRecordingMode()
             }
@@ -422,10 +414,6 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
         binding.routeCreationOptionsLayout.addMarkerButton.setOnClickListener {
             enableAddMarkerOption()
         }
-        // TODO remove / replace this option !
-        binding.routeCreationOptionsLayout.editMarkerButton.setOnClickListener {
-            enableEditMarkerOption()
-        }
         binding.routeCreationOptionsLayout.deleteMarkerButton.setOnClickListener {
             enableDeleteMarkerOption()
         }
@@ -444,6 +432,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
         setAddMarkerClickListenerBehavior()
     }
 
+    /*
     private fun enableEditMarkerOption() {
         highlightCurrentRouteCreationMode(ManualRouteCreationModes.MODE_EDIT)
         mapViewModel.setActiveManualRouteCreationMode(ManualRouteCreationModes.MODE_EDIT)
@@ -455,7 +444,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
             "Diese Funktionalität ist leider noch nicht implementiert!",
             Toast.LENGTH_SHORT
         ).show()
-    }
+    }*/
 
     private fun enableDeleteMarkerOption() {
         highlightCurrentRouteCreationMode(ManualRouteCreationModes.MODE_DELETE)
@@ -541,7 +530,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
         // get button for current mode and highlight it
         val button = when (mode) {
             ManualRouteCreationModes.MODE_ADD -> binding.routeCreationOptionsLayout.addMarkerButton
-            ManualRouteCreationModes.MODE_EDIT -> binding.routeCreationOptionsLayout.editMarkerButton
+            // ManualRouteCreationModes.MODE_EDIT -> binding.routeCreationOptionsLayout.editMarkerButton
             ManualRouteCreationModes.MODE_DELETE -> binding.routeCreationOptionsLayout.deleteMarkerButton
 
             RouteDrawModes.MODE_DRAW -> binding.routeDrawOptionsLayout.drawRouteButton
@@ -615,9 +604,10 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
                 if (!::markerManager.isInitialized) return
                 enableAddMarkerOption()
             }
+            /*
             ManualRouteCreationModes.MODE_EDIT -> {
                 enableEditMarkerOption()
-            }
+            }*/
             ManualRouteCreationModes.MODE_DELETE -> {
                 if (!::markerManager.isInitialized) return
                 enableDeleteMarkerOption()
@@ -756,7 +746,6 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
             routeLineManager?.clearAllLines()
             mapViewModel.resetActiveDrawnLines()
 
-            //  TODO this should be cleared everytime? but then on rotation it is removed ????
             mapViewModel.removeActiveMapMatching()
         }
 
@@ -821,11 +810,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
 
     private fun confirmRoute() {
         with(MaterialAlertDialogBuilder(requireActivity())) {
-            // TODO auslagern
-            setMessage(
-                "Wenn du zum nächsten Schritt der Routenerstellung übergehst, kannst du nicht" +
-                        " mehr in diesen Modus zurückkehren! Möchtest du trotzdem diese Ansicht verlassen?"
-            )
+            setMessage(R.string.confirm_route_creation_warning)
             setPositiveButton(R.string.yes) { _, _ ->
                 mapViewModel.shouldGoToEditing(true)
                 prepareMapMatching()
@@ -852,7 +837,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
 
         if (route == null) {
             showSnackbar(
-                "Keine Route gefunden! Du musst erst eine Route erstellen bevor du speichern kannst!",
+                getString(R.string.no_route_found),
                 binding.mapButtonContainer,
                 colorRes = R.color.colorError
             )
@@ -866,7 +851,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
     }
 
     /**
-     * * Map code
+     * * Map setup code
      */
 
     override fun onMapReady(mapboxMap: MapboxMap) {
@@ -1196,13 +1181,15 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
         mapViewModel.setCurrentUserPosition(location)
     }
 
+    /**
+     * * Menu
+     */
+
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_map, menu)
-
         cancelRouteCreationButton = menu.findItem(R.id.cancelRouteCreationButton)
         showMapMatchingButton = menu.findItem(R.id.showMapMatchedButton)
         confirmRouteButton = menu.findItem(R.id.confirmRouteButton)
-        // startNavigationButton = menu.findItem(R.id.startNavigationButton)
 
         menu.findItem(R.id.show3DSwitch).isChecked = preferencesManager.getBuildingExtrusionShown()
     }
@@ -1226,16 +1213,6 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
                 confirmRoute()
                 true
             }
-            /*
-            R.id.startNavigationButton -> {
-                // convert directionsRoute to json so it can be passed as a string via safe args
-                val routeJson = directionsRoute?.toJson() ?: return false
-                val action = MapFragmentDirections.actionMapFragmentToNavigationFragment(
-                    route = routeJson
-                )
-                findNavController().navigate(action)
-                true
-            }*/
             R.id.show3DSwitch -> {
                 // toggle checkmark and update viewModel & shared preferences state
                 item.isChecked = !item.isChecked
@@ -1275,7 +1252,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
         super.onStop()
         Timber.d("in MapFragment onStop")
         mapView?.onStop()
-
+        // save current map state so it can be re-created!
         mapViewModel.saveActiveMarkers()
         mapViewModel.saveActiveDrawnLines()
         mapViewModel.saveActiveMapMatching()
