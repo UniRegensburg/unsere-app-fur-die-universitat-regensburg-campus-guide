@@ -17,7 +17,7 @@ class AnswerAdapter(private val listener: (String) -> Unit) : RecyclerView.Adapt
     fun setItems(answers: List<Comment>) {
         answerList = answers.toMutableList()
         sortAnswers()
-        // this.notifyDataSetChanged()
+        this.notifyDataSetChanged()
     }
 
     inner class ViewHolder(binding: AnswerItemBinding) : RecyclerView.ViewHolder(binding.root) {
@@ -39,13 +39,17 @@ class AnswerAdapter(private val listener: (String) -> Unit) : RecyclerView.Adapt
         holder.answerText.text = currentItem.message
         val date = dateFormat.format(currentItem.createdAt)
         holder.answerDate.text = date.toString()
+        deleteAnswer(holder, position)
+    }
+
+    private fun deleteAnswer(holder: ViewHolder, position: Int) {
         holder.answerItem.setOnLongClickListener {
             listener(answerList[position].id)
             return@setOnLongClickListener true
         }
     }
 
-    // sorts answers by Date and puts newest answer on the top
+    // sorts answers by date and time and puts newest answer on the top
     private fun sortAnswers() {
         answerList.sortWith { o1, o2 ->
             o2.createdAt.compareTo(o1.createdAt)

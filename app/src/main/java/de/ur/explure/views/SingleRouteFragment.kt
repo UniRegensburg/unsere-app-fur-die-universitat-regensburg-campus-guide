@@ -54,7 +54,7 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinCompon
                 binding.routeDistance.text = getString(R.string.route_item_distance, route.distance.toInt())
                 binding.routeRating.rating = route.currentRating.toFloat()
                 setImage(route.thumbnailUrl)
-                // needs to init Adapters here because otherwise it won't load new comments and answers correctly
+                // Initialises Adapter here so that new responses are also displayed immediately
                 initAdapters()
                 setAdapters(route)
                 binding.scrollview.visibility = View.VISIBLE
@@ -111,13 +111,17 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinCompon
             // share Route
         }
         binding.addCommentButton.setOnClickListener {
-            val commentInput = binding.commentInput.text.toString()
-            if (commentInput.isNotEmpty()) {
-                singleRouteViewModel.addComment(commentInput)
-                binding.commentInput.text.clear()
-            } else {
-                Toast.makeText(context, R.string.empty_comment, Toast.LENGTH_LONG).show()
-            }
+            addComment()
+        }
+    }
+
+    private fun addComment() {
+        val commentInput = binding.commentInput.text.toString()
+        if (commentInput.isNotEmpty()) {
+            singleRouteViewModel.addComment(commentInput)
+            binding.commentInput.text.clear()
+        } else {
+            Toast.makeText(context, R.string.empty_comment, Toast.LENGTH_LONG).show()
         }
     }
 
