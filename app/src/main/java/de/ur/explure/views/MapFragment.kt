@@ -14,6 +14,7 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.addCallback
 import androidx.appcompat.widget.ListPopupWindow
+import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.core.view.children
 import androidx.fragment.app.Fragment
@@ -184,12 +185,16 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
 
                 // also show a tutorial for the menu actions the first time the user creates a route
                 if (preferencesManager.isFirstTimeRouteCreation()) {
+                    val activity = activity ?: return@observe
+                    val toolbar = activity.findViewById<Toolbar>(R.id.toolbar)
+                    val highlightView = activity.findViewById<View>(R.id.showMapMatchedButton)
                     TutorialBuilder.highlightMapActionMenu(
-                        requireActivity(),
-                        requireActivity().findViewById(R.id.toolbar),
+                        activity, toolbar,
                         Highlight(
-                            requireActivity().findViewById(R.id.saveRouteButton),
+                            highlightView,
                             title = getString(R.string.action_menu_tutorial_title),
+                            // TODO:
+                            // ! string anpassen, jetzt wo speichern nicht mehr hier ist!!
                             description = getString(R.string.action_menu_tutorial_description),
                             radius = Highlight.HIGHLIGHT_RADIUS_LARGE
                         )
