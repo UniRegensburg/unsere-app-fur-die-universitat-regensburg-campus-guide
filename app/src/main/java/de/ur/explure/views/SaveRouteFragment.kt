@@ -18,6 +18,7 @@ import de.ur.explure.model.waypoint.WayPointDTO
 import de.ur.explure.viewmodel.SaveRouteViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
+// TODO allow user to go back to previous step here ??
 class SaveRouteFragment : Fragment(R.layout.fragment_save_route) {
 
     private val binding by viewBinding(FragmentSaveRouteBinding::bind)

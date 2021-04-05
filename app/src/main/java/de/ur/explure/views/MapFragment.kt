@@ -417,6 +417,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
         binding.routeCreationOptionsLayout.addMarkerButton.setOnClickListener {
             enableAddMarkerOption()
         }
+        // TODO remove / replace this option !
         binding.routeCreationOptionsLayout.editMarkerButton.setOnClickListener {
             enableEditMarkerOption()
         }
@@ -426,8 +427,6 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
         binding.routeCreationOptionsLayout.resetButton.setOnClickListener {
             showResetMapDialog(getString(R.string.reset_manual_route_creation))
         }
-
-        // TODO add a separate button for dragging markers too ?
     }
 
     private fun enableAddMarkerOption() {
@@ -451,7 +450,6 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
             "Diese Funktionalität ist leider noch nicht implementiert!",
             Toast.LENGTH_SHORT
         ).show()
-        // TODO allow user to edit the markers and their position (e.g. via infowindow ?)
     }
 
     private fun enableDeleteMarkerOption() {
@@ -690,7 +688,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
         routeCreationMapClickListenerBehavior = MapboxMap.OnMapClickListener {
             val symbol = markerManager.addMarker(it)
             if (symbol != null) {
-                mapViewModel.addNewMapMarker(symbol)
+                mapViewModel.addNewMapMarker(symbol, getString(R.string.default_waypoint_title))
             }
             waypointsController.add(it)
 
@@ -753,7 +751,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
             routeLineManager?.clearAllLines()
             mapViewModel.resetActiveDrawnLines()
 
-            // TODO this should be cleared everytime? but then on rotation it is removed ????
+            //  TODO this should be cleared everytime? but then on rotation it is removed ????
             mapViewModel.removeActiveMapMatching()
         }
 
@@ -818,7 +816,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
 
     private fun confirmRoute() {
         with(MaterialAlertDialogBuilder(requireActivity())) {
-            // TODO
+            // TODO auslagern
             setMessage(
                 "Wenn du zum nächsten Schritt der Routenerstellung übergehst, kannst du nicht" +
                         " mehr in diesen Modus zurückkehren! Möchtest du trotzdem diese Ansicht verlassen?"
@@ -847,7 +845,6 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
             markers = mapViewModel.getAllActiveMarkers()?.toMutableList()
         }
 
-        // TODO more error handling
         if (route == null) {
             showSnackbar(
                 "Keine Route gefunden! Du musst erst eine Route erstellen bevor du speichern kannst!",
@@ -1107,10 +1104,6 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
 
     private fun setupMapListeners() {
         map.addOnCameraIdleListener(this::onCameraMoved)
-        map.setOnInfoWindowClickListener {
-            // TODO implement info windows ?
-            false
-        }
     }
 
     private fun removeMapListeners() {

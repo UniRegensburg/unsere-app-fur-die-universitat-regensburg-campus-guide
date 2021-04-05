@@ -226,4 +226,5 @@
     <string name="create_waypoint_save_btn">Save</string>
     <string name="create_waypoint_title">Waypoint Information</string>
     <string name="create_route_save_btn">Save</string>
+    <string name="default_waypoint_title">No title</string>
 </resources>

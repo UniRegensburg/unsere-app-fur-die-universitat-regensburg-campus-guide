@@ -1,16 +1,15 @@
 package de.ur.explure.views
 
-import android.graphics.drawable.BitmapDrawable
+import android.graphics.Bitmap
+import android.graphics.PointF
+import android.graphics.Rect
 import android.os.Bundle
 import android.view.Gravity
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import android.view.WindowManager
 import android.widget.ImageButton
-import android.widget.PopupWindow
-import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.addCallback
 import androidx.fragment.app.Fragment
@@ -20,6 +19,8 @@ import com.crazylegend.viewbinding.viewBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.mapbox.core.constants.Constants.PRECISION_6
+import com.mapbox.geojson.Feature
+import com.mapbox.geojson.FeatureCollection
 import com.mapbox.geojson.LineString
 import com.mapbox.geojson.Point
 import com.mapbox.mapboxsdk.geometry.LatLng
@@ -28,12 +29,21 @@ import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
 import com.mapbox.mapboxsdk.maps.Style
+import com.mapbox.mapboxsdk.style.expressions.Expression
+import com.mapbox.mapboxsdk.style.layers.Property
+import com.mapbox.mapboxsdk.style.layers.PropertyFactory
+import com.mapbox.mapboxsdk.style.layers.SymbolLayer
+import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
 import com.mapbox.turf.TurfConstants
 import com.mapbox.turf.TurfMeasurement
 import de.ur.explure.R
 import de.ur.explure.databinding.FragmentEditRouteBinding
+import de.ur.explure.extensions.pointToLatLng
+import de.ur.explure.extensions.toFeature
+import de.ur.explure.map.InfoWindowGenerator
 import de.ur.explure.map.MarkerManager
 import de.ur.explure.map.RouteLineManager
+import de.ur.explure.model.waypoint.WayPointDTO
 import de.ur.explure.utils.SharedPreferencesManager
 import de.ur.explure.utils.hasInternetConnection
 import de.ur.explure.utils.measureTimeFor
@@ -45,7 +55,9 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.androidx.viewmodel.scope.emptyState
 import org.koin.core.parameter.parametersOf
 
-class EditRouteFragment : Fragment(R.layout.fragment_edit_route), OnMapReadyCallback {
+@Suppress("TooManyFunctions")
+class EditRouteFragment : Fragment(R.layout.fragment_edit_route), OnMapReadyCallback,
+    InfoWindowGenerator.InfoWindowListener {
 
     private val binding by viewBinding(FragmentEditRouteBinding::bind)
     private val editRouteViewModel: EditRouteViewModel by viewModel(state = emptyState())
@@ -60,11 +72,16 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route), OnMapReadyCall
     private lateinit var map: MapboxMap
     private lateinit var markerManager: MarkerManager
     private var routeLineManager: RouteLineManager? = null
+    private var infoWindowGenerator: InfoWindowGenerator? = null
 
-    private var mapClickListener: MapboxMap.OnMapLongClickListener? = null
     private var backPressedCallback: OnBackPressedCallback? = null
 
     private var uploadSnackbar: Snackbar? = null
+
+    // for info windows
+    private var infoWindowMap = HashMap<String, View>()
+    private var featureCollection: FeatureCollection? = null
+    private var source: GeoJsonSource? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -83,7 +100,7 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route), OnMapReadyCall
         // setup the sliding panel BEFORE the map!
         // setupSlidingPanel()
 
-        // init mapbox map
+        // init the mapbox map
         mapView = binding.editMapView
         mapView?.onCreate(savedInstanceState)
         mapView?.getMapAsync(this)
@@ -135,68 +152,12 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route), OnMapReadyCall
 
         val style = preferencesManager.getCurrentMapStyle()
         map.setStyle(style) { mapStyle ->
-            setupMarkerManager(mapStyle)
-            setupRouteLineManager(mapStyle)
-
-            // recreate all markers if any
-            val routeWaypoints = editRouteViewModel.getWayPoints()
-            markerManager.addWaypoints(routeWaypoints)
-
-            // recreate all route lines
-            val routeLine = editRouteViewModel.getRoute()
-            if (routeLine != null) {
-                routeLineManager?.addLineToMap(routeLine)
-            }
-
-            markerManager.setEditingMarkerClickBehavior { wayPoint, symbol ->
-                val popup = PopupWindow(context)
-                val layout = layoutInflater.inflate(R.layout.waypoint_info_window, binding.root, false)
-                val title = layout.findViewById<TextView>(R.id.waypointTitleIW)
-                title.text = wayPoint.title
-
-                popup.apply {
-                    contentView = layout
-                    width = WindowManager.LayoutParams.WRAP_CONTENT
-                    height = WindowManager.LayoutParams.WRAP_CONTENT
-                    isOutsideTouchable = true
-                    isFocusable = true
-                }
-                popup.setBackgroundDrawable(BitmapDrawable()) // reset the background
-                val clickedPoint = mapboxMap.projection.toScreenLocation(symbol.latLng)
-                @Suppress("MagicNumber")
-                val xOffset = 20
-                popup.showAtLocation(
-                    binding.mapEditContainer,
-                    Gravity.NO_GRAVITY,
-                    clickedPoint.x.toInt() + xOffset,
-                    clickedPoint.y.toInt()
-                )
-
-                val deleteButton = layout.findViewById<ImageButton>(R.id.deleteWaypointButtonIW)
-                deleteButton.setOnClickListener {
-                    showSnackbar(requireActivity(), "Sicher?")
-                    popup.dismiss()
-                }
-                popup.showAsDropDown(binding.editMapView)
-            }
-
-            map.setOnInfoWindowClickListener {
-                // TODO implement info windows ?
-                false
-            }
-
-            // TODO should this be setup before or after the markerManager DragListener ??
-
-            // allow users to add markers to the map on long click
-            mapClickListener = MapboxMap.OnMapLongClickListener {
-                val createdWaypoint = editRouteViewModel.addNewWayPoint(it)
-                markerManager.addWaypoint(it, createdWaypoint)
-                true
-            }
-            mapClickListener?.let { map.addOnMapLongClickListener(it) }
+            setupMapData(mapStyle)
+            setupListeners()
         }
     }
 
+    // TODO next 3 methods are almost completely duplicate:
     private fun setupMapUI() {
         // restrict the camera to a given bounding box as the app focuses only on the uni campus
         map.setLatLngBoundsForCameraTarget(latLngBounds)
@@ -207,12 +168,29 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route), OnMapReadyCall
             compassMarginLeft, 0, 0,
             compassMarginBottom
         )
+    }
 
-        // init the camera at the saved cameraPosition if it is not null
-        /*
-        editRouteViewModel.getLastKnownCameraPosition()?.let {
-            map.cameraPosition = it
-        }*/
+    private fun setupMapData(mapStyle: Style) {
+        setupMarkerManager(mapStyle)
+        setupRouteLineManager(mapStyle)
+
+        // recreate all markers if any
+        val routeWaypoints = editRouteViewModel.getWayPoints()
+        markerManager.addWaypoints(routeWaypoints)
+
+        // recreate all route lines
+        val routeLine = editRouteViewModel.getRoute()
+        if (routeLine != null) {
+            routeLineManager?.addLineToMap(routeLine)
+        }
+
+        // setup the info window layer
+        setupCalloutSource(mapStyle)
+        setupCalloutLayer(mapStyle)
+
+        setupInfoWindowGenerator()
+        // must be called after the infoWindowGenerator has been setup!
+        initFeatureCollection(editRouteViewModel.getWayPoints())
     }
 
     private fun setupMarkerManager(mapStyle: Style) {
@@ -223,6 +201,244 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route), OnMapReadyCall
     private fun setupRouteLineManager(mapStyle: Style) {
         routeLineManager = get { parametersOf(mapView, map, mapStyle) }
         routeLineManager?.let { viewLifecycleOwner.lifecycle.addObserver(it) }
+    }
+
+    private fun setupInfoWindowGenerator() {
+        // needs to be given an activity context to be able to inflate the info window layout!
+        infoWindowGenerator = get { parametersOf(requireActivity()) }
+        infoWindowGenerator?.let { viewLifecycleOwner.lifecycle.addObserver(it) }
+        infoWindowGenerator?.setInfoWindowListener(this)
+    }
+
+    private fun initFeatureCollection(waypoints: List<WayPointDTO>?) {
+        val initialFeatures = mutableListOf<Feature>()
+        waypoints?.forEach {
+            val feature = generateNewFeature(it)
+            initialFeatures.add(feature)
+        }
+        featureCollection = FeatureCollection.fromFeatures(initialFeatures)
+
+        // generate callout views on a background thread
+        featureCollection?.let { infoWindowGenerator?.generateCallouts(it) }
+    }
+
+    private fun generateNewFeature(wayPoint: WayPointDTO): Feature {
+        val feature = wayPoint.geoPoint.toFeature()
+        // each GeoJSON Feature must have a "selected" property with a boolean value:
+        feature.addBooleanProperty(PROPERTY_SELECTED, false)
+        // We don't have an id field so we just use the latLng - position as an id.
+        // This should always be unique as no markers can be at the exact same position!
+        feature.addStringProperty(PROPERTY_ID, wayPoint.geoPoint.toString())
+        feature.addStringProperty(PROPERTY_TITLE, wayPoint.title)
+        return feature
+    }
+
+    /**
+     * This callback is invoked when the [infoWindowGenerator] has finished generating callout bitmaps
+     * that can be shown as a map layer.
+     */
+    override fun onViewsGenerated(
+        bitmapHashMap: HashMap<String, Bitmap>,
+        viewMap: HashMap<String, View>
+    ) {
+        map.getStyle { style ->
+            // calling addImages is faster as separate addImage calls for each bitmap.
+            style.addImages(bitmapHashMap)
+            infoWindowMap.putAll(viewMap)
+            refreshSource()
+        }
+    }
+
+    private fun setupListeners() {
+        markerManager.setEditingMarkerClickBehavior { wayPoint ->
+            val featureList = featureCollection?.features()
+            featureList?.let {
+                it.forEachIndexed { i, _ ->
+                    // get the feature that was clicked and toggle it's selected state
+                    if (featureList[i].getStringProperty(PROPERTY_ID) == wayPoint.geoPoint.toString()) {
+                        if (featureSelectedStatus(i)) {
+                            setFeatureSelectState(featureList[i], false)
+                        } else {
+                            setSelected(i)
+                        }
+                    } else {
+                        // and hide other info windows when a new one is shown
+                        setFeatureSelectState(featureList[i], false)
+                    }
+                }
+            }
+        }
+
+        // TODO should these be setup before or after the markerManager DragListener ??
+        map.addOnMapClickListener(this::onMapClick)
+        // allow users to add markers to the map on long click
+        map.addOnMapLongClickListener(this::onMapLongClick)
+    }
+
+    /**
+     * Set a feature selected state and update the data on the map.
+     *
+     * @param index the index of selected feature
+     */
+    private fun setSelected(index: Int) {
+        val feature = featureCollection?.features()?.getOrNull(index) ?: return
+        setFeatureSelectState(feature, true)
+        refreshSource()
+    }
+
+    /**
+     * Selects the state of a feature and updates the data on the map.
+     *
+     * @param feature the feature to be selected.
+     */
+    private fun setFeatureSelectState(feature: Feature, selectedState: Boolean) {
+        if (feature.properties() != null) {
+            feature.properties()?.addProperty(PROPERTY_SELECTED, selectedState)
+            refreshSource()
+        }
+    }
+
+    /**
+     * Updates the display of data on the map after the  [featureCollection] has been modified.
+     */
+    private fun refreshSource() {
+        if (featureCollection != null) {
+            source?.setGeoJson(featureCollection)
+        }
+    }
+
+    /**
+     * Checks whether a Feature's boolean "selected" property is true or false.
+     *
+     * @param index the specific Feature's index position in the FeatureCollection's list of Features.
+     * @return true if "selected" is true. False if the boolean property is false.
+     */
+    private fun featureSelectedStatus(index: Int): Boolean {
+        return if (featureCollection == null) {
+            false
+        } else {
+            featureCollection?.features()?.get(index)?.getBooleanProperty(PROPERTY_SELECTED) == true
+        }
+    }
+
+    private fun onMapClick(position: LatLng): Boolean {
+        val screenPoint = map.projection.toScreenLocation(position)
+        val features = map.queryRenderedFeatures(screenPoint, CALLOUT_LAYER_ID)
+        if (features.isNotEmpty()) {
+            // we received a click event on the callout - layer (i.e. the info window)
+            val feature = features[0]
+            val symbolScreenPoint = map.projection.toScreenLocation(feature.pointToLatLng())
+            handleClickCallout(feature, screenPoint, symbolScreenPoint)
+        }
+        return true
+    }
+
+    private fun setupCalloutSource(loadedMapStyle: Style) {
+        source = GeoJsonSource(CALLOUT_SOURCE_ID, featureCollection)
+        source?.let { loadedMapStyle.addSource(it) }
+    }
+
+    private fun setupCalloutLayer(loadedMapStyle: Style) {
+        loadedMapStyle.addLayer(
+            SymbolLayer(CALLOUT_LAYER_ID, CALLOUT_SOURCE_ID)
+                .withProperties(
+                    // show image with id title based on the value of the title feature property
+                    PropertyFactory.iconImage("{$PROPERTY_ID}"),
+                    PropertyFactory.iconAllowOverlap(false),
+                    PropertyFactory.iconIgnorePlacement(false),
+                    PropertyFactory.iconAnchor(Property.ICON_ANCHOR_BOTTOM),
+                    // offset icon slightly to match bubble layout
+                    PropertyFactory.iconOffset(INFO_WINDOW_OFFSET)
+                )
+                // add a filter to show only when selected feature property is true
+                .withFilter(
+                    Expression.eq(
+                        Expression.get(PROPERTY_SELECTED),
+                        Expression.literal(true)
+                    )
+                )
+        )
+    }
+
+    /**
+     * This method handles click events for callout symbols.
+     * <p>
+     * It creates a hit rectangle based on the the textView, offsets that rectangle to the location
+     * of the symbol on screen and hit tests that with the screen point.
+     * </p>
+     *
+     * @param feature           the clicked waypoint feature
+     * @param screenPoint       the point on screen clicked
+     * @param symbolScreenPoint the point of the symbol on screen
+     */
+    private fun handleClickCallout(
+        feature: Feature,
+        screenPoint: PointF,
+        symbolScreenPoint: PointF
+    ) {
+        val calloutView = infoWindowMap[feature.getStringProperty(PROPERTY_ID)] ?: return
+        val deleteButton = calloutView.findViewById<ImageButton>(R.id.deleteWaypointButtonIW)
+        val editButton = calloutView.findViewById<ImageButton>(R.id.editWaypointButtonIW)
+        /*
+        val px = TypedValue.applyDimension(
+            TypedValue.COMPLEX_UNIT_DIP,
+            -45f,
+            resources.displayMetrics
+        )
+        */
+
+        // create hitboxes for the info window buttons
+        val hitRectDeleteButton = Rect()
+        deleteButton.getHitRect(hitRectDeleteButton)
+        val hitRectEditButton = Rect()
+        editButton.getHitRect(hitRectEditButton)
+
+        for (hitRect in arrayOf(hitRectEditButton, hitRectDeleteButton)) {
+            // move hitbox to location of symbol
+            hitRect.offset(symbolScreenPoint.x.toInt(), symbolScreenPoint.y.toInt())
+            // offset vertically to match anchor behaviour and horizontally to match custom offset for icons
+            // TODO these offsets are determined empirically, i.e. they can change when a different marker
+            //  icon is used or some other offset are changed!
+            //  -> Find a better way to get the correct heights from the generated bitmaps! (listener won't work here!!)
+            hitRect.offset(HITBOX_OFFSET_X, -calloutView.measuredHeight + HITBOX_OFFSET_Y)
+        }
+
+        // hit test if clicked point is in textview hitbox
+        when {
+            hitRectDeleteButton.contains(screenPoint.x.toInt(), screenPoint.y.toInt()) -> {
+                // user clicked on delete button
+                showSnackbar(
+                    requireActivity(),
+                    "Clicked on delete button for waypoint"
+                )
+                // TODO ask user if he really wants to remove this waypoint!
+            }
+            hitRectEditButton.contains(screenPoint.x.toInt(), screenPoint.y.toInt()) -> {
+                // user clicked on edit button
+                showSnackbar(requireActivity(), "Clicked on edit button")
+                // TODO show edit dialog for this waypoint!
+                // val waypoint = editRouteViewModel.getWaypointForFeature(feature)
+            }
+            else -> {
+                // user clicked somewhere else on the callout
+                showSnackbar(requireActivity(), "Clicked on callout text")
+            }
+        }
+    }
+
+    // TODO vllt doch besser mit normalem MapClickListener, da der Dragging bug offenbar nur den
+    //  longClick Listener triggert aber nicht den normalen!
+    private fun onMapLongClick(position: LatLng): Boolean {
+        val createdWaypoint = editRouteViewModel.addNewWayPoint(position, getString(R.string.default_waypoint_title))
+        markerManager.addWaypoint(position, createdWaypoint)
+
+        // convert the waypoint to a feature and add it to the featureCollection
+        val newFeature = generateNewFeature(createdWaypoint)
+        featureCollection?.features()?.add(newFeature)
+        // also generate an info window for this new feature
+        infoWindowGenerator?.generateCallouts(FeatureCollection.fromFeature(newFeature))
+
+        return true // consume the click
     }
 
     private fun finishRouteEditing() {
@@ -327,6 +543,7 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route), OnMapReadyCall
     override fun onStop() {
         super.onStop()
         mapView?.onStop()
+        // save created waypoints so they are not lost on config change or process death!
         editRouteViewModel.saveWayPoints()
     }
 
@@ -342,9 +559,12 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route), OnMapReadyCall
 
     override fun onDestroyView() {
         backPressedCallback?.remove()
-        mapClickListener?.let { map.removeOnMapLongClickListener(it) }
+        map.removeOnMapClickListener(this::onMapClick)
+        map.removeOnMapLongClickListener(this::onMapLongClick)
+
         mapView?.onDestroy()
 
+        infoWindowMap.clear()
         uploadSnackbar?.dismiss()
         super.onDestroyView()
     }
@@ -353,6 +573,16 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route), OnMapReadyCall
         // in m/s, see https://en.wikipedia.org/wiki/Preferred_walking_speed
         private const val WALKING_SPEED = 1.4
         // private const val WALKING_SPEED = 0.83 // Spaziergang
+
+        private const val CALLOUT_SOURCE_ID = "mapbox.poi.callout_source"
+        private const val CALLOUT_LAYER_ID = "mapbox.poi.callout_layer"
+        const val PROPERTY_SELECTED = "selectedStatus"
+        const val PROPERTY_ID = "waypointID"
+        const val PROPERTY_TITLE = "waypointTitle"
+
+        private const val HITBOX_OFFSET_X = -180
+        private const val HITBOX_OFFSET_Y = 15
+        private val INFO_WINDOW_OFFSET = arrayOf(-5.0f, -45.0f)
 
         // TODO duplicate:
 

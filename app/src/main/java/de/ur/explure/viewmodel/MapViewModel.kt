@@ -78,14 +78,12 @@ class MapViewModel(private val state: SavedStateHandle, private val appRouter: M
         goToRouteEdit = flag
     }
 
-    fun addNewMapMarker(symbol: Symbol) {
+    fun addNewMapMarker(symbol: Symbol, defaultTitle: String) {
         val coordinates = symbol.latLng
 
         val wayPoint = WayPointDTO(
-            title = UUID.randomUUID().toString(),
-            geoPoint = coordinates.toGeoPoint(),
-            // TODO auslagern in strings!
-            description = "Keine Beschreibung (Position: ${coordinates.latitude}, ${coordinates.longitude})"
+            title = defaultTitle,
+            geoPoint = coordinates.toGeoPoint()
         )
 
         val mapMarker = MapMarker(

@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.mapbox.geojson.Feature
 import com.mapbox.geojson.LineString
 import com.mapbox.mapboxsdk.geometry.LatLng
 import de.ur.explure.extensions.toGeoPoint
@@ -12,9 +13,9 @@ import de.ur.explure.model.waypoint.WayPointDTO
 import de.ur.explure.navigation.MainAppRouter
 import de.ur.explure.repository.route.RouteRepositoryImpl
 import de.ur.explure.utils.FirebaseResult
+import de.ur.explure.views.EditRouteFragment.Companion.PROPERTY_ID
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import java.util.*
 
 class EditRouteViewModel(
     private val state: SavedStateHandle,
@@ -40,9 +41,9 @@ class EditRouteViewModel(
         }
     }
 
-    fun addNewWayPoint(coordinates: LatLng): WayPointDTO {
+    fun addNewWayPoint(coordinates: LatLng, defaultTitle: String): WayPointDTO {
         val wayPoint = WayPointDTO(
-            title = UUID.randomUUID().toString(),
+            title = defaultTitle,
             geoPoint = coordinates.toGeoPoint()
         )
         routeWayPoints.value?.add(wayPoint)
@@ -57,6 +58,12 @@ class EditRouteViewModel(
 
     fun getWayPoints(): MutableList<WayPointDTO>? {
         return routeWayPoints.value
+    }
+
+    fun getWaypointForFeature(feature: Feature): WayPointDTO? {
+        return routeWayPoints.value?.find {
+            it.geoPoint.toString() == feature.getStringProperty(PROPERTY_ID)
+        }
     }
 
     fun saveRoute(routeLine: LineString) {

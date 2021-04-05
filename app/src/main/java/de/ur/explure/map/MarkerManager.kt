@@ -99,15 +99,14 @@ class MarkerManager(
         activeWaypoints.remove(waypointSymbol)
     }
 
-    fun setEditingMarkerClickBehavior(onMarkerClicked: (waypoint: WayPointDTO, symbol: Symbol) -> Unit) {
+    fun setEditingMarkerClickBehavior(onMarkerClicked: (waypoint: WayPointDTO) -> Unit) {
         symbolClickListenerBehavior?.let { symbolManager.removeClickListener(it) }
 
         symbolClickListenerBehavior = OnSymbolClickListener {
             val wayPoint = activeWaypoints[it]
             if (wayPoint != null) {
-                onMarkerClicked(wayPoint, it)
+                onMarkerClicked(wayPoint)
             }
-            // TODO toggle info window visibility!
             true
         }
         symbolClickListenerBehavior?.let { symbolManager.addClickListener(it) }
