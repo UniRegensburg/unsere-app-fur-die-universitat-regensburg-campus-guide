@@ -24,7 +24,6 @@ import com.mapbox.geojson.FeatureCollection
 import com.mapbox.geojson.LineString
 import com.mapbox.geojson.Point
 import com.mapbox.mapboxsdk.geometry.LatLng
-import com.mapbox.mapboxsdk.geometry.LatLngBounds
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
@@ -41,6 +40,7 @@ import de.ur.explure.databinding.FragmentEditRouteBinding
 import de.ur.explure.extensions.pointToLatLng
 import de.ur.explure.extensions.toFeature
 import de.ur.explure.map.InfoWindowGenerator
+import de.ur.explure.map.MapConstants
 import de.ur.explure.map.MarkerManager
 import de.ur.explure.map.RouteLineManager
 import de.ur.explure.model.waypoint.WayPointDTO
@@ -157,13 +157,12 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route), OnMapReadyCall
     // TODO next 3 methods are almost completely duplicate:
     private fun setupMapUI() {
         // restrict the camera to a given bounding box as the app focuses only on the uni campus
-        map.setLatLngBoundsForCameraTarget(latLngBounds)
+        map.setLatLngBoundsForCameraTarget(MapConstants.latLngBounds)
 
         // move the compass to the bottom left corner of the mapView so it doesn't overlap with buttons
         map.uiSettings.compassGravity = Gravity.BOTTOM or Gravity.START
         map.uiSettings.setCompassMargins(
-            compassMarginLeft, 0, 0,
-            compassMarginBottom
+            MapConstants.compassMarginLeft, 0, 0, MapConstants.compassMarginBottom
         )
     }
 
@@ -266,10 +265,8 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route), OnMapReadyCall
             }
         }
 
-        // TODO should these be setup before or after the markerManager DragListener ??
+        // allow users to add markers to the map on click
         map.addOnMapClickListener(this::onMapClick)
-        // allow users to add markers to the map on long click
-        map.addOnMapLongClickListener(this::onMapLongClick)
     }
 
     /**
@@ -326,6 +323,19 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route), OnMapReadyCall
             val feature = features[0]
             val symbolScreenPoint = map.projection.toScreenLocation(feature.pointToLatLng())
             handleClickCallout(feature, screenPoint, symbolScreenPoint)
+        } else {
+            // clicked somewhere else on the map, place a new waypoint there
+            val createdWaypoint = editRouteViewModel.addNewWayPoint(
+                position,
+                getString(R.string.default_waypoint_title)
+            )
+            markerManager.addWaypoint(position, createdWaypoint)
+
+            // convert the waypoint to a feature and add it to the featureCollection
+            val newFeature = generateNewFeature(createdWaypoint)
+            featureCollection?.features()?.add(newFeature)
+            // also generate an info window for this new feature
+            infoWindowGenerator?.generateCallouts(FeatureCollection.fromFeature(newFeature))
         }
         return true
     }
@@ -581,19 +591,5 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route), OnMapReadyCall
         private const val HITBOX_OFFSET_X = -180
         private const val HITBOX_OFFSET_Y = 15
         private val INFO_WINDOW_OFFSET = arrayOf(-5.0f, -45.0f)
-
-        // TODO duplicate:
-
-        // custom margins of the mapbox compass
-        private const val compassMarginLeft = 10
-        private const val compassMarginBottom = 100
-
-        // camera bounding box
-        private val southWestCorner = LatLng(48.990768, 12.087611)
-        private val northEastCorner = LatLng(49.006718, 12.101880)
-        private val latLngBounds = LatLngBounds.Builder()
-            .include(southWestCorner)
-            .include(northEastCorner)
-            .build()
     }
 }

@@ -10,6 +10,7 @@ import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.mapboxsdk.plugins.annotation.OnSymbolClickListener
+import com.mapbox.mapboxsdk.plugins.annotation.OnSymbolDragListener
 import com.mapbox.mapboxsdk.plugins.annotation.Symbol
 import com.mapbox.mapboxsdk.plugins.annotation.SymbolManager
 import com.mapbox.mapboxsdk.plugins.annotation.SymbolOptions
@@ -86,9 +87,8 @@ class MarkerManager(
                 .withIconImage(MARKER_ICON)
                 .withIconAnchor(Property.ICON_ANCHOR_BOTTOM)
                 .withIconOffset(markerIconOffset)
-                // .withTextField(waypointName)
                 .withIconSize(1.0f)
-                // .withDraggable(true) // TODO
+                // .withDraggable(true)
         )
         activeWaypoints[waypointSymbol] = waypoint
         return waypointSymbol
@@ -100,8 +100,28 @@ class MarkerManager(
     }
 
     fun setEditingMarkerClickBehavior(onMarkerClicked: (waypoint: WayPointDTO) -> Unit) {
-        symbolClickListenerBehavior?.let { symbolManager.removeClickListener(it) }
 
+        // add a long click listener to enable marker dragging without triggering the map listeners!
+        symbolManager.addLongClickListener {
+            it.isDraggable = true
+            true
+        }
+
+        symbolManager.addDragListener(object : OnSymbolDragListener {
+            override fun onAnnotationDragStarted(annotation: Symbol?) {
+                // not needed
+            }
+
+            override fun onAnnotationDrag(annotation: Symbol?) {
+                // not needed
+            }
+
+            override fun onAnnotationDragFinished(annotation: Symbol?) {
+                annotation?.isDraggable = false
+            }
+        })
+
+        symbolClickListenerBehavior?.let { symbolManager.removeClickListener(it) }
         symbolClickListenerBehavior = OnSymbolClickListener {
             val wayPoint = activeWaypoints[it]
             if (wayPoint != null) {

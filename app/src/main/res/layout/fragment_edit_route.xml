@@ -14,7 +14,7 @@
         android:elevation="2dp"
         android:paddingHorizontal="@dimen/margin_normal"
         android:paddingVertical="@dimen/margin_small"
-        android:text="Du kannst deiner Route durch langes Klicken Wegpunkte hinzufügen und diese bearbeiten. Sobald du fertig bist, klicke auf das &quot;Speichern&quot;-Symbol oben rechts."
+        android:text="@string/route_edit_instructions"
         android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
         app:layout_constraintBottom_toTopOf="@+id/editMapView"
         app:layout_constraintEnd_toEndOf="parent"

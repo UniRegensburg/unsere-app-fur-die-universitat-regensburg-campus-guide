@@ -111,6 +111,7 @@
     <string name="create_route_title">Create Route</string>
     <string name="saving_route">Saving route. Please wait …</string>
     <string name="error_saving_route_snapshot">Unfortunately, an error occurred while saving the route!</string>
+    <string name="route_edit_instructions">You can add waypoints to your route by clicking on the map and drag markers by long clicking them and moving them to a new place. When you are done, you can click on the "disk" symbol in the top right to save your route.</string>
 
     <!-- Warnings -->
     <string name="attention">Attention!</string>
@@ -140,6 +141,9 @@
     <string name="save_route">Save Route</string>
     <string name="reset_manual_route_creation">Do you really want to reset all markers?</string>
     <string name="reset_map_draw">Do you really want to remove all drawn routes on the map?</string>
+    <string name="route_draw_confirm_option">Do you want to use your own route or the automatically generated route?</string>
+    <string name="use_own_route">Own Route</string>
+    <string name="use_map_matching">Generated Route</string>
 
     <!--Test Strings-->
     <string name="lorem_ipsum">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.  </string>

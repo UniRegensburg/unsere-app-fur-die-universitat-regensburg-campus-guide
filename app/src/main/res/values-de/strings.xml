@@ -103,6 +103,7 @@
     <string name="create_route_title">Route erstellen</string>
     <string name="saving_route">Die Route wird gespeichert. Bitte warten …</string>
     <string name="error_saving_route_snapshot">Beim Speichern der Route ist leider ein Fehler aufgetreten!</string>
+    <string name="route_edit_instructions">Du kannst deiner Route durch Klicken Wegpunkte hinzufügen und diese an eine neue Position ziehen, indem du sie etwas länger anklickst und dann bewegst. Sobald du fertig bist, klicke auf das "Disk"-Symbol oben rechts, um zu speichern.</string>
 
     <!-- Warnings -->
     <string name="attention">Achtung!</string>
@@ -132,6 +133,9 @@
     <string name="save_route">Route speichern</string>
     <string name="reset_manual_route_creation">Möchtest du wirklich alles seit Beginn der Routenerstellung rückgängig machen?</string>
     <string name="reset_map_draw">Möchtest du wirklich alle gezeichneten Routen auf der Karte rückgängig machen?</string>
+    <string name="route_draw_confirm_option">Möchtest du deine eigene Route oder die automatisch daraus generierte Route verwenden?</string>
+    <string name="use_own_route">Eigene Route</string>
+    <string name="use_map_matching">Generierte Route</string>
 
     <string name="confirm">Bestätigen</string>
     <string name="abort">Abbrechen</string>

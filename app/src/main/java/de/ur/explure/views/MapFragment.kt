@@ -23,6 +23,7 @@ import androidx.fragment.app.replace
 import com.crazylegend.viewbinding.viewBinding
 import com.daimajia.androidanimations.library.Techniques
 import com.daimajia.androidanimations.library.YoYo
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.mapbox.android.core.permissions.PermissionsManager
@@ -33,8 +34,6 @@ import com.mapbox.geojson.Feature
 import com.mapbox.geojson.LineString
 import com.mapbox.geojson.Point
 import com.mapbox.geojson.utils.PolylineUtils
-import com.mapbox.mapboxsdk.geometry.LatLng
-import com.mapbox.mapboxsdk.geometry.LatLngBounds
 import com.mapbox.mapboxsdk.location.LocationUpdate
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
@@ -43,11 +42,15 @@ import com.mapbox.mapboxsdk.maps.Style
 import com.sothree.slidinguppanel.SlidingUpPanelLayout
 import de.ur.explure.R
 import de.ur.explure.databinding.FragmentMapBinding
+import de.ur.explure.extensions.hide
+import de.ur.explure.extensions.initHidden
+import de.ur.explure.extensions.lineToPoints
 import de.ur.explure.extensions.moveCameraToPosition
 import de.ur.explure.extensions.toPoint
 import de.ur.explure.map.CustomBuildingPlugin
 import de.ur.explure.map.LocationManager
 import de.ur.explure.map.ManualRouteCreationModes
+import de.ur.explure.map.MapConstants
 import de.ur.explure.map.MapMatchingClient
 import de.ur.explure.map.MarkerManager
 import de.ur.explure.map.PermissionHelper
@@ -151,6 +154,9 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
         // setup the sliding panel BEFORE the map!
         setupSlidingPanel()
 
+        // setup the confirmation bottom sheet but don't show it yet
+        BottomSheetBehavior.from(binding.routeDrawConfirmSheet.confirmBottomSheet).initHidden()
+
         // init mapbox map
         mapView = binding.mapView
         mapView?.onCreate(savedInstanceState)
@@ -239,8 +245,28 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
         mapViewModel.activeMapMatching.observe(viewLifecycleOwner) {
             if (mapViewModel.shouldGoToEditing()) {
                 mapViewModel.shouldGoToEditing(false) // reset flag
-                moveToNextStep()
+
+                if (mapViewModel.routeDrawModeActive.value == true) {
+                    // ask user if he wants to use the mapMatching or his own route
+                   showRouteDrawConfirmationSheet()
+                } else {
+                    moveToNextStep()
+                }
             }
+        }
+    }
+
+    private fun showRouteDrawConfirmationSheet() {
+        val bottomSheet = BottomSheetBehavior.from(binding.routeDrawConfirmSheet.root)
+        bottomSheet.state = BottomSheetBehavior.STATE_EXPANDED
+
+        binding.routeDrawConfirmSheet.ownRouteButton.setOnClickListener {
+            bottomSheet.hide()
+            moveToNextStep(useMapMatching = false)
+        }
+        binding.routeDrawConfirmSheet.mapMatchedRouteButton.setOnClickListener {
+            bottomSheet.hide()
+            moveToNextStep(useMapMatching = true)
         }
     }
 
@@ -769,8 +795,6 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
                 markerManager.addMarker(it.toLatLng())
             }*/
             makeMatchingRequest(allRoutePoints)
-
-            // TODO if we get a map matched route ask the user which one he wants to save (map matched or his own)
         }
     }
 
@@ -820,15 +844,21 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
         }
     }
 
-    private fun moveToNextStep() {
+    private fun moveToNextStep(useMapMatching: Boolean = true) {
         var route: LineString? = null
         var markers: List<MapMarker>? = null
 
         // get route and markers based on mode
         if (mapViewModel.routeDrawModeActive.value == true) {
-            // TODO mapMatching or own Route ?
-            //  -> let user decide which he wants !!!
-            route = mapViewModel.getActiveMapMatching()
+            route = if (useMapMatching) {
+                mapViewModel.getActiveMapMatching()
+            } else {
+                val routeFeatures = mapViewModel.getActiveDrawnLines()
+                val routeCoordinates = routeFeatures?.flatMap { lineFeature ->
+                    lineFeature.lineToPoints()
+                }
+                if (routeCoordinates != null) LineString.fromLngLats(routeCoordinates) else null
+            }
         } else if (mapViewModel.manualRouteCreationModeActive.value == true) {
             route = mapViewModel.getActiveMapMatching()
             // make a copy with toMutableList() as otherwise leaving the route creation mode would reset the markers!
@@ -872,11 +902,11 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
 
     private fun setupMapUI() {
         // restrict the camera to a given bounding box as the app focuses only on the uni campus
-        map.setLatLngBoundsForCameraTarget(latLngBounds)
+        map.setLatLngBoundsForCameraTarget(MapConstants.latLngBounds)
 
         // move the compass to the bottom left corner of the mapView so it doesn't overlap with buttons
         map.uiSettings.compassGravity = Gravity.BOTTOM or Gravity.START
-        map.uiSettings.setCompassMargins(compassMarginLeft, 0, 0, compassMarginBottom)
+        map.uiSettings.setCompassMargins(MapConstants.compassMarginLeft, 0, 0, MapConstants.compassMarginBottom)
 
         // init the camera at the saved cameraPosition if it is not null
         mapViewModel.getLastKnownCameraPosition()?.let {
@@ -1289,21 +1319,6 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
         private const val SIMPLIFICATION_TOLERANCE = 0.00001
 
         private const val ANIMATION_DURATION = 500L // in ms
-
-        // TODO move things below to mapUtil to share some code with editRouteFragment
-        //  (oder gleich einen eigenen MapManager?)
-
-        // custom margins of the mapbox compass
-        private const val compassMarginLeft = 10
-        private const val compassMarginBottom = 100
-
-        // camera bounding box
-        private val southWestCorner = LatLng(48.990768, 12.087611)
-        private val northEastCorner = LatLng(49.006718, 12.101880)
-        private val latLngBounds = LatLngBounds.Builder()
-            .include(southWestCorner)
-            .include(northEastCorner)
-            .build()
     }
 
     interface MapFragmentListener {
