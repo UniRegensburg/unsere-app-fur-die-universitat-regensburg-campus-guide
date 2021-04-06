@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import de.ur.explure.R
 import de.ur.explure.databinding.CommentItemBinding
 import de.ur.explure.model.comment.Comment
 import java.text.SimpleDateFormat
@@ -56,7 +57,9 @@ class CommentAdapter(private val listener: CommentInterface) :
     }
 
     private fun showAnswers(holder: ViewHolder, position: Int) {
+        val answerCount = commentList[position].answers.size
         holder.showAnswers.visibility = View.VISIBLE
+        holder.showAnswers.text = holder.itemView.context.getString(R.string.show_answers, answerCount)
         holder.showAnswers.setOnClickListener {
             holder.showAnswers.visibility = View.GONE
             holder.hideAnswers.visibility = View.VISIBLE
