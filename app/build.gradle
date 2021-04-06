@@ -152,7 +152,7 @@ dependencies {
     debugImplementation('com.github.ajitsing:sherlock:1.0.4@aar') {
         transitive = true
     }
-    // releaseImplementation('com.github.ajitsing:sherlock-no-op:1.0.4@aar')
+    releaseImplementation('com.github.ajitsing:sherlock-no-op:1.0.4@aar')
 
     //Algolia and Ktor
     implementation 'com.algolia:algoliasearch-client-kotlin:1.4.0'
