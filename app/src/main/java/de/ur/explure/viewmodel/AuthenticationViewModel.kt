@@ -90,4 +90,8 @@ class AuthenticationViewModel(
     fun navigateToRegister() {
         mainAppRouter.navigateToRegister()
     }
+
+    /*fun navigateToUserData() {
+        mainAppRouter.navigateToUserData()
+    }*/
 }
