@@ -8,7 +8,12 @@ import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.Style
 import de.ur.explure.map.LocationManager
+import de.ur.explure.map.MapMatchingClient
 import de.ur.explure.map.MarkerManager
+import de.ur.explure.map.PermissionHelper
+import de.ur.explure.map.RouteDrawManager
+import de.ur.explure.map.RouteLineManager
+import de.ur.explure.map.WaypointsController
 import de.ur.explure.navigation.MainAppRouter
 import de.ur.explure.repository.category.CategoryRepositoryImpl
 import de.ur.explure.repository.rating.RatingRepositoryImpl
@@ -45,9 +50,18 @@ val mainModule = module {
     factory { (mapView: MapView, map: MapboxMap, mapStyle: Style) ->
         MarkerManager(androidApplication(), mapView, map, mapStyle)
     }
+    factory { (mapView: MapView, map: MapboxMap, mapStyle: Style) ->
+        RouteLineManager(androidApplication(), mapView, map, mapStyle)
+    }
+    factory { (mapView: MapView, map: MapboxMap) ->
+        RouteDrawManager(mapView, map)
+    }
     factory { (callback: (Location) -> Unit) ->
         LocationManager(androidApplication(), callback)
     }
+    single { PermissionHelper() }
+    single { WaypointsController() }
+    single { MapMatchingClient(androidApplication()) }
 
     // navigation router
     single { MainAppRouter() }

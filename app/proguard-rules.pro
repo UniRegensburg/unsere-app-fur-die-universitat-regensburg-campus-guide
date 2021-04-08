@@ -19,3 +19,8 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+# fix for https://github.com/KeepSafe/TapTargetView/issues/180
+-keep class androidx.appcompat.widget.Toolbar { *** mMenuView; }
+-keep class androidx.appcompat.widget.ActionMenuView { *** mPresenter; }
+-keep class androidx.appcompat.widget.ActionMenuPresenter { *** mOverflowButton; }

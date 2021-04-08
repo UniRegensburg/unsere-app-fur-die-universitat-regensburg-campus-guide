@@ -74,6 +74,8 @@ internal class LocationManager(
         mapStyle: Style,
         useDefaultEngine: Boolean = true
     ) {
+        enabled = true
+
         val customLocationComponentOptions =
             LocationComponentOptions.builder(context)
                 // overwrite custom gestures detection to adjust the camera's focal point and increase
