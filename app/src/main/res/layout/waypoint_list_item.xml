@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/marker_list_item"
+    android:background="@drawable/ripple_effect"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="6dp"
+    tools:showIn="@layout/route_creation_bottomsheet">
+
+    <ImageButton
+        android:id="@+id/waypoint_drag_handle_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:padding="12dp"
+        android:scaleType="center"
+        android:src="@drawable/ic_baseline_drag_handle_24"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/waypoint_title"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="ContentDescription" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/waypoint_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:singleLine="true"
+        android:layout_marginHorizontal="@dimen/margin_small"
+        android:paddingVertical="4dp"
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@id/waypoint_description"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintEnd_toStartOf="@+id/waypoint_image"
+        app:layout_constraintStart_toEndOf="@+id/waypoint_drag_handle_icon"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Marker 1" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/waypoint_description"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/margin_small"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/waypoint_image"
+        app:layout_constraintStart_toEndOf="@+id/waypoint_drag_handle_icon"
+        app:layout_constraintTop_toBottomOf="@id/waypoint_title"
+        tools:text="This is a longer description text to test if this layout can work with long descriptions as well. If your are reading this you are probably disappointed to see that this text doesn't contain anything of interest. But that's ok. Everyone makes mistakes." />
+
+    <ImageView
+        android:id="@+id/waypoint_image"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:elevation="2dp"
+        android:scaleType="fitCenter"
+        android:adjustViewBounds="true"
+        android:layout_margin="12dp"
+        android:src="@drawable/mapbox_marker_icon_default"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/waypoint_delete_icon"
+        app:layout_constraintStart_toEndOf="@+id/waypoint_description"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="ContentDescription" />
+    <!--
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/waypoint_image"
+        android:layout_width="72dp"
+        android:layout_height="72dp"
+        android:layout_margin="8dp"
+        android:elevation="2dp"
+        android:src="@drawable/mapbox_marker_icon_default"
+        app:civ_border_color="@color/mapbox_blue"
+        app:civ_border_width="1dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/waypoint_delete_icon"
+        app:layout_constraintStart_toEndOf="@+id/waypoint_description"
+        app:layout_constraintTop_toTopOf="parent" />
+        -->
+
+    <ImageButton
+        android:id="@+id/waypoint_delete_icon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        android:padding="12dp"
+        android:scaleX="1.2"
+        android:scaleY="1.2"
+        android:src="@drawable/ic_baseline_delete_24"
+        android:tint="@color/colorError"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="ContentDescription" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

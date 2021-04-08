@@ -5,15 +5,19 @@ import android.graphics.Rect
 import android.util.DisplayMetrics
 import android.view.View
 import androidx.annotation.DrawableRes
+import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import com.getkeepsafe.taptargetview.TapTarget
 import com.getkeepsafe.taptargetview.TapTargetSequence
 import com.getkeepsafe.taptargetview.TapTargetView
 import de.ur.explure.R
+import de.ur.explure.utils.Highlight.Companion.DESCRIPTION_TEXT_ALPHA
+import de.ur.explure.utils.Highlight.Companion.DESCRIPTION_TEXT_SIZE
+import de.ur.explure.utils.Highlight.Companion.HIGHLIGHT_COLOR
 import de.ur.explure.utils.Highlight.Companion.HIGHLIGHT_RADIUS_LARGE
 import de.ur.explure.utils.Highlight.Companion.OUTER_CIRCLE_ALPHA
+import de.ur.explure.utils.Highlight.Companion.TEXT_COLOR
 
-// TODO listener on the tap target are not yet supported right now
 data class Highlight(
     val viewTarget: View,
     val title: String,
@@ -25,9 +29,13 @@ data class Highlight(
 ) {
     companion object {
         // default values for the tutorial highlighting
-        const val OUTER_CIRCLE_ALPHA = 0.8f
+        const val OUTER_CIRCLE_ALPHA = 0.9f
+        const val DESCRIPTION_TEXT_ALPHA = 1f
+        const val DESCRIPTION_TEXT_SIZE = 14 // in sp
         const val HIGHLIGHT_RADIUS_SMALL = 60 // in dp
         const val HIGHLIGHT_RADIUS_LARGE = 100
+        const val HIGHLIGHT_COLOR = R.color.colorInfo
+        const val TEXT_COLOR = R.color.white
 
         private var idCounter = 1
 
@@ -58,14 +66,13 @@ object TutorialBuilder {
         }
     }
 
-    // TODO use the highlight class here as well, probably subclass with bounds instead of view
     /**
      * Create a highlight at the given bounds.
      * If no bounds are given it is shown at the center of the screen.
      *
      * **This can be used to show a custom highlight in a tutorial sequence with other views.**
      */
-    fun createCustomHighlightView(
+    private fun createCustomHighlightView(
         activityContext: Activity,
         title: String,
         description: String = "",
@@ -121,12 +128,41 @@ object TutorialBuilder {
         TapTargetView.showFor(activityContext, customTarget)
     }
 
+    fun highlightMapActionMenu(
+        activityContext: Activity,
+        toolbar: Toolbar,
+        toolbarHighlight: Highlight
+    ) {
+        TapTargetView.showFor(
+            activityContext,
+            TapTarget.forToolbarMenuItem(
+                toolbar,
+                toolbarHighlight.viewTarget.id,
+                toolbarHighlight.title,
+                toolbarHighlight.description
+            )
+                .id(toolbarHighlight.highlightID)
+                .cancelable(toolbarHighlight.isCancelable)
+                .targetRadius(toolbarHighlight.radius)
+                .textColor(TEXT_COLOR)
+                .outerCircleColor(HIGHLIGHT_COLOR)
+                .outerCircleAlpha(OUTER_CIRCLE_ALPHA)
+                .descriptionTextSize(DESCRIPTION_TEXT_SIZE)
+                .descriptionTextAlpha(DESCRIPTION_TEXT_ALPHA)
+                .transparentTarget(true)
+        )
+    }
+
     private fun createHighlightView(highlight: Highlight): TapTarget? {
         return TapTarget.forView(highlight.viewTarget, highlight.title, highlight.description)
             .id(highlight.highlightID)
             .cancelable(highlight.isCancelable)
             .targetRadius(highlight.radius)
+            .textColor(TEXT_COLOR)
+            .outerCircleColor(HIGHLIGHT_COLOR)
             .outerCircleAlpha(OUTER_CIRCLE_ALPHA)
+            .descriptionTextSize(DESCRIPTION_TEXT_SIZE)
+            .descriptionTextAlpha(DESCRIPTION_TEXT_ALPHA)
             .transparentTarget(true)
     }
 

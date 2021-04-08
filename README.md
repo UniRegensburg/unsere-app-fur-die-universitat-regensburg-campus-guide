@@ -39,6 +39,11 @@ Um eine hohe Code-Qualität im Team zu gewährleisten, werden [Detekt](https://d
 * [Koin](https://insert-koin.io/)
 * [TapTargetView](https://github.com/KeepSafe/TapTargetView)
 * [ViewBinding-Helpers](https://github.com/FunkyMuse/KAHelpers/tree/master/viewbinding)
+* [Shimmer](https://github.com/facebook/shimmer-android)
+* [AdapterDelegates](https://github.com/sockeqwe/AdapterDelegates)
+* [Android View Animations](https://github.com/daimajia/AndroidViewAnimations)
+* [Glide](https://github.com/bumptech/glide)
+* [SlidingUp-Panel](https://github.com/umano/AndroidSlidingUpPanel)
 
 ## Hinweise zur Dokumentation
 

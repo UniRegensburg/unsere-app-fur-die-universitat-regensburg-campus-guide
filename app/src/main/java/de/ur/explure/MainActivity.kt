@@ -11,10 +11,14 @@ import androidx.navigation.ui.onNavDestinationSelected
 import androidx.navigation.ui.setupWithNavController
 import com.crazylegend.viewbinding.viewBinder
 import de.ur.explure.databinding.ActivityMainBinding
+import de.ur.explure.map.PermissionHelper
 import de.ur.explure.navigation.MainAppRouter
 import de.ur.explure.viewmodel.MainViewModel
+import de.ur.explure.viewmodel.MapViewModel
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.androidx.viewmodel.scope.emptyState
+import timber.log.Timber
 
 /**
  * Main activity of the single activity application.
@@ -25,6 +29,7 @@ class MainActivity : AppCompatActivity() {
     // Uses this library to reduce viewbinding boilerplate code: https://github.com/FunkyMuse/KAHelpers/tree/master/viewbinding
     private val activityMainBinding by viewBinder(ActivityMainBinding::inflate)
 
+    private val mapViewModel: MapViewModel by viewModel(state = emptyState())
     private val mainViewModel: MainViewModel by viewModel()
     private val mainAppRouter: MainAppRouter by inject()
 
@@ -32,12 +37,15 @@ class MainActivity : AppCompatActivity() {
     private val appBarConfiguration by lazy { AppBarConfiguration(topLevelDestinations) }
     private var destinationChangeListener: NavController.OnDestinationChangedListener? = null
 
+    private val permissionHelper: PermissionHelper by inject()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(activityMainBinding.root)
 
         setupBottomNavigation()
         setupToolbar()
+        setupViewModelObservers()
 
         // only set the auth state observer if the activity is created from scratch
         if (savedInstanceState == null) {
@@ -52,6 +60,21 @@ class MainActivity : AppCompatActivity() {
         setupBottomNavigation()
         setupToolbar()
     }*/
+
+    private fun setupViewModelObservers() {
+        // hide the bottom navigation bar when the user enters route creation mode on the map
+        mapViewModel.inRouteCreationMode.observe(this) {
+            hideBottomNavDuringRouteCreation(it)
+        }
+    }
+
+    private fun hideBottomNavDuringRouteCreation(routeCreationActive: Boolean) {
+        if (routeCreationActive) {
+            activityMainBinding.bottomNav.visibility = View.GONE
+        } else {
+            activityMainBinding.bottomNav.visibility = View.VISIBLE
+        }
+    }
 
     private fun setupBottomNavigation() {
         activityMainBinding.bottomNav.setupWithNavController(navController)
@@ -120,17 +143,40 @@ class MainActivity : AppCompatActivity() {
         return item.onNavDestinationSelected(controller)
     }
 
-    override fun onResume() {
-        super.onResume()
+    override fun onStart() {
+        super.onStart()
+        Timber.d("in MainActivity onStart")
         setUpNavDestinationChangeListener()
     }
 
+    override fun onResume() {
+        super.onResume()
+        Timber.d("in MainActivity onResume")
+        // ! This onResume is always called after a permission request in any of the fragments!
+        //  -> because of this the navDestinationChangeListener MUST NOT be setup in here!
+    }
+
     override fun onPause() {
+        super.onPause()
+        Timber.d("in MainActivity onPause")
+    }
+
+    override fun onStop() {
+        Timber.d("in MainActivity onStop")
         // remove the destinationChangeListener to prevent memory leaks
         destinationChangeListener?.let {
             navController.removeOnDestinationChangedListener(it)
         }
-        super.onPause()
+        super.onStop()
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        permissionHelper.onRequestLocationPermissionsResult(requestCode, permissions, grantResults)
     }
 
     companion object {
