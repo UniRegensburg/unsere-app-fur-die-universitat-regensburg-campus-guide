@@ -166,4 +166,5 @@
     <string name="set_user_name">Username</string>
     <string name="text_changes">You can change your picture and username later</string>
     <string name="create_button">Create profile</string>
+    <string name="empty_username">Please enter a username</string>
 </resources>

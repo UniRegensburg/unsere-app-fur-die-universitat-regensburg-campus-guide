@@ -2,13 +2,12 @@ package de.ur.explure.repository.user
 
 import android.graphics.Bitmap
 import de.ur.explure.model.user.User
-import de.ur.explure.model.user.UserDTO
 import de.ur.explure.utils.FirebaseResult
 
 @Suppress("TooManyFunctions")
 interface UserRepository {
 
-    suspend fun isProfileCreated(userId: String) : Boolean
+    suspend fun isProfileCreated(userId: String): Boolean
 
     suspend fun createUserInFirestore(userName: String): FirebaseResult<Void>
 

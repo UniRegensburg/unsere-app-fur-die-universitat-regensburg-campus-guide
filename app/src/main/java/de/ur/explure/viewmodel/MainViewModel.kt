@@ -16,7 +16,7 @@ import kotlinx.coroutines.launch
 class MainViewModel(
     private val mainAppRouter: MainAppRouter,
     private val authService: FirebaseAuthService,
-    private val userRepo : UserRepositoryImpl
+    private val userRepo: UserRepositoryImpl
 ) : ViewModel() {
 
     /**
@@ -30,7 +30,7 @@ class MainViewModel(
         authService.currentUser.observe(activity, { user ->
             if (user != null) {
                 viewModelScope.launch {
-                    if (userRepo.isProfileCreated(user.uid)){
+                    if (userRepo.isProfileCreated(user.uid)) {
                         mainAppRouter.navigateToMainApp()
                     } else {
                         mainAppRouter.navigateToOnboarding()

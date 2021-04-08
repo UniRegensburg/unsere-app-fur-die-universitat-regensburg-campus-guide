@@ -85,8 +85,6 @@ class MainAppRouter {
         navController.navigate(R.id.navigateToRegister)
     }
 
-
-
     fun navigateToCreatedRoutes() {
         val ownRoutesAction = ProfileFragmentDirections.actionDiscoverFragmentToCreatedRoutes()
         navController.navigate(ownRoutesAction)

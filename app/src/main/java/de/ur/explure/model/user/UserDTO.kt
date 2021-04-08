@@ -15,7 +15,7 @@ data class UserDTO(
     var email: String,
     var name: String,
 ) : Parcelable {
-    fun toMap(userId : String): Map<String, Any> {
+    fun toMap(userId: String): Map<String, Any> {
         return mapOf(
             EMAIL_KEY to email,
             NAME_KEY to name,
