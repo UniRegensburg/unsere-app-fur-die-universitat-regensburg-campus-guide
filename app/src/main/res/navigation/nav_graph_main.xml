@@ -96,7 +96,22 @@
         android:id="@+id/mapFragment"
         android:name="de.ur.explure.views.MapFragment"
         android:label="Map"
-        tools:layout="@layout/fragment_map" />
+        tools:layout="@layout/fragment_map">
+        <action
+            android:id="@+id/action_mapFragment_to_navigationFragment"
+            app:destination="@id/navigationFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigationFragment"
+        android:name="de.ur.explure.views.NavigationUIFragment"
+        android:label="Navigation"
+        tools:layout="@layout/fragment_navigation_ui">
+        <argument
+            android:name="route"
+            app:argType="string"
+            app:nullable="false" />
+    </fragment>
 
     <fragment
         android:id="@+id/singleRouteFragment"
