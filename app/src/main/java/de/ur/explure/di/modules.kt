@@ -70,7 +70,7 @@ val mainModule = module {
     viewModel { WordSearchViewModel(get(), get()) }
     viewModel { CategoryViewModel(get(), get()) }
     viewModel { DiscoverViewModel(get(), get(), get()) }
-    viewModel { MainViewModel(get(), get()) }
+    viewModel { MainViewModel(get(), get(), get()) }
     viewModel { MapViewModel(get()) }
     viewModel { CreateRouteViewModel(get(), get(), get()) }
     viewModel { CreateWayPointViewModel() }

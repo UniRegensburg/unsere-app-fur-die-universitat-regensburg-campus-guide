@@ -47,7 +47,7 @@ class UserDataFragment : Fragment(R.layout.fragment_user_data) {
             pickImages.launch("image/*")
         }
         binding.createProfile.setOnClickListener {
-            // navigate to MainApp
+            viewModel.createProfileAndNavigateToMain("")
         }
     }
 

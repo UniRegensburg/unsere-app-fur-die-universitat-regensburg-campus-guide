@@ -15,7 +15,7 @@ data class UserDTO(
     var email: String,
     var name: String,
 ) : Parcelable {
-    fun toMap(): Map<String, Any> {
+    fun toMap(userId : String): Map<String, Any> {
         return mapOf(
             EMAIL_KEY to email,
             NAME_KEY to name,
@@ -23,7 +23,7 @@ data class UserDTO(
             FAVOURITE_ROUTES_KEY to emptyList<String>(),
             FINISHED_ROUTES_KEY to emptyList<String>(),
             ACTIVE_ROUTES_KEY to emptyList<String>(),
-            PROFILE_PICTURE_KEY to ""
+            PROFILE_PICTURE_KEY to "gs://explure-2d2f1.appspot.com/profile_pictures/$userId"
         )
     }
 }

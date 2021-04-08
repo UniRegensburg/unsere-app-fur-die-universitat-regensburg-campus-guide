@@ -59,4 +59,9 @@ class ProfileViewModel(
     fun showStatisticsFragment() {
         appRouter.navigateToStatisticsFragment()
     }
+
+    fun createProfileAndNavigateToMain(userName : String) {
+        //Create User in Firestore with UserRepository
+        appRouter.navigateToMainApp()
+    }
 }

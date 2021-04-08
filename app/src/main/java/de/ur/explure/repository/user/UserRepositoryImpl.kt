@@ -26,6 +26,17 @@ class UserRepositoryImpl(
     private val fireStorage: FirebaseStorage
 ) : UserRepository {
 
+    override suspend fun isProfileCreated(userId: String) : Boolean {
+        return try {
+            when(val userCall = fireStore.userCollection.document(userId).get().await()){
+                is FirebaseResult.Success -> userCall.data.exists()
+                else -> false
+            }
+        } catch (exception: Exception) {
+            false
+        }
+    }
+
     /**
      * Creates a new user document in FireStore for the currently logged in user.
      *
@@ -36,10 +47,12 @@ class UserRepositoryImpl(
      *
      */
 
-    override suspend fun createUserInFirestore(user: UserDTO): FirebaseResult<Void> {
+    override suspend fun createUserInFirestore(userName: String): FirebaseResult<Void> {
         return try {
+            val email = firebaseAuth.getCurrentUserEmail() ?: return  NO_USER_RESULT
             val userId = firebaseAuth.getCurrentUserId() ?: return NO_USER_RESULT
-            fireStore.userCollection.document(userId).set(user.toMap()).await()
+            val userDTO = UserDTO(email = email, name = userName)
+            fireStore.userCollection.document(userId).set(userDTO.toMap(userId)).await()
         } catch (exception: Exception) {
             FirebaseResult.Error(exception)
         }

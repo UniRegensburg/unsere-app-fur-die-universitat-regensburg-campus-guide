@@ -70,13 +70,22 @@ class MainAppRouter {
         navController.setGraph(R.navigation.nav_graph_main)
     }
 
+    /**
+     * Changes the current Navigation graph to the onboarding graph and navigates to the start fragment in
+     * the main app while removing the fragments in the current nav graph from the backstack.
+     */
+
+    fun navigateToOnboarding() {
+        resetNavGraph()
+        navController.navigate(R.id.action_hostFragment_to_nav_graph_onboarding)
+        navController.setGraph(R.navigation.nav_graph_onboarding)
+    }
+
     fun navigateToRegister() {
         navController.navigate(R.id.navigateToRegister)
     }
 
-   /* fun navigateToUserData() {
-        navController.navigate(R.id.navigateToUserData)
-    }*/
+
 
     fun navigateToCreatedRoutes() {
         val ownRoutesAction = ProfileFragmentDirections.actionDiscoverFragmentToCreatedRoutes()
