@@ -17,9 +17,15 @@ import de.ur.explure.model.user.UserDTO
 import de.ur.explure.services.FireStoreInstance
 import de.ur.explure.services.FirebaseAuthService
 import de.ur.explure.utils.FirebaseResult
+import timber.log.Timber
 import java.io.ByteArrayOutputStream
 
-@Suppress("TooGenericExceptionCaught", "UnnecessaryParentheses")
+@Suppress(
+    "TooGenericExceptionCaught",
+    "UnnecessaryParentheses",
+    "UseIfInsteadOfWhen",
+    "ReturnCount"
+)
 class UserRepositoryImpl(
     private val firebaseAuth: FirebaseAuthService,
     private val fireStore: FireStoreInstance,
@@ -33,6 +39,7 @@ class UserRepositoryImpl(
                 else -> false
             }
         } catch (exception: Exception) {
+            Timber.d(exception)
             false
         }
     }
@@ -266,7 +273,8 @@ class UserRepositoryImpl(
 
     override suspend fun uploadImageAndSaveUri(bitmap: Bitmap, qualityValue: Int) {
         val baos = ByteArrayOutputStream()
-        val storageRef = fireStorage.reference.child("profile_pictures/${firebaseAuth.getCurrentUserId()}")
+        val storageRef =
+            fireStorage.reference.child("profile_pictures/${firebaseAuth.getCurrentUserId()}")
         bitmap.compress(Bitmap.CompressFormat.JPEG, qualityValue, baos)
         val image = baos.toByteArray()
         storageRef.putBytes(image)

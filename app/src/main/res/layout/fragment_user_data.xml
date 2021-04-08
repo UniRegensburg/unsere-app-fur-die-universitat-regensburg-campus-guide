@@ -3,6 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/user_data_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".views.UserDataFragment">
@@ -51,7 +52,7 @@
                 android:id="@+id/set_profile_picture"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:scaleType="center"
+                android:scaleType="centerCrop"
                 app:srcCompat="@drawable/user_profile_picture"
                 android:contentDescription="@string/profile_picture"/>
 

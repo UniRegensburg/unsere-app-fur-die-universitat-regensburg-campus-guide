@@ -4,28 +4,18 @@ import android.graphics.Bitmap
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import de.ur.explure.model.user.User
 import de.ur.explure.navigation.MainAppRouter
 import de.ur.explure.repository.user.UserRepositoryImpl
 import de.ur.explure.utils.FirebaseResult
 import kotlinx.coroutines.launch
 
+@SuppressWarnings("UseIfInsteadOfWhen")
 class UserDataViewModel(
-        private val userRepository: UserRepositoryImpl,
-        private val appRouter: MainAppRouter
+    private val userRepository: UserRepositoryImpl,
+    private val appRouter: MainAppRouter
 ) : ViewModel() {
 
-    var user: MutableLiveData<User> = MutableLiveData()
-
-    fun getUserInfo() {
-        viewModelScope.launch {
-            when (val userInfo = userRepository.getUserInfo()) {
-                is FirebaseResult.Success -> {
-                    user.postValue(userInfo.data)
-                }
-            }
-        }
-    }
+    val showErrorMessage: MutableLiveData<Boolean> = MutableLiveData()
 
     fun updateProfilePicture(bitmap: Bitmap, qualityValue: Int) {
         viewModelScope.launch {
@@ -33,18 +23,12 @@ class UserDataViewModel(
         }
     }
 
-    fun updateUserName(newUserName: String) {
-        viewModelScope.launch {
-            userRepository.updateUserName(newUserName)
-            getUserInfo()
-        }
-    }
-
     fun createProfileAndNavigateToMain(userName: String) {
-        // Create User in Firestore with UserRepository
         viewModelScope.launch {
-            userRepository.createUserInFirestore(userName)
+            when (userRepository.createUserInFirestore(userName)) {
+                is FirebaseResult.Success -> appRouter.navigateToMainApp()
+                else -> showErrorMessage.postValue(true)
+            }
         }
-        appRouter.navigateToMainApp()
     }
 }

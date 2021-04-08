@@ -161,5 +161,6 @@
     <string name="text_changes">Du kannst Bild und Benutzernamen später ändern</string>
     <string name="create_button">Profil erstellen</string>
     <string name="empty_username">Bitte Benutzernamen eingeben</string>
+    <string name="user_data_error">Beim Erstellen deines Profiles ist etwas schief gelaufen, bitte versuche es später wieder.</string>
 
 </resources>
