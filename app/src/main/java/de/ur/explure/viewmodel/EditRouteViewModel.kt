@@ -66,6 +66,11 @@ class EditRouteViewModel(
         }
     }
 
+    fun deleteWaypoint(wayPoint: WayPointDTO) {
+        routeWayPoints.value?.remove(wayPoint)
+        routeWayPoints.value = routeWayPoints.value
+    }
+
     fun saveRoute(routeLine: LineString) {
         route = routeLine
         state[ROUTE_KEY] = routeLine

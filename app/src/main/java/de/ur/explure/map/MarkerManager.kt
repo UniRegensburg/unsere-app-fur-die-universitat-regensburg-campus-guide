@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.firebase.firestore.GeoPoint
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
@@ -39,12 +40,14 @@ class MarkerManager(
         iconRotationAlignment = Property.ICON_ROTATION_ALIGNMENT_VIEWPORT
     }
 
+    private var markerEditListener: MarkerEditListener? = null
+
     private var symbolClickListenerBehavior: OnSymbolClickListener? = null
 
     // TODO for testing: this list size should ALWAYS equal the mapMarkers list size in the mapViewmodel!
-    private val activeMarkers: MutableList<Symbol> = mutableListOf()
+    private val activeMarkers: MutableList<Symbol> = mutableListOf() // only used in mapFragment
     // TODO for testing: this list size should ALWAYS equal the routeWaypoints list size in the editViewmodel!
-    private val activeWaypoints: MutableMap<Symbol, WayPointDTO> = mutableMapOf()
+    private var activeWaypoints: MutableMap<Symbol, WayPointDTO> = mutableMapOf() // only used in editRouteFragment
 
     init {
         initMapSymbols()
@@ -56,13 +59,10 @@ class MarkerManager(
                 // add a marker icon to the style
                 mapStyle.addImage(MARKER_ICON, it)
             }
-        // TODO own symbols for waypoints ??
-        /*
-        BitmapFactory.decodeResource(context.resources, R.drawable.mapbox_ic_map_marker_light)
-            ?.let {
-                // add a marker icon to the style
-                mapStyle.addImage(WAYPOINT_ICON, it)
-            }*/
+    }
+
+    fun setMarkerEditListener(listener: MarkerEditListener) {
+        markerEditListener = listener
     }
 
     /**
@@ -94,16 +94,29 @@ class MarkerManager(
         return waypointSymbol
     }
 
-    fun deleteWaypoint(waypointSymbol: Symbol) {
-        symbolManager.delete(waypointSymbol)
-        activeWaypoints.remove(waypointSymbol)
+    fun deleteWaypoint(waypoint: WayPointDTO) {
+        var deletedSymbol: Symbol? = null
+        activeWaypoints.entries.forEach { entry ->
+            if (entry.value == waypoint) {
+                deletedSymbol = entry.key
+            }
+        }
+        symbolManager.delete(deletedSymbol)
+        activeWaypoints.remove(deletedSymbol)
     }
 
-    fun setEditingMarkerClickBehavior(onMarkerClicked: (waypoint: WayPointDTO) -> Unit) {
+    fun setEditingMarkerClickBehavior() {
 
         // add a long click listener to enable marker dragging without triggering the map listeners!
         symbolManager.addLongClickListener {
-            it.isDraggable = true
+            activeWaypoints.entries.forEach { entry ->
+                if (entry.key == it) {
+                    // only set dragging dynamically to prevent bugs with the map listeners!
+                    // this has to be set after getting the waypoint!
+                    entry.key.isDraggable = true
+                    markerEditListener?.onMarkerLongClicked(entry.value)
+                }
+            }
             true
         }
 
@@ -117,16 +130,32 @@ class MarkerManager(
             }
 
             override fun onAnnotationDragFinished(annotation: Symbol?) {
-                annotation?.isDraggable = false
+                activeWaypoints.entries.forEach { entry ->
+                    if (entry.key == annotation) {
+                        entry.key.isDraggable = false
+
+                        val newPosition = annotation.latLng
+                        markerEditListener?.onMarkerPositionChanged(newPosition, entry.value)
+                        // update the waypoint AFTER the callback because in the featureCollection
+                        // we still have the old coordinates!
+                        entry.value.geoPoint = GeoPoint(newPosition.latitude, newPosition.longitude)
+                    }
+                }
             }
         })
 
         symbolClickListenerBehavior?.let { symbolManager.removeClickListener(it) }
         symbolClickListenerBehavior = OnSymbolClickListener {
-            val wayPoint = activeWaypoints[it]
-            if (wayPoint != null) {
-                onMarkerClicked(wayPoint)
+            var wayPoint: WayPointDTO? = null
+            // has to be filtered manually as map[it] wouldn't work here after dragging for example
+            for (entry in activeWaypoints.entries) {
+                if (entry.key == it) {
+                    wayPoint = entry.value
+                    break
+                }
             }
+
+            wayPoint?.let { wp -> markerEditListener?.onMarkerClicked(wp) }
             true
         }
         symbolClickListenerBehavior?.let { symbolManager.addClickListener(it) }
@@ -218,6 +247,8 @@ class MarkerManager(
         super.onDestroy(owner)
         // cleanup to prevent leaks (removes click listeners and the annotation manager)
         symbolManager.onDestroy()
+
+        markerEditListener = null
     }
 
     companion object {
@@ -225,5 +256,13 @@ class MarkerManager(
 
         // moves the marker icon offset a little bit down so it feels closer to the actual touch point
         private val markerIconOffset = arrayOf(0f, 12f)
+    }
+
+    interface MarkerEditListener {
+        fun onMarkerClicked(waypoint: WayPointDTO)
+
+        fun onMarkerLongClicked(waypoint: WayPointDTO)
+
+        fun onMarkerPositionChanged(newPosition: LatLng, waypoint: WayPointDTO)
     }
 }

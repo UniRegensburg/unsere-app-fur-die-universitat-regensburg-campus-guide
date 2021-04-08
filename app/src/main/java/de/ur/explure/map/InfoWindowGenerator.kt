@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
+import com.mapbox.geojson.Feature
 import com.mapbox.geojson.FeatureCollection
 import de.ur.explure.databinding.WaypointInfoWindowBinding
 import de.ur.explure.views.EditRouteFragment.Companion.PROPERTY_ID
@@ -103,6 +104,10 @@ class InfoWindowGenerator(context: Activity) : DefaultLifecycleObserver {
         if (bitmapHashMap != null) {
             infoWindowListener?.onViewsGenerated(bitmapHashMap, viewMap)
         }
+    }
+
+    fun removeCalloutView(feature: Feature) {
+        viewMap.remove(feature.getStringProperty(PROPERTY_ID))
     }
 
     fun setInfoWindowListener(listener: InfoWindowListener) {

@@ -18,6 +18,7 @@ import androidx.navigation.fragment.navArgs
 import com.crazylegend.viewbinding.viewBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.firestore.GeoPoint
 import com.mapbox.core.constants.Constants.PRECISION_6
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.FeatureCollection
@@ -57,7 +58,7 @@ import org.koin.core.parameter.parametersOf
 
 @Suppress("TooManyFunctions")
 class EditRouteFragment : Fragment(R.layout.fragment_edit_route), OnMapReadyCallback,
-    InfoWindowGenerator.InfoWindowListener {
+    InfoWindowGenerator.InfoWindowListener, MarkerManager.MarkerEditListener {
 
     private val binding by viewBinding(FragmentEditRouteBinding::bind)
     private val editRouteViewModel: EditRouteViewModel by viewModel(state = emptyState())
@@ -246,38 +247,86 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route), OnMapReadyCall
     }
 
     private fun setupListeners() {
-        markerManager.setEditingMarkerClickBehavior { wayPoint ->
-            val featureList = featureCollection?.features()
-            featureList?.let {
-                it.forEachIndexed { i, _ ->
-                    // get the feature that was clicked and toggle it's selected state
-                    if (featureList[i].getStringProperty(PROPERTY_ID) == wayPoint.geoPoint.toString()) {
-                        if (featureSelectedStatus(i)) {
-                            setFeatureSelectState(featureList[i], false)
-                        } else {
-                            setSelected(i)
-                        }
-                    } else {
-                        // and hide other info windows when a new one is shown
-                        setFeatureSelectState(featureList[i], false)
-                    }
-                }
-            }
-        }
+        markerManager.setMarkerEditListener(this)
+        markerManager.setEditingMarkerClickBehavior()
 
         // allow users to add markers to the map on click
         map.addOnMapClickListener(this::onMapClick)
     }
 
+    private fun getFeatureForWaypoint(waypoint: WayPointDTO): Feature? {
+        val featureList = featureCollection?.features()
+        featureList?.let {
+            it.forEachIndexed { i, _ ->
+                // get the feature that was clicked and toggle it's selected state
+                if (featureList[i].getStringProperty(PROPERTY_ID) == waypoint.geoPoint.toString()) {
+                    return featureList[i]
+                }
+            }
+        }
+        return null
+    }
+
+    override fun onMarkerClicked(waypoint: WayPointDTO) {
+        // get the feature that was clicked and toggle it's selected state
+        val feature = getFeatureForWaypoint(waypoint)
+        if (feature != null) {
+            if (featureSelectedStatus(feature)) {
+                setFeatureSelectState(feature, false)
+            } else {
+                setSelected(feature)
+            }
+        }
+
+        // and hide other info windows when a new one is shown
+        val indexPos = featureCollection?.features()?.indexOf(feature)
+        featureCollection?.features()?.forEachIndexed { index, ft ->
+            if (index != indexPos) {
+                setFeatureSelectState(ft, false)
+            }
+        }
+    }
+
+    override fun onMarkerLongClicked(waypoint: WayPointDTO) {
+        // hide the info window when the user starts dragging a marker
+        // (as the callout window is still fixed to the old position!)
+        val feature = getFeatureForWaypoint(waypoint)
+        feature?.let { setFeatureSelectState(it, false) }
+    }
+
+    override fun onMarkerPositionChanged(newPosition: LatLng, waypoint: WayPointDTO) {
+        val feature = getFeatureForWaypoint(waypoint) ?: return
+        val newGeoPoint = GeoPoint(newPosition.latitude, newPosition.longitude)
+
+        // update the waypointLists in the viewmodel
+        val routeWaypoint = editRouteViewModel.getWaypointForFeature(feature)
+        routeWaypoint?.geoPoint = newGeoPoint
+
+        // remove old feature view from info window map // TODO test
+        infoWindowGenerator?.removeCalloutView(feature)
+
+        // update the feature in the featureCollection
+        val newID = newGeoPoint.toString()
+        feature.properties()?.addProperty(PROPERTY_ID, newID)
+        val coords = (feature.geometry() as? Point)?.coordinates()
+        coords?.set(0, newPosition.longitude)
+        coords?.set(1, newPosition.latitude)
+
+        infoWindowGenerator?.generateCallouts(FeatureCollection.fromFeature(feature))
+
+        refreshSource()
+    }
+
     /**
      * Set a feature selected state and update the data on the map.
      *
-     * @param index the index of selected feature
+     * @param feature the feature to be selected.
      */
-    private fun setSelected(index: Int) {
-        val feature = featureCollection?.features()?.getOrNull(index) ?: return
-        setFeatureSelectState(feature, true)
-        refreshSource()
+    private fun setSelected(feature: Feature?) {
+        if (feature != null) {
+            setFeatureSelectState(feature, true)
+            refreshSource()
+        }
     }
 
     /**
@@ -304,14 +353,14 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route), OnMapReadyCall
     /**
      * Checks whether a Feature's boolean "selected" property is true or false.
      *
-     * @param index the specific Feature's index position in the FeatureCollection's list of Features.
+     * @param feature the specific feature to check
      * @return true if "selected" is true. False if the boolean property is false.
      */
-    private fun featureSelectedStatus(index: Int): Boolean {
+    private fun featureSelectedStatus(feature: Feature?): Boolean {
         return if (featureCollection == null) {
             false
         } else {
-            featureCollection?.features()?.get(index)?.getBooleanProperty(PROPERTY_SELECTED) == true
+            feature?.getBooleanProperty(PROPERTY_SELECTED) == true
         }
     }
 
@@ -407,11 +456,22 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route), OnMapReadyCall
         when {
             hitRectDeleteButton.contains(screenPoint.x.toInt(), screenPoint.y.toInt()) -> {
                 // user clicked on delete button
-                showSnackbar(
-                    requireActivity(),
-                    "Clicked on delete button for waypoint"
-                )
-                // TODO ask user if he really wants to remove this waypoint!
+                with(MaterialAlertDialogBuilder(requireActivity())) {
+                    setMessage(R.string.delete_waypoint_confirmation)
+                    setPositiveButton(R.string.yes) { _, _ ->
+                        // TODO this feature does not exist in the featureCollection for some reason
+                        val featureParam = feature
+                        val deletedWaypoint = editRouteViewModel.getWaypointForFeature(feature)
+                        setFeatureSelectState(feature, false) // hide the info window
+                        featureCollection?.features()?.remove(feature)
+                        if (deletedWaypoint != null) {
+                            markerManager.deleteWaypoint(deletedWaypoint)
+                            editRouteViewModel.deleteWaypoint(deletedWaypoint)
+                        }
+                    }
+                    setNegativeButton(R.string.no) { _, _ -> }
+                    show()
+                }
             }
             hitRectEditButton.contains(screenPoint.x.toInt(), screenPoint.y.toInt()) -> {
                 // user clicked on edit button
@@ -426,10 +486,11 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route), OnMapReadyCall
         }
     }
 
-    // TODO vllt doch besser mit normalem MapClickListener, da der Dragging bug offenbar nur den
-    //  longClick Listener triggert aber nicht den normalen!
     private fun onMapLongClick(position: LatLng): Boolean {
-        val createdWaypoint = editRouteViewModel.addNewWayPoint(position, getString(R.string.default_waypoint_title))
+        val createdWaypoint = editRouteViewModel.addNewWayPoint(
+            position,
+            getString(R.string.default_waypoint_title)
+        )
         markerManager.addWaypoint(position, createdWaypoint)
 
         // convert the waypoint to a feature and add it to the featureCollection
