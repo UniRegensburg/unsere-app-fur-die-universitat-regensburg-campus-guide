@@ -2,6 +2,7 @@ package de.ur.explure.map
 
 import android.app.Application
 import android.graphics.BitmapFactory
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -57,6 +58,9 @@ class MarkerManager(
                 // add a marker icon to the style
                 mapStyle.addImage(MARKER_ICON, it)
             }
+        ContextCompat.getDrawable(context, R.drawable.ic_marker_destination)?.let {
+            mapStyle.addImage(DESTINATION_ICON, it)
+        }
     }
 
     fun setMarkerEditListener(listener: MarkerEditListener) {
@@ -163,8 +167,8 @@ class MarkerManager(
      * Methods for route creation:
      */
 
-    fun addMarker(coordinate: LatLng): Symbol? {
-        return createMarker(coordinate)
+    fun addMarker(coordinate: LatLng, icon: String = MARKER_ICON): Symbol? {
+        return createMarker(coordinate, icon)
     }
 
     fun addMarkers(markerCoordinates: List<LatLng>?) {
@@ -173,11 +177,11 @@ class MarkerManager(
         }
     }
 
-    private fun createMarker(coordinate: LatLng): Symbol? {
+    private fun createMarker(coordinate: LatLng, icon: String = MARKER_ICON): Symbol? {
         val newMarker = symbolManager.create(
             SymbolOptions()
                 .withLatLng(coordinate)
-                .withIconImage(MARKER_ICON)
+                .withIconImage(icon)
                 .withIconAnchor(Property.ICON_ANCHOR_BOTTOM)
                 .withIconSize(1.0f)
                 .withDraggable(false)
@@ -186,7 +190,7 @@ class MarkerManager(
         return newMarker
     }
 
-    fun deleteMarker(marker: Symbol) {
+    private fun deleteMarker(marker: Symbol) {
         symbolManager.delete(marker)
         activeMarkers.remove(marker)
     }
@@ -240,6 +244,7 @@ class MarkerManager(
 
     companion object {
         private const val MARKER_ICON = "marker-icon"
+        const val DESTINATION_ICON = "destination-icon"
 
         // moves the marker icon offset a little bit down so it feels closer to the actual touch point
         private val markerIconOffset = arrayOf(0f, 12f)
