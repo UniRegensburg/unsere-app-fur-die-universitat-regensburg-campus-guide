@@ -30,11 +30,10 @@
         app:showAsAction="always"
         tools:visible="true" />
 
-    <!-- TODO string -->
     <item
         android:id="@+id/confirmRouteButton"
         android:icon="@drawable/ic_baseline_done_24"
-        android:title="Route bestätigen"
+        android:title="@string/menu_confirm_route"
         android:visible="false"
         app:showAsAction="always"
         tools:visible="true" />

@@ -28,6 +28,7 @@ class EditRouteViewModel(
     var uploadedRouteUri: String? = state[SNAPSHOT_URI_KEY]
     // var routeId: String? = null // TODO save the id of the newly created route here!
 
+    // TODO LinkedList ?
     val routeWayPoints: MutableLiveData<MutableList<WayPointDTO>> by lazy {
         MutableLiveData(state[ROUTE_WayPointS_KEY] ?: mutableListOf())
     }
@@ -37,6 +38,8 @@ class EditRouteViewModel(
     // TODO schönere lösung hierfür finden, wenn Zeit
     // used to update the map marker symbols when a waypoint is deleted from the bottomsheet
     val deletedWaypoint: MutableLiveData<WayPointDTO> by lazy { MutableLiveData<WayPointDTO>() }
+
+    val buildingExtrusionActive by lazy { MutableLiveData(state[BUILDING_KEY] ?: true) }
 
     private val _snapshotUploadSuccessful: MutableLiveData<Boolean?> by lazy { MutableLiveData() }
     val snapshotUploadSuccessful = _snapshotUploadSuccessful
@@ -138,9 +141,15 @@ class EditRouteViewModel(
         _snapshotUploadSuccessful.value = null
     }
 
+    fun setBuildingExtrusionStatus(active: Boolean) {
+        buildingExtrusionActive.value = active
+        state[BUILDING_KEY] = active
+    }
+
     companion object {
         private const val ROUTE_KEY = "recreatedRoute"
         private const val ROUTE_WayPointS_KEY = "routeWayPoints"
         private const val SNAPSHOT_URI_KEY = "snapshotUri"
+        private const val BUILDING_KEY = "3dBuildingsActive"
     }
 }

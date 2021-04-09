@@ -49,11 +49,13 @@ import de.ur.explure.map.MarkerManager
 import de.ur.explure.map.MarkerManager.Companion.DESTINATION_ICON
 import de.ur.explure.map.MarkerManager.Companion.selectedMarkerZoom
 import de.ur.explure.model.waypoint.WayPointDTO
+import de.ur.explure.utils.SharedPreferencesManager
 import de.ur.explure.utils.hasInternetConnection
 import de.ur.explure.utils.measureTimeFor
 import de.ur.explure.utils.showSnackbar
 import de.ur.explure.viewmodel.EditRouteViewModel
 import org.koin.android.ext.android.get
+import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.scope.emptyState
 import org.koin.core.parameter.parametersOf
@@ -69,6 +71,9 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route),
     private val editRouteViewModel: EditRouteViewModel by sharedViewModel(state = emptyState())
 
     private val args: EditRouteFragmentArgs by navArgs()
+
+    // SharedPrefs
+    private val preferencesManager: SharedPreferencesManager by inject()
 
     // bottom sheet sliding panel
     private lateinit var slidingBottomPanel: SlidingUpPanelLayout
@@ -167,6 +172,9 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route),
             if (mapHelper.isMapInitialized()) {
                 deleteWaypoint(waypoint)
             }
+        }
+        editRouteViewModel.buildingExtrusionActive.observe(viewLifecycleOwner) { extrusionsActive ->
+            mapHelper.buildingPlugin?.setVisibility(extrusionsActive)
         }
     }
 
@@ -655,6 +663,8 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route),
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         menu.clear() // clear the old menu
         inflater.inflate(R.menu.menu_edit_route, menu)
+
+        menu.findItem(R.id.showBuildings).isChecked = preferencesManager.getBuildingExtrusionShown()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -672,6 +682,12 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route),
                     setNegativeButton(R.string.continue_edit) { _, _ -> }
                     show()
                 }
+                true
+            }
+            R.id.showBuildings -> {
+                item.isChecked = !item.isChecked
+                editRouteViewModel.setBuildingExtrusionStatus(item.isChecked)
+                preferencesManager.setBuildingExtrusionShown(item.isChecked)
                 true
             }
             else -> super.onOptionsItemSelected(item)
