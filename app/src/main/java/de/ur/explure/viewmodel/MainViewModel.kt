@@ -30,7 +30,7 @@ class MainViewModel(
         authService.currentUser.observe(activity, { user ->
             if (user != null) {
                 viewModelScope.launch {
-                    if (userRepo.isProfileCreated(user.uid)) {
+                    if (user.isAnonymous || userRepo.isProfileCreated(user.uid)) {
                         mainAppRouter.navigateToMainApp()
                     } else {
                         mainAppRouter.navigateToOnboarding()
