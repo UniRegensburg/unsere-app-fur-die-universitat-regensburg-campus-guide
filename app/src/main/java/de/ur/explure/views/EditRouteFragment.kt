@@ -172,7 +172,7 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route),
     private fun setupSlidingPanel() {
         // setup bottomSheet
         childFragmentManager.commit {
-            replace<RouteCreationBottomSheet>(R.id.dragViewFragmentContainer)
+            replace<RouteWaypointBottomSheet>(R.id.dragViewFragmentContainer)
             setReorderingAllowed(true)
             addToBackStack(null)
         }
@@ -636,11 +636,7 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route),
         source?.setGeoJson(FeatureCollection.fromFeatures(arrayOf<Feature>()))
         infoWindowMap.clear()
 
-        // Hide bottom sheet panel by setting it to collapsed and its view to invisible.
-        // This is a workaround as setting it to State.Hidden or its View to Gone would cause the
-        // bottom navigation bar that is shown again to overlap the button at the bottom!
-        // slidingBottomPanel.panelState = SlidingUpPanelLayout.PanelState.COLLAPSED
-        // binding.dragView.visibility = View.INVISIBLE
+        // Hide bottom sheet panel
         slidingBottomPanel.panelState = SlidingUpPanelLayout.PanelState.HIDDEN
         binding.dragView.visibility = View.GONE
     }

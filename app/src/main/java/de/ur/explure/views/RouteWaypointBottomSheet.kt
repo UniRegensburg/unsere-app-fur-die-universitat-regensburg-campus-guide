@@ -9,17 +9,17 @@ import com.crazylegend.viewbinding.viewBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import de.ur.explure.R
 import de.ur.explure.adapter.RouteEditAdapter
-import de.ur.explure.databinding.RouteCreationBottomsheetBinding
+import de.ur.explure.databinding.RouteWaypointBottomsheetBinding
 import de.ur.explure.model.waypoint.WayPointDTO
 import de.ur.explure.utils.ItemDragHelper
 import de.ur.explure.viewmodel.EditRouteViewModel
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.scope.emptyState
 
-class RouteCreationBottomSheet : Fragment(R.layout.route_creation_bottomsheet),
+class RouteWaypointBottomSheet : Fragment(R.layout.route_waypoint_bottomsheet),
     ItemDragHelper.OnDragStartListener, RouteEditAdapter.OnDeleteItemListener {
 
-    private val binding by viewBinding(RouteCreationBottomsheetBinding::bind)
+    private val binding by viewBinding(RouteWaypointBottomsheetBinding::bind)
 
     // see https://stackoverflow.com/questions/59094242/get-sharedviewmodel-in-childfragment-using-koin-and-navargs
     // private val editRouteViewModel: EditRouteViewModel by lazy { requireParentFragment().getViewModel() }
