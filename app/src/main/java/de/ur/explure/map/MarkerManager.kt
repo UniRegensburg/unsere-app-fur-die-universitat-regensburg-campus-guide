@@ -19,9 +19,7 @@ import com.mapbox.mapboxsdk.style.layers.Property
 import de.ur.explure.R
 import de.ur.explure.extensions.moveCameraToPosition
 import de.ur.explure.extensions.toLatLng
-import de.ur.explure.model.MapMarker
 import de.ur.explure.model.waypoint.WayPointDTO
-import de.ur.explure.views.MapFragment.Companion.selectedMarkerZoom
 
 // use the application context instead of the activity context to make sure it doesn't leak memory,
 // see https://proandroiddev.com/everything-you-need-to-know-about-memory-leaks-in-android-d7a59faaf46a
@@ -193,17 +191,6 @@ class MarkerManager(
         activeMarkers.remove(marker)
     }
 
-    fun removeWaypointMarker(waypointMarker: MapMarker) {
-        val markerSymbol = activeMarkers.find {
-            it.latLng == waypointMarker.markerPosition
-        }
-
-        if (markerSymbol != null) {
-            activeMarkers.remove(markerSymbol)
-            deleteMarker(markerSymbol)
-        }
-    }
-
     fun deleteAllMarkers() {
         symbolManager.deleteAll()
         activeMarkers.clear()
@@ -256,6 +243,8 @@ class MarkerManager(
 
         // moves the marker icon offset a little bit down so it feels closer to the actual touch point
         private val markerIconOffset = arrayOf(0f, 12f)
+
+        const val selectedMarkerZoom = 17.0
     }
 
     interface MarkerEditListener {

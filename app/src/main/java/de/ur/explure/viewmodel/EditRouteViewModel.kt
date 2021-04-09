@@ -28,9 +28,15 @@ class EditRouteViewModel(
     var uploadedRouteUri: String? = state[SNAPSHOT_URI_KEY]
     // var routeId: String? = null // TODO save the id of the newly created route here!
 
-    private val routeWayPoints: MutableLiveData<MutableList<WayPointDTO>> by lazy {
+    val routeWayPoints: MutableLiveData<MutableList<WayPointDTO>> by lazy {
         MutableLiveData(state[ROUTE_WayPointS_KEY] ?: mutableListOf())
     }
+
+    val selectedMarker: MutableLiveData<WayPointDTO> by lazy { MutableLiveData<WayPointDTO>() }
+
+    // TODO schönere lösung hierfür finden, wenn Zeit
+    // used to update the map marker symbols when a waypoint is deleted from the bottomsheet
+    val deletedWaypoint: MutableLiveData<WayPointDTO> by lazy { MutableLiveData<WayPointDTO>() }
 
     private val _snapshotUploadSuccessful: MutableLiveData<Boolean?> by lazy { MutableLiveData() }
     val snapshotUploadSuccessful = _snapshotUploadSuccessful
@@ -66,9 +72,23 @@ class EditRouteViewModel(
         }
     }
 
+    /**
+     * Used when a marker symbol has been removed directly from the map via it's info window.
+     * Removes this marker from the waypoints list and from the bottom sheet.
+     */
     fun deleteWaypoint(wayPoint: WayPointDTO) {
         routeWayPoints.value?.remove(wayPoint)
         routeWayPoints.value = routeWayPoints.value
+    }
+
+    /**
+     * Used when a waypoint item has been removed from the bottom sheet.
+     * Removes this marker from the waypoints list and sets the deleted marker livedata to delete it
+     * from the marker symbols as well.
+     */
+    fun removeWaypointFromSheet(waypoint: WayPointDTO) {
+        deleteWaypoint(waypoint)
+        deletedWaypoint.value = waypoint
     }
 
     fun clearAllWaypoints() {

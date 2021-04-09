@@ -61,14 +61,9 @@ class MapViewModel(private val state: SavedStateHandle, private val appRouter: M
     }
     val activeMapMatching = _activeMapMatching
 
-    val mapMarkers: MutableLiveData<MutableList<MapMarker>> by lazy {
+    private val mapMarkers: MutableLiveData<MutableList<MapMarker>> by lazy {
         MutableLiveData(state[ACTIVE_MARKERS_KEY] ?: mutableListOf())
     }
-    val selectedMarker: MutableLiveData<MapMarker> by lazy { MutableLiveData<MapMarker>() }
-
-    // TODO schönere lösung hierfür finden, wenn Zeit
-    // used to update the map marker symbols when a waypoint is deleted from the bottomsheet
-    val deletedWaypoint: MutableLiveData<MapMarker> by lazy { MutableLiveData<MapMarker>() }
 
     fun shouldGoToEditing(): Boolean {
         return goToRouteEdit
@@ -96,27 +91,12 @@ class MapViewModel(private val state: SavedStateHandle, private val appRouter: M
         mapMarkers.value = mapMarkers.value
     }
 
-    /**
-     * Used when a marker symbol has been removed directly from the map.
-     * Removes this marker from the mapMarker list and from the bottom sheet.
-     */
     fun removeMarker(marker: Symbol) {
         val removedWaypoint = mapMarkers.value?.find {
             it.markerPosition == marker.latLng
         }
         mapMarkers.value?.remove(removedWaypoint)
         mapMarkers.value = mapMarkers.value
-    }
-
-    /**
-     * Used when a waypoint item has been removed from the bottom sheet.
-     * Removes this marker from the mapMarker list and sets the deleted marker livedata to delete it
-     * from the marker symbols as well.
-     */
-    fun removeWaypoint(waypointMarker: MapMarker) {
-        mapMarkers.value?.remove(waypointMarker)
-        mapMarkers.value = mapMarkers.value
-        deletedWaypoint.value = waypointMarker
     }
 
     fun getAllActiveMarkers(): List<MapMarker>? {

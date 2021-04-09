@@ -13,6 +13,7 @@ import com.mapbox.mapboxsdk.Mapbox
 import de.ur.explure.R
 import timber.log.Timber
 import java.nio.ByteBuffer
+import java.util.*
 
 /**
  * Checks if GPS is enabled in the system settings.
@@ -149,4 +150,20 @@ inline fun <T> measureTimeFor(tag: String = "Execution of function", function: (
     val result: T = function.invoke()
     Timber.d("$tag took ${System.currentTimeMillis() - startTime} ms.")
     return result
+}
+
+/**
+ * Utility function to swap all elements of a given list between [fromPosition] and [toPosition]
+ * either with their predecessor or their successor depending on the given positions.
+ */
+fun <T> reorderList(collection: List<T>, fromPosition: Int, toPosition: Int) {
+    if (fromPosition < toPosition) {
+        for (i in fromPosition until toPosition) {
+            Collections.swap(collection, i, i + 1)
+        }
+    } else {
+        for (i in fromPosition downTo toPosition + 1) {
+            Collections.swap(collection, i, i - 1)
+        }
+    }
 }

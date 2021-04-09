@@ -17,8 +17,6 @@ import androidx.appcompat.widget.Toolbar
 import androidx.core.content.ContextCompat
 import androidx.core.view.children
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.commit
-import androidx.fragment.app.replace
 import com.crazylegend.viewbinding.viewBinding
 import com.daimajia.androidanimations.library.Techniques
 import com.daimajia.androidanimations.library.YoYo
@@ -37,14 +35,11 @@ import com.mapbox.mapboxsdk.location.LocationUpdate
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.Style
-import com.sothree.slidinguppanel.SlidingUpPanelLayout
 import de.ur.explure.R
 import de.ur.explure.databinding.FragmentMapBinding
 import de.ur.explure.extensions.hide
 import de.ur.explure.extensions.initHidden
 import de.ur.explure.extensions.lineToPoints
-import de.ur.explure.extensions.moveCameraToPosition
-import de.ur.explure.extensions.toPoint
 import de.ur.explure.map.LocationManager
 import de.ur.explure.map.ManualRouteCreationModes
 import de.ur.explure.map.MapHelper
@@ -70,7 +65,7 @@ import de.ur.explure.viewmodel.MapViewModel
 import de.ur.explure.viewmodel.MapViewModel.Companion.All_MAP_STYLES
 import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
-import org.koin.androidx.viewmodel.ext.android.sharedViewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.androidx.viewmodel.scope.emptyState
 import org.koin.core.parameter.parametersOf
 import timber.log.Timber
@@ -85,8 +80,7 @@ class MapFragment : Fragment(R.layout.fragment_map), MapMatchingClient.MapMatchi
     private var activityCallback: MapFragmentListener? = null
 
     // Setting the state as emptyState as a workaround for this issue: https://github.com/InsertKoinIO/koin/issues/963
-    // private val mapViewModel: MapViewModel by viewModel(state = emptyState())
-    private val mapViewModel: MapViewModel by sharedViewModel(state = emptyState())
+    private val mapViewModel: MapViewModel by viewModel(state = emptyState())
 
     // SharedPrefs
     private val preferencesManager: SharedPreferencesManager by inject()
@@ -97,9 +91,8 @@ class MapFragment : Fragment(R.layout.fragment_map), MapMatchingClient.MapMatchi
 
     // route creation
     private val waypointsController: WaypointsController by inject()
-    private var directionsRoute: DirectionsRoute? = null
     private val mapMatchingClient: MapMatchingClient by inject()
-
+    private var directionsRoute: DirectionsRoute? = null // TODO not used at the moment!
     private var routeCreationMapClickListenerBehavior: MapboxMap.OnMapClickListener? = null
 
     // location tracking
@@ -110,9 +103,6 @@ class MapFragment : Fragment(R.layout.fragment_map), MapMatchingClient.MapMatchi
     private var permissionExplanationSnackbar: Snackbar? = null
 
     private var backPressedCallback: OnBackPressedCallback? = null
-
-    private lateinit var slidingBottomPanel: SlidingUpPanelLayout
-    private lateinit var slidingPanelListener: SlidingUpPanelLayout.PanelSlideListener
 
     // action menu items
     private var cancelRouteCreationButton: MenuItem? = null
@@ -143,8 +133,6 @@ class MapFragment : Fragment(R.layout.fragment_map), MapMatchingClient.MapMatchi
 
         setupBackButtonClickObserver()
         setupViewModelObservers()
-        // setup the sliding panel BEFORE the map!
-        setupSlidingPanel()
 
         // setup the confirmation bottom sheet but don't show it yet
         BottomSheetBehavior.from(binding.routeDrawConfirmSheet.confirmBottomSheet).initHidden()
@@ -211,20 +199,6 @@ class MapFragment : Fragment(R.layout.fragment_map), MapMatchingClient.MapMatchi
         mapViewModel.buildingExtrusionActive.observe(viewLifecycleOwner) { extrusionsActive ->
             mapHelper.buildingPlugin?.setVisibility(extrusionsActive)
         }
-        mapViewModel.selectedMarker.observe(viewLifecycleOwner) { marker ->
-            // move the camera to the selected marker
-            if (mapHelper.isMapInitialized()) {
-                mapHelper.map.moveCameraToPosition(marker.markerPosition, selectedMarkerZoom)
-            }
-        }
-        mapViewModel.deletedWaypoint.observe(viewLifecycleOwner) { mapMarker ->
-            // check to prevent crashes on config change as marker manager is not setup initially
-            if (mapHelper.isMapInitialized()) {
-                // delete the corresponding marker symbol and remove from waypointscontroller
-                waypointsController.remove(mapMarker.markerPosition.toPoint())
-                mapHelper.markerManager.removeWaypointMarker(mapMarker)
-            }
-        }
         mapViewModel.activeMapMatching.observe(viewLifecycleOwner) {
             if (mapViewModel.shouldGoToEditing()) {
                 mapViewModel.shouldGoToEditing(false) // reset flag
@@ -279,42 +253,11 @@ class MapFragment : Fragment(R.layout.fragment_map), MapMatchingClient.MapMatchi
      * * UI Setup
      */
 
-    private fun setupSlidingPanel() {
-        slidingBottomPanel = binding.slidingRootLayout
-        binding.dragView.visibility = View.INVISIBLE
-
-        slidingPanelListener = object : SlidingUpPanelLayout.PanelSlideListener {
-            override fun onPanelSlide(panel: View?, slideOffset: Float) {
-                Timber.i("onPanelSlide, offset $slideOffset")
-            }
-
-            override fun onPanelStateChanged(
-                panel: View?,
-                previousState: SlidingUpPanelLayout.PanelState?,
-                newState: SlidingUpPanelLayout.PanelState?
-            ) {
-                if (previousState == SlidingUpPanelLayout.PanelState.HIDDEN) {
-                    // workaround for visual bug that occurs when setting to collapsed while hiding
-                    // the bottom navigation which would move this panel higher than it should!
-                    slidingBottomPanel.panelState = SlidingUpPanelLayout.PanelState.COLLAPSED
-                }
-            }
-        }
-        slidingBottomPanel.addPanelSlideListener(slidingPanelListener)
-    }
-
     private fun setupInitialUIState() {
         // enable the buttons now that the map is ready
         binding.ownLocationButton.isEnabled = true
         binding.changeStyleButton.isEnabled = true
         binding.buildRouteButton.isEnabled = true
-
-        // setup bottomSheet for route creation mode
-        childFragmentManager.commit {
-            replace<RouteCreationBottomSheet>(R.id.dragViewFragmentContainer)
-            setReorderingAllowed(true)
-            addToBackStack(null)
-        }
 
         binding.changeStyleButton.setOnClickListener {
             if (mapViewModel.inRouteCreationMode.value == true) {
@@ -620,9 +563,6 @@ class MapFragment : Fragment(R.layout.fragment_map), MapMatchingClient.MapMatchi
         // slide in the options panel
         slideInView(binding.routeCreationOptionsLayout.root)
 
-        // show bottom sheet panel
-        slidingBottomPanel.panelState = SlidingUpPanelLayout.PanelState.COLLAPSED
-
         when (mapViewModel.getActiveManualRouteCreationMode()
             ?: ManualRouteCreationModes.MODE_ADD) {
             ManualRouteCreationModes.MODE_ADD -> {
@@ -645,12 +585,6 @@ class MapFragment : Fragment(R.layout.fragment_map), MapMatchingClient.MapMatchi
 
         // slide out the options panel
         slideOutView(binding.routeCreationOptionsLayout.root)
-
-        // Hide bottom sheet panel by setting it to collapsed and its view to invisible.
-        // This is a workaround as setting it to State.Hidden or its View to Gone would cause the
-        // bottom navigation bar that is shown again to overlap the button at the bottom!
-        slidingBottomPanel.panelState = SlidingUpPanelLayout.PanelState.COLLAPSED
-        binding.dragView.visibility = View.INVISIBLE
 
         // remove the click listener behavior for manual route creation mode
         routeCreationMapClickListenerBehavior?.let {
@@ -1220,8 +1154,6 @@ class MapFragment : Fragment(R.layout.fragment_map), MapMatchingClient.MapMatchi
 
     override fun onDestroyView() {
         Timber.d("in MapFragment onDestroyView")
-
-        slidingBottomPanel.removePanelSlideListener(slidingPanelListener)
         removeMapListeners()
         backPressedCallback?.remove()
 
@@ -1229,8 +1161,6 @@ class MapFragment : Fragment(R.layout.fragment_map), MapMatchingClient.MapMatchi
     }
 
     companion object {
-        const val selectedMarkerZoom = 17.0
-
         // Tolerance for the douglas-peucker-simplification algorithm for manual route creation mode.
         // Needs to be a bit lower than for free draw as we have generally less points here so
         // results tend to be more fuzzy.

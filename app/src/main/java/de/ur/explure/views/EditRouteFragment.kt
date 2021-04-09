@@ -12,6 +12,8 @@ import android.widget.ImageButton
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.addCallback
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.commit
+import androidx.fragment.app.replace
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.crazylegend.viewbinding.viewBinding
@@ -34,33 +36,42 @@ import com.mapbox.mapboxsdk.style.layers.SymbolLayer
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
 import com.mapbox.turf.TurfConstants
 import com.mapbox.turf.TurfMeasurement
+import com.sothree.slidinguppanel.SlidingUpPanelLayout
 import de.ur.explure.R
 import de.ur.explure.databinding.FragmentEditRouteBinding
+import de.ur.explure.extensions.moveCameraToPosition
 import de.ur.explure.extensions.pointToLatLng
 import de.ur.explure.extensions.toFeature
+import de.ur.explure.extensions.toLatLng
 import de.ur.explure.map.InfoWindowGenerator
 import de.ur.explure.map.MapHelper
 import de.ur.explure.map.MarkerManager
+import de.ur.explure.map.MarkerManager.Companion.selectedMarkerZoom
 import de.ur.explure.model.waypoint.WayPointDTO
 import de.ur.explure.utils.hasInternetConnection
 import de.ur.explure.utils.measureTimeFor
 import de.ur.explure.utils.showSnackbar
 import de.ur.explure.viewmodel.EditRouteViewModel
 import org.koin.android.ext.android.get
-import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.scope.emptyState
 import org.koin.core.parameter.parametersOf
 import timber.log.Timber
 
+// TODO: this map should also allow map style changes and the building plugin menu option!
 @Suppress("TooManyFunctions")
 class EditRouteFragment : Fragment(R.layout.fragment_edit_route),
     InfoWindowGenerator.InfoWindowListener,
     MapHelper.MapHelperListener, MarkerManager.MarkerEditListener {
 
     private val binding by viewBinding(FragmentEditRouteBinding::bind)
-    private val editRouteViewModel: EditRouteViewModel by viewModel(state = emptyState())
+    private val editRouteViewModel: EditRouteViewModel by sharedViewModel(state = emptyState())
 
     private val args: EditRouteFragmentArgs by navArgs()
+
+    // bottom sheet sliding panel
+    private lateinit var slidingBottomPanel: SlidingUpPanelLayout
+    private lateinit var slidingPanelListener: SlidingUpPanelLayout.PanelSlideListener
 
     // map
     private var mapView: MapView? = null
@@ -81,7 +92,7 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route),
         setHasOptionsMenu(true)
 
         // get nav arguments and save them in the viewModel
-        // TODO only get the nav args if created from scratch?? check savedinstancestate to prevent
+        // TODO only get the nav args if created from scratch?? check savedinstancestate
         val routeLine = LineString.fromPolyline(args.routePolyline, PRECISION_6)
         editRouteViewModel.saveRoute(routeLine)
         val existingWaypoints = args.routeMarkers?.toList()?.map { it.wayPoint }
@@ -90,9 +101,8 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route),
         setupBackButtonClickObserver()
         setupViewModelObservers()
 
-        // TODO sliding panel hier statt in mapFragment?
-        // setup the sliding panel BEFORE the map!
-        // setupSlidingPanel()
+        // setup the sliding panel before the map!
+        setupSlidingPanel()
 
         // init mapbox map
         mapView = binding.editMapView
@@ -140,6 +150,54 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route),
                 )
             }
         }
+        editRouteViewModel.selectedMarker.observe(viewLifecycleOwner) { marker ->
+            // move the camera to the selected marker
+            if (mapHelper.isMapInitialized()) {
+                mapHelper.map.moveCameraToPosition(marker.geoPoint.toLatLng(), selectedMarkerZoom)
+                val feature = getFeatureForWaypoint(marker)
+                if (feature != null) {
+                    // and show it's info window
+                    setFeatureSelectState(feature, true)
+                }
+            }
+        }
+        editRouteViewModel.deletedWaypoint.observe(viewLifecycleOwner) { waypoint ->
+            // check to prevent crashes on config change as marker manager is not setup initially
+            if (mapHelper.isMapInitialized()) {
+                deleteWaypoint(waypoint)
+            }
+        }
+    }
+
+    private fun setupSlidingPanel() {
+        // setup bottomSheet
+        childFragmentManager.commit {
+            replace<RouteCreationBottomSheet>(R.id.dragViewFragmentContainer)
+            setReorderingAllowed(true)
+            addToBackStack(null)
+        }
+
+        slidingBottomPanel = binding.slidingRootLayout
+        binding.dragView.visibility = View.INVISIBLE
+
+        slidingPanelListener = object : SlidingUpPanelLayout.PanelSlideListener {
+            override fun onPanelSlide(panel: View?, slideOffset: Float) {
+                Timber.i("onPanelSlide, offset $slideOffset")
+            }
+
+            override fun onPanelStateChanged(
+                panel: View?,
+                previousState: SlidingUpPanelLayout.PanelState?,
+                newState: SlidingUpPanelLayout.PanelState?
+            ) {
+                if (previousState == SlidingUpPanelLayout.PanelState.HIDDEN) {
+                    // workaround for visual bug that occurs when setting to collapsed while hiding
+                    // the bottom navigation which would move this panel higher than it should!
+                    slidingBottomPanel.panelState = SlidingUpPanelLayout.PanelState.COLLAPSED
+                }
+            }
+        }
+        slidingBottomPanel.addPanelSlideListener(slidingPanelListener)
     }
 
     override fun onMapLoaded(map: MapboxMap) {
@@ -149,6 +207,9 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route),
     override fun onMapStyleLoaded(mapStyle: Style) {
         setupMapData(mapStyle)
         setupListeners()
+
+        // show bottom sheet panel
+        slidingBottomPanel.panelState = SlidingUpPanelLayout.PanelState.COLLAPSED
     }
 
     private fun setupMapData(mapStyle: Style) {
@@ -203,7 +264,7 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route),
         // each GeoJSON Feature must have a "selected" property with a boolean value:
         feature.addBooleanProperty(PROPERTY_SELECTED, false)
         // We don't have an id field so we just use the latLng - position as an id.
-        // This should always be unique as no markers can be at the exact same position!
+        // This should always be unique as no other marker can be at the exact same position!
         feature.addStringProperty(PROPERTY_ID, wayPoint.geoPoint.toString())
         feature.addStringProperty(PROPERTY_TITLE, wayPoint.title)
         return feature
@@ -273,7 +334,7 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route),
         val routeWaypoint = editRouteViewModel.getWaypointForFeature(feature)
         routeWaypoint?.geoPoint = newGeoPoint
 
-        // remove old feature view from info window map // TODO test
+        // remove old feature view from info window map
         infoWindowGenerator?.removeCalloutView(feature)
 
         // update the feature in the featureCollection
@@ -466,7 +527,21 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route),
         }
     }
 
+    private fun deleteWaypoint(waypoint: WayPointDTO) {
+        val feature = getFeatureForWaypoint(waypoint)
+        if (feature != null) {
+            // hide the info window and remove it from the collection
+            setFeatureSelectState(feature, false)
+            featureCollection?.features()?.remove(feature)
+        }
+        // also remove the corresponding marker symbol
+        mapHelper.markerManager.deleteWaypoint(waypoint)
+    }
+
     private fun editWaypoint(feature: Feature) {
+        // hide info window first because we can't edit it directly and must recreate it
+        setFeatureSelectState(feature, false)
+
         val waypoint = editRouteViewModel.getWaypointForFeature(feature)
         // TODO
     }
@@ -508,7 +583,7 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route),
         val routeWaypoints = editRouteViewModel.getWayPoints()
         val routeWaypointArray = routeWaypoints?.toTypedArray()
         if (routeWaypointArray == null) {
-            // TODO for debugging only
+            // TODO for debugging only -> change to timber.e later!
             showSnackbar(
                 requireActivity(),
                 "Fehler: Keine Waypoints im Viewmodel gefunden!",
@@ -560,6 +635,14 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route),
         featureCollection = null
         source?.setGeoJson(FeatureCollection.fromFeatures(arrayOf<Feature>()))
         infoWindowMap.clear()
+
+        // Hide bottom sheet panel by setting it to collapsed and its view to invisible.
+        // This is a workaround as setting it to State.Hidden or its View to Gone would cause the
+        // bottom navigation bar that is shown again to overlap the button at the bottom!
+        // slidingBottomPanel.panelState = SlidingUpPanelLayout.PanelState.COLLAPSED
+        // binding.dragView.visibility = View.INVISIBLE
+        slidingBottomPanel.panelState = SlidingUpPanelLayout.PanelState.HIDDEN
+        binding.dragView.visibility = View.GONE
     }
 
     /**
@@ -614,6 +697,8 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route),
 
     override fun onDestroyView() {
         backPressedCallback?.remove()
+
+        slidingBottomPanel.removePanelSlideListener(slidingPanelListener)
 
         if (mapHelper.isMapInitialized()) {
             mapHelper.map.removeOnMapClickListener(this::onMapClick)

@@ -8,66 +8,55 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.crazylegend.viewbinding.viewBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import de.ur.explure.R
-import de.ur.explure.adapter.RouteCreationAdapter
+import de.ur.explure.adapter.RouteEditAdapter
 import de.ur.explure.databinding.RouteCreationBottomsheetBinding
-import de.ur.explure.model.MapMarker
+import de.ur.explure.model.waypoint.WayPointDTO
 import de.ur.explure.utils.ItemDragHelper
-import de.ur.explure.viewmodel.MapViewModel
+import de.ur.explure.viewmodel.EditRouteViewModel
 import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.scope.emptyState
 
 class RouteCreationBottomSheet : Fragment(R.layout.route_creation_bottomsheet),
-    ItemDragHelper.OnDragStartListener, RouteCreationAdapter.OnDeleteItemListener {
+    ItemDragHelper.OnDragStartListener, RouteEditAdapter.OnDeleteItemListener {
 
     private val binding by viewBinding(RouteCreationBottomsheetBinding::bind)
 
     // see https://stackoverflow.com/questions/59094242/get-sharedviewmodel-in-childfragment-using-koin-and-navargs
-    // private val mapViewModel: MapViewModel by lazy { requireParentFragment().getViewModel() }
-    private val mapViewModel: MapViewModel by sharedViewModel(state = emptyState())
+    // private val editRouteViewModel: EditRouteViewModel by lazy { requireParentFragment().getViewModel() }
+    private val editRouteViewModel: EditRouteViewModel by sharedViewModel(state = emptyState())
 
-    private var routeCreationAdapter: RouteCreationAdapter? = null
+    private var routeEditAdapter: RouteEditAdapter? = null
     private var itemTouchHelper: ItemTouchHelper? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         observeViewModel()
+        setupWaypointList()
     }
 
     private fun observeViewModel() {
-        mapViewModel.manualRouteCreationModeActive.observe(viewLifecycleOwner, { active ->
-            if (active) {
-                showRouteCreationSheet()
-            } else {
-                // reset adapter when finished
-                routeCreationAdapter?.waypointMarkerList = emptyList()
-            }
+        editRouteViewModel.routeWayPoints.observe(viewLifecycleOwner, { waypoints ->
+            routeEditAdapter?.waypointList = waypoints
         })
-        mapViewModel.mapMarkers.observe(viewLifecycleOwner, { mapMarkers ->
-            routeCreationAdapter?.waypointMarkerList = mapMarkers
-        })
-    }
-
-    private fun showRouteCreationSheet() {
-        setupWaypointList()
     }
 
     private fun setupWaypointList() {
         val linearLayoutManager = LinearLayoutManager(activity ?: return)
         linearLayoutManager.stackFromEnd = true // insert items at the bottom instead of top
 
-        routeCreationAdapter = RouteCreationAdapter(this, this) { wayPointMarker: MapMarker, _ ->
+        routeEditAdapter = RouteEditAdapter(this, this) { wayPoint: WayPointDTO, _ ->
             // a item in the recyclerView was clicked
-            mapViewModel.selectedMarker.value = wayPointMarker
+            editRouteViewModel.selectedMarker.value = wayPoint
         }
 
         binding.recyclerWaypointList.apply {
-            adapter = routeCreationAdapter
+            adapter = routeEditAdapter
             layoutManager = linearLayoutManager
 
             addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->
                 // show a text message if the recyclerView is empty
-                if (routeCreationAdapter?.itemCount != 0) {
+                if (routeEditAdapter?.itemCount != 0) {
                     binding.emptyRecyclerWaypointText.visibility = View.GONE
                 } else {
                     binding.emptyRecyclerWaypointText.visibility = View.VISIBLE
@@ -75,36 +64,38 @@ class RouteCreationBottomSheet : Fragment(R.layout.route_creation_bottomsheet),
             }
         }
 
-        // TODO: drag and drop MUST also update the viewmodel marker list and the waypointsController
-        //  to change the route!! => maybe use drag & drop not here but later during route editing ?
+        // TODO: drag and drop MUST also update the viewmodel marker list to change the route!!
 
         // enable drag & drop on this recyclerview
-        val callback: ItemTouchHelper.Callback = ItemDragHelper(routeCreationAdapter ?: return)
+        val callback: ItemTouchHelper.Callback = ItemDragHelper(routeEditAdapter ?: return)
         itemTouchHelper = ItemTouchHelper(callback)
         itemTouchHelper?.attachToRecyclerView(binding.recyclerWaypointList)
     }
 
-    private fun showDeleteWaypointDialog(marker: MapMarker) {
+    private fun showDeleteWaypointDialog(marker: WayPointDTO) {
         with(MaterialAlertDialogBuilder(requireActivity())) {
             setMessage(R.string.delete_waypoint_confirmation)
             setPositiveButton(R.string.yes) { _, _ ->
-                mapViewModel.removeWaypoint(marker)
+                editRouteViewModel.removeWaypointFromSheet(marker)
             }
             setNegativeButton(R.string.cancel) { _, _ -> }
             show()
         }
     }
 
-    override fun onStartDrag(viewHolder: RouteCreationAdapter.ViewHolder) {
+    override fun onStartDrag(viewHolder: RouteEditAdapter.ViewHolder) {
         itemTouchHelper?.startDrag(viewHolder)
     }
 
-    override fun onItemDeleted(waypointMarker: MapMarker, layoutPosition: Int) {
-        showDeleteWaypointDialog(waypointMarker)
+    override fun onItemDeleted(waypoint: WayPointDTO, layoutPosition: Int) {
+        showDeleteWaypointDialog(waypoint)
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
         itemTouchHelper?.attachToRecyclerView(null)
+
+        // reset adapter when finished
+        routeEditAdapter?.waypointList = emptyList()
     }
 }
