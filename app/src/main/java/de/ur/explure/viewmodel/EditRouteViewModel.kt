@@ -32,12 +32,12 @@ class EditRouteViewModel(
         MutableLiveData(state[ROUTE_WayPointS_KEY] ?: mutableListOf())
     }
 
-    private val _snapshotUploadSuccessful: MutableLiveData<Boolean> by lazy { MutableLiveData() }
+    private val _snapshotUploadSuccessful: MutableLiveData<Boolean?> by lazy { MutableLiveData() }
     val snapshotUploadSuccessful = _snapshotUploadSuccessful
 
     fun setInitialWayPoints(wayPoints: List<WayPointDTO>?) {
         if (wayPoints != null) {
-            routeWayPoints.value?.addAll(wayPoints)
+            routeWayPoints.value = wayPoints.toMutableList()
         }
     }
 
@@ -68,6 +68,11 @@ class EditRouteViewModel(
 
     fun deleteWaypoint(wayPoint: WayPointDTO) {
         routeWayPoints.value?.remove(wayPoint)
+        routeWayPoints.value = routeWayPoints.value
+    }
+
+    fun clearAllWaypoints() {
+        routeWayPoints.value?.clear()
         routeWayPoints.value = routeWayPoints.value
     }
 
@@ -110,7 +115,7 @@ class EditRouteViewModel(
     }
 
     fun resetSnapshotUpload() {
-        _snapshotUploadSuccessful.value = false
+        _snapshotUploadSuccessful.value = null
     }
 
     companion object {

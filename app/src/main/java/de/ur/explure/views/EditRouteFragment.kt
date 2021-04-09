@@ -81,6 +81,7 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route),
         setHasOptionsMenu(true)
 
         // get nav arguments and save them in the viewModel
+        // TODO only get the nav args if created from scratch?? check savedinstancestate to prevent
         val routeLine = LineString.fromPolyline(args.routePolyline, PRECISION_6)
         editRouteViewModel.saveRoute(routeLine)
         val existingWaypoints = args.routeMarkers?.toList()?.map { it.wayPoint }
@@ -125,6 +126,7 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route),
     private fun setupViewModelObservers() {
         editRouteViewModel.snapshotUploadSuccessful.observe(viewLifecycleOwner) { successful ->
             uploadSnackbar?.dismiss()
+            if (successful == null) return@observe // prevent this livedata from firing everytime after a reset
 
             if (successful) {
                 onSuccessfulSnapshot()
@@ -504,7 +506,7 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route),
 
     private fun onSuccessfulSnapshot() {
         val routeWaypoints = editRouteViewModel.getWayPoints()
-        val routeWaypointArray = routeWaypoints?.toTypedArray() // ?: return@observe
+        val routeWaypointArray = routeWaypoints?.toTypedArray()
         if (routeWaypointArray == null) {
             // TODO for debugging only
             showSnackbar(
@@ -526,6 +528,8 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route),
             return
         }
 
+        resetEditMap()
+
         val routeCoordinates: MutableList<Point> = route.coordinates()
         val routeLength = TurfMeasurement.length(routeCoordinates, TurfConstants.UNIT_METERS)
         val routeDuration = routeLength * WALKING_SPEED / 60
@@ -538,6 +542,24 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route),
             duration = routeDuration.toFloat()
         )
         findNavController().navigate(action)
+    }
+
+    private fun resetEditMap() {
+        if (mapHelper.routeLineManager != null) {
+            // clear route line on the map
+            mapHelper.routeLineManager?.removeMapMatching()
+        }
+
+        if (mapHelper.isMarkerManagerInitialized()) {
+            // clear waypoints and markers on the map and in the viewmodel
+            mapHelper.markerManager.deleteAllMarkers()
+            editRouteViewModel.clearAllWaypoints()
+        }
+
+        // clear the featureCollection and the info windows
+        featureCollection = null
+        source?.setGeoJson(FeatureCollection.fromFeatures(arrayOf<Feature>()))
+        infoWindowMap.clear()
     }
 
     /**
@@ -598,7 +620,6 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route),
             mapHelper.map.removeOnMapLongClickListener(this::onMapLongClick)
         }
 
-        infoWindowMap.clear()
         uploadSnackbar?.dismiss()
         super.onDestroyView()
     }
