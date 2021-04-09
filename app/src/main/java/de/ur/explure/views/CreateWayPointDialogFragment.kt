@@ -98,6 +98,9 @@ class CreateWayPointDialogFragment : DialogFragment(R.layout.dialog_create_waypo
         binding.btnSaveWaypoint.setOnClickListener {
             val title = binding.etWayPointTitle.text.toString()
             viewModel.setTitle(title)
+            val description = binding.etWayPointDescription.text.toString()
+            viewModel.setDescription(description)
+
             val wayPointDTO = viewModel.newWayPointDTO.value
             if (wayPointDTO != null) {
                 findNavController().previousBackStackEntry?.savedStateHandle?.set(
