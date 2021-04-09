@@ -13,7 +13,9 @@ import de.ur.explure.model.waypoint.WayPointDTO
 import de.ur.explure.navigation.MainAppRouter
 import de.ur.explure.repository.route.RouteRepositoryImpl
 import de.ur.explure.utils.FirebaseResult
+import de.ur.explure.utils.reorderList
 import de.ur.explure.views.EditRouteFragment.Companion.PROPERTY_ID
+import de.ur.explure.views.EditRouteFragmentDirections
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -94,6 +96,20 @@ class EditRouteViewModel(
         deletedWaypoint.value = waypoint
     }
 
+    fun updateWaypointOrder(originalPos: Int, newPos: Int) {
+        routeWayPoints.value?.let { reorderList(it, originalPos, newPos) }
+    }
+
+    fun updateWayPoint(updatedWayPoint: WayPointDTO) {
+        val wayPointList = routeWayPoints.value
+        wayPointList?.forEachIndexed { index, wayPoint ->
+            if (wayPoint.geoPoint == updatedWayPoint.geoPoint) {
+                wayPointList[index] = updatedWayPoint
+            }
+        }
+        routeWayPoints.value = wayPointList
+    }
+
     fun clearAllWaypoints() {
         routeWayPoints.value?.clear()
         routeWayPoints.value = routeWayPoints.value
@@ -135,6 +151,12 @@ class EditRouteViewModel(
                 }
             }
         }
+    }
+
+    fun navigateToWayPointDialogFragment(wayPointDTO: WayPointDTO) {
+        val directions =
+            EditRouteFragmentDirections.actionEditRouteFragmentToCreateWayPointDialog(wayPointDTO)
+        appRouter.getNavController()?.navigate(directions)
     }
 
     fun resetSnapshotUpload() {

@@ -14,6 +14,8 @@ import androidx.activity.addCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.fragment.app.replace
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.crazylegend.viewbinding.viewBinding
@@ -106,6 +108,8 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route),
 
         setupBackButtonClickObserver()
         setupViewModelObservers()
+
+        initWayPointEditObserver()
 
         // setup the sliding panel before the map!
         setupSlidingPanel()
@@ -554,11 +558,46 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route),
     }
 
     private fun editWaypoint(feature: Feature) {
-        // hide info window first because we can't edit it directly and must recreate it
+        // hide info window first because we can't edit it directly and must recreate it later
         setFeatureSelectState(feature, false)
 
         val waypoint = editRouteViewModel.getWaypointForFeature(feature)
-        // TODO
+        if (waypoint != null) {
+            editRouteViewModel.navigateToWayPointDialogFragment(waypoint)
+        }
+    }
+
+    // TODO almost identical to the code in the saveRouteFragment
+    private fun initWayPointEditObserver() {
+        val navBackStackEntry = findNavController().getBackStackEntry(R.id.editRouteFragment)
+
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME &&
+                navBackStackEntry.savedStateHandle.contains(SaveRouteFragment.WAYPOINT_EDIT_KEY)
+            ) {
+                // get the edited waypoint from the saved state handle
+                val editedWayPoint =
+                    navBackStackEntry.savedStateHandle.get<WayPointDTO>(SaveRouteFragment.WAYPOINT_EDIT_KEY)
+                if (editedWayPoint != null) {
+                    // update the waypoint information
+                    editRouteViewModel.updateWayPoint(editedWayPoint)
+                    // generate a new info window with a new title
+                    val waypointFeature = getFeatureForWaypoint(editedWayPoint)
+                    if (waypointFeature != null) {
+                        waypointFeature.addStringProperty(PROPERTY_TITLE, editedWayPoint.title)
+                        infoWindowGenerator?.generateCallouts(FeatureCollection.fromFeature(waypointFeature))
+                    }
+                }
+            }
+        }
+
+        navBackStackEntry.lifecycle.addObserver(observer)
+
+        viewLifecycleOwner.lifecycle.addObserver(LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_DESTROY) {
+                navBackStackEntry.lifecycle.removeObserver(observer)
+            }
+        })
     }
 
     private fun onMapLongClick(position: LatLng): Boolean {

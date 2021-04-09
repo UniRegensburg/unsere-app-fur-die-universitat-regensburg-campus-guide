@@ -18,8 +18,8 @@ class CreateWayPointViewModel : ViewModel() {
         Timber.d("Editing Waypoint: %s", wayPointDTO.toString())
     }
 
-    fun initNewWayPointDTO(longitude: Double, latitude: Double) {
-        val wayPointDTO = WayPointDTO("", GeoPoint(latitude, longitude))
+    fun initNewWayPointDTO(longitude: Double, latitude: Double, defaultTitle: String) {
+        val wayPointDTO = WayPointDTO(defaultTitle, GeoPoint(latitude, longitude))
         Timber.d("Creating new Waypoint with: %s", wayPointDTO.toString())
         newWayPointDTO.postValue(wayPointDTO)
     }

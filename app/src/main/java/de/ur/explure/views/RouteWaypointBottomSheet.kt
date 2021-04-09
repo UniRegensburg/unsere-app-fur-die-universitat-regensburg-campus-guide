@@ -17,7 +17,7 @@ import org.koin.androidx.viewmodel.ext.android.sharedViewModel
 import org.koin.androidx.viewmodel.scope.emptyState
 
 class RouteWaypointBottomSheet : Fragment(R.layout.route_waypoint_bottomsheet),
-    ItemDragHelper.OnDragStartListener, RouteEditAdapter.OnDeleteItemListener {
+    ItemDragHelper.OnDragStartListener, ItemDragHelper.CustomDragListener, RouteEditAdapter.OnDeleteItemListener {
 
     private val binding by viewBinding(RouteWaypointBottomsheetBinding::bind)
 
@@ -64,8 +64,6 @@ class RouteWaypointBottomSheet : Fragment(R.layout.route_waypoint_bottomsheet),
             }
         }
 
-        // TODO: drag and drop MUST also update the viewmodel marker list to change the route!!
-
         // enable drag & drop on this recyclerview
         val callback: ItemTouchHelper.Callback = ItemDragHelper(routeEditAdapter ?: return)
         itemTouchHelper = ItemTouchHelper(callback)
@@ -85,6 +83,18 @@ class RouteWaypointBottomSheet : Fragment(R.layout.route_waypoint_bottomsheet),
 
     override fun onStartDrag(viewHolder: RouteEditAdapter.ViewHolder) {
         itemTouchHelper?.startDrag(viewHolder)
+    }
+
+    override fun onRowMoved(fromPosition: Int, toPosition: Int) {
+        editRouteViewModel.updateWaypointOrder(fromPosition, toPosition)
+    }
+
+    override fun onRowSelected(itemViewHolder: RouteEditAdapter.ViewHolder) {
+        // not needed
+    }
+
+    override fun onRowClear(itemViewHolder: RouteEditAdapter.ViewHolder) {
+        // not needed
     }
 
     override fun onItemDeleted(waypoint: WayPointDTO, layoutPosition: Int) {

@@ -140,6 +140,9 @@
             app:nullable="true" />
 
         <action
+            android:id="@+id/action_editRouteFragment_to_createWayPointDialog"
+            app:destination="@id/createWayPointDialog" />
+        <action
             android:id="@+id/action_editRouteFragment_to_saveRouteFragment"
             app:destination="@id/saveRouteFragment" />
     </fragment>
