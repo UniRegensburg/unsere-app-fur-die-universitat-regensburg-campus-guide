@@ -4,7 +4,6 @@ import android.graphics.Bitmap
 import android.graphics.PointF
 import android.graphics.Rect
 import android.os.Bundle
-import android.view.Gravity
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -27,7 +26,6 @@ import com.mapbox.geojson.Point
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
-import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
 import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.mapboxsdk.style.expressions.Expression
 import com.mapbox.mapboxsdk.style.layers.Property
@@ -41,38 +39,32 @@ import de.ur.explure.databinding.FragmentEditRouteBinding
 import de.ur.explure.extensions.pointToLatLng
 import de.ur.explure.extensions.toFeature
 import de.ur.explure.map.InfoWindowGenerator
-import de.ur.explure.map.MapConstants
+import de.ur.explure.map.MapHelper
 import de.ur.explure.map.MarkerManager
-import de.ur.explure.map.RouteLineManager
 import de.ur.explure.model.waypoint.WayPointDTO
-import de.ur.explure.utils.SharedPreferencesManager
 import de.ur.explure.utils.hasInternetConnection
 import de.ur.explure.utils.measureTimeFor
 import de.ur.explure.utils.showSnackbar
 import de.ur.explure.viewmodel.EditRouteViewModel
 import org.koin.android.ext.android.get
-import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.androidx.viewmodel.scope.emptyState
 import org.koin.core.parameter.parametersOf
+import timber.log.Timber
 
 @Suppress("TooManyFunctions")
-class EditRouteFragment : Fragment(R.layout.fragment_edit_route), OnMapReadyCallback,
-    InfoWindowGenerator.InfoWindowListener, MarkerManager.MarkerEditListener {
+class EditRouteFragment : Fragment(R.layout.fragment_edit_route),
+    InfoWindowGenerator.InfoWindowListener,
+    MapHelper.MapHelperListener, MarkerManager.MarkerEditListener {
 
     private val binding by viewBinding(FragmentEditRouteBinding::bind)
     private val editRouteViewModel: EditRouteViewModel by viewModel(state = emptyState())
 
     private val args: EditRouteFragmentArgs by navArgs()
 
-    // SharedPrefs
-    private val preferencesManager: SharedPreferencesManager by inject()
-
     // map
     private var mapView: MapView? = null
-    private lateinit var map: MapboxMap
-    private lateinit var markerManager: MarkerManager
-    private var routeLineManager: RouteLineManager? = null
+    private lateinit var mapHelper: MapHelper
     private var infoWindowGenerator: InfoWindowGenerator? = null
 
     private var backPressedCallback: OnBackPressedCallback? = null
@@ -101,10 +93,13 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route), OnMapReadyCall
         // setup the sliding panel BEFORE the map!
         // setupSlidingPanel()
 
-        // init the mapbox map
+        // init mapbox map
         mapView = binding.editMapView
         mapView?.onCreate(savedInstanceState)
-        mapView?.getMapAsync(this)
+        // and setup the mapHelper
+        mapHelper = get { parametersOf(mapView, viewLifecycleOwner.lifecycle) }
+        viewLifecycleOwner.lifecycle.addObserver(mapHelper)
+        mapHelper.setMapHelperListener(this)
     }
 
     private fun setupBackButtonClickObserver() {
@@ -133,6 +128,7 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route), OnMapReadyCall
 
             if (successful) {
                 onSuccessfulSnapshot()
+                editRouteViewModel.resetSnapshotUpload()
             } else {
                 // inform user that something went horribly wrong...
                 showSnackbar(
@@ -144,41 +140,24 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route), OnMapReadyCall
         }
     }
 
-    override fun onMapReady(mapboxMap: MapboxMap) {
-        this.map = mapboxMap
-        setupMapUI()
-
-        val style = preferencesManager.getCurrentMapStyle()
-        map.setStyle(style) { mapStyle ->
-            setupMapData(mapStyle)
-            setupListeners()
-        }
+    override fun onMapLoaded(map: MapboxMap) {
+        // not needed
     }
 
-    // TODO next 3 methods are almost completely duplicate:
-    private fun setupMapUI() {
-        // restrict the camera to a given bounding box as the app focuses only on the uni campus
-        map.setLatLngBoundsForCameraTarget(MapConstants.latLngBounds)
-
-        // move the compass to the bottom left corner of the mapView so it doesn't overlap with buttons
-        map.uiSettings.compassGravity = Gravity.BOTTOM or Gravity.START
-        map.uiSettings.setCompassMargins(
-            MapConstants.compassMarginLeft, 0, 0, MapConstants.compassMarginBottom
-        )
+    override fun onMapStyleLoaded(mapStyle: Style) {
+        setupMapData(mapStyle)
+        setupListeners()
     }
 
     private fun setupMapData(mapStyle: Style) {
-        setupMarkerManager(mapStyle)
-        setupRouteLineManager(mapStyle)
-
         // recreate all markers if any
         val routeWaypoints = editRouteViewModel.getWayPoints()
-        markerManager.addWaypoints(routeWaypoints)
+        mapHelper.markerManager.addWaypoints(routeWaypoints)
 
         // recreate all route lines
         val routeLine = editRouteViewModel.getRoute()
         if (routeLine != null) {
-            routeLineManager?.addLineToMap(routeLine)
+            mapHelper.routeLineManager?.addLineToMap(routeLine)
         }
 
         // setup the info window layer
@@ -190,14 +169,12 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route), OnMapReadyCall
         initFeatureCollection(editRouteViewModel.getWayPoints())
     }
 
-    private fun setupMarkerManager(mapStyle: Style) {
-        markerManager = get { parametersOf(mapView, map, mapStyle) }
-        viewLifecycleOwner.lifecycle.addObserver(markerManager)
-    }
+    private fun setupListeners() {
+        mapHelper.markerManager.setMarkerEditListener(this)
+        mapHelper.markerManager.setEditingMarkerClickBehavior()
 
-    private fun setupRouteLineManager(mapStyle: Style) {
-        routeLineManager = get { parametersOf(mapView, map, mapStyle) }
-        routeLineManager?.let { viewLifecycleOwner.lifecycle.addObserver(it) }
+        // allow users to add markers to the map on click
+        mapHelper.map.addOnMapClickListener(this::onMapClick)
     }
 
     private fun setupInfoWindowGenerator() {
@@ -238,20 +215,12 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route), OnMapReadyCall
         bitmapHashMap: HashMap<String, Bitmap>,
         viewMap: HashMap<String, View>
     ) {
-        map.getStyle { style ->
+        mapHelper.map.getStyle { style ->
             // calling addImages is faster as separate addImage calls for each bitmap.
             style.addImages(bitmapHashMap)
             infoWindowMap.putAll(viewMap)
             refreshSource()
         }
-    }
-
-    private fun setupListeners() {
-        markerManager.setMarkerEditListener(this)
-        markerManager.setEditingMarkerClickBehavior()
-
-        // allow users to add markers to the map on click
-        map.addOnMapClickListener(this::onMapClick)
     }
 
     private fun getFeatureForWaypoint(waypoint: WayPointDTO): Feature? {
@@ -365,12 +334,12 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route), OnMapReadyCall
     }
 
     private fun onMapClick(position: LatLng): Boolean {
-        val screenPoint = map.projection.toScreenLocation(position)
-        val features = map.queryRenderedFeatures(screenPoint, CALLOUT_LAYER_ID)
+        val screenPoint = mapHelper.map.projection.toScreenLocation(position)
+        val features = mapHelper.map.queryRenderedFeatures(screenPoint, CALLOUT_LAYER_ID)
         if (features.isNotEmpty()) {
             // we received a click event on the callout - layer (i.e. the info window)
             val feature = features[0]
-            val symbolScreenPoint = map.projection.toScreenLocation(feature.pointToLatLng())
+            val symbolScreenPoint = mapHelper.map.projection.toScreenLocation(feature.pointToLatLng())
             handleClickCallout(feature, screenPoint, symbolScreenPoint)
         } else {
             // clicked somewhere else on the map, place a new waypoint there
@@ -378,7 +347,7 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route), OnMapReadyCall
                 position,
                 getString(R.string.default_waypoint_title)
             )
-            markerManager.addWaypoint(position, createdWaypoint)
+            mapHelper.markerManager.addWaypoint(position, createdWaypoint)
 
             // convert the waypoint to a feature and add it to the featureCollection
             val newFeature = generateNewFeature(createdWaypoint)
@@ -423,7 +392,7 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route), OnMapReadyCall
      * of the symbol on screen and hit tests that with the screen point.
      * </p>
      *
-     * @param feature           the clicked waypoint feature
+     * @param feature           the clicked feature
      * @param screenPoint       the point on screen clicked
      * @param symbolScreenPoint the point of the symbol on screen
      */
@@ -432,7 +401,14 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route), OnMapReadyCall
         screenPoint: PointF,
         symbolScreenPoint: PointF
     ) {
-        val calloutView = infoWindowMap[feature.getStringProperty(PROPERTY_ID)] ?: return
+        val clickedFeatureID = feature.getStringProperty(PROPERTY_ID)
+        val featureList = featureCollection?.features()
+        // get the correct feature from the featureCollection (the given feature parameter has other coordinates!)
+        val waypointFeature = featureList?.find {
+            clickedFeatureID == it.getStringProperty(PROPERTY_ID)
+        } ?: return
+
+        val calloutView = infoWindowMap[clickedFeatureID] ?: return
         val deleteButton = calloutView.findViewById<ImageButton>(R.id.deleteWaypointButtonIW)
         val editButton = calloutView.findViewById<ImageButton>(R.id.editWaypointButtonIW)
 
@@ -459,15 +435,7 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route), OnMapReadyCall
                 with(MaterialAlertDialogBuilder(requireActivity())) {
                     setMessage(R.string.delete_waypoint_confirmation)
                     setPositiveButton(R.string.yes) { _, _ ->
-                        // TODO this feature does not exist in the featureCollection for some reason
-                        val featureParam = feature
-                        val deletedWaypoint = editRouteViewModel.getWaypointForFeature(feature)
-                        setFeatureSelectState(feature, false) // hide the info window
-                        featureCollection?.features()?.remove(feature)
-                        if (deletedWaypoint != null) {
-                            markerManager.deleteWaypoint(deletedWaypoint)
-                            editRouteViewModel.deleteWaypoint(deletedWaypoint)
-                        }
+                        deleteWaypoint(waypointFeature)
                     }
                     setNegativeButton(R.string.no) { _, _ -> }
                     show()
@@ -475,23 +443,35 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route), OnMapReadyCall
             }
             hitRectEditButton.contains(screenPoint.x.toInt(), screenPoint.y.toInt()) -> {
                 // user clicked on edit button
-                showSnackbar(requireActivity(), "Clicked on edit button")
-                // TODO show edit dialog for this waypoint!
-                // val waypoint = editRouteViewModel.getWaypointForFeature(feature)
+                editWaypoint(waypointFeature)
             }
             else -> {
                 // user clicked somewhere else on the callout
-                showSnackbar(requireActivity(), "Clicked on callout text")
+                Timber.d("Clicked on callout text")
             }
         }
     }
 
+    private fun deleteWaypoint(feature: Feature) {
+        val deletedWaypoint = editRouteViewModel.getWaypointForFeature(feature)
+        // hide the info window and remove it from the collection
+        setFeatureSelectState(feature, false)
+        featureCollection?.features()?.remove(feature)
+        // also remove the corresponding marker symbol and the route waypoint itself
+        if (deletedWaypoint != null) {
+            mapHelper.markerManager.deleteWaypoint(deletedWaypoint)
+            editRouteViewModel.deleteWaypoint(deletedWaypoint)
+        }
+    }
+
+    private fun editWaypoint(feature: Feature) {
+        val waypoint = editRouteViewModel.getWaypointForFeature(feature)
+        // TODO
+    }
+
     private fun onMapLongClick(position: LatLng): Boolean {
-        val createdWaypoint = editRouteViewModel.addNewWayPoint(
-            position,
-            getString(R.string.default_waypoint_title)
-        )
-        markerManager.addWaypoint(position, createdWaypoint)
+        val createdWaypoint = editRouteViewModel.addNewWayPoint(position, getString(R.string.default_waypoint_title))
+        mapHelper.markerManager.addWaypoint(position, createdWaypoint)
 
         // convert the waypoint to a feature and add it to the featureCollection
         val newFeature = generateNewFeature(createdWaypoint)
@@ -507,7 +487,7 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route), OnMapReadyCall
             return
         }
 
-        map.snapshot { mapSnapshot ->
+        mapHelper.map.snapshot { mapSnapshot ->
             uploadSnackbar = showSnackbar(
                 requireActivity(),
                 getString(R.string.saving_route),
@@ -594,24 +574,8 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route), OnMapReadyCall
      * * Lifecycle
      */
 
-    override fun onStart() {
-        super.onStart()
-        mapView?.onStart()
-    }
-
-    override fun onResume() {
-        super.onResume()
-        mapView?.onResume()
-    }
-
-    override fun onPause() {
-        super.onPause()
-        mapView?.onPause()
-    }
-
     override fun onStop() {
         super.onStop()
-        mapView?.onStop()
         // save created waypoints so they are not lost on config change or process death!
         editRouteViewModel.saveWayPoints()
     }
@@ -628,10 +592,11 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route), OnMapReadyCall
 
     override fun onDestroyView() {
         backPressedCallback?.remove()
-        map.removeOnMapClickListener(this::onMapClick)
-        map.removeOnMapLongClickListener(this::onMapLongClick)
 
-        mapView?.onDestroy()
+        if (mapHelper.isMapInitialized()) {
+            mapHelper.map.removeOnMapClickListener(this::onMapClick)
+            mapHelper.map.removeOnMapLongClickListener(this::onMapLongClick)
+        }
 
         infoWindowMap.clear()
         uploadSnackbar?.dismiss()

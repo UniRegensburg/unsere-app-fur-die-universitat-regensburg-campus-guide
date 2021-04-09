@@ -4,7 +4,6 @@ import android.content.Context
 import android.graphics.RectF
 import android.location.Location
 import android.os.Bundle
-import android.view.Gravity
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
@@ -37,7 +36,6 @@ import com.mapbox.geojson.utils.PolylineUtils
 import com.mapbox.mapboxsdk.location.LocationUpdate
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
-import com.mapbox.mapboxsdk.maps.OnMapReadyCallback
 import com.mapbox.mapboxsdk.maps.Style
 import com.sothree.slidinguppanel.SlidingUpPanelLayout
 import de.ur.explure.R
@@ -47,18 +45,15 @@ import de.ur.explure.extensions.initHidden
 import de.ur.explure.extensions.lineToPoints
 import de.ur.explure.extensions.moveCameraToPosition
 import de.ur.explure.extensions.toPoint
-import de.ur.explure.map.CustomBuildingPlugin
 import de.ur.explure.map.LocationManager
 import de.ur.explure.map.ManualRouteCreationModes
-import de.ur.explure.map.MapConstants
+import de.ur.explure.map.MapHelper
 import de.ur.explure.map.MapMatchingClient
-import de.ur.explure.map.MarkerManager
 import de.ur.explure.map.PermissionHelper
 import de.ur.explure.map.RouteCreationMode
 import de.ur.explure.map.RouteDrawModes
 import de.ur.explure.map.RouteLineManager
 import de.ur.explure.map.RouteLineManager.Companion.DRAW_LINE_LAYER_ID
-import de.ur.explure.map.RouteLineManager.Companion.MAPBOX_FIRST_LABEL_LAYER
 import de.ur.explure.map.WaypointsController
 import de.ur.explure.model.MapMarker
 import de.ur.explure.utils.EventObserver
@@ -82,8 +77,8 @@ import timber.log.Timber
 import java.util.*
 
 @Suppress("TooManyFunctions")
-class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
-    MapMatchingClient.MapMatchingListener, RouteLineManager.OnRouteDrawListener {
+class MapFragment : Fragment(R.layout.fragment_map), MapMatchingClient.MapMatchingListener,
+    RouteLineManager.OnRouteDrawListener, MapHelper.MapHelperListener {
 
     private val binding by viewBinding(FragmentMapBinding::bind)
 
@@ -98,17 +93,14 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
 
     // map
     private var mapView: MapView? = null
-    private lateinit var map: MapboxMap
-    private lateinit var markerManager: MarkerManager
-    private var routeLineManager: RouteLineManager? = null
-    private var buildingPlugin: CustomBuildingPlugin? = null
-
-    private var routeCreationMapClickListenerBehavior: MapboxMap.OnMapClickListener? = null
+    private lateinit var mapHelper: MapHelper
 
     // route creation
     private val waypointsController: WaypointsController by inject()
     private var directionsRoute: DirectionsRoute? = null
     private val mapMatchingClient: MapMatchingClient by inject()
+
+    private var routeCreationMapClickListenerBehavior: MapboxMap.OnMapClickListener? = null
 
     // location tracking
     private lateinit var locationManager: LocationManager
@@ -160,7 +152,10 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
         // init mapbox map
         mapView = binding.mapView
         mapView?.onCreate(savedInstanceState)
-        mapView?.getMapAsync(this)
+        // and setup the mapHelper
+        mapHelper = get { parametersOf(mapView, viewLifecycleOwner.lifecycle) }
+        viewLifecycleOwner.lifecycle.addObserver(mapHelper)
+        mapHelper.setMapHelperListener(this)
     }
 
     private fun setupBackButtonClickObserver() {
@@ -174,7 +169,6 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
         }
     }
 
-    @Suppress("LongMethod")
     private fun setupViewModelObservers() {
         mapViewModel.mapReady.observe(viewLifecycleOwner, EventObserver {
             // this should only get called if the event has never been handled before because of the EventObserver
@@ -191,18 +185,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
 
                 // also show a tutorial for the menu actions the first time the user creates a route
                 if (preferencesManager.isFirstTimeRouteCreation()) {
-                    val activity = activity ?: return@observe
-                    val toolbar = activity.findViewById<Toolbar>(R.id.toolbar)
-                    val highlightView = activity.findViewById<View>(R.id.showMapMatchedButton)
-                    TutorialBuilder.highlightMapActionMenu(
-                        activity, toolbar,
-                        Highlight(
-                            highlightView,
-                            title = getString(R.string.action_menu_tutorial_title),
-                            description = getString(R.string.action_menu_tutorial_description),
-                            radius = Highlight.HIGHLIGHT_RADIUS_LARGE
-                        )
-                    )
+                    showRouteCreationTutorial()
                     preferencesManager.completedRouteCreationTutorial()
                 }
             } else {
@@ -226,20 +209,20 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
             }
         }
         mapViewModel.buildingExtrusionActive.observe(viewLifecycleOwner) { extrusionsActive ->
-            buildingPlugin?.setVisibility(extrusionsActive)
+            mapHelper.buildingPlugin?.setVisibility(extrusionsActive)
         }
         mapViewModel.selectedMarker.observe(viewLifecycleOwner) { marker ->
             // move the camera to the selected marker
-            if (::map.isInitialized) {
-                map.moveCameraToPosition(marker.markerPosition, selectedMarkerZoom)
+            if (mapHelper.isMapInitialized()) {
+                mapHelper.map.moveCameraToPosition(marker.markerPosition, selectedMarkerZoom)
             }
         }
         mapViewModel.deletedWaypoint.observe(viewLifecycleOwner) { mapMarker ->
             // check to prevent crashes on config change as marker manager is not setup initially
-            if (::markerManager.isInitialized) {
+            if (mapHelper.isMapInitialized()) {
                 // delete the corresponding marker symbol and remove from waypointscontroller
                 waypointsController.remove(mapMarker.markerPosition.toPoint())
-                markerManager.removeWaypointMarker(mapMarker)
+                mapHelper.markerManager.removeWaypointMarker(mapMarker)
             }
         }
         mapViewModel.activeMapMatching.observe(viewLifecycleOwner) {
@@ -248,12 +231,27 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
 
                 if (mapViewModel.routeDrawModeActive.value == true) {
                     // ask user if he wants to use the mapMatching or his own route
-                   showRouteDrawConfirmationSheet()
+                    showRouteDrawConfirmationSheet()
                 } else {
-                    moveToNextStep()
+                    moveToNextCreationStep()
                 }
             }
         }
+    }
+
+    private fun showRouteCreationTutorial() {
+        val activity = activity ?: return
+        val toolbar = activity.findViewById<Toolbar>(R.id.toolbar)
+        val highlightView = activity.findViewById<View>(R.id.showMapMatchedButton)
+        TutorialBuilder.highlightMapActionMenu(
+            activity, toolbar,
+            Highlight(
+                highlightView,
+                title = getString(R.string.action_menu_tutorial_title),
+                description = getString(R.string.action_menu_tutorial_description),
+                radius = Highlight.HIGHLIGHT_RADIUS_LARGE
+            )
+        )
     }
 
     private fun showRouteDrawConfirmationSheet() {
@@ -262,11 +260,11 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
 
         binding.routeDrawConfirmSheet.ownRouteButton.setOnClickListener {
             bottomSheet.hide()
-            moveToNextStep(useMapMatching = false)
+            moveToNextCreationStep(useMapMatching = false)
         }
         binding.routeDrawConfirmSheet.mapMatchedRouteButton.setOnClickListener {
             bottomSheet.hide()
-            moveToNextStep(useMapMatching = true)
+            moveToNextCreationStep(useMapMatching = true)
         }
     }
 
@@ -393,7 +391,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
             val selectedItem =
                 parent.getItemAtPosition(position) as? String ?: return@setOnItemClickListener
             val selectedMapStyle = All_MAP_STYLES[selectedItem]
-            setMapStyle(selectedMapStyle)
+            mapHelper.setMapStyle(selectedMapStyle)
 
             listPopup.dismiss()
         }
@@ -453,7 +451,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
         mapViewModel.setActiveManualRouteCreationMode(ManualRouteCreationModes.MODE_ADD)
 
         // (re-)set marker default click listener behavior
-        markerManager.setDefaultMarkerClickListenerBehavior()
+        mapHelper.markerManager.setDefaultMarkerClickListenerBehavior()
         // add markers on click
         setAddMarkerClickListenerBehavior()
     }
@@ -464,7 +462,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
         mapViewModel.setActiveManualRouteCreationMode(ManualRouteCreationModes.MODE_EDIT)
 
         // reset marker click listener behavior
-        routeCreationMapClickListenerBehavior?.let { map.removeOnMapClickListener(it) }
+        routeCreationMapClickListenerBehavior?.let { mapHelper.map.removeOnMapClickListener(it) }
         Toast.makeText(
             requireContext(),
             "Diese Funktionalität ist leider noch nicht implementiert!",
@@ -477,9 +475,9 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
         mapViewModel.setActiveManualRouteCreationMode(ManualRouteCreationModes.MODE_DELETE)
 
         // reset marker click listener behavior
-        routeCreationMapClickListenerBehavior?.let { map.removeOnMapClickListener(it) }
+        routeCreationMapClickListenerBehavior?.let { mapHelper.map.removeOnMapClickListener(it) }
         // delete markers on click
-        markerManager.setDeleteMarkerClickListenerBehavior(onMarkerDeleted = {
+        mapHelper.markerManager.setDeleteMarkerClickListenerBehavior(onMarkerDeleted = {
             // remove this marker from waypoints controller and from viewModel
             waypointsController.remove(it.geometry)
             mapViewModel.removeMarker(it)
@@ -512,8 +510,8 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
         mapViewModel.setActiveRouteDrawMode(RouteDrawModes.MODE_DRAW)
 
         // reset click listener behavior if it was set and enable drawing
-        routeCreationMapClickListenerBehavior?.let { map.removeOnMapClickListener(it) }
-        routeLineManager?.enableMapDrawing()
+        routeCreationMapClickListenerBehavior?.let { mapHelper.map.removeOnMapClickListener(it) }
+        mapHelper.routeLineManager?.enableMapDrawing()
     }
 
     private fun enableMoveMapOption() {
@@ -521,15 +519,15 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
         mapViewModel.setActiveRouteDrawMode(RouteDrawModes.MODE_MOVE)
 
         // reset click listener behavior if it was set and enable map movement
-        routeCreationMapClickListenerBehavior?.let { map.removeOnMapClickListener(it) }
-        routeLineManager?.enableMapMovement()
+        routeCreationMapClickListenerBehavior?.let { mapHelper.map.removeOnMapClickListener(it) }
+        mapHelper.routeLineManager?.enableMapMovement()
     }
 
     private fun enableDeleteRouteOption() {
         highlightCurrentRouteCreationMode(RouteDrawModes.MODE_DELETE)
         mapViewModel.setActiveRouteDrawMode(RouteDrawModes.MODE_DELETE)
 
-        routeLineManager?.enableMapMovement() // reset the touch listener first
+        mapHelper.routeLineManager?.enableMapMovement() // reset the touch listener first
         setRemoveRouteClickListenerBehavior()
     }
 
@@ -625,9 +623,10 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
         // show bottom sheet panel
         slidingBottomPanel.panelState = SlidingUpPanelLayout.PanelState.COLLAPSED
 
-        when (mapViewModel.getActiveManualRouteCreationMode() ?: ManualRouteCreationModes.MODE_ADD) {
+        when (mapViewModel.getActiveManualRouteCreationMode()
+            ?: ManualRouteCreationModes.MODE_ADD) {
             ManualRouteCreationModes.MODE_ADD -> {
-                if (!::markerManager.isInitialized) return
+                if (!mapHelper.isMarkerManagerInitialized()) return
                 enableAddMarkerOption()
             }
             /*
@@ -635,7 +634,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
                 enableEditMarkerOption()
             }*/
             ManualRouteCreationModes.MODE_DELETE -> {
-                if (!::markerManager.isInitialized) return
+                if (!mapHelper.isMarkerManagerInitialized()) return
                 enableDeleteMarkerOption()
             }
         }
@@ -657,8 +656,8 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
         routeCreationMapClickListenerBehavior?.let {
             // necessary check as the viewmodel observer fires the first time as well which might be
             // before the map has been setup
-            if (::map.isInitialized) {
-                map.removeOnMapClickListener(it)
+            if (mapHelper.isMapInitialized()) {
+                mapHelper.map.removeOnMapClickListener(it)
             }
         }
     }
@@ -669,7 +668,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
         // slide in the options panel
         slideInView(binding.routeDrawOptionsLayout.root)
 
-        routeLineManager?.initFreeDrawMode()
+        mapHelper.routeLineManager?.initFreeDrawMode()
 
         when (mapViewModel.getActiveRouteDrawMode() ?: RouteDrawModes.MODE_DRAW) {
             RouteDrawModes.MODE_DRAW -> {
@@ -695,19 +694,19 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
         slideOutView(binding.routeDrawOptionsLayout.root)
 
         // remove the custom touch behavior
-        routeLineManager?.enableMapMovement()
+        mapHelper.routeLineManager?.enableMapMovement()
 
         // reset the click listener behavior if it was changed
         routeCreationMapClickListenerBehavior?.let {
-            if (::map.isInitialized) {
-                map.removeOnMapClickListener(it)
+            if (mapHelper.isMapInitialized()) {
+                mapHelper.map.removeOnMapClickListener(it)
             }
         }
     }
 
     private fun setAddMarkerClickListenerBehavior() {
         routeCreationMapClickListenerBehavior = MapboxMap.OnMapClickListener {
-            val symbol = markerManager.addMarker(it)
+            val symbol = mapHelper.markerManager.addMarker(it)
             if (symbol != null) {
                 mapViewModel.addNewMapMarker(symbol, getString(R.string.default_waypoint_title))
             }
@@ -717,8 +716,8 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
         }
 
         routeCreationMapClickListenerBehavior?.let {
-            if (::map.isInitialized) {
-                map.addOnMapClickListener(it)
+            if (mapHelper.isMapInitialized()) {
+                mapHelper.map.addOnMapClickListener(it)
             }
         }
     }
@@ -726,7 +725,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
     private fun setRemoveRouteClickListenerBehavior() {
         routeCreationMapClickListenerBehavior = MapboxMap.OnMapClickListener {
             // Detect whether a linestring of the draw layer was clicked on
-            val screenPoint = map.projection.toScreenLocation(it)
+            val screenPoint = mapHelper.map.projection.toScreenLocation(it)
 
             @Suppress("MagicNumber")
             val touchAreaBuffer = 15
@@ -738,7 +737,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
                 screenPoint.y + touchAreaBuffer
             )
 
-            val featureList = map.queryRenderedFeatures(screenArea, DRAW_LINE_LAYER_ID)
+            val featureList = mapHelper.map.queryRenderedFeatures(screenArea, DRAW_LINE_LAYER_ID)
             if (featureList.isNotEmpty()) {
                 showRemoveRouteDialog(featureList[0])
             }
@@ -746,8 +745,8 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
         }
 
         routeCreationMapClickListenerBehavior?.let {
-            if (::map.isInitialized) {
-                map.addOnMapClickListener(it)
+            if (mapHelper.isMapInitialized()) {
+                mapHelper.map.addOnMapClickListener(it)
             }
         }
     }
@@ -757,7 +756,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
             setMessage(R.string.delete_route_confirmation)
             setPositiveButton(R.string.yes) { _, _ ->
                 // delete the clicked line
-                routeLineManager?.removeDrawnLineStringFromMap(routePart)
+                mapHelper.routeLineManager?.removeDrawnLineStringFromMap(routePart)
                 // update viewModel list
                 mapViewModel.removeDrawnLine(routePart)
             }
@@ -768,16 +767,16 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
 
     private fun resetMapOverlays() {
         // clear lines on the map
-        if (routeLineManager != null) {
-            routeLineManager?.clearAllLines()
+        if (mapHelper.routeLineManager != null) {
+            mapHelper.routeLineManager?.clearAllLines()
             mapViewModel.resetActiveDrawnLines()
 
             mapViewModel.removeActiveMapMatching()
         }
 
-        if (::markerManager.isInitialized) {
+        if (mapHelper.isMarkerManagerInitialized()) {
             // clear markers on the map and in the viewmodel
-            markerManager.deleteAllMarkers()
+            mapHelper.markerManager.deleteAllMarkers()
             mapViewModel.removeActiveMarkers()
         }
 
@@ -786,13 +785,13 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
     }
 
     private fun mapMatchDrawnRoute() {
-        val allRoutePoints = routeLineManager?.getCompleteRoute()
+        val allRoutePoints = mapHelper.routeLineManager?.getCompleteRoute()
 
         if (allRoutePoints != null) {
             /*
             // show markers at the automatically generated waypoints of the route
             allRoutePoints.forEach {
-                markerManager.addMarker(it.toLatLng())
+                mapHelper.markerManager.addMarker(it.toLatLng())
             }*/
             makeMatchingRequest(allRoutePoints)
         }
@@ -844,7 +843,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
         }
     }
 
-    private fun moveToNextStep(useMapMatching: Boolean = true) {
+    private fun moveToNextCreationStep(useMapMatching: Boolean = true) {
         var route: LineString? = null
         var markers: List<MapMarker>? = null
 
@@ -880,13 +879,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
         mapViewModel.navigateToEditScreen(route, markers)
     }
 
-    /**
-     * * Map setup code
-     */
-
-    override fun onMapReady(mapboxMap: MapboxMap) {
-        this.map = mapboxMap
-
+    override fun onMapLoaded(map: MapboxMap) {
         if (preferencesManager.isFirstRun()) {
             showFirstRunTutorial()
             // mark first launch as completed so this tutorial won't be shown on further app starts
@@ -894,24 +887,22 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
             preferencesManager.completedFirstRun()
         }
 
-        setupMapUI()
-
-        val style = preferencesManager.getCurrentMapStyle()
-        setMapStyle(style)
-    }
-
-    private fun setupMapUI() {
-        // restrict the camera to a given bounding box as the app focuses only on the uni campus
-        map.setLatLngBoundsForCameraTarget(MapConstants.latLngBounds)
-
-        // move the compass to the bottom left corner of the mapView so it doesn't overlap with buttons
-        map.uiSettings.compassGravity = Gravity.BOTTOM or Gravity.START
-        map.uiSettings.setCompassMargins(MapConstants.compassMarginLeft, 0, 0, MapConstants.compassMarginBottom)
-
         // init the camera at the saved cameraPosition if it is not null
         mapViewModel.getLastKnownCameraPosition()?.let {
             map.cameraPosition = it
         }
+    }
+
+    override fun onMapStyleLoaded(mapStyle: Style) {
+        // save the current style in the viewmodel
+        mapViewModel.setCurrentMapStyle(mapStyle)
+
+        recreateMarkers()
+        recreateMapMatching()
+
+        setupMapListeners()
+
+        mapViewModel.setMapReadyStatus(true)
     }
 
     private fun showFirstRunTutorial() {
@@ -935,62 +926,12 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
         )
     }
 
-    private fun setMapStyle(styleUrl: String?) {
-        styleUrl ?: return
-
-        map.setStyle(styleUrl) { mapStyle ->
-            // Map is set up and the style has loaded.
-            // save the current style in the shared preferences and the viewmodel
-            mapViewModel.setCurrentMapStyle(mapStyle)
-
-            // save the current style in the shared preferences
-            preferencesManager.setCurrentMapStyle(styleUrl)
-
-            mapMatchingClient.setMapMatchingListener(this)
-
-            setupMarkerManager(mapStyle)
-            recreateMarkers()
-
-            setupRouteLineManager(mapStyle)
-            recreateMapMatching()
-
-            // ! This needs to be called AFTER the MarkerManager is set up because this way clicks
-            // ! on the markers will be handled before clicks on the map itself!
-            setupMapListeners()
-
-            // setup building plugin
-            setupBuildingExtrusions(mapStyle)
-
-            mapViewModel.setMapReadyStatus(true)
-        }
-    }
-
-    private fun setupBuildingExtrusions(mapStyle: Style) {
-        // setup the building plugin below the map labels so map click events are not consumed here!
-        buildingPlugin = CustomBuildingPlugin(mapStyle, MAPBOX_FIRST_LABEL_LAYER)
-
-        val visibility = preferencesManager.getBuildingExtrusionShown()
-        buildingPlugin?.setVisibility(visibility)
-    }
-
-    private fun setupMarkerManager(mapStyle: Style) {
-        markerManager = get { parametersOf(mapView, map, mapStyle) }
-        // let the marker manager observe the fragment lifecycle so it can clean itself up on destroy
-        viewLifecycleOwner.lifecycle.addObserver(markerManager)
-    }
-
     private fun recreateMarkers() {
         // recreate all markers that were on the map before the config change or process death
         val allActiveMarkers = mapViewModel.getAllActiveMarkers()
         val markerCoords = allActiveMarkers?.map { it.markerPosition }
-        markerManager.addMarkers(markerCoords)
+        mapHelper.markerManager.addMarkers(markerCoords)
         waypointsController.addAll(markerCoords)
-    }
-
-    private fun setupRouteLineManager(mapStyle: Style) {
-        routeLineManager = get { parametersOf(mapView, map, mapStyle) }
-        routeLineManager?.let { viewLifecycleOwner.lifecycle.addObserver(it) }
-        routeLineManager?.setRouteDrawListener(this)
     }
 
     override fun onNewRouteDrawn(lineFeature: Feature) {
@@ -1002,7 +943,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
         val allActiveLines = mapViewModel.getActiveDrawnLines()
         // val allActiveRoutePoints = mapViewModel.getActiveRoutePoints()
         if (allActiveLines != null) {
-            routeLineManager?.redrawActiveRoutes(allActiveLines)
+            mapHelper.routeLineManager?.redrawActiveRoutes(allActiveLines)
         }
     }
 
@@ -1010,7 +951,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
         // recreate the last map matching if there is one
         val activeMapMatching = mapViewModel.getActiveMapMatching()
         activeMapMatching?.let {
-            routeLineManager?.addLineToMap(it)
+            mapHelper.routeLineManager?.addLineToMap(it)
         }
     }
 
@@ -1047,12 +988,12 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
         // remove old map matching if there is one
         val oldMapMatching = mapViewModel.getActiveMapMatching()
         if (oldMapMatching != null) {
-            routeLineManager?.removeMapMatching()
+            mapHelper.routeLineManager?.removeMapMatching()
         }
 
         // draw map matched line
         val lineString = LineString.fromPolyline(routeGeometry, PRECISION_6)
-        routeLineManager?.addLineToMap(lineString)
+        mapHelper.routeLineManager?.addLineToMap(lineString)
         // save in viewmodel
         mapViewModel.setActiveMapMatching(lineString)
     }
@@ -1123,19 +1064,23 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
      */
 
     private fun setupMapListeners() {
-        map.addOnCameraIdleListener(this::onCameraMoved)
+        mapMatchingClient.setMapMatchingListener(this)
+        mapHelper.routeLineManager?.setRouteDrawListener(this)
+        mapHelper.map.addOnCameraIdleListener(this::onCameraMoved)
     }
 
     private fun removeMapListeners() {
-        if (this::map.isInitialized) {
-            map.removeOnCameraIdleListener(this::onCameraMoved)
-            routeCreationMapClickListenerBehavior?.let { map.removeOnMapClickListener(it) }
+        mapMatchingClient.setMapMatchingListener(null)
+
+        if (mapHelper.isMapInitialized()) {
+            mapHelper.map.removeOnCameraIdleListener(this::onCameraMoved)
+            routeCreationMapClickListenerBehavior?.let { mapHelper.map.removeOnMapClickListener(it) }
         }
     }
 
     private fun onCameraMoved() {
         // keep track of the current camera position in case of a configuration change or similar
-        mapViewModel.setCurrentCameraPosition(map.cameraPosition)
+        mapViewModel.setCurrentCameraPosition(mapHelper.map.cameraPosition)
     }
 
     /**
@@ -1164,7 +1109,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
 
                 // enable location tracking with custom location engine
                 locationManager.activateLocationComponent(
-                    map.locationComponent, loadedMapStyle, useDefaultEngine = false
+                    mapHelper.map.locationComponent, loadedMapStyle, useDefaultEngine = false
                 )
             }
         } else {
@@ -1181,7 +1126,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
             // dismiss the permission explanation
             permissionExplanationSnackbar?.dismiss()
             // try to find the device location and enable location tracking
-            map.style?.let { startLocationTracking(it) }
+            mapHelper.map.style?.let { startLocationTracking(it) }
         } else {
             showSnackbar(
                 requireActivity(),
@@ -1206,7 +1151,7 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
     private fun onNewLocationReceived(location: Location) {
         // Pass the new location to the Maps SDK's LocationComponent
         val locationUpdate = LocationUpdate.Builder().location(location).build()
-        map.locationComponent.forceLocationUpdate(locationUpdate)
+        mapHelper.map.locationComponent.forceLocationUpdate(locationUpdate)
         // save the new location
         mapViewModel.setCurrentUserPosition(location)
     }
@@ -1254,34 +1199,9 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
         }
     }
 
-    /**
-     * * Lifecycle Hooks
-     *
-     * To handle Mapbox state correctly, the corresponding mapView hooks need to be called here.
-     */
-
-    override fun onStart() {
-        super.onStart()
-        Timber.d("in MapFragment onStart")
-        mapView?.onStart()
-    }
-
-    override fun onResume() {
-        super.onResume()
-        Timber.d("in MapFragment onResume")
-        mapView?.onResume()
-    }
-
-    override fun onPause() {
-        super.onPause()
-        Timber.d("in MapFragment onPause")
-        mapView?.onPause()
-    }
-
     override fun onStop() {
         super.onStop()
         Timber.d("in MapFragment onStop")
-        mapView?.onStop()
         // save current map state so it can be re-created!
         mapViewModel.saveActiveMarkers()
         mapViewModel.saveActiveDrawnLines()
@@ -1302,11 +1222,9 @@ class MapFragment : Fragment(R.layout.fragment_map), OnMapReadyCallback,
         Timber.d("in MapFragment onDestroyView")
 
         slidingBottomPanel.removePanelSlideListener(slidingPanelListener)
-        mapMatchingClient.setMapMatchingListener(null)
         removeMapListeners()
         backPressedCallback?.remove()
 
-        mapView?.onDestroy()
         super.onDestroyView()
     }
 

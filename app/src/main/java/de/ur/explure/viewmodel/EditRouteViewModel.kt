@@ -109,6 +109,10 @@ class EditRouteViewModel(
         }
     }
 
+    fun resetSnapshotUpload() {
+        _snapshotUploadSuccessful.value = false
+    }
+
     companion object {
         private const val ROUTE_KEY = "recreatedRoute"
         private const val ROUTE_WayPointS_KEY = "routeWayPoints"

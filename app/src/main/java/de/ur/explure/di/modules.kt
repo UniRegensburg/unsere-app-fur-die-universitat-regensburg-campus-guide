@@ -2,6 +2,7 @@ package de.ur.explure.di
 
 import android.app.Activity
 import android.location.Location
+import androidx.lifecycle.Lifecycle
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
@@ -23,6 +24,7 @@ import de.ur.explure.repository.user.UserRepositoryImpl
 import de.ur.explure.services.FireStoreInstance
 import de.ur.explure.services.FirebaseAuthService
 import de.ur.explure.map.InfoWindowGenerator
+import de.ur.explure.map.MapHelper
 import de.ur.explure.utils.SharedPreferencesManager
 import de.ur.explure.viewmodel.AuthenticationViewModel
 import de.ur.explure.viewmodel.CategoryViewModel
@@ -61,6 +63,9 @@ val mainModule = module {
     }
     factory { (callback: (Location) -> Unit) ->
         LocationManager(androidApplication(), callback)
+    }
+    factory { (mapView: MapView, lifecycle: Lifecycle) ->
+        MapHelper(mapView, lifecycle)
     }
     factory { (activityContext: Activity) -> InfoWindowGenerator(activityContext) }
     single { PermissionHelper() }
