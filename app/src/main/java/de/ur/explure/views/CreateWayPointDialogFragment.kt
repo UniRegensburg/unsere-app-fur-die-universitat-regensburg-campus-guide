@@ -8,9 +8,11 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
 import android.view.View
+import android.widget.ImageView
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import androidx.core.net.toFile
 import androidx.fragment.app.DialogFragment
 import androidx.navigation.fragment.findNavController
@@ -65,6 +67,7 @@ class CreateWayPointDialogFragment : DialogFragment(R.layout.dialog_create_waypo
         initMediaAdapter()
         initResultLaunchers()
         analyseNavArgs()
+        viewModel.initAudioRecorder(requireContext())
     }
 
 
@@ -85,6 +88,8 @@ class CreateWayPointDialogFragment : DialogFragment(R.layout.dialog_create_waypo
         initImageMediaButton()
         initVideoMediaButton()
         initAudioMediaButton()
+        initHideAudioUIButton()
+        initAudioUI()
     }
 
     private fun initMediaAdapter() {
@@ -203,7 +208,14 @@ class CreateWayPointDialogFragment : DialogFragment(R.layout.dialog_create_waypo
 
     private fun initAudioMediaButton() {
         binding.ivAddAudio.setOnClickListener {
-            viewModel.addMediaItem(WayPointAudioItem(null))
+            if (binding.llRecordAudioView.visibility == View.GONE) {
+                setInitialAudioButtons()
+                binding.llRecordAudioView.visibility = View.VISIBLE
+                binding.ivExitAudioBtn.visibility = View.VISIBLE
+            } else if (binding.llRecordAudioView.visibility == View.VISIBLE) {
+                binding.llRecordAudioView.visibility = View.GONE
+                binding.ivExitAudioBtn.visibility = View.GONE
+            }
         }
     }
 
@@ -250,6 +262,66 @@ class CreateWayPointDialogFragment : DialogFragment(R.layout.dialog_create_waypo
             }
             dismiss()
         }
+    }
+
+    private fun initHideAudioUIButton() {
+        binding.ivExitAudioBtn.setOnClickListener {
+            binding.llRecordAudioView.visibility = View.GONE
+            binding.ivExitAudioBtn.visibility = View.GONE
+        }
+    }
+
+    private fun initAudioUI() {
+        binding.ivPlayAudioBtn.setOnClickListener {
+            //Play Audio
+        }
+        binding.ivDeleteAudioBtn.setOnClickListener {
+            //Delete
+            setInitialAudioButtons()
+        }
+        binding.ivRecordAudioBtn.setOnClickListener {
+            //Record
+            disableAudioButton(binding.ivPlayAudioBtn)
+            disableAudioButton(binding.ivSaveAudioBtn)
+            disableAudioButton(binding.ivRecordAudioBtn)
+            enableAudioButton(binding.ivStopAudioBtn)
+            enableAudioButton(binding.ivDeleteAudioBtn)
+        }
+        binding.ivStopAudioBtn.setOnClickListener {
+            //Stop Record
+            enableAudioButton(binding.ivPlayAudioBtn)
+            enableAudioButton(binding.ivSaveAudioBtn)
+            enableAudioButton(binding.ivDeleteAudioBtn)
+            enableAudioButton(binding.ivRecordAudioBtn)
+            disableAudioButton(binding.ivStopAudioBtn)
+        }
+        binding.ivSaveAudioBtn.setOnClickListener {
+            //Save Audio
+            binding.llRecordAudioView.visibility = View.GONE
+            binding.ivExitAudioBtn.visibility = View.GONE
+        }
+    }
+
+    private fun disableAudioButton(imageView: ImageView) {
+        imageView.isEnabled = false
+        imageView.backgroundTintList =
+            ContextCompat.getColorStateList(requireContext(), R.color.colorLightGrey)
+        imageView.setColorFilter(ContextCompat.getColor(requireContext(), R.color.grey))
+    }
+
+    private fun enableAudioButton(imageView: ImageView) {
+        imageView.isEnabled = true
+        imageView.backgroundTintList =
+            ContextCompat.getColorStateList(requireContext(), R.color.white)
+        imageView.setColorFilter(ContextCompat.getColor(requireContext(), R.color.highlightColor))
+    }
+
+    private fun setInitialAudioButtons() {
+        disableAudioButton(binding.ivPlayAudioBtn)
+        disableAudioButton(binding.ivSaveAudioBtn)
+        disableAudioButton(binding.ivDeleteAudioBtn)
+        enableAudioButton(binding.ivRecordAudioBtn)
+        disableAudioButton(binding.ivStopAudioBtn)
     }
 
     private fun startVideoIntent() {

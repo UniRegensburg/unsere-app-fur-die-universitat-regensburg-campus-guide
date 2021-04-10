@@ -1,6 +1,7 @@
 package de.ur.explure.viewmodel
 
 import android.content.Context
+import android.media.MediaRecorder
 import android.net.Uri
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -11,6 +12,8 @@ import de.ur.explure.model.view.WayPointVideoItem
 import de.ur.explure.model.waypoint.WayPointDTO
 import de.ur.explure.utils.CachedFileUtils
 import timber.log.Timber
+import java.io.File
+
 
 class CreateWayPointViewModel : ViewModel() {
 
@@ -21,6 +24,10 @@ class CreateWayPointViewModel : ViewModel() {
     val mediaList: MutableLiveData<MutableList<WayPointMediaItem>> = MutableLiveData(mutableListOf())
 
     var currentTempUri: Uri? = null
+
+    var currentAudioOutputFile : File? = null
+
+    private lateinit var audioRecorder: MediaRecorder
 
     fun initWayPointDTOEdit(wayPointDTO: WayPointDTO) {
         newWayPointDTO.postValue(wayPointDTO)
@@ -47,7 +54,7 @@ class CreateWayPointViewModel : ViewModel() {
         addMediaItem(mediaItem)
     }
 
-    fun addMediaItem(item: WayPointMediaItem) {
+    private fun addMediaItem(item: WayPointMediaItem) {
         val list = mediaList.value ?: mutableListOf()
         list.add(item)
         mediaList.postValue(list)
@@ -76,6 +83,19 @@ class CreateWayPointViewModel : ViewModel() {
         val newUri = CachedFileUtils.getNewVideoUri(context)
         currentTempUri = newUri
         return newUri
+    }
+
+
+    fun initAudioRecorder(context: Context){
+        val outputFile = CachedFileUtils.getNewAudioFile(context)
+        audioRecorder = MediaRecorder()
+        audioRecorder.setAudioSource(MediaRecorder.AudioSource.MIC)
+        audioRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
+        audioRecorder.setAudioEncoder(MediaRecorder.OutputFormat.AMR_NB)
+        audioRecorder.setAudioEncodingBitRate(16*44100)
+        audioRecorder.setAudioSamplingRate(44100)
+        audioRecorder.setOutputFile(outputFile.path)
+        currentAudioOutputFile = outputFile
     }
 
     fun setVideoMedia(data: Uri) {

@@ -30,4 +30,13 @@ object CachedFileUtils {
         )
         return FileProvider.getUriForFile(context, PROVIDER_AUTHORITY, file)
     }
+
+    fun getNewAudioFile(context: Context): File {
+        val timeStamp = SimpleDateFormat.getDateTimeInstance().format(Date())
+        return File.createTempFile(
+            "M4A_${timeStamp}_",
+            ".m4a",
+            context.externalCacheDir
+        )
+    }
 }
