@@ -1,5 +1,6 @@
 package de.ur.explure.views
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
@@ -117,7 +118,7 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinCompon
             // start route
         }
         binding.shareRouteButton.setOnClickListener {
-            // share Route
+            shareRoute()
         }
         binding.addCommentButton.setOnClickListener {
             val commentInput = binding.commentInput.text.toString()
@@ -128,5 +129,13 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinCompon
                 Toast.makeText(context, R.string.empty_comment, Toast.LENGTH_LONG).show()
             }
         }
+    }
+
+    private fun shareRoute() {
+        val intent = Intent()
+        intent.action = Intent.ACTION_SEND
+        intent.putExtra(Intent.EXTRA_TEXT, R.string.share_text)
+        intent.type = "text/plain"
+        startActivity(Intent.createChooser(intent,"Share To:"))
     }
 }

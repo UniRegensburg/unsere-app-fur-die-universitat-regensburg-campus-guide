@@ -34,8 +34,8 @@
 
         <ImageButton
             android:id="@+id/share_route_button"
-            android:layout_width="16dp"
-            android:layout_height="13dp"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
             android:layout_marginEnd="16dp"
             android:background="?attr/actionModeShareDrawable"
             android:contentDescription="@string/share_route"

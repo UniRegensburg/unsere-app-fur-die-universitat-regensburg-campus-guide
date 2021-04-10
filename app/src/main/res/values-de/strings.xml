@@ -180,6 +180,7 @@
     <string name="add_comment">Posten</string>
     <string name="answer_input">Antwort</string>
     <string name="empty_comment">Bitte Kommentar eingeben</string>
+    <string name="share_text">Schau dir diese Route an: %1$s</string>
 
     <string name="discover_new_routes">Neue Routen</string>
     <string name="discover_popular_routes">Beliebte Routen</string>
