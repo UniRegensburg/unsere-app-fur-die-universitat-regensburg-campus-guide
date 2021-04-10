@@ -50,15 +50,6 @@ class SaveRouteFragment : Fragment(R.layout.fragment_save_route) {
         setRouteData()
         setupTextListeners()
         viewModel.getCategories()
-
-        // set the initial selection (e.g. after a rotation)
-        viewModel.routeCategory?.let { categoryId ->
-            val category = viewModel.categories.value?.find { it.id == categoryId }
-            if (category != null) {
-                val spinnerPosition = categoryAdapter.getPosition(category)
-                binding.spinnerCategories.setSelection(spinnerPosition)
-            }
-        }
     }
 
     private fun setRouteData() {
@@ -230,6 +221,16 @@ class SaveRouteFragment : Fragment(R.layout.fragment_save_route) {
         viewModel.categories.observe(viewLifecycleOwner, { categories ->
             if (categories != null) {
                 categoryAdapter.addAll(categories)
+
+                // set the initial selection (e.g. after a rotation)
+                // TODO doesn't work??
+                viewModel.routeCategory?.let { categoryId ->
+                    val category = viewModel.categories.value?.find { it.id == categoryId }
+                    if (category != null) {
+                        val spinnerPosition = categoryAdapter.getPosition(category)
+                        binding.spinnerCategories.setSelection(spinnerPosition)
+                    }
+                }
                 categoryAdapter.notifyDataSetChanged()
             }
         })

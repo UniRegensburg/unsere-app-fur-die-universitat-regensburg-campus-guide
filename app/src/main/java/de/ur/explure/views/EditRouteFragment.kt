@@ -65,7 +65,7 @@ import org.koin.androidx.viewmodel.scope.emptyState
 import org.koin.core.parameter.parametersOf
 import timber.log.Timber
 
-// TODO: this map should also allow map style changes and the building plugin menu option!
+// TODO: this map should also allow map style changes!
 @Suppress("TooManyFunctions")
 class EditRouteFragment : Fragment(R.layout.fragment_edit_route),
     InfoWindowGenerator.InfoWindowListener,
@@ -102,7 +102,6 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route),
         setHasOptionsMenu(true)
 
         // get nav arguments and save them in the viewModel
-        // TODO only get the nav args if created from scratch?? check savedinstancestate
         val routeLine = LineString.fromPolyline(args.routePolyline, PRECISION_6)
         editRouteViewModel.saveRoute(routeLine)
         val existingWaypoints = args.routeMarkers?.toList()?.map { it.wayPoint }
@@ -625,6 +624,8 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route),
             setFeatureSelectState(it, false)
         }
 
+        // register a camera listener so we can take a snapshot after the camera has been moved
+        // to the correct position
         mapHelper.map.addOnCameraIdleListener(this::takeSnapshot)
 
         // center camera on the route before making a snapshot
@@ -645,7 +646,8 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route),
     }
 
     private fun takeSnapshot() {
-        // after we moved the camera to the correct position, take a snapshot
+        // alternatively, the Static Image API could be used for more flexibility!
+        // (see. https://docs.mapbox.com/android/java/guides/static-image/)
         mapHelper.map.snapshot { mapSnapshot ->
             uploadSnackbar = showSnackbar(
                 requireActivity(),
@@ -660,48 +662,34 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route),
             // enable compass again after snapshot
             mapHelper.map.uiSettings.isCompassEnabled = true
         }
-
-        // TODO oder static image api am besten statt einfachem snapshot ??
     }
 
     @Suppress("ReturnCount")
     private fun onSuccessfulSnapshot() {
         val routeWaypoints = editRouteViewModel.getWayPoints()
         val routeWaypointArray = routeWaypoints?.toTypedArray()
+
+        // some checks for debugging
         if (routeWaypointArray == null) {
-            // TODO for debugging only -> change to timber.e later!
-            showSnackbar(
-                requireActivity(),
-                "Fehler: Keine Waypoints im Viewmodel gefunden!",
-                colorRes = R.color.colorError
-            )
+            Timber.e("Fehler: Keine Waypoints im Viewmodel gefunden!")
             return
         }
 
         val route: LineString? = editRouteViewModel.getRoute()
         if (route == null) {
-            // TODO for debugging only
-            showSnackbar(
-                requireActivity(),
-                "Fehler: Keine Route im Viewmodel gefunden!",
-                colorRes = R.color.colorError
-            )
+            Timber.e("Fehler: Keine Route im Viewmodel gefunden!")
             return
         }
 
         val routeSnapshot = editRouteViewModel.routeSnapshotUri
         if (routeSnapshot == null) {
-            // TODO for debugging only
-            showSnackbar(
-                requireActivity(),
-                "Fehler: Kein Routen Snapshot im Viewmodel gefunden!",
-                colorRes = R.color.colorError
-            )
+            Timber.e("Fehler: Keine RoutenSnapshot im Viewmodel gefunden!")
             return
         }
 
         resetEditMap()
 
+        // get coordinates and calculate length and duration of the route
         val routeCoordinates: MutableList<Point> = route.coordinates()
         val routeLength = TurfMeasurement.length(routeCoordinates, TurfConstants.UNIT_METERS)
         val routeDuration = routeLength * WALKING_SPEED / 60

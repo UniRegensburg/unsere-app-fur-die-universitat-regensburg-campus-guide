@@ -128,7 +128,6 @@ class EditRouteViewModel(
         return route?.coordinates()
     }
 
-    // TODO show progress ? -> probably not needed because it shouldn't take that long
     fun uploadRouteSnapshot(routeBitmap: Bitmap) {
         viewModelScope.launch {
             when (val uploadResult = routeRepository.uploadRouteThumbnail(routeBitmap)) {
