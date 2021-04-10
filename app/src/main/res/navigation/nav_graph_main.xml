@@ -164,6 +164,10 @@
             app:argType="string"
             app:nullable="false" />
         <argument
+            android:name="routeThumbnail"
+            app:argType="string"
+            app:nullable="false" />
+        <argument
             android:name="waypoints"
             app:argType="de.ur.explure.model.waypoint.WayPointDTO[]" />
         <argument

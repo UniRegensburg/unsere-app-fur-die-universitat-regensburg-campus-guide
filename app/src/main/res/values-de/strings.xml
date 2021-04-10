@@ -218,6 +218,8 @@
     <string name="create_waypoint_title">Wegpunkt Information</string>
     <string name="create_route_save_btn">Speichern</string>
     <string name="default_waypoint_title">Kein Titel</string>
+    <string name="route_duration_default">N.A.</string>
+    <string name="route_duration_text">Routendauer (in Minuten):</string>
 
     <!-- SearchFragment Strings-->
     <string name="title_page_searchresults">Ergebnisse deiner Suche</string>

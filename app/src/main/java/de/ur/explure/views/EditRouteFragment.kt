@@ -27,7 +27,9 @@ import com.mapbox.geojson.Feature
 import com.mapbox.geojson.FeatureCollection
 import com.mapbox.geojson.LineString
 import com.mapbox.geojson.Point
+import com.mapbox.mapboxsdk.camera.CameraUpdateFactory
 import com.mapbox.mapboxsdk.geometry.LatLng
+import com.mapbox.mapboxsdk.geometry.LatLngBounds
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.Style
@@ -223,7 +225,7 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route),
 
         // add a marker to the route destination
         // TODO overlaps with marker if route was created manually!
-        val routeCoordinates = editRouteViewModel.getRoute()?.coordinates()
+        val routeCoordinates = editRouteViewModel.getRouteCoordinates()
         val lastRoutePoint = routeCoordinates?.last() ?: return
         mapHelper.markerManager.addMarker(lastRoutePoint.toLatLng(), DESTINATION_ICON)
 
@@ -618,6 +620,32 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route),
             return
         }
 
+        // hide all info windows before making a snapshot
+        featureCollection?.features()?.forEach {
+            setFeatureSelectState(it, false)
+        }
+
+        mapHelper.map.addOnCameraIdleListener(this::takeSnapshot)
+
+        // center camera on the route before making a snapshot
+        val routeCoordinates = editRouteViewModel.getRouteCoordinates()?.map { it.toLatLng() }
+        if (routeCoordinates != null) {
+            val latLngBounds = LatLngBounds.Builder()
+                // .includes(routeCoordinates)
+                .include(routeCoordinates.first())
+                .include(routeCoordinates.last())
+                .build()
+            mapHelper.map.moveCamera(CameraUpdateFactory.newLatLngBounds(latLngBounds, 0))
+        }
+
+        // hide the compass if it shown
+        mapHelper.map.uiSettings.isCompassEnabled = false
+
+        // TODO also reset tilt and bearing of map ? or better to give user control over this?
+    }
+
+    private fun takeSnapshot() {
+        // after we moved the camera to the correct position, take a snapshot
         mapHelper.map.snapshot { mapSnapshot ->
             uploadSnackbar = showSnackbar(
                 requireActivity(),
@@ -628,11 +656,15 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route),
             measureTimeFor("uploading route snapshot") {
                 editRouteViewModel.uploadRouteSnapshot(mapSnapshot)
             }
+
+            // enable compass again after snapshot
+            mapHelper.map.uiSettings.isCompassEnabled = true
         }
 
         // TODO oder static image api am besten statt einfachem snapshot ??
     }
 
+    @Suppress("ReturnCount")
     private fun onSuccessfulSnapshot() {
         val routeWaypoints = editRouteViewModel.getWayPoints()
         val routeWaypointArray = routeWaypoints?.toTypedArray()
@@ -657,6 +689,17 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route),
             return
         }
 
+        val routeSnapshot = editRouteViewModel.routeSnapshotUri
+        if (routeSnapshot == null) {
+            // TODO for debugging only
+            showSnackbar(
+                requireActivity(),
+                "Fehler: Kein Routen Snapshot im Viewmodel gefunden!",
+                colorRes = R.color.colorError
+            )
+            return
+        }
+
         resetEditMap()
 
         val routeCoordinates: MutableList<Point> = route.coordinates()
@@ -664,8 +707,9 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route),
         val routeDuration = routeLength * WALKING_SPEED / 60
 
         val action = EditRouteFragmentDirections.actionEditRouteFragmentToSaveRouteFragment(
-            // TODO stattdessen lieber die id der erstellten Route übergeben?
+            // TODO später stattdessen die id der hier schon erstellten Route übergeben?
             route = route.toPolyline(PRECISION_6),
+            routeThumbnail = routeSnapshot,
             waypoints = routeWaypointArray,
             distance = routeLength.toFloat(),
             duration = routeDuration.toFloat()
@@ -761,6 +805,7 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route),
         if (mapHelper.isMapInitialized()) {
             mapHelper.map.removeOnMapClickListener(this::onMapClick)
             mapHelper.map.removeOnMapLongClickListener(this::onMapLongClick)
+            mapHelper.map.removeOnCameraIdleListener(this::takeSnapshot)
         }
 
         uploadSnackbar?.dismiss()

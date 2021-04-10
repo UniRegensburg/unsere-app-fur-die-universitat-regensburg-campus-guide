@@ -347,8 +347,7 @@ class RouteRepositoryImpl(
             val secretId = UUID.randomUUID().toString()
             val storageRef = fireStorage.reference.child("route_thumbnails/$userId-$secretId")
 
-            Timber.d("Downloadurl in route repo: ${storageRef.downloadUrl}")
-
+            // TODO should probably save to file first so we don't need to keep all of this in memory!
             val baos = ByteArrayOutputStream()
             bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
             val byteArray = baos.toByteArray()

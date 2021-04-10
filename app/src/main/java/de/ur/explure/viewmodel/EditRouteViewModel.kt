@@ -7,7 +7,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.LineString
+import com.mapbox.geojson.Point
 import com.mapbox.mapboxsdk.geometry.LatLng
+import de.ur.explure.extensions.await
 import de.ur.explure.extensions.toGeoPoint
 import de.ur.explure.model.waypoint.WayPointDTO
 import de.ur.explure.navigation.MainAppRouter
@@ -26,8 +28,7 @@ class EditRouteViewModel(
 ) : ViewModel() {
 
     private var route: LineString? = state[ROUTE_KEY]
-
-    var uploadedRouteUri: String? = state[SNAPSHOT_URI_KEY]
+    var routeSnapshotUri: String? = state[SNAPSHOT_URI_KEY]
     // var routeId: String? = null // TODO save the id of the newly created route here!
 
     // TODO LinkedList ?
@@ -124,22 +125,22 @@ class EditRouteViewModel(
         return route
     }
 
+    fun getRouteCoordinates(): MutableList<Point>? {
+        return route?.coordinates()
+    }
+
+    // TODO show progress ? -> probably not needed because it shouldn't take that long
     fun uploadRouteSnapshot(routeBitmap: Bitmap) {
         viewModelScope.launch {
-            // TODO show progress ?
             when (val uploadResult = routeRepository.uploadRouteThumbnail(routeBitmap)) {
                 is FirebaseResult.Success -> {
                     Timber.d("Uploading snapshot was successful")
-                    _snapshotUploadSuccessful.postValue(true)
-                    // TODO uploadedRouteUri = routeUri
-
-                    val storagePath = uploadResult.data.metadata?.path
-                    val storageReference = uploadResult.data.metadata?.reference
-                    val uri = storageReference?.downloadUrl
-                    // val uri = storageReference?.downloadUrl?.result
-                    Timber.d("url in viewmodel: $uri")
-
-                    // TODO save the uri in the route's entry in firestore so we can access it later !!
+                    when (val urlResult = uploadResult.data.storage.downloadUrl.await()) {
+                        is FirebaseResult.Success -> {
+                            routeSnapshotUri = urlResult.data.toString()
+                            _snapshotUploadSuccessful.postValue(true)
+                        }
+                    }
                 }
                 is FirebaseResult.Canceled -> {
                     Timber.d("Uploading snapshot was canceled")

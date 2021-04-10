@@ -191,8 +191,8 @@
     <string name="route_item_title">Route Name</string>
     <string name="route_item_rating">(%1d)</string>
     <string name="route_item_waypoints">0</string>
-    <string name="route_item_distance">%1d km</string>
-    <string name="route_item_duration">%1d h</string>
+    <string name="route_item_distance">%1d m</string>
+    <string name="route_item_duration">%1d min</string>
     <string name="route_item_author">von %1s</string>
 
     <string name="discover_new_routes">New Routes</string>
@@ -238,4 +238,6 @@
     <string name="create_waypoint_title">Waypoint Information</string>
     <string name="create_route_save_btn">Save</string>
     <string name="default_waypoint_title">No title</string>
+    <string name="route_duration_default">N.A.</string>
+    <string name="route_duration_text">Routeduration (in minutes):</string>
 </resources>

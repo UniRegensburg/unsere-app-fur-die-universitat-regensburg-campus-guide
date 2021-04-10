@@ -64,6 +64,8 @@ class RouteWaypointBottomSheet : Fragment(R.layout.route_waypoint_bottomsheet),
             }
         }
 
+        // TODO drag & drop should probably change the position of the markers on the map too
+
         // enable drag & drop on this recyclerview
         val callback: ItemTouchHelper.Callback = ItemDragHelper(routeEditAdapter ?: return)
         itemTouchHelper = ItemTouchHelper(callback)
