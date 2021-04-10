@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.navigation.NavDeepLinkBuilder
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
@@ -19,7 +20,6 @@ import de.ur.explure.model.route.Route
 import de.ur.explure.viewmodel.SingleRouteViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.component.KoinComponent
-import org.koin.core.component.bind
 import org.koin.core.component.inject
 
 class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinComponent {
@@ -28,6 +28,7 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinCompon
     private val args: SingleRouteFragmentArgs by navArgs()
     private val singleRouteViewModel: SingleRouteViewModel by viewModel()
     private val fireStorage: FirebaseStorage by inject()
+    private var routeName: String = ""
 
     private lateinit var wayPointAdapter: WayPointAdapter
     private lateinit var commentAdapter: CommentAdapter
@@ -48,6 +49,7 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinCompon
     private fun observeRouteInformation() {
         singleRouteViewModel.route.observe(viewLifecycleOwner, { route ->
             if (route != null) {
+                routeName = route.title
                 binding.routeName.text = route.title
                 binding.routeDescription.text = route.description
                 binding.routeDuration.text = getString(R.string.route_item_duration, route.duration.toInt())
@@ -134,8 +136,16 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinCompon
     private fun shareRoute() {
         val intent = Intent()
         intent.action = Intent.ACTION_SEND
-        intent.putExtra(Intent.EXTRA_TEXT, R.string.share_text)
+        intent.putExtra(Intent.EXTRA_TEXT, getString(R.string.share_text, routeName))
         intent.type = "text/plain"
         startActivity(Intent.createChooser(intent,"Share To:"))
+
+        val pendingIntent = context?.let {
+            NavDeepLinkBuilder(it)
+                    .setGraph(R.navigation.nav_graph_main)
+                    .setDestination(R.id.singleRouteFragment)
+                    .setArguments(args.toBundle())
+                    .createPendingIntent()
+        }
     }
 }
