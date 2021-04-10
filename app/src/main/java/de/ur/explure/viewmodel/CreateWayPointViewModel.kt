@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import com.google.firebase.firestore.GeoPoint
 import de.ur.explure.model.view.WayPointImageItem
 import de.ur.explure.model.view.WayPointMediaItem
+import de.ur.explure.model.view.WayPointVideoItem
 import de.ur.explure.model.waypoint.WayPointDTO
 import de.ur.explure.utils.CachedFileUtils
 import timber.log.Timber
@@ -19,7 +20,7 @@ class CreateWayPointViewModel : ViewModel() {
 
     val mediaList: MutableLiveData<MutableList<WayPointMediaItem>> = MutableLiveData(mutableListOf())
 
-    var currentImageUri: Uri? = null
+    var currentTempUri: Uri? = null
 
     fun initWayPointDTOEdit(wayPointDTO: WayPointDTO) {
         newWayPointDTO.postValue(wayPointDTO)
@@ -66,8 +67,19 @@ class CreateWayPointViewModel : ViewModel() {
     }
 
     fun createNewImageUri(context: Context): Uri {
-        val newUri = CachedFileUtils.getImageUri(context)
-        currentImageUri = newUri
+        val newUri = CachedFileUtils.getNewImageUri(context)
+        currentTempUri = newUri
         return newUri
+    }
+
+    fun createNewVideoUri(context: Context): Uri {
+        val newUri = CachedFileUtils.getNewVideoUri(context)
+        currentTempUri = newUri
+        return newUri
+    }
+
+    fun setVideoMedia(data: Uri) {
+        val mediaImageItem = WayPointVideoItem(data)
+        addMediaItem(mediaImageItem)
     }
 }

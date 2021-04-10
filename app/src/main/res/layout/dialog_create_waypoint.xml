@@ -8,11 +8,11 @@
     android:layout_marginHorizontal="40dp"
     android:background="@color/colorContentBackground"
     android:elevation="5dp"
+    android:id="@+id/dialog_layout_view"
     android:paddingHorizontal="12dp"
     android:paddingVertical="20dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/dialog_layout_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 

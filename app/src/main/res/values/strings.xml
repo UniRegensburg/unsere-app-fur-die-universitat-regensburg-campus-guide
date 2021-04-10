@@ -159,4 +159,8 @@
     <string name="create_waypoint_title">Waypoint Information</string>
     <string name="create_route_save_btn">Save</string>
     <string name="camera_permission_not_granted">The app can\'t access your camera without this permission</string>
+    <string name="video_size_error">The video exceeds the file size limit of %1d MB. Please choose a smaller video.</string>
+    <string name="audio_permission_not_granted">Without this permission the app is not able to record an audio message.</string>
+    <string name="external_storage_permission_not_granted">Without this permission the app can\'t access files in your external storage.</string>
+    <string name="universal_permission_not_granted">This action is not possible without the permission.</string>
 </resources>
