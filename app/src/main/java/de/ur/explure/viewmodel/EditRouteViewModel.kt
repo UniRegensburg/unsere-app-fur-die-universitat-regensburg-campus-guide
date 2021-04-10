@@ -9,7 +9,6 @@ import com.mapbox.geojson.Feature
 import com.mapbox.geojson.LineString
 import com.mapbox.geojson.Point
 import com.mapbox.mapboxsdk.geometry.LatLng
-import de.ur.explure.extensions.await
 import de.ur.explure.extensions.toGeoPoint
 import de.ur.explure.model.waypoint.WayPointDTO
 import de.ur.explure.navigation.MainAppRouter
@@ -135,12 +134,8 @@ class EditRouteViewModel(
             when (val uploadResult = routeRepository.uploadRouteThumbnail(routeBitmap)) {
                 is FirebaseResult.Success -> {
                     Timber.d("Uploading snapshot was successful")
-                    when (val urlResult = uploadResult.data.storage.downloadUrl.await()) {
-                        is FirebaseResult.Success -> {
-                            routeSnapshotUri = urlResult.data.toString()
-                            _snapshotUploadSuccessful.postValue(true)
-                        }
-                    }
+                    routeSnapshotUri = uploadResult.data.toString()
+                    _snapshotUploadSuccessful.postValue(true)
                 }
                 is FirebaseResult.Canceled -> {
                     Timber.d("Uploading snapshot was canceled")

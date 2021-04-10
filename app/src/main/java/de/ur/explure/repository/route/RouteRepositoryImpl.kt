@@ -1,6 +1,7 @@
 package de.ur.explure.repository.route
 
 import android.graphics.Bitmap
+import android.net.Uri
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldPath
@@ -9,7 +10,6 @@ import com.google.firebase.firestore.QueryDocumentSnapshot
 import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.WriteBatch
 import com.google.firebase.storage.FirebaseStorage
-import com.google.firebase.storage.UploadTask
 import de.ur.explure.config.ErrorConfig
 import de.ur.explure.config.FirebaseCollections.ANSWER_COLLECTION_NAME
 import de.ur.explure.config.FirebaseCollections.COMMENT_COLLECTION_NAME
@@ -341,7 +341,7 @@ class RouteRepositoryImpl(
         }
     }
 
-    override suspend fun uploadRouteThumbnail(bitmap: Bitmap): FirebaseResult<UploadTask.TaskSnapshot> {
+    override suspend fun uploadRouteThumbnail(bitmap: Bitmap): FirebaseResult<Uri> {
         return try {
             val userId = authService.getCurrentUserId() ?: return ErrorConfig.NO_USER_RESULT
             val secretId = UUID.randomUUID().toString()
@@ -355,7 +355,13 @@ class RouteRepositoryImpl(
             bitmap.recycle()
             val uploadTask = storageRef.putBytes(byteArray)
 
-            uploadTask.await()
+            when (val uploadResult = uploadTask.await()) {
+                is FirebaseResult.Success -> {
+                    uploadResult.data.storage.downloadUrl.await()
+                }
+                is FirebaseResult.Error -> FirebaseResult.Error(uploadResult.exception)
+                is FirebaseResult.Canceled -> FirebaseResult.Canceled(uploadResult.exception)
+            }
         } catch (exception: Exception) {
             FirebaseResult.Error(exception)
         }
