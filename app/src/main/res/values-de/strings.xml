@@ -152,5 +152,6 @@
 
     <!-- Category Strings-->
     <string name="default_title">Kategorie</string>
+    <string name="camera_permission_not_granted">Wir benötigen die Berechtigung auf deine Kamera zuzugreifen, um Bilder aufzunehmen.</string>
 
 </resources>

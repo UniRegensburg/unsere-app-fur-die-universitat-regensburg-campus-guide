@@ -158,4 +158,5 @@
     <string name="create_waypoint_save_btn">Save</string>
     <string name="create_waypoint_title">Waypoint Information</string>
     <string name="create_route_save_btn">Save</string>
+    <string name="camera_permission_not_granted">The app can\'t access your camera without this permission</string>
 </resources>

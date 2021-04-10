@@ -1,11 +1,14 @@
 package de.ur.explure.viewmodel
 
+import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.firebase.firestore.GeoPoint
+import de.ur.explure.model.view.WayPointImageItem
 import de.ur.explure.model.view.WayPointMediaItem
 import de.ur.explure.model.waypoint.WayPointDTO
+import de.ur.explure.utils.CachedFileUtils
 import timber.log.Timber
 
 class CreateWayPointViewModel : ViewModel() {
@@ -14,9 +17,9 @@ class CreateWayPointViewModel : ViewModel() {
 
     val oldWayPointDTO: MutableLiveData<WayPointDTO> = MutableLiveData()
 
-    val selectedImage: MutableLiveData<Uri> = MutableLiveData()
+    val mediaList: MutableLiveData<MutableList<WayPointMediaItem>> = MutableLiveData(mutableListOf())
 
-    val mediaList : MutableLiveData<MutableList<WayPointMediaItem>> = MutableLiveData(mutableListOf())
+    var currentImageUri: Uri? = null
 
     fun initWayPointDTOEdit(wayPointDTO: WayPointDTO) {
         newWayPointDTO.postValue(wayPointDTO)
@@ -38,28 +41,33 @@ class CreateWayPointViewModel : ViewModel() {
         newWayPointDTO.value?.title = description
     }
 
-    fun setSelectedImage(uri: Uri){
-        selectedImage.postValue(uri)
+    fun setImageMedia(uri: Uri) {
+        val mediaItem = WayPointImageItem(uri)
+        addMediaItem(mediaItem)
     }
 
-    fun addMediaItem(item: WayPointMediaItem){
+    fun addMediaItem(item: WayPointMediaItem) {
         val list = mediaList.value ?: mutableListOf()
         list.add(item)
         mediaList.postValue(list)
     }
 
-    fun replaceMediaItem(item: WayPointMediaItem, type: Class<*>){
+    fun replaceMediaItem(item: WayPointMediaItem, type: Class<*>) {
         val list = mediaList.value ?: mutableListOf()
         list.forEach {
-
         }
         mediaList.postValue(list)
     }
 
-    fun deleteMediaItem(item: WayPointMediaItem){
+    fun deleteMediaItem(item: WayPointMediaItem) {
         val list = mediaList.value ?: mutableListOf()
         list.remove(item)
         mediaList.postValue(list)
     }
 
+    fun createNewImageUri(context: Context): Uri {
+        val newUri = CachedFileUtils.getImageUri(context)
+        currentImageUri = newUri
+        return newUri
+    }
 }

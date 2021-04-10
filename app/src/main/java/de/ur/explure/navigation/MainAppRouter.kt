@@ -114,9 +114,9 @@ class MainAppRouter {
 
     fun navigateToRouteDetails(routeId: String) {
         val waypoints = WayPointDTO("Sers", GeoPoint(35.0, 49.0), "Sers", "", "", "")
-        val action = DiscoverFragmentDirections.actionDiscoverFragmentToCreateRouteFragment(arrayOf(waypoints),20L, 0L)
+        val action = DiscoverFragmentDirections.actionDiscoverFragmentToCreateRouteFragment(arrayOf(waypoints), 20L, 0L)
 
-        //val action = DiscoverFragmentDirections.actionDiscoverFragmentToRouteDetails(routeId)
+        // val action = DiscoverFragmentDirections.actionDiscoverFragmentToRouteDetails(routeId)
         navController.navigate(action)
     }
 

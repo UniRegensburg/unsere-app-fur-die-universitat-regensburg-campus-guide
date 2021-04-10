@@ -1,7 +1,9 @@
 package de.ur.explure.adapter
 
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.hannesdorfmann.adapterdelegates4.ListDelegationAdapter
 import com.hannesdorfmann.adapterdelegates4.dsl.adapterDelegateViewBinding
+import de.ur.explure.GlideApp
 import de.ur.explure.WayPointMediaInterface
 import de.ur.explure.databinding.CardviewWaypointAudioBinding
 import de.ur.explure.databinding.CardviewWaypointImageBinding
@@ -12,7 +14,7 @@ import de.ur.explure.model.view.WayPointMediaItem
 import de.ur.explure.model.view.WayPointVideoItem
 import org.koin.core.component.KoinComponent
 
-class WayPointCreateMediaAdapter(private val mediaListener : WayPointMediaInterface) :
+class WayPointCreateMediaAdapter(private val mediaListener: WayPointMediaInterface) :
     ListDelegationAdapter<List<WayPointMediaItem>>(), KoinComponent {
 
     init {
@@ -34,6 +36,12 @@ class WayPointCreateMediaAdapter(private val mediaListener : WayPointMediaInterf
         }) {
 
             bind {
+                GlideApp
+                    .with(itemView)
+                    .load(item.uri)
+                    .transition(DrawableTransitionOptions.withCrossFade())
+                    .into(binding.ivImagePreview)
+
                 binding.ivDeleteButton.setOnClickListener {
                     mediaListener.removeMediaItem(item)
                 }
@@ -70,7 +78,6 @@ class WayPointCreateMediaAdapter(private val mediaListener : WayPointMediaInterf
                 false
             )
         }) {
-
 
             bind {
                 binding.ivDeleteButton.setOnClickListener {

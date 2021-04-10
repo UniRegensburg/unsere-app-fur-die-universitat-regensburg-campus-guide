@@ -1,9 +1,9 @@
 package de.ur.explure.views
 
+import android.Manifest
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
-import android.opengl.Visibility
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.View
@@ -15,6 +15,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.crazylegend.viewbinding.viewBinding
+import com.google.android.material.snackbar.Snackbar
 import de.ur.explure.R
 import de.ur.explure.WayPointMediaInterface
 import de.ur.explure.adapter.WayPointCreateMediaAdapter
@@ -24,10 +25,10 @@ import de.ur.explure.model.view.WayPointImageItem
 import de.ur.explure.model.view.WayPointMediaItem
 import de.ur.explure.model.view.WayPointVideoItem
 import de.ur.explure.model.waypoint.WayPointDTO
-import de.ur.explure.utils.CachedFileUtils
+import de.ur.explure.utils.hasCameraPermission
+import de.ur.explure.utils.showSnackbar
 import de.ur.explure.viewmodel.CreateWayPointViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
-
 
 class CreateWayPointDialogFragment : DialogFragment(R.layout.dialog_create_waypoint),
     WayPointMediaInterface {
@@ -39,6 +40,10 @@ class CreateWayPointDialogFragment : DialogFragment(R.layout.dialog_create_waypo
     private lateinit var imageResultLauncher: ActivityResultLauncher<Intent>
     private lateinit var videoResultLauncher: ActivityResultLauncher<Intent>
     private lateinit var audioResultLauncher: ActivityResultLauncher<Intent>
+
+    private lateinit var cameraPermissionLauncher: ActivityResultLauncher<String>
+    private lateinit var storagePermissionLauncher: ActivityResultLauncher<String>
+    private lateinit var microphonePermissionLauncher: ActivityResultLauncher<String>
 
     private lateinit var mediaAdapter: WayPointCreateMediaAdapter
 
@@ -70,14 +75,34 @@ class CreateWayPointDialogFragment : DialogFragment(R.layout.dialog_create_waypo
         initImageResultLauncher()
         initVideoResultLauncher()
         initAudioResultLauncher()
+        initCameraPermissionLauncher()
+    }
+
+    private fun initCameraPermissionLauncher() {
+        cameraPermissionLauncher =
+            registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+                if (isGranted) {
+                    startImageIntent()
+                } else {
+                    showSnackbar(
+                        requireActivity(),
+                        R.string.camera_permission_not_granted,
+                        R.id.dialog_layout_view,
+                        Snackbar.LENGTH_LONG,
+                        colorRes = R.color.colorWarning
+                    )
+                }
+            }
     }
 
     private fun initImageResultLauncher() {
         imageResultLauncher =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
                 if (result.resultCode == Activity.RESULT_OK) {
-                    val data: Uri = result.data?.data ?: return@registerForActivityResult
-                    viewModel.setSelectedImage(data)
+                    val data: Uri = result.data?.data
+                        ?: viewModel.currentImageUri
+                        ?: return@registerForActivityResult
+                    viewModel.setImageMedia(data)
                 }
             }
     }
@@ -96,7 +121,6 @@ class CreateWayPointDialogFragment : DialogFragment(R.layout.dialog_create_waypo
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
                 if (result.resultCode == Activity.RESULT_OK) {
                     val data: Uri = result.data?.data ?: return@registerForActivityResult
-                    viewModel.setSelectedImage(data)
                 }
             }
     }
@@ -117,7 +141,6 @@ class CreateWayPointDialogFragment : DialogFragment(R.layout.dialog_create_waypo
     private fun initObservers() {
         initEditObserver()
         initMediaListObserver()
-        initSelectedImageObserver()
     }
 
     private fun initMediaListObserver() {
@@ -134,15 +157,6 @@ class CreateWayPointDialogFragment : DialogFragment(R.layout.dialog_create_waypo
         binding.ivAddAudio.isEnabled = !mediaList.any { it is WayPointAudioItem }
         binding.ivAddImage.isEnabled = !mediaList.any { it is WayPointImageItem }
         binding.ivAddVideo.isEnabled = !mediaList.any { it is WayPointVideoItem }
-
-    }
-
-    private fun initSelectedImageObserver() {
-        viewModel.selectedImage.observe(viewLifecycleOwner, { image ->
-            if (image != null) {
-                binding.ivAddImage.setImageURI(image)
-            }
-        })
     }
 
     private fun initClickListeners() {
@@ -183,8 +197,11 @@ class CreateWayPointDialogFragment : DialogFragment(R.layout.dialog_create_waypo
 
     private fun initImageMediaButton() {
         binding.ivAddImage.setOnClickListener {
-            viewModel.addMediaItem(WayPointImageItem(null))
-            //startImageIntent()
+            if (hasCameraPermission(requireContext())) {
+                startImageIntent()
+            } else {
+                cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
+            }
         }
     }
 
@@ -193,10 +210,10 @@ class CreateWayPointDialogFragment : DialogFragment(R.layout.dialog_create_waypo
         galleryIntent.type = "image/*"
 
         val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-        cameraIntent.putExtra(
-            MediaStore.EXTRA_OUTPUT,
-            CachedFileUtils.getImageUri(requireContext())
-        )
+
+        val uriForFile = viewModel.createNewImageUri(requireContext())
+        cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, uriForFile)
+
         val chooser = Intent(Intent.ACTION_CHOOSER)
         chooser.putExtra(Intent.EXTRA_INTENT, galleryIntent)
         val intentArray = arrayOf(cameraIntent)

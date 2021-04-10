@@ -14,5 +14,4 @@ interface WayPointMediaInterface {
     fun playAudioMedia(mediaItem: WayPointAudioItem)
 
     fun removeMediaItem(item: WayPointMediaItem)
-
 }
