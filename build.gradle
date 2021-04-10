@@ -39,11 +39,10 @@ allprojects {
             authentication {
                 basic(BasicAuthentication)
             }
-            // see https://docs.mapbox.com/help/troubleshooting/private-access-token-android-and-ios/
             credentials {
                 // This should always be `mapbox` (not your username).
                 username = 'mapbox'
-                password = project.properties['MAPBOX_DOWNLOADS_TOKEN'] ?: ""
+                password = System.getenv("MAPBOX_DOWNLOADS_TOKEN") != null ? System.getenv("MAPBOX_DOWNLOADS_TOKEN") : project.properties['MAPBOX_DOWNLOADS_TOKEN']
             }
         }
     }
