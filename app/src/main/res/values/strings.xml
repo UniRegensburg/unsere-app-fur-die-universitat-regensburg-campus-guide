@@ -88,7 +88,7 @@
     <string name="new_email">Email</string>
 
 	<string name="new_password">Password</string>
-    <string name="confirm_password">Conform password</string>
+    <string name="confirm_password">Confirm password</string>
     <string name="register_button">Register</string>
     <string name="already_account">Already have an account?</string>
     <string name="back_to_login_button">Login</string>
