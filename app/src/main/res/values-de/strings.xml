@@ -157,5 +157,6 @@
     <string name="audio_permission_not_granted">Diese Berechtigung wird benötigt, um Audio Dateien aufzunehmen.</string>
     <string name="external_storage_permission_not_granted">Diese Berechtigung wird benötigt, um Dateien aus deinem externen Speicher zu lesen.</string>
     <string name="universal_permission_not_granted">Ohne diese Berechtigung kann die Aktion nicht ausgeführt werden.</string>
+    <string name="audio_recording_error">Leider ist etwas schief gelaufen, bitte versuche es noch einmal.</string>
 
 </resources>

@@ -5,7 +5,6 @@ import android.database.Cursor
 import android.net.Uri
 import android.provider.MediaStore
 
-
 fun Uri.getRealSize(context: Context) : Long? {
     var cursor: Cursor? = null
     return try {

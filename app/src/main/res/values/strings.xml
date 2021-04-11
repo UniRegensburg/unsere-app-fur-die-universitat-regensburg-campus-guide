@@ -163,4 +163,5 @@
     <string name="audio_permission_not_granted">Without this permission the app is not able to record an audio message.</string>
     <string name="external_storage_permission_not_granted">Without this permission the app can\'t access files in your external storage.</string>
     <string name="universal_permission_not_granted">This action is not possible without the permission.</string>
+    <string name="audio_recording_error">An error occured while recording your audio message. Please try again.</string>
 </resources>

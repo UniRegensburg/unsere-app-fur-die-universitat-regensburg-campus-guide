@@ -6,14 +6,12 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
-import android.util.Log
 import android.view.View
 import android.widget.ImageView
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
-import androidx.core.net.toFile
 import androidx.fragment.app.DialogFragment
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
@@ -46,7 +44,6 @@ class CreateWayPointDialogFragment : DialogFragment(R.layout.dialog_create_waypo
 
     private lateinit var imageResultLauncher: ActivityResultLauncher<Intent>
     private lateinit var videoResultLauncher: ActivityResultLauncher<Intent>
-    private lateinit var audioResultLauncher: ActivityResultLauncher<Intent>
 
     private lateinit var multiplePermissionLauncher: ActivityResultLauncher<Array<String>>
 
@@ -67,20 +64,20 @@ class CreateWayPointDialogFragment : DialogFragment(R.layout.dialog_create_waypo
         initMediaAdapter()
         initResultLaunchers()
         analyseNavArgs()
-        viewModel.initAudioRecorder(requireContext())
     }
 
 
     private fun initResultLaunchers() {
         initImageResultLauncher()
         initVideoResultLauncher()
-        initAudioResultLauncher()
         initMultiplePermissionLauncher()
     }
 
     private fun initObservers() {
         initEditObserver()
         initMediaListObserver()
+        initAudioRecordingObserver()
+        initAudioErrorObserver()
     }
 
     private fun initClickListeners() {
@@ -88,7 +85,6 @@ class CreateWayPointDialogFragment : DialogFragment(R.layout.dialog_create_waypo
         initImageMediaButton()
         initVideoMediaButton()
         initAudioMediaButton()
-        initHideAudioUIButton()
         initAudioUI()
     }
 
@@ -172,21 +168,28 @@ class CreateWayPointDialogFragment : DialogFragment(R.layout.dialog_create_waypo
             }
     }
 
-    private fun initAudioResultLauncher() {
-        audioResultLauncher =
-            registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-                if (result.resultCode == Activity.RESULT_OK) {
-                    val data: Uri = result.data?.data ?: return@registerForActivityResult
-                }
-            }
-    }
-
     private fun initMediaListObserver() {
         viewModel.mediaList.observe(viewLifecycleOwner, { mediaList ->
             if (mediaList != null) {
                 mediaAdapter.items = mediaList
                 mediaAdapter.notifyDataSetChanged()
                 setMediaButtons(mediaList)
+            }
+        })
+    }
+
+    private fun initAudioErrorObserver() {
+        viewModel.showAudioError.observe(viewLifecycleOwner, { showAudioError ->
+            if (showAudioError){
+                showSnackbar(
+                    requireActivity(),
+                    R.string.audio_recording_error,
+                    R.id.btn_save_route,
+                    Snackbar.LENGTH_LONG,
+                    colorRes = R.color.colorWarning
+                )
+                viewModel.showAudioError.postValue(false)
+                viewModel.resetMediaPlayerAndRecorder()
             }
         })
     }
@@ -264,42 +267,59 @@ class CreateWayPointDialogFragment : DialogFragment(R.layout.dialog_create_waypo
         }
     }
 
-    private fun initHideAudioUIButton() {
+    private fun initAudioUI() {
+        binding.ivPlayAudioBtn.setOnClickListener {
+            viewModel.playRecording(requireContext())
+        }
+        binding.ivDeleteAudioBtn.setOnClickListener {
+            setInitialAudioButtons()
+            viewModel.resetMediaPlayerAndRecorder()
+        }
+        binding.ivRecordAudioBtn.setOnClickListener {
+            viewModel.startRecording(requireContext())
+        }
+        binding.ivStopAudioBtn.setOnClickListener {
+            viewModel.stopRecording()
+        }
+        binding.ivSaveAudioBtn.setOnClickListener {
+            viewModel.saveAudioRecording(requireContext())
+            binding.llRecordAudioView.visibility = View.GONE
+            binding.ivExitAudioBtn.visibility = View.GONE
+        }
         binding.ivExitAudioBtn.setOnClickListener {
+            viewModel.resetMediaPlayerAndRecorder()
             binding.llRecordAudioView.visibility = View.GONE
             binding.ivExitAudioBtn.visibility = View.GONE
         }
     }
 
-    private fun initAudioUI() {
-        binding.ivPlayAudioBtn.setOnClickListener {
-            //Play Audio
-        }
-        binding.ivDeleteAudioBtn.setOnClickListener {
-            //Delete
-            setInitialAudioButtons()
-        }
-        binding.ivRecordAudioBtn.setOnClickListener {
-            //Record
-            disableAudioButton(binding.ivPlayAudioBtn)
-            disableAudioButton(binding.ivSaveAudioBtn)
-            disableAudioButton(binding.ivRecordAudioBtn)
-            enableAudioButton(binding.ivStopAudioBtn)
-            enableAudioButton(binding.ivDeleteAudioBtn)
-        }
-        binding.ivStopAudioBtn.setOnClickListener {
-            //Stop Record
-            enableAudioButton(binding.ivPlayAudioBtn)
-            enableAudioButton(binding.ivSaveAudioBtn)
-            enableAudioButton(binding.ivDeleteAudioBtn)
-            enableAudioButton(binding.ivRecordAudioBtn)
-            disableAudioButton(binding.ivStopAudioBtn)
-        }
-        binding.ivSaveAudioBtn.setOnClickListener {
-            //Save Audio
-            binding.llRecordAudioView.visibility = View.GONE
-            binding.ivExitAudioBtn.visibility = View.GONE
-        }
+    private fun initAudioRecordingObserver(){
+        viewModel.isRecording.observe(viewLifecycleOwner, { isRecording ->
+            if (isRecording != null){
+                if (isRecording){
+                    setRecordingState()
+                } else {
+                    setStopState()
+                }
+            }
+        })
+    }
+
+
+    private fun setStopState(){
+        enableAudioButton(binding.ivPlayAudioBtn)
+        enableAudioButton(binding.ivSaveAudioBtn)
+        enableAudioButton(binding.ivDeleteAudioBtn)
+        disableAudioButton(binding.ivRecordAudioBtn)
+        disableAudioButton(binding.ivStopAudioBtn)
+    }
+
+    private fun setRecordingState(){
+        disableAudioButton(binding.ivPlayAudioBtn)
+        disableAudioButton(binding.ivSaveAudioBtn)
+        disableAudioButton(binding.ivRecordAudioBtn)
+        enableAudioButton(binding.ivStopAudioBtn)
+        disableAudioButton(binding.ivDeleteAudioBtn)
     }
 
     private fun disableAudioButton(imageView: ImageView) {

@@ -1,11 +1,13 @@
 package de.ur.explure.viewmodel
 
 import android.content.Context
+import android.media.MediaPlayer
 import android.media.MediaRecorder
 import android.net.Uri
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.firebase.firestore.GeoPoint
+import de.ur.explure.model.view.WayPointAudioItem
 import de.ur.explure.model.view.WayPointImageItem
 import de.ur.explure.model.view.WayPointMediaItem
 import de.ur.explure.model.view.WayPointVideoItem
@@ -21,13 +23,20 @@ class CreateWayPointViewModel : ViewModel() {
 
     val oldWayPointDTO: MutableLiveData<WayPointDTO> = MutableLiveData()
 
-    val mediaList: MutableLiveData<MutableList<WayPointMediaItem>> = MutableLiveData(mutableListOf())
+    val mediaList: MutableLiveData<MutableList<WayPointMediaItem>> =
+        MutableLiveData(mutableListOf())
+
+    val isRecording: MutableLiveData<Boolean> = MutableLiveData()
+
+    val showAudioError: MutableLiveData<Boolean> = MutableLiveData(false)
 
     var currentTempUri: Uri? = null
 
-    var currentAudioOutputFile : File? = null
+    var currentAudioOutputFile: File? = null
 
-    private lateinit var audioRecorder: MediaRecorder
+    private var audioRecorder: MediaRecorder? = null
+
+    private var audioPlayer: MediaPlayer? = null
 
     fun initWayPointDTOEdit(wayPointDTO: WayPointDTO) {
         newWayPointDTO.postValue(wayPointDTO)
@@ -52,6 +61,11 @@ class CreateWayPointViewModel : ViewModel() {
     fun setImageMedia(uri: Uri) {
         val mediaItem = WayPointImageItem(uri)
         addMediaItem(mediaItem)
+    }
+
+    fun setVideoMedia(data: Uri) {
+        val mediaImageItem = WayPointVideoItem(data)
+        addMediaItem(mediaImageItem)
     }
 
     private fun addMediaItem(item: WayPointMediaItem) {
@@ -85,21 +99,96 @@ class CreateWayPointViewModel : ViewModel() {
         return newUri
     }
 
-
-    fun initAudioRecorder(context: Context){
+    private fun initAudioRecorder(context: Context) {
         val outputFile = CachedFileUtils.getNewAudioFile(context)
         audioRecorder = MediaRecorder()
-        audioRecorder.setAudioSource(MediaRecorder.AudioSource.MIC)
-        audioRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
-        audioRecorder.setAudioEncoder(MediaRecorder.OutputFormat.AMR_NB)
-        audioRecorder.setAudioEncodingBitRate(16*44100)
-        audioRecorder.setAudioSamplingRate(44100)
-        audioRecorder.setOutputFile(outputFile.path)
+        audioRecorder?.setAudioSource(MediaRecorder.AudioSource.MIC)
+        audioRecorder?.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP)
+        audioRecorder?.setAudioEncoder(MediaRecorder.OutputFormat.AMR_NB)
+        audioRecorder?.setOutputFile(outputFile.path)
+        audioRecorder?.setMaxDuration(MAX_AUDIO_DURATION)
+
         currentAudioOutputFile = outputFile
     }
 
-    fun setVideoMedia(data: Uri) {
-        val mediaImageItem = WayPointVideoItem(data)
-        addMediaItem(mediaImageItem)
+    fun startRecording(context: Context) {
+        try {
+            initAudioRecorder(context)
+            audioRecorder?.prepare()
+            audioRecorder?.start()
+            audioRecorder?.setOnInfoListener { _, what, _ ->
+                if (what == MediaRecorder.MEDIA_RECORDER_INFO_MAX_DURATION_REACHED) {
+                    stopRecording()
+                }
+            }
+            isRecording.postValue(true)
+        } catch (e: Exception) {
+            resetMediaPlayerAndRecorder()
+            showAudioError.postValue(true)
+        }
+    }
+
+    fun stopRecording() {
+        try {
+            isRecording.postValue(false)
+            audioRecorder?.stop()
+            audioRecorder?.release()
+            audioRecorder = null
+        } catch (e: Exception) {
+            resetMediaPlayerAndRecorder()
+            showAudioError.postValue(true)
+        }
+    }
+
+    fun playRecording(context: Context) {
+        audioPlayer = MediaPlayer()
+        val audioFile = currentAudioOutputFile
+        if (audioFile != null) {
+            try {
+                audioPlayer?.setOnCompletionListener {
+                    it.release()
+                    audioPlayer = null
+                }
+                audioPlayer?.setDataSource(
+                    context,
+                    CachedFileUtils.getUriForFile(context, audioFile)
+                )
+                audioPlayer?.prepare()
+                audioPlayer?.start()
+            } catch (e: Exception) {
+                resetMediaPlayerAndRecorder()
+                showAudioError.postValue(true)
+            }
+        }
+    }
+
+    fun saveAudioRecording(context: Context) {
+        val audioFile = currentAudioOutputFile
+        if (audioFile != null) {
+            val uri = CachedFileUtils.getUriForFile(context, audioFile)
+            val mediaAudioItem = WayPointAudioItem(uri)
+            addMediaItem(mediaAudioItem)
+        } else {
+            showAudioError.postValue(true)
+        }
+        resetMediaPlayerAndRecorder()
+    }
+
+    fun resetMediaPlayerAndRecorder() {
+        try {
+            isRecording.postValue(false)
+            audioPlayer?.release()
+            audioRecorder?.release()
+        } catch (e: Exception) {
+            Timber.d("Failed to release Audio Player or Recorder")
+        } finally {
+            audioPlayer = null
+            audioRecorder = null
+            currentAudioOutputFile?.delete()
+        }
+    }
+
+    companion object {
+        const val MAX_AUDIO_DURATION = 300000
     }
 }

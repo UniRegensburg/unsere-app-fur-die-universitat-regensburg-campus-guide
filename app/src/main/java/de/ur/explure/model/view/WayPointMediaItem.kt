@@ -2,7 +2,7 @@ package de.ur.explure.model.view
 
 import android.net.Uri
 
-open class WayPointMediaItem()
+open class WayPointMediaItem
 
 data class WayPointImageItem(val uri: Uri?) : WayPointMediaItem()
 
