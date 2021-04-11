@@ -9,7 +9,8 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        >
 
         <TextView
             android:id="@+id/loginText"
@@ -17,7 +18,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="70dp"
             android:text="@string/login_text"
-            android:textSize="30sp"
+            android:textSize="40sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toTopOf="@id/tfEmail"
             app:layout_constraintEnd_toEndOf="parent"
@@ -29,9 +30,11 @@
             android:id="@+id/tfEmail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
+            android:layout_marginStart="@dimen/margin_normal"
             android:layout_marginTop="80dp"
-            android:layout_marginEnd="10dp"
+            android:layout_marginEnd="@dimen/margin_normal"
+            app:cardCornerRadius="@dimen/cardview_corner_radius"
+            app:cardElevation="@dimen/cardview_default_elevation"
             app:layout_constraintBottom_toTopOf="@+id/tfPassword"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -42,7 +45,9 @@
                 android:id="@+id/edLoginEmail"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
                 android:hint="@string/login_email"
+                android:textSize="20sp"
                 android:inputType="textEmailAddress" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -50,9 +55,10 @@
             android:id="@+id/tfPassword"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginEnd="10dp"
+            android:textSize="20sp"
+            android:layout_marginStart="@dimen/margin_normal"
+            android:layout_marginTop="@dimen/margin_normal"
+            android:layout_marginEnd="@dimen/margin_normal"
             app:layout_constraintBottom_toTopOf="@+id/loginButton"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -64,7 +70,9 @@
                 android:id="@+id/edLoginPassword"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
                 android:hint="@string/login_password"
+                android:textSize="20sp"
                 android:inputType="textPassword" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -72,9 +80,14 @@
             android:id="@+id/loginButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:layout_marginTop="8dp"
+            android:layout_margin="@dimen/margin_normal"
+            android:stateListAnimator="@null"
+            android:elevation="@dimen/cardview_default_elevation"
+            android:layout_marginTop="@dimen/margin_normal"
             android:text="@string/login_button"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:textStyle="bold"
             app:layout_constraintTop_toBottomOf="@+id/tfPassword" />
 
         <TextView
@@ -82,7 +95,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:layout_marginEnd="10dp"
+            android:layout_marginEnd="@dimen/margin_normal"
             android:gravity="end"
             android:text="@string/reset_password"
             android:textAllCaps="false"
