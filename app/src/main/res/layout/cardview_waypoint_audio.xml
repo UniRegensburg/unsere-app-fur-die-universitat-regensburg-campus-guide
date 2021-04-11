@@ -2,7 +2,6 @@
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/waypoint_cardview"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -34,18 +33,24 @@
 
 
         <ImageView
-            android:id="@+id/iv_audio_play_btn"
-            android:layout_width="100dp"
-            android:layout_height="60dp"
+            android:id="@+id/iv_play_audio_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginStart="15dp"
+            android:background="@drawable/circular_background"
+            android:backgroundTint="@color/highlightColor"
             android:clickable="true"
+            android:elevation="3dp"
             android:focusable="true"
             android:foreground="?android:attr/selectableItemBackground"
-            android:src="@drawable/ic_baseline_play_circle_outline_24"
+            android:padding="9dp"
+            android:src="@drawable/ic_play_arrow"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/iv_delete_button"
             app:layout_constraintStart_toEndOf="@+id/iv_waypoint_icon"
             app:layout_constraintTop_toTopOf="parent"
-            app:tint="@color/highlightColor" />
+            app:layout_goneMarginStart="5dp"
+            app:tint="@color/white" />
 
 
         <ImageView
@@ -63,20 +68,6 @@
             app:layout_constraintTop_toTopOf="parent"
             app:tint="@color/highlightColor" />
 
-        <ImageView
-            android:id="@+id/iv_edit_button"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:layout_marginEnd="10dp"
-            android:clickable="true"
-            android:focusable="true"
-            android:foreground="?android:attr/selectableItemBackground"
-            android:padding="10dp"
-            android:src="@drawable/ic_edit"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/iv_delete_button"
-            app:layout_constraintTop_toTopOf="parent"
-            app:tint="@color/highlightColor" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

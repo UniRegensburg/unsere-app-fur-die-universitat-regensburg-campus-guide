@@ -3,9 +3,6 @@ package de.ur.explure.model.route
 import android.os.Parcelable
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.ServerTimestamp
-import de.ur.explure.model.waypoint.WayPointDTO
-import kotlinx.parcelize.Parcelize
-import java.util.Date
 import de.ur.explure.config.RouteDocumentConfig.AUTHOR_ID_FIELD
 import de.ur.explure.config.RouteDocumentConfig.CATEGORY_FIELD
 import de.ur.explure.config.RouteDocumentConfig.CURRENT_RATING_FIELD
@@ -16,6 +13,9 @@ import de.ur.explure.config.RouteDocumentConfig.DURATION_FIELD
 import de.ur.explure.config.RouteDocumentConfig.RATING_LIST_FIELD
 import de.ur.explure.config.RouteDocumentConfig.THUMBNAIL_URL_FIELD
 import de.ur.explure.config.RouteDocumentConfig.TITLE_FIELD
+import de.ur.explure.model.waypoint.WayPointDTO
+import kotlinx.parcelize.Parcelize
+import java.util.*
 
 @Parcelize
 data class RouteDTO(

@@ -3,8 +3,8 @@ package de.ur.explure.model.rating
 import android.os.Parcelable
 import com.google.firebase.firestore.DocumentId
 import com.google.firebase.firestore.ServerTimestamp
-import java.util.Date
 import kotlinx.parcelize.Parcelize
+import java.util.*
 
 @Parcelize
 data class Rating(

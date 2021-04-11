@@ -18,7 +18,6 @@ import de.ur.explure.model.route.Route
 import de.ur.explure.viewmodel.SingleRouteViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.component.KoinComponent
-import org.koin.core.component.bind
 import org.koin.core.component.inject
 
 class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinComponent {

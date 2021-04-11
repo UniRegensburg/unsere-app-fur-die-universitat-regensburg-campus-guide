@@ -17,20 +17,8 @@ import de.ur.explure.repository.user.UserRepositoryImpl
 import de.ur.explure.services.FireStoreInstance
 import de.ur.explure.services.FirebaseAuthService
 import de.ur.explure.utils.SharedPreferencesManager
-import de.ur.explure.viewmodel.AuthenticationViewModel
-import de.ur.explure.viewmodel.CreateRouteViewModel
-import de.ur.explure.viewmodel.CreateWayPointViewModel
-import de.ur.explure.viewmodel.DiscoverViewModel
-import de.ur.explure.viewmodel.CategoryViewModel
-import de.ur.explure.viewmodel.MainViewModel
-import de.ur.explure.viewmodel.MapViewModel
-import de.ur.explure.viewmodel.SingleRouteViewModel
-import de.ur.explure.viewmodel.WordSearchViewModel
+import de.ur.explure.viewmodel.*
 import org.koin.android.ext.koin.androidApplication
-import de.ur.explure.viewmodel.ProfileViewModel
-import de.ur.explure.viewmodel.CreatedRoutesViewModel
-import de.ur.explure.viewmodel.FavoriteRoutesViewModel
-import de.ur.explure.viewmodel.StatisticsViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 

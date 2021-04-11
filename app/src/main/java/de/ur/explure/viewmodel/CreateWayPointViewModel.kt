@@ -74,13 +74,6 @@ class CreateWayPointViewModel : ViewModel() {
         mediaList.postValue(list)
     }
 
-    fun replaceMediaItem(item: WayPointMediaItem, type: Class<*>) {
-        val list = mediaList.value ?: mutableListOf()
-        list.forEach {
-        }
-        mediaList.postValue(list)
-    }
-
     fun deleteMediaItem(item: WayPointMediaItem) {
         val list = mediaList.value ?: mutableListOf()
         list.remove(item)
@@ -100,6 +93,7 @@ class CreateWayPointViewModel : ViewModel() {
     }
 
     private fun initAudioRecorder(context: Context) {
+        currentAudioOutputFile?.delete()
         val outputFile = CachedFileUtils.getNewAudioFile(context)
         audioRecorder = MediaRecorder()
         audioRecorder?.setAudioSource(MediaRecorder.AudioSource.MIC)
@@ -184,7 +178,6 @@ class CreateWayPointViewModel : ViewModel() {
         } finally {
             audioPlayer = null
             audioRecorder = null
-            currentAudioOutputFile?.delete()
         }
     }
 

@@ -23,7 +23,7 @@ import de.ur.explure.services.FireStoreInstance
 import de.ur.explure.services.FirebaseAuthService
 import de.ur.explure.utils.FirebaseResult
 import timber.log.Timber
-import java.util.Date
+import java.util.*
 
 @Suppress("TooGenericExceptionCaught", "UnnecessaryParentheses", "ReturnCount")
 class RouteRepositoryImpl(

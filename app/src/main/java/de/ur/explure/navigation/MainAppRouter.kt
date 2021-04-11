@@ -3,14 +3,14 @@ package de.ur.explure.navigation
 import androidx.navigation.NavController
 import com.google.firebase.firestore.GeoPoint
 import de.ur.explure.R
-import de.ur.explure.views.CreatedRoutesFragmentDirections
-import de.ur.explure.views.ProfileFragmentDirections
 import de.ur.explure.model.category.Category
 import de.ur.explure.model.waypoint.WayPointDTO
 import de.ur.explure.views.CategoryQueryFragmentDirections
 import de.ur.explure.views.CreateRouteFragmentDirections
+import de.ur.explure.views.CreatedRoutesFragmentDirections
 import de.ur.explure.views.DiscoverFragmentDirections
 import de.ur.explure.views.FavoriteRoutesFragmentDirections
+import de.ur.explure.views.ProfileFragmentDirections
 import de.ur.explure.views.TextQueryFragmentDirections
 
 /**
