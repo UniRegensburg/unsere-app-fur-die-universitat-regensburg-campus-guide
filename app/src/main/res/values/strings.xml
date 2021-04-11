@@ -155,7 +155,7 @@
     <string name="register_text">Register</string>
     <string name="new_email">Email</string>
 
-	<string name="new_password">Password</string>
+    <string name="new_password">Password</string>
     <string name="confirm_password">Conform password</string>
     <string name="register_button">Register</string>
     <string name="already_account">Already have an account?</string>
@@ -225,4 +225,14 @@
     <string name="create_waypoint_save_btn">Save</string>
     <string name="create_waypoint_title">Waypoint Information</string>
     <string name="create_route_save_btn">Save</string>
+
+    <!-- set user date -->
+    <string name="create_profile">Create your profile</string>
+    <string name="add_picture_text">Add your profile picture</string>
+    <string name="profile_picture">Profile Picture</string>
+    <string name="set_user_name">Username</string>
+    <string name="text_changes">You can change your picture and username later</string>
+    <string name="create_button">Create profile</string>
+    <string name="empty_username">Please enter a username</string>
+    <string name="user_data_error">Something went wrong while creating your profile. Please try again later.</string>
 </resources>
