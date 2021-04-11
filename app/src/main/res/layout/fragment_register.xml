@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".views.RegisterFragment">
+    tools:context=".views.RegisterFragment"
+    android:background="@color/themeColorDark">
 
     <TextView
         android:id="@+id/registerText"
@@ -15,6 +16,7 @@
         android:text="@string/login_text"
         android:textSize="40sp"
         android:textStyle="bold"
+        android:textColor="@color/white"
         app:layout_constraintBottom_toTopOf="@id/textEmail"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -28,6 +30,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/margin_normal"
         android:layout_marginTop="80dp"
+        android:textColorHint="@color/colorLightGreen"
         android:layout_marginEnd="@dimen/margin_normal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -41,6 +44,7 @@
             android:background="@android:color/transparent"
             android:hint="@string/new_email"
             android:textSize="20sp"
+            android:textColor="@color/white"
             android:inputType="textEmailAddress" />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -48,6 +52,7 @@
         android:id="@+id/textPassword"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:textColorHint="@color/colorLightGreen"
         android:layout_marginStart="@dimen/margin_normal"
         android:layout_marginTop="@dimen/margin_normal"
         android:layout_marginEnd="@dimen/margin_normal"
@@ -62,6 +67,7 @@
             android:layout_height="wrap_content"
             android:hint="@string/new_password"
             android:textSize="20sp"
+            android:textColor="@color/white"
             android:background="@android:color/transparent"
             android:inputType="textPassword" />
     </com.google.android.material.textfield.TextInputLayout>
@@ -70,6 +76,7 @@
         android:id="@+id/textCPassword"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:textColorHint="@color/colorLightGreen"
         android:layout_marginStart="@dimen/margin_normal"
         android:layout_marginTop="@dimen/margin_normal"
         android:layout_marginEnd="@dimen/margin_normal"
@@ -84,6 +91,7 @@
             android:layout_height="wrap_content"
             android:hint="@string/confirm_password"
             android:textSize="20sp"
+            android:textColor="@color/white"
             android:background="@android:color/transparent"
             android:inputType="textPassword" />
     </com.google.android.material.textfield.TextInputLayout>
@@ -124,6 +132,7 @@
             android:layout_height="wrap_content"
             android:padding="10dp"
             android:text="@string/already_account"
+            android:textColor="@color/white"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.136"
@@ -134,9 +143,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="30dp"
+            android:textSize="20sp"
+            android:textColor="@color/white"
+            android:textStyle="bold"
             android:background="@android:color/transparent"
             android:text="@string/back_to_login_button"
-            android:textColor="@color/themeColorDark"
             app:layout_constraintTop_toBottomOf="@+id/tvRegister"
             tools:layout_editor_absoluteX="221dp" />
 
