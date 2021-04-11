@@ -16,7 +16,6 @@ import de.ur.explure.utils.CachedFileUtils
 import timber.log.Timber
 import java.io.File
 
-
 class CreateWayPointViewModel : ViewModel() {
 
     val newWayPointDTO: MutableLiveData<WayPointDTO> = MutableLiveData()

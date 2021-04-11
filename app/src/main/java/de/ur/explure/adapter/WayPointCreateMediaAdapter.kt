@@ -70,6 +70,13 @@ class WayPointCreateMediaAdapter(private val mediaListener: WayPointMediaInterfa
         }) {
 
             bind {
+                try {
+                    binding.ivVideoPreview.setVideoURI(item.uri)
+                    binding.ivVideoPreview.seekTo(1)
+                } catch (e: Exception) {
+                    Timber.d("Failed to load video into preview")
+                }
+
                 binding.ivDeleteButton.setOnClickListener {
                     mediaListener.removeMediaItem(item)
                 }
@@ -105,7 +112,6 @@ class WayPointCreateMediaAdapter(private val mediaListener: WayPointMediaInterfa
             }
         }
 
-
     private fun pauseAudio() {
         try {
             audioPlayer?.pause()
@@ -131,7 +137,6 @@ class WayPointCreateMediaAdapter(private val mediaListener: WayPointMediaInterfa
             audioPlayer?.start()
             isPlayingAudio = true
         } catch (e: Exception) {
-            Timber.d(e)
             Timber.d("Failed to play list audio")
         }
     }

@@ -66,7 +66,6 @@ class CreateWayPointDialogFragment : DialogFragment(R.layout.dialog_create_waypo
         analyseNavArgs()
     }
 
-
     private fun initResultLaunchers() {
         initImageResultLauncher()
         initVideoResultLauncher()
@@ -180,7 +179,7 @@ class CreateWayPointDialogFragment : DialogFragment(R.layout.dialog_create_waypo
 
     private fun initAudioErrorObserver() {
         viewModel.showAudioError.observe(viewLifecycleOwner, { showAudioError ->
-            if (showAudioError){
+            if (showAudioError) {
                 showSnackbar(
                     requireActivity(),
                     R.string.audio_recording_error,
@@ -293,10 +292,10 @@ class CreateWayPointDialogFragment : DialogFragment(R.layout.dialog_create_waypo
         }
     }
 
-    private fun initAudioRecordingObserver(){
+    private fun initAudioRecordingObserver() {
         viewModel.isRecording.observe(viewLifecycleOwner, { isRecording ->
-            if (isRecording != null){
-                if (isRecording){
+            if (isRecording != null) {
+                if (isRecording) {
                     setRecordingState()
                 } else {
                     setStopState()
@@ -305,8 +304,7 @@ class CreateWayPointDialogFragment : DialogFragment(R.layout.dialog_create_waypo
         })
     }
 
-
-    private fun setStopState(){
+    private fun setStopState() {
         enableAudioButton(binding.ivPlayAudioBtn)
         enableAudioButton(binding.ivSaveAudioBtn)
         enableAudioButton(binding.ivDeleteAudioBtn)
@@ -314,7 +312,7 @@ class CreateWayPointDialogFragment : DialogFragment(R.layout.dialog_create_waypo
         disableAudioButton(binding.ivStopAudioBtn)
     }
 
-    private fun setRecordingState(){
+    private fun setRecordingState() {
         disableAudioButton(binding.ivPlayAudioBtn)
         disableAudioButton(binding.ivSaveAudioBtn)
         disableAudioButton(binding.ivRecordAudioBtn)
@@ -364,7 +362,6 @@ class CreateWayPointDialogFragment : DialogFragment(R.layout.dialog_create_waypo
         videoResultLauncher.launch(chooser)
     }
 
-
     private fun startImageIntent() {
         val galleryIntent = Intent(Intent.ACTION_GET_CONTENT, null)
         galleryIntent.type = "image/*"
@@ -385,19 +382,7 @@ class CreateWayPointDialogFragment : DialogFragment(R.layout.dialog_create_waypo
         const val COORDINATES_DEFAULT_VALUE: Long = 0L
         const val MAX_VIDEO_SIZE_MB = 50
         const val MAX_VIDEO_SIZE = (MAX_VIDEO_SIZE_MB * 1024 * 1024).toLong()
-        const val MAX_VIDEO_LENGTH = 90 //Seconds
-    }
-
-    override fun showImageMedia(mediaItem: WayPointImageItem) {
-        TODO("Not yet implemented")
-    }
-
-    override fun showVideoMedia(mediaItem: WayPointVideoItem) {
-        TODO("Not yet implemented")
-    }
-
-    override fun playAudioMedia(mediaItem: WayPointAudioItem) {
-        TODO("Not yet implemented")
+        const val MAX_VIDEO_LENGTH = 90 // Seconds
     }
 
     override fun removeMediaItem(item: WayPointMediaItem) {
