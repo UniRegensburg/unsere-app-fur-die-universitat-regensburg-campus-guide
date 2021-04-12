@@ -2,12 +2,12 @@ package de.ur.explure.views
 
 import android.os.Bundle
 import android.view.View
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.crazylegend.viewbinding.viewBinding
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.storage.FirebaseStorage
 import de.ur.explure.GlideApp
 import de.ur.explure.R
@@ -15,10 +15,10 @@ import de.ur.explure.adapter.CommentAdapter
 import de.ur.explure.adapter.WayPointAdapter
 import de.ur.explure.databinding.FragmentSingleRouteBinding
 import de.ur.explure.model.route.Route
+import de.ur.explure.utils.showSnackbar
 import de.ur.explure.viewmodel.SingleRouteViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.component.KoinComponent
-import org.koin.core.component.bind
 import org.koin.core.component.inject
 
 class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinComponent {
@@ -85,7 +85,13 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinCompon
         if (answerText.isNotEmpty()) {
             singleRouteViewModel.addAnswer(commentId, answerText)
         } else {
-            Toast.makeText(context, R.string.empty_comment, Toast.LENGTH_LONG).show()
+            showSnackbar(
+                    requireActivity(),
+                    R.string.empty_answer,
+                    R.id.single_route_container,
+                    Snackbar.LENGTH_LONG,
+                    colorRes = R.color.colorError
+            )
         }
     }
 
@@ -125,7 +131,13 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinCompon
                 singleRouteViewModel.addComment(commentInput)
                 binding.commentInput.text.clear()
             } else {
-                Toast.makeText(context, R.string.empty_comment, Toast.LENGTH_LONG).show()
+                showSnackbar(
+                        requireActivity(),
+                        R.string.empty_comment,
+                        R.id.single_route_container,
+                        Snackbar.LENGTH_LONG,
+                        colorRes = R.color.colorError
+                )
             }
         }
     }

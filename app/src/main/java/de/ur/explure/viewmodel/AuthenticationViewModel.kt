@@ -4,7 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import de.ur.explure.R
 import de.ur.explure.navigation.MainAppRouter
 import de.ur.explure.services.FirebaseAuthService
 import de.ur.explure.utils.FirebaseResult
@@ -15,20 +14,20 @@ class AuthenticationViewModel(
     private val mainAppRouter: MainAppRouter
 ) : ViewModel() {
 
-    private val _toast = MutableLiveData<String?>()
-    val toast: LiveData<String?> = _toast
+    private val mutableToast = MutableLiveData<String?>()
+    val toast: LiveData<String?> = mutableToast
 
     fun signIn(email: String, password: String) {
         viewModelScope.launch {
             when (val loginTask = authService.signIn(email, password)) {
                 is FirebaseResult.Success -> {
-                    // do task
+                    // doesn't need to do anything
                 }
                 is FirebaseResult.Error -> {
-                    _toast.value = loginTask.exception.message
+                    mutableToast.value = loginTask.exception.message
                 }
                 is FirebaseResult.Canceled -> {
-                    _toast.value = loginTask.exception!!.message
+                    mutableToast.value = loginTask.exception!!.message
                 }
             }
         }
@@ -38,13 +37,13 @@ class AuthenticationViewModel(
         viewModelScope.launch {
             when (val registerTask = authService.registerUser(email, password)) {
                 is FirebaseResult.Success -> {
-                    // do task
+                    // doesn't need to do anything
                 }
                 is FirebaseResult.Error -> {
-                    _toast.value = registerTask.exception.message
+                    mutableToast.value = registerTask.exception.message
                 }
                 is FirebaseResult.Canceled -> {
-                    _toast.value = registerTask.exception!!.message
+                    mutableToast.value = registerTask.exception!!.message
                 }
             }
         }
@@ -54,14 +53,13 @@ class AuthenticationViewModel(
         viewModelScope.launch {
             when (val resetTask = authService.resetPassword(email)) {
                 is FirebaseResult.Success -> {
-                    // Error: returns String email_sent and then int
-                    _toast.value = R.string.email_sent.toString()
+                    // doesn't need to do anything
                 }
                 is FirebaseResult.Error -> {
-                    _toast.value = resetTask.exception.message
+                    mutableToast.value = resetTask.exception.message
                 }
                 is FirebaseResult.Canceled -> {
-                    _toast.value = resetTask.exception!!.message
+                    mutableToast.value = resetTask.exception!!.message
                 }
             }
         }
@@ -71,13 +69,13 @@ class AuthenticationViewModel(
         viewModelScope.launch {
             when (val anonymouslyTask = authService.signInAnonymously()) {
                 is FirebaseResult.Success -> {
-                    // do task
+                    // doesn't need to do anything
                 }
                 is FirebaseResult.Error -> {
-                    _toast.value = anonymouslyTask.exception.message
+                    mutableToast.value = anonymouslyTask.exception.message
                 }
                 is FirebaseResult.Canceled -> {
-                    _toast.value = anonymouslyTask.exception!!.message
+                    mutableToast.value = anonymouslyTask.exception!!.message
                 }
             }
         }
