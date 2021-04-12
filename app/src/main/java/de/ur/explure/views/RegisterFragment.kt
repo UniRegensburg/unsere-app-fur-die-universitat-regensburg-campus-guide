@@ -25,7 +25,7 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
     }
 
     private fun observe() {
-        authenticationViewModel.toast.observe(viewLifecycleOwner, {
+        authenticationViewModel.userInfo.observe(viewLifecycleOwner, {
             it?.let {
                 showSnackbar(
                         requireActivity(),

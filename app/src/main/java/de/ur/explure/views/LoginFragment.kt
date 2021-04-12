@@ -33,7 +33,7 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
     }
 
     private fun observe() {
-        authenticationViewModel.toast.observe(viewLifecycleOwner, {
+        authenticationViewModel.userInfo.observe(viewLifecycleOwner, {
             it?.let {
                 showSnackbar(
                         requireActivity(),

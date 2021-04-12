@@ -11,7 +11,6 @@ import de.ur.explure.utils.FirebaseResult
 import kotlinx.coroutines.launch
 import java.util.*
 
-@Suppress("UseIfInsteadOfWhen")
 class SingleRouteViewModel(private val routeRepository: RouteRepositoryImpl) : ViewModel() {
 
     val showErrorMessage: MutableLiveData<Boolean> = MutableLiveData()
@@ -21,8 +20,15 @@ class SingleRouteViewModel(private val routeRepository: RouteRepositoryImpl) : V
     fun getRouteData(routeId: String) {
         viewModelScope.launch {
             when (val routeData = routeRepository.getRoute(routeId, false)) {
-                is FirebaseResult.Success -> mutableRoute.postValue(routeData.data)
-                    else -> showErrorMessage.postValue(true)
+                is FirebaseResult.Success -> {
+                    mutableRoute.postValue(routeData.data)
+                }
+                is FirebaseResult.Error -> {
+                    showErrorMessage.postValue(true)
+                }
+                is FirebaseResult.Canceled -> {
+                    showErrorMessage.postValue(true)
+                }
             }
         }
     }
@@ -31,9 +37,10 @@ class SingleRouteViewModel(private val routeRepository: RouteRepositoryImpl) : V
         viewModelScope.launch {
             val commentDto = CommentDTO(comment)
             val routeId = route.value?.id ?: return@launch
-            when (routeRepository.addComment(routeId, commentDto)) {
-                is FirebaseResult.Success -> getRouteData(routeId)
-                    else -> showErrorMessage.postValue(true)
+            if (routeRepository.addComment(routeId, commentDto) is FirebaseResult.Success) {
+                getRouteData(routeId)
+            } else {
+                showErrorMessage.postValue(true)
             }
         }
     }
@@ -42,9 +49,10 @@ class SingleRouteViewModel(private val routeRepository: RouteRepositoryImpl) : V
         viewModelScope.launch {
             val commentDto = CommentDTO(answerText)
             val routeId = route.value?.id ?: return@launch
-            when (routeRepository.addAnswer(routeId, commentId, commentDto)) {
-                is FirebaseResult.Success -> getRouteData(routeId)
-                    else -> showErrorMessage.postValue(true)
+            if (routeRepository.addAnswer(routeId, commentId, commentDto) is FirebaseResult.Success) {
+                getRouteData(routeId)
+            } else {
+                showErrorMessage.postValue(true)
             }
         }
     }

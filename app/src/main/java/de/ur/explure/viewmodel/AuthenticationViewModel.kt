@@ -14,8 +14,8 @@ class AuthenticationViewModel(
     private val mainAppRouter: MainAppRouter
 ) : ViewModel() {
 
-    private val mutableToast = MutableLiveData<String?>()
-    val toast: LiveData<String?> = mutableToast
+    private val mutableUserInfo = MutableLiveData<String?>()
+    val userInfo: LiveData<String?> = mutableUserInfo
 
     fun signIn(email: String, password: String) {
         viewModelScope.launch {
@@ -24,10 +24,10 @@ class AuthenticationViewModel(
                     // doesn't need to do anything
                 }
                 is FirebaseResult.Error -> {
-                    mutableToast.value = loginTask.exception.message
+                    mutableUserInfo.value = loginTask.exception.message
                 }
                 is FirebaseResult.Canceled -> {
-                    mutableToast.value = loginTask.exception!!.message
+                    mutableUserInfo.value = loginTask.exception?.message
                 }
             }
         }
@@ -40,10 +40,10 @@ class AuthenticationViewModel(
                     // doesn't need to do anything
                 }
                 is FirebaseResult.Error -> {
-                    mutableToast.value = registerTask.exception.message
+                    mutableUserInfo.value = registerTask.exception.message
                 }
                 is FirebaseResult.Canceled -> {
-                    mutableToast.value = registerTask.exception!!.message
+                    mutableUserInfo.value = registerTask.exception?.message
                 }
             }
         }
@@ -56,10 +56,10 @@ class AuthenticationViewModel(
                     // doesn't need to do anything
                 }
                 is FirebaseResult.Error -> {
-                    mutableToast.value = resetTask.exception.message
+                    mutableUserInfo.value = resetTask.exception.message
                 }
                 is FirebaseResult.Canceled -> {
-                    mutableToast.value = resetTask.exception!!.message
+                    mutableUserInfo.value = resetTask.exception?.message
                 }
             }
         }
@@ -72,10 +72,10 @@ class AuthenticationViewModel(
                     // doesn't need to do anything
                 }
                 is FirebaseResult.Error -> {
-                    mutableToast.value = anonymouslyTask.exception.message
+                    mutableUserInfo.value = anonymouslyTask.exception.message
                 }
                 is FirebaseResult.Canceled -> {
-                    mutableToast.value = anonymouslyTask.exception!!.message
+                    mutableUserInfo.value = anonymouslyTask.exception?.message
                 }
             }
         }
