@@ -254,15 +254,13 @@ class CreateWayPointDialogFragment : DialogFragment(R.layout.dialog_create_waypo
 
     private fun initSaveButton() {
         binding.btnSaveWaypoint.setOnClickListener {
-            val title = binding.etWayPointTitle.text.toString()
-            viewModel.setTitle(title)
-            val wayPointDTO = viewModel.newWayPointDTO.value
-            if (wayPointDTO != null) {
+            if (areInputsValid()) {
+                val wayPointDTO = viewModel.getEditedWayPointDTO()
                 findNavController().previousBackStackEntry?.savedStateHandle?.set(
                     CreateRouteFragment.WAYPOINT_EDIT_KEY, wayPointDTO
                 )
+                dismiss()
             }
-            dismiss()
         }
     }
 
@@ -340,6 +338,23 @@ class CreateWayPointDialogFragment : DialogFragment(R.layout.dialog_create_waypo
         disableAudioButton(binding.ivDeleteAudioBtn)
         enableAudioButton(binding.ivRecordAudioBtn)
         disableAudioButton(binding.ivStopAudioBtn)
+    }
+
+    private fun areInputsValid(): Boolean {
+        var inputsAreValid = true
+        val title = binding.etWayPointTitle.text.toString()
+        if (title.isEmpty()) {
+            binding.etWayPointTitle.error = getString(R.string.waypoint_title_error)
+            inputsAreValid = false
+        }
+        val description = binding.etWayPointDescription.text.toString()
+        if (description.isEmpty()) {
+            binding.etWayPointDescription.error = getString(R.string.waypoint_description_error)
+            inputsAreValid = false
+        }
+        viewModel.setTitle(title)
+        viewModel.setDescription(description)
+        return inputsAreValid
     }
 
     private fun startVideoIntent() {

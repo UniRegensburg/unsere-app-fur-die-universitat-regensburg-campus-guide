@@ -17,6 +17,7 @@ import de.ur.explure.model.category.Category
 import de.ur.explure.model.waypoint.WayPointDTO
 import de.ur.explure.viewmodel.CreateRouteViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import timber.log.Timber
 
 class CreateRouteFragment : Fragment(R.layout.fragment_create_route) {
 
@@ -79,6 +80,7 @@ class CreateRouteFragment : Fragment(R.layout.fragment_create_route) {
                 val editedWayPointDTO =
                     navBackStackEntry.savedStateHandle.get<WayPointDTO>(WAYPOINT_EDIT_KEY)
                 if (editedWayPointDTO != null) {
+                    Timber.d(editedWayPointDTO.toString())
                     viewModel.updateWayPointDTO(editedWayPointDTO)
                 }
             }

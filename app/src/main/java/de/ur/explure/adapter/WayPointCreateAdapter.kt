@@ -35,13 +35,13 @@ class WayPointCreateAdapter(private val clickListener: (WayPointDTO) -> Unit) :
             bind {
                 val colorFilter = ContextCompat.getColor(context, R.color.highlightColor)
                 binding.tvWaypointTitle.text = item.title
-                if (item.audioURL != null) {
+                if (item.audioUri != null) {
                     binding.ivAudioIcon.setColorFilter(colorFilter)
                 }
-                if (item.imageURL != null) {
+                if (item.imageUri != null) {
                     binding.ivImageIcon.setColorFilter(colorFilter)
                 }
-                if (item.videoURL != null) {
+                if (item.videoUri != null) {
                     binding.ivVideoIcon.setColorFilter(colorFilter)
                 }
             }

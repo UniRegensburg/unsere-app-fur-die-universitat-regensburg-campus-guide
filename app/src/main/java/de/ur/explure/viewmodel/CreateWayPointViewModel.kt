@@ -18,7 +18,7 @@ import java.io.File
 
 class CreateWayPointViewModel : ViewModel() {
 
-    val newWayPointDTO: MutableLiveData<WayPointDTO> = MutableLiveData()
+    private lateinit var newWayPointDTO: WayPointDTO
 
     val oldWayPointDTO: MutableLiveData<WayPointDTO> = MutableLiveData()
 
@@ -38,7 +38,7 @@ class CreateWayPointViewModel : ViewModel() {
     private var audioPlayer: MediaPlayer? = null
 
     fun initWayPointDTOEdit(wayPointDTO: WayPointDTO) {
-        newWayPointDTO.postValue(wayPointDTO)
+        newWayPointDTO = wayPointDTO
         oldWayPointDTO.postValue(wayPointDTO)
         Timber.d("Editing Waypoint: %s", wayPointDTO.toString())
     }
@@ -46,15 +46,34 @@ class CreateWayPointViewModel : ViewModel() {
     fun initNewWayPointDTO(longitude: Double, latitude: Double) {
         val wayPointDTO = WayPointDTO("", GeoPoint(latitude, longitude))
         Timber.d("Creating new Waypoint with: %s", wayPointDTO.toString())
-        newWayPointDTO.postValue(wayPointDTO)
+        newWayPointDTO = wayPointDTO
+    }
+
+    fun getEditedWayPointDTO(): WayPointDTO {
+        mediaList.value?.run {
+            this.forEach { mediaItem ->
+                when (mediaItem) {
+                    is WayPointAudioItem -> {
+                        newWayPointDTO.audioUri = mediaItem.uri
+                    }
+                    is WayPointVideoItem -> {
+                        newWayPointDTO.videoUri = mediaItem.uri
+                    }
+                    is WayPointImageItem -> {
+                        newWayPointDTO.imageUri = mediaItem.uri
+                    }
+                }
+            }
+        }
+        return newWayPointDTO
     }
 
     fun setTitle(title: String) {
-        newWayPointDTO.value?.title = title
+        newWayPointDTO.title = title
     }
 
     fun setDescription(description: String) {
-        newWayPointDTO.value?.title = description
+        newWayPointDTO.description = description
     }
 
     fun setImageMedia(uri: Uri) {

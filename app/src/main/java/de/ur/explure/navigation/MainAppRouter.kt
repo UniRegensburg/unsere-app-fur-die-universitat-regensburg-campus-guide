@@ -113,7 +113,7 @@ class MainAppRouter {
     }
 
     fun navigateToRouteDetails(routeId: String) {
-        val waypoints = WayPointDTO("Sers", GeoPoint(35.0, 49.0), "Sers", "", "", "")
+        val waypoints = WayPointDTO("Sers", GeoPoint(35.0, 49.0), "Sers", null, null, null)
         val action = DiscoverFragmentDirections.actionDiscoverFragmentToCreateRouteFragment(arrayOf(waypoints), 20L, 0L)
 
         // val action = DiscoverFragmentDirections.actionDiscoverFragmentToRouteDetails(routeId)
