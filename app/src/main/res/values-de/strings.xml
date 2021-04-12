@@ -160,5 +160,7 @@
     <string name="route_thumbnail_hint">Setze ein Vorschaubild für deine Route</string>
     <string name="waypoint_title_error">Bitte lege einen Titel fest</string>
     <string name="waypoint_description_error">Bitte beschreibe den Wegpunkt</string>
+    <string name="no_category_selected_error">Bitte wähle eine Category aus</string>
+    <string name="route_image_error">Leider konnte dein Bild nicht geladen werden, bitte versuche es noch einmal.</string>
 
 </resources>

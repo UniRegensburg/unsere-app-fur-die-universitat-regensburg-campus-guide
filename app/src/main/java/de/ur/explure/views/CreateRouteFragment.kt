@@ -88,7 +88,13 @@ class CreateRouteFragment : Fragment(R.layout.fragment_create_route) {
                         ?: return@registerForActivityResult
                     viewModel.setImageUri(data)
                 } else {
-                    //TODO: ERROR
+                    showSnackbar(
+                        requireActivity(),
+                        R.string.route_image_error,
+                        R.id.btn_save_route,
+                        Snackbar.LENGTH_LONG,
+                        colorRes = R.color.colorWarning
+                    )
                 }
             }
     }
@@ -117,7 +123,7 @@ class CreateRouteFragment : Fragment(R.layout.fragment_create_route) {
 
     private fun initSaveButtonListener() {
         binding.btnSaveRoute.setOnClickListener {
-            if (setRouteTitle() && setDescription() && setCategoryId()) {
+            if (validateInputs()) {
                 viewModel.saveRoute()
             }
         }
@@ -226,23 +232,51 @@ class CreateRouteFragment : Fragment(R.layout.fragment_create_route) {
         viewModel.setWayPointDTOs(args.waypoints.toList())
     }
 
-    private fun setCategoryId(): Boolean {
-        // TODO: Validate
-        val category = binding.spinnerCategories.selectedItem as Category? ?: return false
-        viewModel.setCategoryId(category.id)
-        return true
+    private fun validateInputs(): Boolean {
+        var inputsAreValid = true
+        inputsAreValid = validateAndSaveTitle()
+        inputsAreValid = validateAndSaveDescription()
+        inputsAreValid = validateAndSaveCategory()
+        return inputsAreValid
     }
 
-    private fun setDescription(): Boolean {
-        // TODO: Validate
-        viewModel.setDescription(binding.etRouteDescription.text.toString())
-        return true
+    private fun validateAndSaveCategory(): Boolean {
+        val category = binding.spinnerCategories.selectedItem as Category?
+        return if (category == null) {
+            showSnackbar(
+                requireActivity(),
+                R.string.no_category_selected_error,
+                R.id.btn_save_route,
+                Snackbar.LENGTH_LONG,
+                colorRes = R.color.colorWarning
+            )
+            false
+        } else {
+            viewModel.setCategoryId(category.id)
+            true
+        }
     }
 
-    private fun setRouteTitle(): Boolean {
-        // TODO: Validate
-        viewModel.setTitle(binding.etRouteTitle.text.toString())
-        return true
+    private fun validateAndSaveDescription(): Boolean {
+        val description = binding.etRouteDescription.text.toString()
+        return if (description.isEmpty()) {
+            binding.etRouteDescription.error = getString(R.string.waypoint_description_error)
+            false
+        } else {
+            viewModel.setDescription(description)
+            true
+        }
+    }
+
+    private fun validateAndSaveTitle(): Boolean {
+        val title = binding.etRouteTitle.text.toString()
+        return if (title.isEmpty()) {
+            binding.etRouteTitle.error = getString(R.string.waypoint_title_error)
+            false
+        } else {
+            viewModel.setTitle(title)
+            true
+        }
     }
 
     private fun startImageIntent() {

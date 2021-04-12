@@ -31,7 +31,7 @@ class CreateRouteViewModel(
 
     var currentTempCameraUri: Uri? = null
 
-    val routeDTO = RouteDTO()
+    private val routeDTO = RouteDTO()
 
     fun createNewCameraUri(context: Context): Uri {
         val newUri = CachedFileUtils.getNewImageUri(context)
@@ -74,23 +74,6 @@ class CreateRouteViewModel(
         wayPointDTOs.postValue(wayPointArray)
     }
 
-    fun setTitle(title: String) {
-        routeDTO.title = title
-    }
-
-    fun setDescription(description: String) {
-        routeDTO.description = description
-    }
-
-    fun setCategoryId(categoryId: String) {
-        routeDTO.category = categoryId
-    }
-
-    fun setRouteInformation(distance: Double, duration: Double) {
-        routeDTO.distance = distance
-        routeDTO.duration = duration
-    }
-
     fun saveRoute() {
         routeDTO.wayPoints = wayPointDTOs.value ?: mutableListOf()
         viewModelScope.launch {
@@ -105,8 +88,25 @@ class CreateRouteViewModel(
         }
     }
 
+    fun setRouteInformation(distance: Double, duration: Double) {
+        routeDTO.distance = distance
+        routeDTO.duration = duration
+    }
+
     fun setImageUri(data: Uri) {
         currentImageUri.postValue(data)
+    }
+
+    fun setTitle(title: String) {
+        routeDTO.title = title
+    }
+
+    fun setDescription(description: String) {
+        routeDTO.description = description
+    }
+
+    fun setCategoryId(categoryId: String) {
+        routeDTO.category = categoryId
     }
 
     fun deleteCurrentUri() {
