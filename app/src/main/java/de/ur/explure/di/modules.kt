@@ -94,7 +94,7 @@ val mainModule = module {
     viewModel { WordSearchViewModel(get(), get()) }
     viewModel { CategoryViewModel(get(), get()) }
     viewModel { DiscoverViewModel(get(), get(), get()) }
-    viewModel { MainViewModel(get(), get()) }
+    viewModel { MainViewModel(get(), get(), get()) }
     viewModel { MapViewModel(get(), get()) }
     viewModel { EditRouteViewModel(get(), get(), get()) }
     viewModel { SaveRouteViewModel(get(), get(), get(), get()) }
