@@ -52,20 +52,88 @@
     <string name="menu_discover_title">Discover</string>
     <string name="menu_map_title">Map</string>
 
+    <!-- Menu Actions -->
+    <string name="menu_cancel_route_creation">Cancel route creation</string>
+    <string name="menu_save_created_route">Save created route</string>
+    <string name="menu_align_created_route">Align created route</string>
+    <string name="menu_show_buildings_extrusion">Show 3D buildings</string>
+
     <!-- Location Tracking -->
     <string name="gps_not_activated">GPS doesn\'t seem to be enabled! Please enable it in the device settings to continue!</string>
 
     <!-- Location Permissions -->
     <string name="location_permission_not_given">Without the permission your current location can\'t be displayed or used!</string>
     <string name="location_permission_explanation">
-        The permission for your location is needed to display your current location on the map and for navigation!
+        The permission for your location is needed to display and track your current location on the map and to use it during navigation!
     </string>
 
     <!-- Tutorial Information -->
-    <string name="map_style_button_title">Different map styles are available!</string>
-    <string name="map_style_button_description">With this button you can change the current map style.</string>
-    <string name="location_tracking_button_title">Show own location</string>
-    <string name="location_tracking_button_description">With this button you can display and track your own location.</string>
+    <string name="map_style_button_tutorial_title">Map styles</string>
+    <string name="map_style_button_tutorial_description">With this button you can change the current map style.</string>
+    <string name="location_tracking_button_tutorial_title">Show own location</string>
+    <string name="location_tracking_button_tutorial_description">With this button you can display and track your own location.</string>
+    <string name="build_route_tutorial_title">Route Creation</string>
+    <string name="build_route_tutorial_description">Here you can start to create your own route.</string>
+    <string name="action_menu_tutorial_title">Actions during route creation</string>
+    <string name="action_menu_tutorial_description">You can find useful options during the route creation process here. You can cancel the route creation (x - symbol), try to align your created route and waypoints to existing ways on the campus (magnet symbol) and save your route (disk symbol).</string>
+
+    <string name="no_routes">No available routes to that destination</string>
+    <string name="steps_in_route">There are %1$d steps in the route</string>
+    <string name="route_request_failed">The route request failed</string>
+
+    <!-- Route Creation -->
+    <string name="route_creation_options">There are 3 options to create a route:
+        \n<ul>
+            \n<li>You can activate location tracking and the app will record the route while you walk the route yourself.</li>
+            \n<li>You can build the route directly on the map with lines and markers.</li>
+            \n<li>You draw the route manually on the map.</li>
+        </ul>
+    </string>
+    <string name="manual_route_creation_option">Create route with waypoints</string>
+    <string name="route_draw_option">Draw route on map</string>
+    <string name="route_track_option">Track route while walking</string>
+    <string name="map_matching_explanation_confirmation">Hey, looks like this is the first time you are using this feature! Do you want to see an explanation of the functionality?</string>
+    <string name="map_matching_explanation_title">MapMatching</string>
+    <string name="map_matching_explanation_message">Here you can use so-called \"MapMatching\" to automatically match your created routes and markers to known footpaths on the university campus and thus create a more accurate route.
+        \nHowever, <b>there are some restrictions</b>:
+        \n<ul>
+            \n<li>Because only footpaths can be used, routes can also <b>only be found in the exterior of the university</b>, which may cause problems if the created route goes through a building. Markers should therefore not be placed inside buildings.</li>
+            \n<li>In addition, it is possible that no suitable route can be created if route points are too far (about 10-15m) away from known footpaths. In this case, it can help to align certain parts of the route a little closer to paths on the map.</li>
+        </ul>
+    </string>
+
+    <string name="current_waypoints">Currently the route consists of these waypoints:</string>
+    <string name="no_current_waypoints">There are no waypoints yet! Click on locations on the map where you want to place waypoints to add some.</string>
+    <string name="map_matching_failed">Couldn\'t find a route on the campus that matches the created waypoints!</string>
+    <string name="map_matching_request_error">Unfortunately, an error occurred while generating a suitable route! Make sure you have an internet connection or adjust some points slightly.</string>
+    <string name="map_matching_succeeded">Successfully created a route from the given waypoints!</string>
+    <string name="save_created_route_confirmation">Save created route?</string>
+    <string name="create_route_title">Create Route</string>
+
+    <!-- Warnings -->
+    <string name="attention">Attention!</string>
+    <string name="leave_route_creation_warning">Do you want to leave the route creation mode? Your current progress will be lost!</string>
+    <string name="change_style_during_route_creation">Unfortunately, it isn\'t possible to change the map style during route creation!</string>
+    <string name="delete_waypoint_confirmation">Do you really want to delete this waypoint?</string>
+    <string name="delete_marker_confirmation">Do you really want to delete this marker?</string>
+    <string name="delete_route_confirmation">Do you really want to delete this route part?</string>
+    <string name="no_internet">No internet connection!</string>
+    <string name="no_internet_default_explanation">No internet connection could be established! Please check your connection and try again.</string>
+    <string name="no_internet_map_matching">An internet connection is required to create a route!</string>
+    <string name="too_few_waypoints">There must be at least 2 way points on the map to create a route!</string>
+    <string name="too_many_waypoints">Unfortunately, a route with so many waypoints cannot be created! Please try to remove some unnecessary points.</string>
+
+    <!-- Buttons and Options -->
+    <string name="try_again">Try again</string>
+    <string name="continue_edit">Continue edit</string>
+    <string name="cancel">Cancel</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="got_it">Got it</string>
+    <string name="create_route">Create Route</string>
+    <string name="save_route">Save Route</string>
+    <string name="reset_manual_route_creation">Do you really want to reset all markers?</string>
+    <string name="reset_map_draw">Do you really want to remove all drawn routes on the map?</string>
 
     <!--Test Strings-->
     <string name="lorem_ipsum">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.  </string>
@@ -76,7 +144,7 @@
     <string name="login_email">Email</string>
     <string name="login_password">Password</string>
     <string name="login_button">Login</string>
-    <string name="login_text">ExplURe</string>
+    <string name="login_text">Login</string>
     <string name="tv_register">Register ?</string>
     <string name="reset_password">Forgot password?</string>
     <string name="or_text">or</string>
@@ -147,6 +215,7 @@
     <string name="add_comment">Add</string>
     <string name="answer_input">Answer</string>
     <string name="empty_comment">Please enter comment</string>
+
     <string name="category_spinner_header">Set a Category</string>
     <string name="waypoint_title">Waypoints</string>
     <string name="create_route_descr_hint">Description</string>
@@ -158,4 +227,14 @@
     <string name="create_waypoint_save_btn">Save</string>
     <string name="create_waypoint_title">Waypoint Information</string>
     <string name="create_route_save_btn">Save</string>
+
+    <!-- set user date -->
+    <string name="create_profile">Create your profile</string>
+    <string name="add_picture_text">Add your profile picture</string>
+    <string name="profile_picture">Profile Picture</string>
+    <string name="set_user_name">Username</string>
+    <string name="text_changes">You can change your picture and username later</string>
+    <string name="create_button">Create profile</string>
+    <string name="empty_username">Please enter a username</string>
+    <string name="user_data_error">Something went wrong while creating your profile. Please try again later.</string>
 </resources>

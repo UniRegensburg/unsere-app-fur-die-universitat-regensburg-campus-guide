@@ -8,6 +8,8 @@ buildscript {
     ext.google_services_version = "4.3.4"
     ext.detekt_version = "1.15.0"
     ext.tap_target_view_version = "1.13.0"
+    ext.mapbox_navigation_version = "1.4.0"
+    ext.mapbox_java_sdk_version = "5.8.0"
 
     repositories {
         google()
@@ -37,11 +39,10 @@ allprojects {
             authentication {
                 basic(BasicAuthentication)
             }
-            // see https://docs.mapbox.com/help/troubleshooting/private-access-token-android-and-ios/
             credentials {
                 // This should always be `mapbox` (not your username).
                 username = 'mapbox'
-                password = project.properties['MAPBOX_DOWNLOADS_TOKEN'] ?: ""
+                password = System.getenv("MAPBOX_DOWNLOADS_TOKEN") != null ? System.getenv("MAPBOX_DOWNLOADS_TOKEN") : project.properties['MAPBOX_DOWNLOADS_TOKEN']
             }
         }
     }
