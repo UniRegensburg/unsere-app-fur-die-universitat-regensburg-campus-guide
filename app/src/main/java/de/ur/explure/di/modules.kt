@@ -9,11 +9,12 @@ import com.google.firebase.storage.FirebaseStorage
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.Style
+import de.ur.explure.map.InfoWindowGenerator
 import de.ur.explure.map.LocationManager
+import de.ur.explure.map.MapHelper
 import de.ur.explure.map.MapMatchingClient
 import de.ur.explure.map.MarkerManager
 import de.ur.explure.map.PermissionHelper
-import de.ur.explure.map.RouteDrawManager
 import de.ur.explure.map.RouteLineManager
 import de.ur.explure.map.WaypointsController
 import de.ur.explure.navigation.MainAppRouter
@@ -23,8 +24,6 @@ import de.ur.explure.repository.route.RouteRepositoryImpl
 import de.ur.explure.repository.user.UserRepositoryImpl
 import de.ur.explure.services.FireStoreInstance
 import de.ur.explure.services.FirebaseAuthService
-import de.ur.explure.map.InfoWindowGenerator
-import de.ur.explure.map.MapHelper
 import de.ur.explure.utils.SharedPreferencesManager
 import de.ur.explure.viewmodel.AuthenticationViewModel
 import de.ur.explure.viewmodel.CategoryViewModel
@@ -35,6 +34,7 @@ import de.ur.explure.viewmodel.EditRouteViewModel
 import de.ur.explure.viewmodel.FavoriteRoutesViewModel
 import de.ur.explure.viewmodel.MainViewModel
 import de.ur.explure.viewmodel.MapViewModel
+import de.ur.explure.viewmodel.NavigationViewModel
 import de.ur.explure.viewmodel.ProfileViewModel
 import de.ur.explure.viewmodel.SaveRouteViewModel
 import de.ur.explure.viewmodel.SingleRouteViewModel
@@ -57,9 +57,6 @@ val mainModule = module {
     }
     factory { (mapView: MapView, map: MapboxMap, mapStyle: Style) ->
         RouteLineManager(androidApplication(), mapView, map, mapStyle)
-    }
-    factory { (mapView: MapView, map: MapboxMap) ->
-        RouteDrawManager(mapView, map)
     }
     factory { (callback: (Location) -> Unit) ->
         LocationManager(androidApplication(), callback)
@@ -102,5 +99,6 @@ val mainModule = module {
     viewModel { CreatedRoutesViewModel(get(), get(), get()) }
     viewModel { FavoriteRoutesViewModel(get(), get(), get()) }
     viewModel { StatisticsViewModel(get(), get(), get(), get()) }
-    viewModel { SingleRouteViewModel(get()) }
+    viewModel { SingleRouteViewModel(get(), get()) }
+    viewModel { NavigationViewModel(get()) }
 }

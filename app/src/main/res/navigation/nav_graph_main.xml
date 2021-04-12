@@ -98,16 +98,16 @@
             android:name="routeID"
             app:argType="string" />
 
+        <action
+            android:id="@+id/action_singleRouteFragment_to_navigationFragment"
+            app:destination="@id/navigationFragment" />
     </fragment>
 
     <fragment
         android:id="@+id/mapFragment"
         android:name="de.ur.explure.views.MapFragment"
-        android:label="Map"
+        android:label="Karte"
         tools:layout="@layout/fragment_map">
-        <action
-            android:id="@+id/action_mapFragment_to_navigationFragment"
-            app:destination="@id/navigationFragment" />
         <action
             android:id="@+id/action_mapFragment_to_editRouteFragment"
             app:destination="@id/editRouteFragment" />
@@ -115,6 +115,22 @@
 
     <fragment
         android:id="@+id/navigationFragment"
+        android:name="de.ur.explure.views.NavigationFragment"
+        android:label="{routeTitle}"
+        tools:layout="@layout/fragment_navigation">
+        <argument
+            android:name="route"
+            app:argType="de.ur.explure.model.route.Route"
+            app:nullable="false" />
+        <argument
+            android:name="routeTitle"
+            app:argType="string"
+            app:nullable="false" />
+    </fragment>
+
+    <!-- TODO unused
+    <fragment
+        android:id="@+id/navigationUIFragment"
         android:name="de.ur.explure.views.NavigationUIFragment"
         android:label="Navigation"
         tools:layout="@layout/fragment_navigation_ui">
@@ -123,6 +139,7 @@
             app:argType="string"
             app:nullable="false" />
     </fragment>
+    -->
 
     <fragment
         android:id="@+id/editRouteFragment"
@@ -180,7 +197,8 @@
     <dialog
         android:id="@+id/createWayPointDialog"
         android:name="de.ur.explure.views.CreateWayPointDialogFragment"
-        android:label="CreateWayPointDialogFragment">
+        android:label="CreateWayPointDialogFragment"
+        tools:layout="@layout/dialog_create_waypoint">
         <argument
             android:name="wayPointDTO"
             android:defaultValue="@null"

@@ -6,13 +6,19 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import de.ur.explure.model.comment.CommentDTO
 import de.ur.explure.model.route.Route
+import de.ur.explure.navigation.MainAppRouter
 import de.ur.explure.repository.route.RouteRepositoryImpl
 import de.ur.explure.utils.FirebaseResult
+import de.ur.explure.views.SingleRouteFragmentDirections
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import java.util.*
 
 @Suppress("StringLiteralDuplication")
-class SingleRouteViewModel(private val routeRepository: RouteRepositoryImpl) : ViewModel() {
+class SingleRouteViewModel(
+    private val routeRepository: RouteRepositoryImpl,
+    private var appRouter: MainAppRouter
+) : ViewModel() {
 
     private val mutableRoute: MutableLiveData<Route> = MutableLiveData()
     val route: LiveData<Route> = mutableRoute
@@ -49,5 +55,18 @@ class SingleRouteViewModel(private val routeRepository: RouteRepositoryImpl) : V
                 }
             }
         }
+    }
+
+    fun startNavigation() {
+        val route = mutableRoute.value
+        if (route == null) {
+            Timber.e("Navigation start failed because route object was null!")
+            return
+        }
+        val action = SingleRouteFragmentDirections.actionSingleRouteFragmentToNavigationFragment(
+            route = route,
+            routeTitle = route.title
+        )
+        appRouter.getNavController()?.navigate(action)
     }
 }

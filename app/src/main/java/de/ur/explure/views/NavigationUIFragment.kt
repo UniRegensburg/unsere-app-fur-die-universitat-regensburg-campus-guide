@@ -1,3 +1,6 @@
+// TODO delete this later:
+
+/*
 package de.ur.explure.views
 
 import android.os.Bundle
@@ -16,7 +19,6 @@ import com.mapbox.navigation.ui.map.NavigationMapboxMap
 import de.ur.explure.R
 import de.ur.explure.databinding.FragmentNavigationUiBinding
 
-// TODO leaving this mode completely destroys our app theme and colors for some reason
 class NavigationUIFragment : Fragment(R.layout.fragment_navigation_ui), OnNavigationReadyCallback,
     NavigationListener {
 
@@ -120,3 +122,4 @@ class NavigationUIFragment : Fragment(R.layout.fragment_navigation_ui), OnNaviga
         super.onDestroyView()
     }
 }
+*/
