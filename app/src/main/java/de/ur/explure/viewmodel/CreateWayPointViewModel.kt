@@ -16,6 +16,7 @@ import de.ur.explure.utils.CachedFileUtils
 import timber.log.Timber
 import java.io.File
 
+@Suppress("TooGenericExceptionCaught", "SwallowedException")
 class CreateWayPointViewModel : ViewModel() {
 
     private lateinit var newWayPointDTO: WayPointDTO

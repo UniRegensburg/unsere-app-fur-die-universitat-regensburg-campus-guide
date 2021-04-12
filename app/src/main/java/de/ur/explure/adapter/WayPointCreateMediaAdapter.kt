@@ -20,6 +20,7 @@ import de.ur.explure.model.view.WayPointVideoItem
 import org.koin.core.component.KoinComponent
 import timber.log.Timber
 
+@Suppress("TooGenericExceptionCaught", "SwallowedException")
 class WayPointCreateMediaAdapter(private val mediaListener: WayPointMediaInterface) :
     ListDelegationAdapter<List<WayPointMediaItem>>(), KoinComponent {
 

@@ -15,7 +15,6 @@ import de.ur.explure.utils.CachedFileUtils
 import de.ur.explure.utils.FirebaseResult
 import de.ur.explure.views.CreateRouteFragmentDirections
 import kotlinx.coroutines.launch
-import timber.log.Timber
 
 class CreateRouteViewModel(
     private val appRouter: MainAppRouter,

@@ -35,6 +35,7 @@ import de.ur.explure.utils.showSnackbar
 import de.ur.explure.viewmodel.CreateWayPointViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
+@Suppress("TooManyFunctions")
 class CreateWayPointDialogFragment : DialogFragment(R.layout.dialog_create_waypoint),
     WayPointMediaInterface {
 
@@ -113,10 +114,14 @@ class CreateWayPointDialogFragment : DialogFragment(R.layout.dialog_create_waypo
                 resultsMap.forEach {
                     if (!it.value) {
                         val message = when (it.key) {
-                            Manifest.permission.RECORD_AUDIO -> R.string.audio_permission_not_granted
-                            Manifest.permission.CAMERA -> R.string.camera_permission_not_granted
-                            Manifest.permission.READ_EXTERNAL_STORAGE -> R.string.external_storage_permission_not_granted
-                            else -> R.string.universal_permission_not_granted
+                            Manifest.permission.RECORD_AUDIO ->
+                                R.string.audio_permission_not_granted
+                            Manifest.permission.CAMERA ->
+                                R.string.camera_permission_not_granted
+                            Manifest.permission.READ_EXTERNAL_STORAGE ->
+                                R.string.external_storage_permission_not_granted
+                            else ->
+                                R.string.universal_permission_not_granted
                         }
                         showSnackbar(
                             requireActivity(),
@@ -393,14 +398,14 @@ class CreateWayPointDialogFragment : DialogFragment(R.layout.dialog_create_waypo
         imageResultLauncher.launch(chooser)
     }
 
+    override fun removeMediaItem(item: WayPointMediaItem) {
+        viewModel.deleteMediaItem(item)
+    }
+
     companion object {
         const val COORDINATES_DEFAULT_VALUE: Long = 0L
         const val MAX_VIDEO_SIZE_MB = 50
         const val MAX_VIDEO_SIZE = (MAX_VIDEO_SIZE_MB * 1024 * 1024).toLong()
         const val MAX_VIDEO_LENGTH = 90 // Seconds
-    }
-
-    override fun removeMediaItem(item: WayPointMediaItem) {
-        viewModel.deleteMediaItem(item)
     }
 }

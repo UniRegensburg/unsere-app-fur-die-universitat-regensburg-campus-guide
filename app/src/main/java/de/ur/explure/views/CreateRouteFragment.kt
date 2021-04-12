@@ -32,6 +32,7 @@ import de.ur.explure.viewmodel.CreateRouteViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
 
+@Suppress("TooManyFunctions")
 class CreateRouteFragment : Fragment(R.layout.fragment_create_route) {
 
     private val binding by viewBinding(FragmentCreateRouteBinding::bind)
@@ -41,7 +42,6 @@ class CreateRouteFragment : Fragment(R.layout.fragment_create_route) {
     private lateinit var imageResultLauncher: ActivityResultLauncher<Intent>
 
     private lateinit var multiplePermissionLauncher: ActivityResultLauncher<Array<String>>
-
 
     private lateinit var categoryAdapter: CategorySpinnerAdapter
     private lateinit var wayPointAdapter: WayPointCreateAdapter
@@ -85,9 +85,8 @@ class CreateRouteFragment : Fragment(R.layout.fragment_create_route) {
         imageResultLauncher =
             registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
                 if (result.resultCode == Activity.RESULT_OK) {
-                    val data: Uri = result.data?.data
-                        ?: viewModel.currentTempCameraUri
-                        ?: return@registerForActivityResult
+                    val data: Uri = result.data?.data ?: viewModel.currentTempCameraUri
+                    ?: return@registerForActivityResult
                     viewModel.setImageUri(data)
                 } else {
                     showSnackbar(
@@ -107,9 +106,12 @@ class CreateRouteFragment : Fragment(R.layout.fragment_create_route) {
                 resultsMap.forEach {
                     if (!it.value) {
                         val message = when (it.key) {
-                            Manifest.permission.CAMERA -> R.string.camera_permission_not_granted
-                            Manifest.permission.READ_EXTERNAL_STORAGE -> R.string.external_storage_permission_not_granted
-                            else -> R.string.universal_permission_not_granted
+                            Manifest.permission.CAMERA ->
+                                R.string.camera_permission_not_granted
+                            Manifest.permission.READ_EXTERNAL_STORAGE ->
+                                R.string.external_storage_permission_not_granted
+                            else ->
+                                R.string.universal_permission_not_granted
                         }
                         showSnackbar(
                             requireActivity(),
@@ -133,7 +135,9 @@ class CreateRouteFragment : Fragment(R.layout.fragment_create_route) {
 
     private fun initRouteImageListener() {
         binding.ivRouteImage.setOnClickListener {
-            if (hasCameraPermission(requireContext()) && hasExternalReadPermission(requireContext())) {
+            if (hasCameraPermission(requireContext()) &&
+                hasExternalReadPermission(requireContext())
+            ) {
                 startImageIntent()
             } else {
                 multiplePermissionLauncher.launch(
@@ -206,7 +210,6 @@ class CreateRouteFragment : Fragment(R.layout.fragment_create_route) {
                 binding.ivRouteImage.setImageResource(R.drawable.highlight_square_outline)
                 binding.ivDeleteButton.visibility = View.INVISIBLE
                 binding.ivDeleteButton.isEnabled = false
-
             }
         })
     }
@@ -229,9 +232,9 @@ class CreateRouteFragment : Fragment(R.layout.fragment_create_route) {
         })
     }
 
-    private fun initRouteErrorObserver(){
-        viewModel.showRouteCreationError.observe(viewLifecycleOwner,{ showError ->
-            if (showError){
+    private fun initRouteErrorObserver() {
+        viewModel.showRouteCreationError.observe(viewLifecycleOwner, { showError ->
+            if (showError) {
                 showSnackbar(
                     requireActivity(),
                     R.string.route_creation_error,
@@ -241,13 +244,12 @@ class CreateRouteFragment : Fragment(R.layout.fragment_create_route) {
                 )
                 viewModel.showRouteCreationError.postValue(false)
             }
-
         })
     }
 
-    private fun initCategoryErrorObserver(){
-        viewModel.showCategoryDownloadError.observe(viewLifecycleOwner,{showError ->
-            if (showError){
+    private fun initCategoryErrorObserver() {
+        viewModel.showCategoryDownloadError.observe(viewLifecycleOwner, { showError ->
+            if (showError) {
                 showSnackbar(
                     requireActivity(),
                     R.string.category_download_error,
