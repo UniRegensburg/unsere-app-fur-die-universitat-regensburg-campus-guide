@@ -50,9 +50,11 @@
 
     <!-- Menu Actions -->
     <string name="menu_cancel_route_creation">Routenerstellung abbrechen</string>
+    <string name="menu_cancel_route_editing">Routenbearbeitung abbrechen</string>
     <string name="menu_save_created_route">Route speichern</string>
     <string name="menu_align_created_route">Route automatisch anpassen</string>
     <string name="menu_show_buildings_extrusion">3D Gebäude anzeigen</string>
+    <string name="menu_confirm_route">Route bestätigen</string>
 
     <!-- Location Tracking -->
     <string name="gps_not_activated">GPS ist nicht aktiviert! Bitte aktiviere die Standortfreigabe in den Geräteeinstellungen, um diese Funktion zu nutzen!</string>
@@ -71,7 +73,7 @@
     <string name="build_route_tutorial_title">Routenerstellung</string>
     <string name="build_route_tutorial_description">Hier kannst du mit der Erstellung einer eigenen Route beginnen.</string>
     <string name="action_menu_tutorial_title">Aktionsmöglichkeiten während der Routenerstellung</string>
-    <string name="action_menu_tutorial_description">Hier findest du nützliche Aktionsmöglichkeiten während der Routenerstellung. Du kannst die Routenerstellung abbrechen (x - Symbol), versuchen deine erstellte Route und deine Wegpunkte automatisch an bekannte Wege auf dem Campus anzugleichen (Magnet - Symbol) und die erstellte Route speichern (Disk - Symbol).</string>
+    <string name="action_menu_tutorial_description">Hier findest du nützliche Aktionsmöglichkeiten während der Routenerstellung. Du kannst die Routenerstellung abbrechen (x - Symbol), versuchen deine erstellte Route und deine Wegpunkte automatisch an bekannte Wege auf dem Campus anzugleichen (Magnet - Symbol) oder die erstellte Route bestätigen und mit dem nächsten Schritt weitermachen (Haken - Symbol).</string>
 
     <!-- Route Creation -->
     <string name="route_creation_options">Es gibt 3 Möglichkeiten, um Routen zu erstellen:
@@ -101,10 +103,14 @@
     <string name="map_matching_succeeded">Für die Wegpunkte wurde erfolgreich eine Route erstellt!</string>
     <string name="save_created_route_confirmation">Erstellte Route speichern?</string>
     <string name="create_route_title">Route erstellen</string>
+    <string name="saving_route">Die Route wird gespeichert. Bitte warten …</string>
+    <string name="error_saving_route_snapshot">Beim Speichern der Route ist leider ein Fehler aufgetreten!</string>
+    <string name="route_edit_instructions">Du kannst deiner Route durch Klicken Wegpunkte hinzufügen und diese an eine neue Position ziehen, indem du sie etwas länger anklickst und dann bewegst. Sobald du fertig bist, klicke auf das "Disk"-Symbol oben rechts, um zu speichern.</string>
 
     <!-- Warnings -->
     <string name="attention">Achtung!</string>
     <string name="leave_route_creation_warning">Möchtest du die Routenerstellung abbrechen? Dein bisheriger Fortschritt geht dabei verloren!</string>
+    <string name="leave_route_editing_warning">Wenn du jetzt abbrichst, wird diese Route nicht gespeichert und dein bisheriger Fortschritt geht verloren! Möchtest du wirklich zurückgehen?</string>
     <string name="change_style_during_route_creation">Während der Routenerstellung kann der Kartenstil leider nicht geändert werden!</string>
     <string name="delete_waypoint_confirmation">Möchtest du diesen Wegpunkt wirklich löschen?</string>
     <string name="delete_marker_confirmation">Möchtest du diese Markierung wirklich löschen?</string>
@@ -112,8 +118,11 @@
     <string name="no_internet">Keine Internetverbindung!</string>
     <string name="no_internet_default_explanation">Es konnte keine Internetverbindung hergestellt werden! Überprüfe bitte deine Verbindung und versuch es dann erneut.</string>
     <string name="no_internet_map_matching">Um eine Route erstellen zu können, wird eine Internetverbindung benötigt!</string>
+    <string name="no_internet_save_route">Um die Route speichern zu können, wird eine Internetverbindung benötigt!</string>
     <string name="too_few_waypoints">Es müssen sich mindestens 2 Wegpunkte auf der Karte befinden, damit eine Route erstellt werden kann!</string>
     <string name="too_many_waypoints">Leider kann aktuell keine Route mit so vielen Wegpunkten erstellt werden! Bitte versuche ein paar unnötige Punkte zu entfernen.</string>
+    <string name="no_route_found">Es wurde keine Route gefunden! Du musst erst eine Route erstellen bevor du fortfahren kannst!</string>
+    <string name="confirm_route_creation_warning">Wenn du zum nächsten Schritt der Routenerstellung übergehst und dann wieder zurückkehrst, musst du von vorne mit der Routenerstellung beginnen! Trotzdem fortfahren?</string>
 
     <!-- Buttons and Options -->
     <string name="try_again">Erneut versuchen</string>
@@ -126,6 +135,9 @@
     <string name="save_route">Route speichern</string>
     <string name="reset_manual_route_creation">Möchtest du wirklich alles seit Beginn der Routenerstellung rückgängig machen?</string>
     <string name="reset_map_draw">Möchtest du wirklich alle gezeichneten Routen auf der Karte rückgängig machen?</string>
+    <string name="route_draw_confirm_option">Möchtest du deine eigene Route oder die automatisch daraus generierte Route verwenden?</string>
+    <string name="use_own_route">Eigene Route</string>
+    <string name="use_map_matching">Generierte Route</string>
 
     <string name="confirm">Bestätigen</string>
     <string name="abort">Abbrechen</string>
@@ -204,7 +216,9 @@
     <string name="create_waypoint_save_btn">Speichern</string>
     <string name="create_waypoint_title">Wegpunkt Information</string>
     <string name="create_route_save_btn">Speichern</string>
-
+    <string name="default_waypoint_title">Kein Titel</string>
+    <string name="route_duration_default">N.A.</string>
+    <string name="route_duration_text">Routendauer (in Minuten):</string>
 
     <!-- SearchFragment Strings-->
     <string name="title_page_searchresults">Ergebnisse deiner Suche</string>

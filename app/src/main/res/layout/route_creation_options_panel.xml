@@ -14,17 +14,6 @@
     <!-- the root layout must be clickable in order to consume clicks;
     otherwise it will just pass the click events to the layout below! -->
 
-    <!--
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/route_creation_options_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:padding="4dp"
-        android:text="Optionen"
-        android:textAppearance="@style/TextAppearance.AppCompat.Small"
-        android:textStyle="bold" />-->
-
     <ImageButton
         android:id="@+id/add_marker_button"
         android:layout_width="wrap_content"
@@ -36,6 +25,7 @@
         android:tint="@color/themeColor"
         tools:ignore="ContentDescription" />
 
+    <!-- TODO let user edit points (e.g. dragging) ?
     <ImageButton
         android:id="@+id/edit_marker_button"
         android:layout_width="wrap_content"
@@ -47,12 +37,13 @@
         android:src="@drawable/ic_baseline_edit_location_alt_24"
         android:tint="@color/colorInfo"
         tools:ignore="ContentDescription" />
+        -->
 
     <ImageButton
         android:id="@+id/delete_marker_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/edit_marker_button"
+        android:layout_below="@id/add_marker_button"
         android:layout_centerHorizontal="true"
         android:layout_marginVertical="8dp"
         android:background="@drawable/background_icon_button"
@@ -74,7 +65,7 @@
         android:tint="@color/colorError"
         tools:ignore="ContentDescription" />
 
-    <!-- TODO alternativ auch so möglich mit Text dazu: -->
+    <!-- alternativ auch so möglich mit Text dazu: -->
     <!--
     <TextView
         android:layout_width="wrap_content"

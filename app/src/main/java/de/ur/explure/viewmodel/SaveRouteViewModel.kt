@@ -3,6 +3,7 @@ package de.ur.explure.viewmodel
 import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import de.ur.explure.model.category.Category
@@ -13,10 +14,11 @@ import de.ur.explure.repository.category.CategoryRepositoryImpl
 import de.ur.explure.repository.route.RouteRepositoryImpl
 import de.ur.explure.utils.CachedFileUtils
 import de.ur.explure.utils.FirebaseResult
-import de.ur.explure.views.CreateRouteFragmentDirections
+import de.ur.explure.views.SaveRouteFragmentDirections
 import kotlinx.coroutines.launch
 
-class CreateRouteViewModel(
+class SaveRouteViewModel(
+    private val state: SavedStateHandle,
     private val appRouter: MainAppRouter,
     private val categoryRepo: CategoryRepositoryImpl,
     private val routeRepository: RouteRepositoryImpl
@@ -35,6 +37,11 @@ class CreateRouteViewModel(
     var currentTempCameraUri: Uri? = null
 
     private val routeDTO = RouteDTO()
+
+    var routeTitle: String? = state[ROUTE_TITLE_KEY]
+    var routeDescription: String? = state[ROUTE_DESCRIPTION_KEY]
+    var routeCategory: String? = state[ROUTE_CATEGORY_KEY]
+    var routeDuration: Double? = state[ROUTE_DURATION_KEY]
 
     fun createNewCameraUri(context: Context): Uri {
         val newUri = CachedFileUtils.getNewImageUri(context)
@@ -59,7 +66,7 @@ class CreateRouteViewModel(
 
     fun openWayPointDialogFragment(wayPointDTO: WayPointDTO) {
         val directions =
-            CreateRouteFragmentDirections.actionCreateRouteFragmentToCreateWayPointDialog(
+            SaveRouteFragmentDirections.actionSaveRouteFragmentToCreateWayPointDialog(
                 wayPointDTO
             )
         appRouter.getNavController()?.navigate(
@@ -92,9 +99,15 @@ class CreateRouteViewModel(
         }
     }
 
-    fun setRouteInformation(distance: Double, duration: Double) {
+    fun updateRouteDuration(duration: Double) {
+        routeDTO.duration = duration
+        state[ROUTE_DURATION_KEY] = duration
+    }
+
+    fun setInitialRouteInformation(distance: Double, duration: Double) {
         routeDTO.distance = distance
         routeDTO.duration = duration
+        state[ROUTE_DURATION_KEY] = duration
     }
 
     fun setImageUri(data: Uri) {
@@ -103,17 +116,28 @@ class CreateRouteViewModel(
 
     fun setTitle(title: String) {
         routeDTO.title = title
+        state[ROUTE_TITLE_KEY] = title
     }
 
     fun setDescription(description: String) {
         routeDTO.description = description
+        state[ROUTE_DESCRIPTION_KEY] = description
     }
 
     fun setCategoryId(categoryId: String) {
         routeDTO.category = categoryId
+        state[ROUTE_CATEGORY_KEY] = categoryId
+
     }
 
     fun deleteCurrentUri() {
         currentImageUri.postValue(null)
+    }
+
+    companion object {
+        private const val ROUTE_TITLE_KEY = "routeTitle"
+        private const val ROUTE_DESCRIPTION_KEY = "routeDescription"
+        private const val ROUTE_CATEGORY_KEY = "routeCategory"
+        private const val ROUTE_DURATION_KEY = "routeDuration"
     }
 }

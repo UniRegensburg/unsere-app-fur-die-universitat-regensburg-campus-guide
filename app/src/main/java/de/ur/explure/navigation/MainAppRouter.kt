@@ -1,16 +1,18 @@
 package de.ur.explure.navigation
 
 import androidx.navigation.NavController
-import com.google.firebase.firestore.GeoPoint
+import com.mapbox.core.constants.Constants.PRECISION_6
+import com.mapbox.geojson.LineString
 import de.ur.explure.R
+import de.ur.explure.model.MapMarker
 import de.ur.explure.model.category.Category
-import de.ur.explure.model.waypoint.WayPointDTO
 import de.ur.explure.views.CategoryQueryFragmentDirections
-import de.ur.explure.views.CreateRouteFragmentDirections
 import de.ur.explure.views.CreatedRoutesFragmentDirections
 import de.ur.explure.views.DiscoverFragmentDirections
 import de.ur.explure.views.FavoriteRoutesFragmentDirections
+import de.ur.explure.views.MapFragmentDirections
 import de.ur.explure.views.ProfileFragmentDirections
+import de.ur.explure.views.SaveRouteFragmentDirections
 import de.ur.explure.views.TextQueryFragmentDirections
 
 /**
@@ -124,15 +126,12 @@ class MainAppRouter {
     }
 
     fun navigateToRouteDetails(routeId: String) {
-        val waypoints = WayPointDTO("Sers", GeoPoint(35.0, 49.0), "Sers", null, null, null)
-        val action = DiscoverFragmentDirections.actionDiscoverFragmentToCreateRouteFragment(arrayOf(waypoints), 20L, 0L)
-
-        // val action = DiscoverFragmentDirections.actionDiscoverFragmentToRouteDetails(routeId)
+        val action = DiscoverFragmentDirections.actionDiscoverFragmentToRouteDetails(routeId)
         navController.navigate(action)
     }
 
     fun navigateToRouteDetailsAfterCreation(routeId: String) {
-        val action = CreateRouteFragmentDirections.actionCreateRouteFragmentToSingleRouteFragment(routeId)
+        val action = SaveRouteFragmentDirections.actionSaveRouteFragmentToSingleRouteFragment(routeId)
         navController.navigate(action)
     }
 
@@ -153,6 +152,16 @@ class MainAppRouter {
 
     fun navigateToFavoriteRouteDetails(routeId: String) {
         val action = FavoriteRoutesFragmentDirections.actionFavoriteRoutesFragmentToRouteDetails(routeId)
+        navController.navigate(action)
+    }
+
+    fun navigateToRouteEditFragment(route: LineString, markers: List<MapMarker>?) {
+        val encodedRoute = route.toPolyline(PRECISION_6)
+        val markerArray = markers?.toTypedArray()
+        val action = MapFragmentDirections.actionMapFragmentToEditRouteFragment(
+            routePolyline = encodedRoute,
+            routeMarkers = markerArray
+        )
         navController.navigate(action)
     }
 }
