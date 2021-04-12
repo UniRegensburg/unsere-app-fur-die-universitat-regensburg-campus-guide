@@ -228,4 +228,14 @@
     <!-- Category Strings-->
     <string name="default_title">Kategorie</string>
 
+    <!-- set user date -->
+    <string name="create_profile">Erstelle dein Profil</string>
+    <string name="add_picture_text">Profilbild hinzufügen</string>
+    <string name="profile_picture">Profilbild</string>
+    <string name="set_user_name">Benutzername</string>
+    <string name="text_changes">Du kannst Bild und Benutzernamen später ändern</string>
+    <string name="create_button">Profil erstellen</string>
+    <string name="empty_username">Bitte Benutzernamen eingeben</string>
+    <string name="user_data_error">Beim Erstellen deines Profiles ist etwas schief gelaufen, bitte versuche es später wieder.</string>
+
 </resources>
