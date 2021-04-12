@@ -18,9 +18,10 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_marginVertical="8dp"
+        android:backgroundTint="@color/themeColor"
         android:background="@drawable/background_icon_button"
         android:src="@drawable/ic_pencil"
-        android:tint="@color/themeColor"
+        android:tint="@color/white"
         tools:ignore="ContentDescription" />
 
     <ImageButton
@@ -30,9 +31,10 @@
         android:layout_below="@id/draw_route_button"
         android:layout_centerHorizontal="true"
         android:layout_marginVertical="8dp"
+        android:backgroundTint="@color/colorInfo"
         android:background="@drawable/background_icon_button"
         android:src="@drawable/ic_move_filled"
-        android:tint="@color/colorInfo"
+        android:tint="@color/white"
         tools:ignore="ContentDescription" />
 
     <ImageButton
@@ -42,9 +44,10 @@
         android:layout_below="@id/move_map_button"
         android:layout_centerHorizontal="true"
         android:layout_marginVertical="8dp"
+        android:backgroundTint="@color/colorError"
         android:background="@drawable/background_icon_button"
         android:src="@drawable/ic_pencil_delete"
-        android:tint="@color/colorError"
+        android:tint="@color/white"
         tools:ignore="ContentDescription" />
 
     <!--
@@ -69,10 +72,11 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="24dp"
         android:layout_marginBottom="8dp"
+        android:backgroundTint="@color/colorError"
         android:background="@drawable/background_icon_button"
         android:foreground="?attr/selectableItemBackgroundBorderless"
         android:src="@drawable/ic_baseline_delete_24"
-        android:tint="@color/colorError"
+        android:tint="@color/white"
         tools:ignore="ContentDescription" />
 
 </RelativeLayout>

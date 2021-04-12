@@ -20,9 +20,10 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_marginVertical="8dp"
+        android:backgroundTint="@color/themeColor"
         android:background="@drawable/background_icon_button"
         android:src="@drawable/ic_baseline_add_location_alt_24"
-        android:tint="@color/themeColor"
+        android:tint="@color/white"
         tools:ignore="ContentDescription" />
 
     <!-- TODO let user edit points (e.g. dragging) ?
@@ -46,9 +47,10 @@
         android:layout_below="@id/add_marker_button"
         android:layout_centerHorizontal="true"
         android:layout_marginVertical="8dp"
+        android:backgroundTint="@color/colorError"
         android:background="@drawable/background_icon_button"
         android:src="@drawable/ic_baseline_wrong_location_24"
-        android:tint="@color/colorError"
+        android:tint="@color/white"
         tools:ignore="ContentDescription" />
 
     <ImageButton
@@ -59,10 +61,11 @@
         android:layout_centerHorizontal="true"
         android:layout_marginTop="24dp"
         android:layout_marginBottom="8dp"
+        android:backgroundTint="@color/colorError"
         android:background="@drawable/background_icon_button"
         android:foreground="?attr/selectableItemBackgroundBorderless"
         android:src="@drawable/ic_baseline_delete_24"
-        android:tint="@color/colorError"
+        android:tint="@color/white"
         tools:ignore="ContentDescription" />
 
     <!-- alternativ auch so möglich mit Text dazu: -->
