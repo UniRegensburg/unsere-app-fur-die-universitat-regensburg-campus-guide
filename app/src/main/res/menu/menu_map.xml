@@ -23,17 +23,17 @@
         tools:ignore="AlwaysShowAction" />
 
     <item
-        android:id="@+id/saveRouteButton"
-        android:icon="@drawable/ic_baseline_save_24"
-        android:title="@string/menu_save_created_route"
+        android:id="@+id/showMapMatchedButton"
+        android:icon="@drawable/ic_magnet"
+        android:title="@string/menu_align_created_route"
         android:visible="false"
         app:showAsAction="always"
         tools:visible="true" />
 
     <item
-        android:id="@+id/showMapMatchedButton"
-        android:icon="@drawable/ic_magnet"
-        android:title="@string/menu_align_created_route"
+        android:id="@+id/confirmRouteButton"
+        android:icon="@drawable/ic_baseline_done_24"
+        android:title="@string/menu_confirm_route"
         android:visible="false"
         app:showAsAction="always"
         tools:visible="true" />

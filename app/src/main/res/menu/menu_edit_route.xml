@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <item
+        android:id="@+id/cancelRouteEditButton"
+        android:icon="@drawable/ic_baseline_close_24"
+        android:title="@string/menu_cancel_route_editing"
+        app:showAsAction="always"
+        tools:ignore="AlwaysShowAction" />
+
+    <item
+        android:id="@+id/saveRouteButton"
+        android:icon="@drawable/ic_baseline_save_24"
+        android:title="@string/menu_save_created_route"
+        app:showAsAction="always" />
+
+    <item
+        android:id="@+id/showBuildings"
+        android:icon="@drawable/ic_baseline_domain_24"
+        android:title="@string/menu_show_buildings_extrusion"
+        android:checkable="true"
+        android:checked="true"
+        android:visible="true"
+        app:showAsAction="never" />
+
+</menu>

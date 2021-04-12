@@ -39,7 +39,11 @@ class CreateWayPointDialogFragment : DialogFragment(R.layout.dialog_create_waypo
         val latitude: Long = args.latitude
         val longitude: Long = args.longitude
         if (latitude != COORDINATES_DEFAULT_VALUE && longitude != COORDINATES_DEFAULT_VALUE) {
-            viewModel.initNewWayPointDTO(longitude.toDouble(), latitude.toDouble())
+            viewModel.initNewWayPointDTO(
+                longitude.toDouble(),
+                latitude.toDouble(),
+                getString(R.string.default_waypoint_title)
+            )
         } else if (wayPointDTO != null) {
             viewModel.initWayPointDTOEdit(wayPointDTO)
         } else {
@@ -94,10 +98,13 @@ class CreateWayPointDialogFragment : DialogFragment(R.layout.dialog_create_waypo
         binding.btnSaveWaypoint.setOnClickListener {
             val title = binding.etWayPointTitle.text.toString()
             viewModel.setTitle(title)
+            val description = binding.etWayPointDescription.text.toString()
+            viewModel.setDescription(description)
+
             val wayPointDTO = viewModel.newWayPointDTO.value
             if (wayPointDTO != null) {
                 findNavController().previousBackStackEntry?.savedStateHandle?.set(
-                    CreateRouteFragment.WAYPOINT_EDIT_KEY, wayPointDTO
+                    SaveRouteFragment.WAYPOINT_EDIT_KEY, wayPointDTO
                 )
             }
             dismiss()
