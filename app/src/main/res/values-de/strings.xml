@@ -16,7 +16,7 @@
     <string name="test_route_timestamp">14.01.2021 15:15</string>
 
     <!-- Statistics Page -->
-    <string name="statistics">Statistiken</string>
+    <string name="statistics">Statistik Überblick</string>
     <string name="distance">Distanz</string>
     <string name="covered_track">Zurückgelegte Strecke</string>
     <string name="covered_track_value">0m</string>
