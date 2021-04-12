@@ -166,6 +166,9 @@
     <string name="sign_up_button">Register?</string>
     <string name="register_text">Register</string>
     <string name="new_email">Email</string>
+    <string name="delete_account">Delete Account</string>
+    <string name="delete_text">Deleting your account will remove your information from the database. This cannot be undone</string>
+    <string name="account_deleted">Account has been deleted</string>
 
     <string name="new_password">Password</string>
     <string name="confirm_password">Conform password</string>

@@ -175,6 +175,9 @@
     <string name="email_sent">Email wurde gesendet</string>
     <string name="registration_failed">Registrierung fehlgeschlagen</string>
     <string name="changeUserName">Benutzernamen ändern</string>
+    <string name="delete_account">Account löschen</string>
+    <string name="delete_text">Wenn du dein Konto löschen, werden deine Informationen aus der Datenbank entfernt. Dies kann nicht rückgängig gemacht werden</string>
+    <string name="account_deleted">Account wurde gelöscht</string>
 
     <!-- Single Route -->
     <string name="route_name">Route</string>

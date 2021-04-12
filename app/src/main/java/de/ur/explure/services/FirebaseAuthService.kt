@@ -82,6 +82,10 @@ class FirebaseAuthService(private val firebaseAuth: FirebaseAuth) {
         firebaseAuth.signOut()
     }
 
+    fun delete() {
+       firebaseAuth.currentUser?.delete()
+    }
+
     fun getCurrentUserId(): String? = currentUser.value?.uid
 
     fun getCurrentUserEmail(): String? = currentUser.value?.email
