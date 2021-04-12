@@ -8,7 +8,12 @@ import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.Style
 import de.ur.explure.map.LocationManager
+import de.ur.explure.map.MapMatchingClient
 import de.ur.explure.map.MarkerManager
+import de.ur.explure.map.PermissionHelper
+import de.ur.explure.map.RouteDrawManager
+import de.ur.explure.map.RouteLineManager
+import de.ur.explure.map.WaypointsController
 import de.ur.explure.navigation.MainAppRouter
 import de.ur.explure.repository.category.CategoryRepositoryImpl
 import de.ur.explure.repository.rating.RatingRepositoryImpl
@@ -17,8 +22,21 @@ import de.ur.explure.repository.user.UserRepositoryImpl
 import de.ur.explure.services.FireStoreInstance
 import de.ur.explure.services.FirebaseAuthService
 import de.ur.explure.utils.SharedPreferencesManager
-import de.ur.explure.viewmodel.*
+import de.ur.explure.viewmodel.AuthenticationViewModel
+import de.ur.explure.viewmodel.CreateRouteViewModel
+import de.ur.explure.viewmodel.CreateWayPointViewModel
+import de.ur.explure.viewmodel.DiscoverViewModel
+import de.ur.explure.viewmodel.CategoryViewModel
+import de.ur.explure.viewmodel.MainViewModel
+import de.ur.explure.viewmodel.MapViewModel
+import de.ur.explure.viewmodel.SingleRouteViewModel
+import de.ur.explure.viewmodel.WordSearchViewModel
 import org.koin.android.ext.koin.androidApplication
+import de.ur.explure.viewmodel.ProfileViewModel
+import de.ur.explure.viewmodel.CreatedRoutesViewModel
+import de.ur.explure.viewmodel.FavoriteRoutesViewModel
+import de.ur.explure.viewmodel.StatisticsViewModel
+import de.ur.explure.viewmodel.UserDataViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
@@ -33,9 +51,18 @@ val mainModule = module {
     factory { (mapView: MapView, map: MapboxMap, mapStyle: Style) ->
         MarkerManager(androidApplication(), mapView, map, mapStyle)
     }
+    factory { (mapView: MapView, map: MapboxMap, mapStyle: Style) ->
+        RouteLineManager(androidApplication(), mapView, map, mapStyle)
+    }
+    factory { (mapView: MapView, map: MapboxMap) ->
+        RouteDrawManager(mapView, map)
+    }
     factory { (callback: (Location) -> Unit) ->
         LocationManager(androidApplication(), callback)
     }
+    single { PermissionHelper() }
+    single { WaypointsController() }
+    single { MapMatchingClient(androidApplication()) }
 
     // navigation router
     single { MainAppRouter() }
@@ -58,7 +85,7 @@ val mainModule = module {
     viewModel { WordSearchViewModel(get(), get()) }
     viewModel { CategoryViewModel(get(), get()) }
     viewModel { DiscoverViewModel(get(), get(), get()) }
-    viewModel { MainViewModel(get(), get()) }
+    viewModel { MainViewModel(get(), get(), get()) }
     viewModel { MapViewModel(get()) }
     viewModel { CreateRouteViewModel(get(), get(), get()) }
     viewModel { CreateWayPointViewModel() }
@@ -67,4 +94,5 @@ val mainModule = module {
     viewModel { FavoriteRoutesViewModel(get(), get(), get()) }
     viewModel { StatisticsViewModel(get(), get(), get(), get()) }
     viewModel { SingleRouteViewModel(get()) }
+    viewModel { UserDataViewModel(get(), get()) }
 }

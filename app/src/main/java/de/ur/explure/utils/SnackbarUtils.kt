@@ -3,6 +3,7 @@
 package de.ur.explure.utils
 
 import android.app.Activity
+import android.content.Context
 import android.view.View
 import android.widget.TextView
 import androidx.annotation.ColorRes
@@ -19,8 +20,39 @@ object SnackBarConstants {
      * https://stackoverflow.com/questions/4486034/get-root-view-from-current-activity
      */
     const val defaultAnchorViewID = android.R.id.content
-    const val defaultBackgroundColor = R.color.themeColor
+    const val defaultBackgroundColor = R.color.themeColorDark
     const val SNACKBAR_MAX_LINES = 4
+}
+
+inline fun showSnackbar(
+    message: String,
+    anchorView: View,
+    length: Int = Snackbar.LENGTH_SHORT,
+    @ColorRes colorRes: Int? = defaultBackgroundColor,
+    f: Snackbar.() -> Unit = {}
+): Snackbar {
+    val snackbar = Snackbar.make(anchorView, message, length)
+    snackbar.setBackgroundColor(colorRes)
+    // set the snackbar's textview max. lines size up to 4 (instead of 2)
+    snackbar.view.findViewById<TextView>(R.id.snackbar_text).maxLines = SNACKBAR_MAX_LINES
+
+    // invoke callback if any
+    snackbar.f()
+    snackbar.show()
+
+    return snackbar
+}
+
+inline fun showSnackbar(
+    context: Context,
+    @StringRes messageRes: Int,
+    anchorView: View,
+    length: Int = Snackbar.LENGTH_SHORT,
+    @ColorRes colorRes: Int? = defaultBackgroundColor,
+    f: Snackbar.() -> Unit = {}
+): Snackbar {
+    val message = context.resources.getString(messageRes)
+    return showSnackbar(message, anchorView, length, colorRes, f)
 }
 
 inline fun showSnackbar(
@@ -30,18 +62,9 @@ inline fun showSnackbar(
     length: Int = Snackbar.LENGTH_SHORT,
     @ColorRes colorRes: Int? = defaultBackgroundColor,
     f: Snackbar.() -> Unit = {}
-) {
-    val snackbar = Snackbar.make(context.findViewById(anchorViewId), message, length)
-    if (colorRes != null) {
-        snackbar.view.setBackgroundColor(context.resources.getColor(colorRes, null))
-    }
-
-    // set the snackbar's textview max. lines size up to 4 (instead of 2)
-    snackbar.view.findViewById<TextView>(R.id.snackbar_text).maxLines = SNACKBAR_MAX_LINES
-
-    // invoke callback if any
-    snackbar.f()
-    snackbar.show()
+): Snackbar? {
+    val view = context.findViewById<View>(anchorViewId) ?: return null
+    return showSnackbar(message, view, length, colorRes, f)
 }
 
 inline fun showSnackbar(
@@ -49,19 +72,19 @@ inline fun showSnackbar(
     @StringRes messageRes: Int,
     anchorViewId: Int = defaultAnchorViewID,
     length: Int = Snackbar.LENGTH_SHORT,
-    @ColorRes colorRes: Int? = null,
+    @ColorRes colorRes: Int? = defaultBackgroundColor,
     f: Snackbar.() -> Unit = {}
-) {
-    val message = context.resources.getString(messageRes)
-    showSnackbar(context, message, anchorViewId, length, colorRes, f)
+): Snackbar? {
+    val message = context.getString(messageRes)
+    return showSnackbar(context, message, anchorViewId, length, colorRes, f)
 }
 
 /**
  * Can be used like this:
  *
  * ```
- * showSnackbar(...) {
- *      withAction("Ok") { // do something if Ok button clicked }
+ * showSnackbar(...).withAction("Ok") {
+ *      // do something if Ok button clicked }
  * }
  * ```
  */
@@ -69,4 +92,30 @@ fun Snackbar.withAction(action: String, color: Int? = null, listener: ((View) ->
     val actionListener = listener ?: {}
     setAction(action, actionListener)
     color?.let { setActionTextColor(color) }
+}
+
+fun Snackbar.withAction(
+    @StringRes action: Int,
+    color: Int? = null,
+    listener: ((View) -> Unit)? = null
+) {
+    val actionListener = listener ?: {}
+    setAction(action, actionListener)
+    color?.let { setActionTextColor(color) }
+}
+
+fun Snackbar.setBackgroundColor(@ColorRes colorRes: Int? = defaultBackgroundColor) {
+    if (colorRes != null) {
+        view.setBackgroundColor(context.resources.getColor(colorRes, null))
+    }
+}
+
+fun Snackbar.updateSnackbar(newText: String, @ColorRes colorRes: Int? = null) {
+    setText(newText)
+    colorRes?.let { setBackgroundColor(it) }
+}
+
+fun Snackbar.updateSnackbar(@StringRes newText: Int, @ColorRes colorRes: Int? = null) {
+    setText(newText)
+    colorRes?.let { setBackgroundColor(it) }
 }

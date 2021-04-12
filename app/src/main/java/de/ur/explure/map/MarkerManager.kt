@@ -2,26 +2,30 @@ package de.ur.explure.map
 
 import android.app.Application
 import android.graphics.BitmapFactory
-import android.widget.Toast
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.mapbox.mapboxsdk.geometry.LatLng
 import com.mapbox.mapboxsdk.maps.MapView
 import com.mapbox.mapboxsdk.maps.MapboxMap
 import com.mapbox.mapboxsdk.maps.Style
+import com.mapbox.mapboxsdk.plugins.annotation.OnSymbolClickListener
 import com.mapbox.mapboxsdk.plugins.annotation.Symbol
 import com.mapbox.mapboxsdk.plugins.annotation.SymbolManager
 import com.mapbox.mapboxsdk.plugins.annotation.SymbolOptions
 import com.mapbox.mapboxsdk.style.layers.Property
 import de.ur.explure.R
+import de.ur.explure.extensions.moveCameraToPosition
+import de.ur.explure.model.MapMarker
+import de.ur.explure.views.MapFragment.Companion.selectedMarkerZoom
 
 // use the application context instead of the activity context to make sure it doesn't leak memory,
 // see https://proandroiddev.com/everything-you-need-to-know-about-memory-leaks-in-android-d7a59faaf46a
 class MarkerManager(
     private val context: Application,
-    mapView: MapView,
-    map: MapboxMap,
-    private var mapStyle: Style
+    private val mapView: MapView,
+    private val map: MapboxMap,
+    private val mapStyle: Style
 ) : DefaultLifecycleObserver {
 
     private val symbolManager: SymbolManager = SymbolManager(mapView, map, mapStyle).apply {
@@ -32,9 +36,13 @@ class MarkerManager(
         iconRotationAlignment = Property.ICON_ROTATION_ALIGNMENT_VIEWPORT
     }
 
+    private var symbolClickListenerBehavior: OnSymbolClickListener? = null
+
+    // TODO for testing: this list size should ALWAYS equal the mapMarkers list size in the viewmodel!
+    private val activeMarkers: MutableList<Symbol> = mutableListOf()
+
     init {
         initMapSymbols()
-        initListeners()
     }
 
     private fun initMapSymbols() {
@@ -45,14 +53,29 @@ class MarkerManager(
             }
     }
 
-    private fun initListeners() {
-        symbolManager.addClickListener(this::onMarkerClickListener)
-        symbolManager.addLongClickListener(this::onMarkerLongClickListener)
-        // symbolManager.addDragListener(this::onSymbolDragged)
-    }
-
     fun addMarker(coordinate: LatLng): Symbol? {
         return createMarker(coordinate)
+    }
+
+    fun deleteMarker(marker: Symbol) {
+        symbolManager.delete(marker)
+        activeMarkers.remove(marker)
+    }
+
+    fun removeWaypointMarker(waypointMarker: MapMarker) {
+        val markerSymbol = activeMarkers.find {
+            it.latLng == waypointMarker.markerPosition
+        }
+
+        if (markerSymbol != null) {
+            activeMarkers.remove(markerSymbol)
+            deleteMarker(markerSymbol)
+        }
+    }
+
+    fun deleteAllMarkers() {
+        symbolManager.deleteAll()
+        activeMarkers.clear()
     }
 
     fun addMarkers(markerCoordinates: List<LatLng>?) {
@@ -62,7 +85,7 @@ class MarkerManager(
     }
 
     private fun createMarker(coordinate: LatLng): Symbol? {
-        return symbolManager.create(
+        val newMarker = symbolManager.create(
             SymbolOptions()
                 .withLatLng(coordinate)
                 .withIconImage(ID_ICON)
@@ -71,28 +94,48 @@ class MarkerManager(
                 // TODO right now draggable=true spawns a new marker; this seems to be an open issue
                 .withDraggable(false)
         )
+        activeMarkers.add(newMarker)
+        return newMarker
     }
 
-    private fun onMarkerClickListener(marker: Symbol): Boolean {
-        Toast.makeText(
-            context,
-            "Clicked on marker ${marker.id}",
-            Toast.LENGTH_SHORT
-        ).show()
-        return false
+    fun setDefaultMarkerClickListenerBehavior() {
+        // remove the active click listener behavior first before setting a new one;
+        // otherwise only the click listener behavior that was first set would be used!
+        symbolClickListenerBehavior?.let { symbolManager.removeClickListener(it) }
+
+        symbolClickListenerBehavior = OnSymbolClickListener {
+            map.moveCameraToPosition(it.latLng, selectedMarkerZoom)
+            // true to consume the click so the map onClick - Listener won't be called!
+            true
+        }
+        symbolClickListenerBehavior?.let { symbolManager.addClickListener(it) }
     }
 
-    // TODO deleting a marker should probably happen via its info window (e.g. a small
-    //  'delete this marker'- button at the bottom)
-    private fun onMarkerLongClickListener(marker: Symbol): Boolean {
-        // remove a marker on long click
-        symbolManager.delete(marker)
-        return false
+    fun setDeleteMarkerClickListenerBehavior(onMarkerDeleted: (marker: Symbol) -> Unit) {
+        symbolClickListenerBehavior?.let { symbolManager.removeClickListener(it) }
+
+        symbolClickListenerBehavior = OnSymbolClickListener {
+            // Hier kann der applicationcontext nicht verwendet werden, da der materialAlertDialogBuilder
+            // sonst ein AppCompatTheme als BaseTheme erwartet und crashen würde!
+            with(MaterialAlertDialogBuilder(mapView.context)) {
+                setMessage(R.string.delete_marker_confirmation)
+                setPositiveButton(R.string.yes) { _, _ ->
+                    deleteMarker(it)
+                    onMarkerDeleted(it)
+                }
+                setNegativeButton(R.string.cancel) { _, _ -> }
+                show()
+            }
+            true
+        }
+        symbolClickListenerBehavior?.let { symbolManager.addClickListener(it) }
     }
 
     override fun onDestroy(owner: LifecycleOwner) {
         super.onDestroy(owner)
-        symbolManager.onDestroy() // cleanup to prevent leaks
+        // cleanup to prevent leaks (removes click listeners and the annotation manager)
+        symbolManager.onDestroy()
+        // activeMarkers.clear()
     }
 
     companion object {
