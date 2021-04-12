@@ -170,8 +170,6 @@
     <string name="registration_failed">Registration failed</string>
     <string name="changeUserName">Change user name</string>
 
-    <string name="yes">YES</string>
-    <string name="no">NO</string>
     <string name="confirm">Confirm</string>
     <string name="abort">Abort</string>
 
