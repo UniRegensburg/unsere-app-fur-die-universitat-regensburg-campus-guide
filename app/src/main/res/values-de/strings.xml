@@ -122,6 +122,7 @@
     <string name="too_few_waypoints">Es müssen sich mindestens 2 Wegpunkte auf der Karte befinden, damit eine Route erstellt werden kann!</string>
     <string name="too_many_waypoints">Leider kann aktuell keine Route mit so vielen Wegpunkten erstellt werden! Bitte versuche ein paar unnötige Punkte zu entfernen.</string>
     <string name="no_route_found">Es wurde keine Route gefunden! Du musst erst eine Route erstellen bevor du fortfahren kannst!</string>
+    <string name="not_yet_implemented">"Dieses Feature ist leider noch nicht implementiert!"</string>
     <string name="confirm_route_creation_warning">Wenn du zum nächsten Schritt der Routenerstellung übergehst und dann wieder zurückkehrst, musst du von vorne mit der Routenerstellung beginnen! Trotzdem fortfahren?</string>
 
     <!-- Buttons and Options -->
