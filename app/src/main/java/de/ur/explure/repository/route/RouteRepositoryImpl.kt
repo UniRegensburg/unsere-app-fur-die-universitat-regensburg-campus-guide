@@ -1,5 +1,7 @@
 package de.ur.explure.repository.route
 
+import android.graphics.Bitmap
+import android.net.Uri
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldPath
@@ -7,6 +9,7 @@ import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.QueryDocumentSnapshot
 import com.google.firebase.firestore.QuerySnapshot
 import com.google.firebase.firestore.WriteBatch
+import com.google.firebase.storage.FirebaseStorage
 import de.ur.explure.config.ErrorConfig
 import de.ur.explure.config.FirebaseCollections.ANSWER_COLLECTION_NAME
 import de.ur.explure.config.FirebaseCollections.COMMENT_COLLECTION_NAME
@@ -23,12 +26,14 @@ import de.ur.explure.services.FireStoreInstance
 import de.ur.explure.services.FirebaseAuthService
 import de.ur.explure.utils.FirebaseResult
 import timber.log.Timber
-import java.util.Date
+import java.io.ByteArrayOutputStream
+import java.util.*
 
 @Suppress("TooGenericExceptionCaught", "UnnecessaryParentheses", "ReturnCount")
 class RouteRepositoryImpl(
     private val authService: FirebaseAuthService,
-    private val fireStore: FireStoreInstance
+    private val fireStore: FireStoreInstance,
+    private val fireStorage: FirebaseStorage
 ) : RouteRepository {
 
     /**
@@ -330,6 +335,32 @@ class RouteRepositoryImpl(
                 }
                 is FirebaseResult.Error -> FirebaseResult.Error(categoryResult.exception)
                 is FirebaseResult.Canceled -> FirebaseResult.Canceled(categoryResult.exception)
+            }
+        } catch (exception: Exception) {
+            FirebaseResult.Error(exception)
+        }
+    }
+
+    override suspend fun uploadRouteThumbnail(bitmap: Bitmap): FirebaseResult<Uri> {
+        return try {
+            val userId = authService.getCurrentUserId() ?: return ErrorConfig.NO_USER_RESULT
+            val secretId = UUID.randomUUID().toString()
+            val storageRef = fireStorage.reference.child("route_thumbnails/$userId-$secretId")
+
+            // TODO should probably save to file first so we don't need to keep all of this in memory!
+            val baos = ByteArrayOutputStream()
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
+            val byteArray = baos.toByteArray()
+            // val byteArray = bitmap.convertToByteArray()
+            bitmap.recycle()
+            val uploadTask = storageRef.putBytes(byteArray)
+
+            when (val uploadResult = uploadTask.await()) {
+                is FirebaseResult.Success -> {
+                    uploadResult.data.storage.downloadUrl.await()
+                }
+                is FirebaseResult.Error -> FirebaseResult.Error(uploadResult.exception)
+                is FirebaseResult.Canceled -> FirebaseResult.Canceled(uploadResult.exception)
             }
         } catch (exception: Exception) {
             FirebaseResult.Error(exception)

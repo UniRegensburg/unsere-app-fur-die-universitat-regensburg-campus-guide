@@ -5,27 +5,27 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import de.ur.explure.adapter.RouteCreationAdapter.ViewHolder.Companion.from
+import de.ur.explure.adapter.RouteEditAdapter.ViewHolder.Companion.from
 import de.ur.explure.databinding.WaypointListItemBinding
-import de.ur.explure.model.MapMarker
+import de.ur.explure.model.waypoint.WayPointDTO
 import de.ur.explure.utils.ItemDragHelper
-import java.util.*
+import de.ur.explure.utils.reorderList
 
-typealias onItemClickCallback = (waypointMarker: MapMarker, adapterPosition: Int) -> Unit
+typealias onItemClickCallback = (waypoint: WayPointDTO, adapterPosition: Int) -> Unit
 
-class RouteCreationAdapter(
+class RouteEditAdapter(
     private val onDragListener: ItemDragHelper.OnDragStartListener,
     private val onDeleteListener: OnDeleteItemListener,
     private val callback: onItemClickCallback
-) : RecyclerView.Adapter<RouteCreationAdapter.ViewHolder>(), ItemDragHelper.CustomDragListener {
+) : RecyclerView.Adapter<RouteEditAdapter.ViewHolder>(), ItemDragHelper.CustomDragListener {
 
-    var waypointMarkerList = emptyList<MapMarker>()
+    var waypointList = emptyList<WayPointDTO>()
         set(value) {
             field = value
             notifyDataSetChanged()
         }
 
-    override fun getItemCount(): Int = waypointMarkerList.size
+    override fun getItemCount(): Int = waypointList.size
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return from(parent)
@@ -35,7 +35,7 @@ class RouteCreationAdapter(
      * Replace the contents of a view (this is invoked by the layout manager)
      */
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
-        val item = waypointMarkerList[position]
+        val item = waypointList[position]
         viewHolder.bind(item, callback, onDragListener, onDeleteListener)
     }
 
@@ -45,25 +45,19 @@ class RouteCreationAdapter(
 
         @SuppressLint("ClickableViewAccessibility")
         fun bind(
-            waypointMarker: MapMarker,
+            waypoint: WayPointDTO,
             callback: onItemClickCallback,
             dragListener: ItemDragHelper.OnDragStartListener,
             deleteListener: OnDeleteItemListener,
         ) {
-            val waypoint = waypointMarker.wayPoint
             // setup the view
             binding.waypointTitle.text = waypoint.title
             binding.waypointDescription.text = waypoint.description
 
-            // TODO get the waypoint imageUrl and show it in the recycler item ?
-            /*
-            val iconIdentifier = itemView.context.resources.getIdentifier(
-                waypoint.imageURL,
-                "drawable",
-                itemView.context.packageName
-            )
-            binding.waypointImage.setImageResource(iconIdentifier)
-            */
+            itemView.setOnClickListener {
+                // invoke the given callback on item click
+                callback(waypoint, layoutPosition)
+            }
 
             // allow drag & drop with the drag handle icon
             binding.waypointDragHandleIcon.setOnTouchListener { _, event ->
@@ -73,24 +67,15 @@ class RouteCreationAdapter(
                 true
             }
 
-            itemView.setOnClickListener {
-                // invoke the given callback on item click
-                callback(waypointMarker, layoutPosition)
-            }
-
             // allow removing items by clicking on the delete icon
             binding.waypointDeleteIcon.setOnClickListener {
-                deleteListener.onItemDeleted(waypointMarker, layoutPosition)
+                deleteListener.onItemDeleted(waypoint, layoutPosition)
             }
         }
 
         companion object {
             fun from(parent: ViewGroup): ViewHolder {
-                val binding = WaypointListItemBinding.inflate(
-                    LayoutInflater.from(parent.context),
-                    parent,
-                    false
-                )
+                val binding = WaypointListItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
                 return ViewHolder(binding)
             }
         }
@@ -98,15 +83,7 @@ class RouteCreationAdapter(
 
     // update the waypoint list after drag & drop event has finished
     override fun onRowMoved(fromPosition: Int, toPosition: Int) {
-        if (fromPosition < toPosition) {
-            for (i in fromPosition until toPosition) {
-                Collections.swap(waypointMarkerList, i, i + 1)
-            }
-        } else {
-            for (i in fromPosition downTo toPosition + 1) {
-                Collections.swap(waypointMarkerList, i, i - 1)
-            }
-        }
+        reorderList(waypointList, fromPosition, toPosition)
         notifyItemMoved(fromPosition, toPosition)
     }
 
@@ -119,6 +96,6 @@ class RouteCreationAdapter(
     }
 
     interface OnDeleteItemListener {
-        fun onItemDeleted(waypointMarker: MapMarker, layoutPosition: Int)
+        fun onItemDeleted(waypoint: WayPointDTO, layoutPosition: Int)
     }
 }

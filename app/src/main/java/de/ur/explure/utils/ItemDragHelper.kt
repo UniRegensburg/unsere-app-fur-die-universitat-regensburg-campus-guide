@@ -3,9 +3,9 @@ package de.ur.explure.utils
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import de.ur.explure.R
-import de.ur.explure.adapter.RouteCreationAdapter
+import de.ur.explure.adapter.RouteEditAdapter
 
-class ItemDragHelper(private val adapter: RouteCreationAdapter) : ItemTouchHelper.Callback() {
+class ItemDragHelper(private val adapter: RouteEditAdapter) : ItemTouchHelper.Callback() {
 
     override fun getMovementFlags(
         recyclerView: RecyclerView,
@@ -44,7 +44,7 @@ class ItemDragHelper(private val adapter: RouteCreationAdapter) : ItemTouchHelpe
 
     override fun onSelectedChanged(viewHolder: RecyclerView.ViewHolder?, actionState: Int) {
         if (actionState != ItemTouchHelper.ACTION_STATE_IDLE) {
-            if (viewHolder is RouteCreationAdapter.ViewHolder) {
+            if (viewHolder is RouteEditAdapter.ViewHolder) {
                 adapter.onRowSelected(viewHolder)
 
                 viewHolder.itemView.elevation = 1f
@@ -60,18 +60,18 @@ class ItemDragHelper(private val adapter: RouteCreationAdapter) : ItemTouchHelpe
         viewHolder.itemView.elevation = 0f
         viewHolder.itemView.setBackgroundResource(R.drawable.ripple_effect)
 
-        if (viewHolder is RouteCreationAdapter.ViewHolder) {
+        if (viewHolder is RouteEditAdapter.ViewHolder) {
             adapter.onRowClear(viewHolder)
         }
     }
 
     interface OnDragStartListener {
-        fun onStartDrag(viewHolder: RouteCreationAdapter.ViewHolder)
+        fun onStartDrag(viewHolder: RouteEditAdapter.ViewHolder)
     }
 
     interface CustomDragListener {
         fun onRowMoved(fromPosition: Int, toPosition: Int)
-        fun onRowSelected(itemViewHolder: RouteCreationAdapter.ViewHolder)
-        fun onRowClear(itemViewHolder: RouteCreationAdapter.ViewHolder)
+        fun onRowSelected(itemViewHolder: RouteEditAdapter.ViewHolder)
+        fun onRowClear(itemViewHolder: RouteEditAdapter.ViewHolder)
     }
 }

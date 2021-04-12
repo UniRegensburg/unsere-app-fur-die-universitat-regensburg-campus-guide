@@ -2,19 +2,21 @@ package de.ur.explure.model
 
 import android.os.Parcel
 import android.os.Parcelable
+import com.google.firebase.firestore.GeoPoint
 import com.mapbox.mapboxsdk.geometry.LatLng
-import de.ur.explure.model.waypoint.WayPoint
+import de.ur.explure.model.waypoint.WayPointDTO
 
 data class MapMarker(
     val id: String = "",
-    val wayPoint: WayPoint = WayPoint(),
+    val wayPoint: WayPointDTO = WayPointDTO("", GeoPoint(0.0, 0.0)),
     // val markerSymbol: Symbol, // not parcelizable
     val markerPosition: LatLng = LatLng(0.0, 0.0)
 ) : Parcelable {
 
     constructor(parcel: Parcel) : this(
         parcel.readString() ?: "",
-        parcel.readParcelable(WayPoint::class.java.classLoader) ?: WayPoint(),
+        parcel.readParcelable(WayPointDTO::class.java.classLoader)
+            ?: WayPointDTO("", GeoPoint(0.0, 0.0)),
         LatLng(parcel.readDouble(), parcel.readDouble())
     )
 

@@ -3,17 +3,17 @@ package de.ur.explure.extensions
 import android.view.View
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 
-fun BottomSheetBehavior<View>.initHidden() {
+fun <T : View> BottomSheetBehavior<T>.initHidden() {
     state = BottomSheetBehavior.STATE_HIDDEN
     peekHeight = 0
 }
 
-fun BottomSheetBehavior<View>.hide() {
+fun <T : View> BottomSheetBehavior<T>.hide() {
     isHideable = true
     state = BottomSheetBehavior.STATE_HIDDEN
 }
 
-fun BottomSheetBehavior<View>.show(onStateChangedCallback: ((state: Int) -> Unit)? = null) {
+fun <T : View> BottomSheetBehavior<T>.show(onStateChangedCallback: ((state: Int) -> Unit)? = null) {
     state = BottomSheetBehavior.STATE_HALF_EXPANDED
 
     onStateChangedCallback?.let { callback ->
@@ -27,13 +27,4 @@ fun BottomSheetBehavior<View>.show(onStateChangedCallback: ((state: Int) -> Unit
             }
         })
     }
-}
-
-/**
- * e.g. `bottomSheet.showCompletely(height = bottomSheet.height)`
- */
-fun BottomSheetBehavior<View>.showCompletely(height: Int) {
-    peekHeight = height
-    state = BottomSheetBehavior.STATE_EXPANDED
-    isHideable = false
 }
