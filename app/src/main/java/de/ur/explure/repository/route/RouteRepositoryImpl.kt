@@ -17,6 +17,7 @@ import de.ur.explure.config.FirebaseCollections.WAYPOINT_COLLECTION_NAME
 import de.ur.explure.config.FirestoreStorageDirectories
 import de.ur.explure.config.RouteDocumentConfig
 import de.ur.explure.extensions.await
+import de.ur.explure.extensions.toRouteObject
 import de.ur.explure.model.comment.Comment
 import de.ur.explure.model.comment.CommentDTO
 import de.ur.explure.model.rating.RatingValues
@@ -82,7 +83,7 @@ class RouteRepositoryImpl(
             when (val routeCall = fireStore.routeCollection.document(routeId).get().await()) {
                 is FirebaseResult.Success -> {
                     if (getAsPreview) {
-                        val routeList = routeCall.data.toObject(Route::class.java)
+                        val routeList = routeCall.data.toRouteObject()
                             ?: return ErrorConfig.DESERIALIZATION_FAILED_RESULT
                         FirebaseResult.Success(routeList)
                     } else {
@@ -253,7 +254,7 @@ class RouteRepositoryImpl(
         val comments =
             getComments(data.id) ?: mutableListOf()
         val routeObject =
-            data.toObject(Route::class.java) ?: return ErrorConfig.DESERIALIZATION_FAILED_RESULT
+            data.toRouteObject() ?: return ErrorConfig.DESERIALIZATION_FAILED_RESULT
         routeObject.fillComments(comments)
         routeObject.fillWayPoints(wayPoints)
         return FirebaseResult.Success(routeObject)

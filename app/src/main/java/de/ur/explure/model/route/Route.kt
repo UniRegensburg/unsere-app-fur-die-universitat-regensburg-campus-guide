@@ -2,6 +2,7 @@ package de.ur.explure.model.route
 
 import android.os.Parcelable
 import com.google.firebase.firestore.DocumentId
+import com.mapbox.mapboxsdk.geometry.LatLng
 import de.ur.explure.model.comment.Comment
 import de.ur.explure.model.waypoint.WayPoint
 import kotlinx.parcelize.Parcelize
@@ -25,7 +26,12 @@ data class Route(
     val wayPointCount: Int = 0,
     val currentRating: Double = 0.0,
     val commentCount: Int = 0,
+    val routeCoordinates: MutableList<LatLng> = mutableListOf()
 ) : Parcelable {
+
+    fun addRouteCoordinates(latLngList: List<LatLng>) {
+        routeCoordinates.addAll(latLngList)
+    }
 
     fun fillWayPoints(wayPointList: List<WayPoint>) {
         wayPoints.addAll(wayPointList)

@@ -4,7 +4,6 @@ import android.content.Context
 import android.media.MediaPlayer
 import android.media.MediaRecorder
 import android.net.Uri
-import androidx.core.net.toFile
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.firebase.firestore.GeoPoint

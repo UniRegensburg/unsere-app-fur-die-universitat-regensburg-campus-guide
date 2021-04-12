@@ -106,7 +106,7 @@ class SaveRouteViewModel(
     }
 
     fun setInitialRouteInformation(distance: Double, duration: Double, routeLine: String) {
-        //routeDTO.routeLine = routeLine
+        routeDTO.routeLine = routeLine
         routeDTO.distance = distance
         routeDTO.duration = duration
         state[ROUTE_DURATION_KEY] = duration
