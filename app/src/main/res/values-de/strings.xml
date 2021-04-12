@@ -75,6 +75,11 @@
     <string name="action_menu_tutorial_title">Aktionsmöglichkeiten während der Routenerstellung</string>
     <string name="action_menu_tutorial_description">Hier findest du nützliche Aktionsmöglichkeiten während der Routenerstellung. Du kannst die Routenerstellung abbrechen (x - Symbol), versuchen deine erstellte Route und deine Wegpunkte automatisch an bekannte Wege auf dem Campus anzugleichen (Magnet - Symbol) oder die erstellte Route bestätigen und mit dem nächsten Schritt weitermachen (Haken - Symbol).</string>
 
+    <string name="no_routes">Zu diesem Ziel gibt es keine verfügbaren Routen</string>
+    <string name="steps_in_route">Diese Route besteht aus %1$d Schritten</string>
+    <string name="route_request_failed">Die Routenanfrage ist fehlgeschlagen</string>
+
+
     <!-- Route Creation -->
     <string name="route_creation_options">Es gibt 3 Möglichkeiten, um Routen zu erstellen:
         \n<ul>
@@ -204,7 +209,6 @@
 
     <!--Test Strings-->
     <string name="lorem_ipsum">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.  </string>
-    <string name="arbeits_button">Arbeiten</string>
 
 
     <!--Create Route Strings-->
@@ -213,7 +217,9 @@
     <string name="create_route_descr_hint">Beschreibung</string>
     <string name="create_route_title_hint">Titel</string>
     <string name="create_waypoint_image_title">Bild hinzufügen</string>
-    <string name="create_waypoint_media_title">Add Media</string>
+    <string name="create_waypoint_video_title">Video hinzufügen</string>
+    <string name="create_waypoint_audio_title">Audio hinzufügen</string>
+    <string name="create_waypoint_media_title">Media hinzufügen</string>
     <string name="create_waypoint_save_btn">Speichern</string>
     <string name="create_waypoint_title">Wegpunkt Information</string>
     <string name="create_route_save_btn">Speichern</string>
@@ -224,6 +230,13 @@
     <!-- SearchFragment Strings-->
     <string name="title_page_searchresults">Ergebnisse deiner Suche</string>
     <string name="no_results">Keine Suchergebnisse</string>
+
+    <string name="route_item_title">Routenname</string>
+    <string name="route_item_rating">(%1d)</string>
+    <string name="route_item_waypoints">0</string>
+    <string name="route_item_distance">%1d m</string>
+    <string name="route_item_duration">%1d min</string>
+    <string name="route_item_author">von %1s</string>
 
     <!-- Category Strings-->
     <string name="default_title">Kategorie</string>

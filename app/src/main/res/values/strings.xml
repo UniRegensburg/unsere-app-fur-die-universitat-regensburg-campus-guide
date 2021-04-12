@@ -193,7 +193,7 @@
     <string name="route_item_waypoints">0</string>
     <string name="route_item_distance">%1d m</string>
     <string name="route_item_duration">%1d min</string>
-    <string name="route_item_author">von %1s</string>
+    <string name="route_item_author">from %1s</string>
 
     <string name="discover_new_routes">New Routes</string>
     <string name="discover_popular_routes">Popular Routes</string>
