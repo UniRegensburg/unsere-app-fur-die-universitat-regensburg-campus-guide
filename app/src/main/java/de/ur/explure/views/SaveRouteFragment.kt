@@ -33,6 +33,7 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.androidx.viewmodel.scope.emptyState
 import kotlin.math.roundToInt
 
+@Suppress("TooManyFunctions")
 class SaveRouteFragment : Fragment(R.layout.fragment_save_route) {
 
     private val binding by viewBinding(FragmentSaveRouteBinding::bind)

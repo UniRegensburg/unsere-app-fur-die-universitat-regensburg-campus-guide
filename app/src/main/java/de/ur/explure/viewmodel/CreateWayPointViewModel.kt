@@ -4,6 +4,7 @@ import android.content.Context
 import android.media.MediaPlayer
 import android.media.MediaRecorder
 import android.net.Uri
+import androidx.core.net.toFile
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.firebase.firestore.GeoPoint
@@ -41,6 +42,16 @@ class CreateWayPointViewModel : ViewModel() {
     fun initWayPointDTOEdit(wayPointDTO: WayPointDTO) {
         newWayPointDTO = wayPointDTO
         oldWayPointDTO.postValue(wayPointDTO)
+        wayPointDTO.audioUri?.run {
+            val mediaItem = WayPointAudioItem(this)
+            addMediaItem(mediaItem)
+        }
+        wayPointDTO.videoUri?.run {
+            setVideoMedia(this)
+        }
+        wayPointDTO.imageUri?.run {
+            setImageMedia(this)
+        }
         Timber.d("Editing Waypoint: %s", wayPointDTO.toString())
     }
 
@@ -97,6 +108,17 @@ class CreateWayPointViewModel : ViewModel() {
         val list = mediaList.value ?: mutableListOf()
         list.remove(item)
         mediaList.postValue(list)
+        when (item) {
+            is WayPointAudioItem -> {
+                newWayPointDTO.audioUri = null
+            }
+            is WayPointVideoItem -> {
+                newWayPointDTO.videoUri = null
+            }
+            is WayPointImageItem -> {
+                newWayPointDTO.imageUri = null
+            }
+        }
     }
 
     fun createNewImageUri(context: Context): Uri {

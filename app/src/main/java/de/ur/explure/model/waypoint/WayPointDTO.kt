@@ -18,6 +18,15 @@ data class WayPointDTO(
     var imageURL: String = ""
 ) : Parcelable {
 
+    constructor(parcel: Parcel) : this(
+        title = parcel.readString() ?: "",
+        description = parcel.readString() ?: "",
+        geoPoint = GeoPoint(parcel.readDouble(), parcel.readDouble()),
+        audioUri = parcel.readParcelable(ClassLoader.getSystemClassLoader()),
+        imageUri = parcel.readParcelable(ClassLoader.getSystemClassLoader()),
+        videoUri = parcel.readParcelable(ClassLoader.getSystemClassLoader()),
+    )
+
     fun toMap(): Map<String, Any> {
         return mapOf(
             WayPointDocumentConfig.WAYPOINT_TITLE_FIELD to title,
@@ -28,15 +37,6 @@ data class WayPointDTO(
             WayPointDocumentConfig.WAYPOINT_IMAGE_FIELD to imageURL
         )
     }
-
-    constructor(parcel: Parcel) : this(
-        title = parcel.readString() ?: "",
-        description = parcel.readString() ?: "",
-        geoPoint = GeoPoint(parcel.readDouble(), parcel.readDouble()),
-        audioUri = parcel.readParcelable(ClassLoader.getSystemClassLoader()),
-        imageUri = parcel.readParcelable(ClassLoader.getSystemClassLoader()),
-        videoUri = parcel.readParcelable(ClassLoader.getSystemClassLoader()),
-    )
 
     override fun writeToParcel(parcel: Parcel, i: Int) {
         parcel.writeDouble(geoPoint.latitude)

@@ -23,6 +23,7 @@ import de.ur.explure.views.EditRouteFragmentDirections
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
+@Suppress("ReturnCount")
 class EditRouteViewModel(
     private val state: SavedStateHandle,
     private val appRouter: MainAppRouter,

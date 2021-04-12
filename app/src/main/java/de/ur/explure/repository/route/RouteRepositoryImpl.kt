@@ -340,7 +340,7 @@ class RouteRepositoryImpl(
                     .child(
                         "$routeId-$waypointId-$secretId-${CachedFileUtils.AUDIO_FILE_SUFFIX}"
                     )
-            wayPoint.audioUrl = reference.toString()
+            wayPoint.audioURL = reference.toString()
             reference.putFile(this)
         }
         wayPoint.videoUri?.run {
@@ -350,7 +350,7 @@ class RouteRepositoryImpl(
                     .child(
                         "$routeId-$waypointId-$secretId-${CachedFileUtils.VIDEO_FILE_SUFFIX}"
                     )
-            wayPoint.videoUrl = reference.toString()
+            wayPoint.videoURL = reference.toString()
             reference.putFile(this)
         }
         wayPoint.imageUri?.run {
@@ -360,7 +360,7 @@ class RouteRepositoryImpl(
                     .child(
                         "$routeId-$waypointId-$secretId-${CachedFileUtils.IMAGE_FILE_SUFFIX}"
                     )
-            wayPoint.imageUrl = reference.toString()
+            wayPoint.imageURL = reference.toString()
             reference.putFile(this)
         }
         return wayPoint

@@ -37,12 +37,18 @@ class WayPointCreateAdapter(private val clickListener: (WayPointDTO) -> Unit) :
                 binding.tvWaypointTitle.text = item.title
                 if (item.audioUri != null) {
                     binding.ivAudioIcon.setColorFilter(colorFilter)
+                } else {
+                    binding.ivAudioIcon.clearColorFilter()
                 }
                 if (item.imageUri != null) {
                     binding.ivImageIcon.setColorFilter(colorFilter)
+                } else {
+                    binding.ivImageIcon.clearColorFilter()
                 }
                 if (item.videoUri != null) {
                     binding.ivVideoIcon.setColorFilter(colorFilter)
+                } else {
+                    binding.ivVideoIcon.clearColorFilter()
                 }
             }
         }
