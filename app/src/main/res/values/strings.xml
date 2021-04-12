@@ -151,9 +151,6 @@
     <string name="waypoint_title">Waypoints</string>
     <string name="create_route_descr_hint">Description</string>
     <string name="create_route_title_hint">Title</string>
-    <string name="create_waypoint_image_title">Add Image</string>
-    <string name="create_waypoint_video_title">Add Video</string>
-    <string name="create_waypoint_audio_title">Add Audio</string>
     <string name="create_waypoint_media_title">Add Media</string>
     <string name="create_waypoint_save_btn">Save</string>
     <string name="create_waypoint_title">Waypoint Information</string>
@@ -166,4 +163,5 @@
     <string name="audio_recording_error">An error occured while recording your audio message. Please try again.</string>
     <string name="waypoint_title_error">Please enter a title</string>
     <string name="waypoint_description_error">Please enter a description</string>
+    <string name="route_thumbnail_hint">Set a thumbnail for your view</string>
 </resources>

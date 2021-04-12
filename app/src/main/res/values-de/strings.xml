@@ -139,7 +139,6 @@
     <string name="waypoint_title">Wegpunkte</string>
     <string name="create_route_descr_hint">Beschreibung</string>
     <string name="create_route_title_hint">Titel</string>
-    <string name="create_waypoint_image_title">Bild hinzufügen</string>
     <string name="create_waypoint_media_title">Add Media</string>
     <string name="create_waypoint_save_btn">Speichern</string>
     <string name="create_waypoint_title">Wegpunkt Information</string>
@@ -158,5 +157,8 @@
     <string name="external_storage_permission_not_granted">Diese Berechtigung wird benötigt, um Dateien aus deinem externen Speicher zu lesen.</string>
     <string name="universal_permission_not_granted">Ohne diese Berechtigung kann die Aktion nicht ausgeführt werden.</string>
     <string name="audio_recording_error">Leider ist etwas schief gelaufen, bitte versuche es noch einmal.</string>
+    <string name="route_thumbnail_hint">Setze ein Vorschaubild für deine Route</string>
+    <string name="waypoint_title_error">Bitte lege einen Titel fest</string>
+    <string name="waypoint_description_error">Bitte beschreibe den Wegpunkt</string>
 
 </resources>

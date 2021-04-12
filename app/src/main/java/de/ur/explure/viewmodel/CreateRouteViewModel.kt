@@ -1,5 +1,7 @@
 package de.ur.explure.viewmodel
 
+import android.content.Context
+import android.net.Uri
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -9,6 +11,7 @@ import de.ur.explure.model.waypoint.WayPointDTO
 import de.ur.explure.navigation.MainAppRouter
 import de.ur.explure.repository.category.CategoryRepositoryImpl
 import de.ur.explure.repository.route.RouteRepositoryImpl
+import de.ur.explure.utils.CachedFileUtils
 import de.ur.explure.utils.FirebaseResult
 import de.ur.explure.views.CreateRouteFragmentDirections
 import kotlinx.coroutines.launch
@@ -24,7 +27,17 @@ class CreateRouteViewModel(
 
     val wayPointDTOs: MutableLiveData<MutableList<WayPointDTO>> = MutableLiveData()
 
+    val currentImageUri: MutableLiveData<Uri> = MutableLiveData()
+
+    var currentTempCameraUri: Uri? = null
+
     val routeDTO = RouteDTO()
+
+    fun createNewCameraUri(context: Context): Uri {
+        val newUri = CachedFileUtils.getNewImageUri(context)
+        currentTempCameraUri = newUri
+        return newUri
+    }
 
     fun getCategories() {
         viewModelScope.launch {
@@ -90,5 +103,13 @@ class CreateRouteViewModel(
                 }
             }
         }
+    }
+
+    fun setImageUri(data: Uri) {
+        currentImageUri.postValue(data)
+    }
+
+    fun deleteCurrentUri() {
+        currentImageUri.postValue(null)
     }
 }
