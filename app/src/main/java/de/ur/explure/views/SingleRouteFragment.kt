@@ -37,6 +37,7 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinCompon
         val routeId = args.routeID
         singleRouteViewModel.getRouteData(routeId)
         setOnClickListener()
+        setErrorObserver()
     }
 
     private fun initAdapters() {
@@ -140,5 +141,19 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinCompon
                 )
             }
         }
+    }
+
+    private fun setErrorObserver() {
+        singleRouteViewModel.showErrorMessage.observe(viewLifecycleOwner, { showError ->
+            if (showError != null && showError) {
+                showSnackbar(
+                        requireActivity(),
+                        R.string.single_route_error,
+                        R.id.single_route_container,
+                        Snackbar.LENGTH_LONG,
+                        colorRes = R.color.colorWarning
+                )
+            }
+        })
     }
 }

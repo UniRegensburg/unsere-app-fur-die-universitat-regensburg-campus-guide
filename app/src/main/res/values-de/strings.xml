@@ -198,6 +198,7 @@
     <string name="answer_input">Antwort</string>
     <string name="empty_comment">Bitte Kommentar eingeben</string>
     <string name="empty_answer">Bitte Antwort eingeben</string>
+    <string name="single_route_error">Beim Laden der Routendaten ist etwas schief gelaufen, bitte versuche es später wieder.</string>
 
     <string name="discover_new_routes">Neue Routen</string>
     <string name="discover_popular_routes">Beliebte Routen</string>
