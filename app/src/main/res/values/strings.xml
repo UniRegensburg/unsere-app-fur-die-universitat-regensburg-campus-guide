@@ -19,7 +19,7 @@
     <string name="test_route_timestamp">14.01.2021 15:15</string>
 
     <!-- Statistics Page -->
-    <string name="statistics">Statistic page</string>
+    <string name="statistics">Statistic Page</string>
     <string name="distance">Distance</string>
     <string name="covered_track">Covered track</string>
     <string name="covered_track_value">0m</string>
