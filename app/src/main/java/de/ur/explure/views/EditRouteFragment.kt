@@ -38,8 +38,6 @@ import com.mapbox.mapboxsdk.style.layers.Property
 import com.mapbox.mapboxsdk.style.layers.PropertyFactory
 import com.mapbox.mapboxsdk.style.layers.SymbolLayer
 import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
-import com.mapbox.turf.TurfConstants
-import com.mapbox.turf.TurfMeasurement
 import com.sothree.slidinguppanel.SlidingUpPanelLayout
 import de.ur.explure.R
 import de.ur.explure.databinding.FragmentEditRouteBinding
@@ -666,43 +664,9 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route),
 
     @Suppress("ReturnCount")
     private fun onSuccessfulSnapshot() {
-        val routeWaypoints = editRouteViewModel.getWayPoints()
-        val routeWaypointArray = routeWaypoints?.toTypedArray()
-
-        // some checks for debugging
-        if (routeWaypointArray == null) {
-            Timber.e("Fehler: Keine Waypoints im Viewmodel gefunden!")
-            return
+        editRouteViewModel.uploadRoute {
+            resetEditMap()
         }
-
-        val route: LineString? = editRouteViewModel.getRoute()
-        if (route == null) {
-            Timber.e("Fehler: Keine Route im Viewmodel gefunden!")
-            return
-        }
-
-        val routeSnapshot = editRouteViewModel.routeSnapshotUri
-        if (routeSnapshot == null) {
-            Timber.e("Fehler: Keine RoutenSnapshot im Viewmodel gefunden!")
-            return
-        }
-
-        resetEditMap()
-
-        // get coordinates and calculate length and duration of the route
-        val routeCoordinates: MutableList<Point> = route.coordinates()
-        val routeLength = TurfMeasurement.length(routeCoordinates, TurfConstants.UNIT_METERS)
-        val routeDuration = routeLength * WALKING_SPEED / 60
-
-        val action = EditRouteFragmentDirections.actionEditRouteFragmentToSaveRouteFragment(
-            // TODO später stattdessen die id der hier schon erstellten Route übergeben?
-            route = route.toPolyline(PRECISION_6),
-            routeThumbnail = routeSnapshot,
-            waypoints = routeWaypointArray,
-            distance = routeLength.toFloat(),
-            duration = routeDuration.toFloat()
-        )
-        findNavController().navigate(action)
     }
 
     private fun resetEditMap() {

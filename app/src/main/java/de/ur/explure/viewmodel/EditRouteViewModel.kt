@@ -5,10 +5,13 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.mapbox.core.constants.Constants
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.LineString
 import com.mapbox.geojson.Point
 import com.mapbox.mapboxsdk.geometry.LatLng
+import com.mapbox.turf.TurfConstants
+import com.mapbox.turf.TurfMeasurement
 import de.ur.explure.extensions.toGeoPoint
 import de.ur.explure.model.waypoint.WayPointDTO
 import de.ur.explure.navigation.MainAppRouter
@@ -163,10 +166,32 @@ class EditRouteViewModel(
         state[BUILDING_KEY] = active
     }
 
+    fun uploadRoute(callback: () -> Unit) {
+        val route = route ?: return
+        val waypoints = getWayPoints()?.toTypedArray() ?: return
+        val snapShot = routeSnapshotUri ?: return
+
+        val routeCoordinates: MutableList<Point> = route.coordinates()
+        val routeLength = TurfMeasurement.length(routeCoordinates, TurfConstants.UNIT_METERS)
+        val routeDuration = routeLength * WALKING_SPEED / 60
+
+        callback()
+
+        val action = EditRouteFragmentDirections.actionEditRouteFragmentToSaveRouteFragment(
+            route = route.toPolyline(Constants.PRECISION_6),
+            routeThumbnail = snapShot,
+            waypoints = waypoints,
+            distance = routeLength.toFloat(),
+            duration = routeDuration.toFloat()
+        )
+        appRouter.navigateToSaveRouteFragment(action)
+    }
+
     companion object {
         private const val ROUTE_KEY = "recreatedRoute"
         private const val ROUTE_WayPointS_KEY = "routeWayPoints"
         private const val SNAPSHOT_URI_KEY = "snapshotUri"
         private const val BUILDING_KEY = "3dBuildingsActive"
+        private const val WALKING_SPEED = 1.4
     }
 }

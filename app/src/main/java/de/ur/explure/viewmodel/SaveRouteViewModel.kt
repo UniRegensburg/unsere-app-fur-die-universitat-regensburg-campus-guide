@@ -16,6 +16,7 @@ import de.ur.explure.utils.CachedFileUtils
 import de.ur.explure.utils.FirebaseResult
 import de.ur.explure.views.SaveRouteFragmentDirections
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class SaveRouteViewModel(
     private val state: SavedStateHandle,
@@ -40,7 +41,6 @@ class SaveRouteViewModel(
 
     var routeTitle: String? = state[ROUTE_TITLE_KEY]
     var routeDescription: String? = state[ROUTE_DESCRIPTION_KEY]
-    var routeCategory: String? = state[ROUTE_CATEGORY_KEY]
     var routeDuration: Double? = state[ROUTE_DURATION_KEY]
 
     fun createNewCameraUri(context: Context): Uri {
@@ -93,18 +93,20 @@ class SaveRouteViewModel(
                     appRouter.navigateToRouteDetailsAfterCreation(routeCall.data)
                 }
                 is FirebaseResult.Error -> {
+                    Timber.d(routeCall.exception)
                     showRouteCreationError.postValue(true)
                 }
             }
         }
     }
 
-    fun updateRouteDuration(duration: Double) {
+    fun setDuration(duration: Double) {
         routeDTO.duration = duration
         state[ROUTE_DURATION_KEY] = duration
     }
 
-    fun setInitialRouteInformation(distance: Double, duration: Double) {
+    fun setInitialRouteInformation(distance: Double, duration: Double, routeLine: String) {
+        routeDTO.routeLine = routeLine
         routeDTO.distance = distance
         routeDTO.duration = duration
         state[ROUTE_DURATION_KEY] = duration
@@ -127,7 +129,6 @@ class SaveRouteViewModel(
     fun setCategoryId(categoryId: String) {
         routeDTO.category = categoryId
         state[ROUTE_CATEGORY_KEY] = categoryId
-
     }
 
     fun deleteCurrentUri() {

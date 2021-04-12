@@ -1,6 +1,7 @@
 package de.ur.explure.navigation
 
 import androidx.navigation.NavController
+import androidx.navigation.NavDirections
 import com.mapbox.core.constants.Constants.PRECISION_6
 import com.mapbox.geojson.LineString
 import de.ur.explure.R
@@ -163,5 +164,9 @@ class MainAppRouter {
             routeMarkers = markerArray
         )
         navController.navigate(action)
+    }
+
+    fun navigateToSaveRouteFragment(action: NavDirections) {
+            navController.navigate(action)
     }
 }

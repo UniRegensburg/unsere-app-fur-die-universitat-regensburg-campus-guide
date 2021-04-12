@@ -11,11 +11,15 @@ object CachedFileUtils {
 
     private const val PROVIDER_AUTHORITY = "com.explure.fileprovider"
 
+    const val AUDIO_FILE_SUFFIX = ".3gp"
+    const val VIDEO_FILE_SUFFIX = ".mp4"
+    const val IMAGE_FILE_SUFFIX = ".jpg"
+
     fun getNewImageUri(context: Context): Uri {
         val timeStamp = SimpleDateFormat.getDateTimeInstance().format(Date())
         val file = File.createTempFile(
             "JPEG_${timeStamp}_",
-            ".jpg",
+            IMAGE_FILE_SUFFIX,
             context.externalCacheDir
         )
         return FileProvider.getUriForFile(context, PROVIDER_AUTHORITY, file)
@@ -25,7 +29,7 @@ object CachedFileUtils {
         val timeStamp = SimpleDateFormat.getDateTimeInstance().format(Date())
         val file = File.createTempFile(
             "MP4_${timeStamp}_",
-            ".mp4",
+            VIDEO_FILE_SUFFIX,
             context.externalCacheDir
         )
         return FileProvider.getUriForFile(context, PROVIDER_AUTHORITY, file)
@@ -35,7 +39,7 @@ object CachedFileUtils {
         val timeStamp = SimpleDateFormat.getDateTimeInstance().format(Date())
         return File.createTempFile(
             "3GP_${timeStamp}_",
-            ".3gp",
+            AUDIO_FILE_SUFFIX,
             context.externalCacheDir
         )
     }

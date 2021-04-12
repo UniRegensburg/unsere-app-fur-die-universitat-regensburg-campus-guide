@@ -14,6 +14,7 @@ import de.ur.explure.config.ErrorConfig
 import de.ur.explure.config.FirebaseCollections.ANSWER_COLLECTION_NAME
 import de.ur.explure.config.FirebaseCollections.COMMENT_COLLECTION_NAME
 import de.ur.explure.config.FirebaseCollections.WAYPOINT_COLLECTION_NAME
+import de.ur.explure.config.FirestoreStorageDirectories
 import de.ur.explure.config.RouteDocumentConfig
 import de.ur.explure.extensions.await
 import de.ur.explure.model.comment.Comment
@@ -22,8 +23,10 @@ import de.ur.explure.model.rating.RatingValues
 import de.ur.explure.model.route.Route
 import de.ur.explure.model.route.RouteDTO
 import de.ur.explure.model.waypoint.WayPoint
+import de.ur.explure.model.waypoint.WayPointDTO
 import de.ur.explure.services.FireStoreInstance
 import de.ur.explure.services.FirebaseAuthService
+import de.ur.explure.utils.CachedFileUtils
 import de.ur.explure.utils.FirebaseResult
 import timber.log.Timber
 import java.io.ByteArrayOutputStream
@@ -58,6 +61,7 @@ class RouteRepositoryImpl(
                 is FirebaseResult.Canceled -> FirebaseResult.Canceled(routeBatch.exception)
             }
         } catch (exception: Exception) {
+            Timber.d(exception)
             FirebaseResult.Error(exception)
         }
     }
@@ -319,9 +323,47 @@ class RouteRepositoryImpl(
         batch.set(routeDocument, routeDTO.toMap(userId))
         val wayPointCollection = routeDocument.collection(WAYPOINT_COLLECTION_NAME)
         routeDTO.wayPoints.forEach { wayPoint ->
-            batch.set(wayPointCollection.document(), wayPoint)
+            val wayPointDocument = wayPointCollection.document()
+            val waypointWithRefs =
+                uploadMediaToStorage(wayPoint, wayPointDocument.id, routeDocument.id)
+            batch.set(wayPointDocument, waypointWithRefs.toMap())
         }
         return batch
+    }
+
+    private fun uploadMediaToStorage(wayPoint: WayPointDTO, waypointId: String, routeId: String):
+            WayPointDTO {
+        wayPoint.audioUri?.run {
+            val secretId = UUID.randomUUID().toString()
+            val reference =
+                fireStorage.reference.child(FirestoreStorageDirectories.WAYPOINT_DATA_DIRECTORY)
+                    .child(
+                        "$routeId-$waypointId-$secretId-${CachedFileUtils.AUDIO_FILE_SUFFIX}"
+                    )
+            wayPoint.audioUrl = reference.toString()
+            reference.putFile(this)
+        }
+        wayPoint.videoUri?.run {
+            val secretId = UUID.randomUUID().toString()
+            val reference =
+                fireStorage.reference.child(FirestoreStorageDirectories.WAYPOINT_DATA_DIRECTORY)
+                    .child(
+                        "$routeId-$waypointId-$secretId-${CachedFileUtils.VIDEO_FILE_SUFFIX}"
+                    )
+            wayPoint.videoUrl = reference.toString()
+            reference.putFile(this)
+        }
+        wayPoint.imageUri?.run {
+            val secretId = UUID.randomUUID().toString()
+            val reference =
+                fireStorage.reference.child(FirestoreStorageDirectories.WAYPOINT_DATA_DIRECTORY)
+                    .child(
+                        "$routeId-$waypointId-$secretId-${CachedFileUtils.IMAGE_FILE_SUFFIX}"
+                    )
+            wayPoint.imageUrl = reference.toString()
+            reference.putFile(this)
+        }
+        return wayPoint
     }
 
     suspend fun getCategoryRoutes(category: String): FirebaseResult<List<Route>> {

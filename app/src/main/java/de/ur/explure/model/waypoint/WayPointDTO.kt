@@ -4,6 +4,7 @@ import android.net.Uri
 import android.os.Parcel
 import android.os.Parcelable
 import com.google.firebase.firestore.GeoPoint
+import de.ur.explure.config.WayPointDocumentConfig
 
 data class WayPointDTO(
     var title: String,
@@ -11,8 +12,22 @@ data class WayPointDTO(
     var description: String = "",
     var audioUri: Uri? = null,
     var imageUri: Uri? = null,
-    var videoUri: Uri? = null
+    var videoUri: Uri? = null,
+    var audioURL: String = "",
+    var videoURL: String = "",
+    var imageURL: String = ""
 ) : Parcelable {
+
+    fun toMap(): Map<String, Any> {
+        return mapOf(
+            WayPointDocumentConfig.WAYPOINT_TITLE_FIELD to title,
+            WayPointDocumentConfig.WAYPOINT_GEOPOINT_FIELD to geoPoint,
+            WayPointDocumentConfig.WAYPOINT_DESCRIPTION_FIELD to description,
+            WayPointDocumentConfig.WAYPOINT_AUDIO_FIELD to audioURL,
+            WayPointDocumentConfig.WAYPOINT_VIDEO_FIELD to videoURL,
+            WayPointDocumentConfig.WAYPOINT_IMAGE_FIELD to imageURL
+        )
+    }
 
     constructor(parcel: Parcel) : this(
         title = parcel.readString() ?: "",
