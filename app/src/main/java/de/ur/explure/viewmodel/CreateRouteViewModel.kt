@@ -29,6 +29,10 @@ class CreateRouteViewModel(
 
     val currentImageUri: MutableLiveData<Uri> = MutableLiveData()
 
+    val showRouteCreationError: MutableLiveData<Boolean> = MutableLiveData(false)
+
+    val showCategoryDownloadError: MutableLiveData<Boolean> = MutableLiveData(false)
+
     var currentTempCameraUri: Uri? = null
 
     private val routeDTO = RouteDTO()
@@ -45,7 +49,7 @@ class CreateRouteViewModel(
             if (categoryCall is FirebaseResult.Success) {
                 categories.postValue(categoryCall.data)
             } else {
-                Timber.d("Failed to get Categories")
+                showCategoryDownloadError.postValue(true)
             }
         }
     }
@@ -76,13 +80,14 @@ class CreateRouteViewModel(
 
     fun saveRoute() {
         routeDTO.wayPoints = wayPointDTOs.value ?: mutableListOf()
+        routeDTO.thumbnailUri = currentTempCameraUri
         viewModelScope.launch {
             when (val routeCall = routeRepository.createRouteInFireStore(routeDTO)) {
                 is FirebaseResult.Success -> {
                     appRouter.navigateToRouteDetailsAfterCreation(routeCall.data)
                 }
                 is FirebaseResult.Error -> {
-                    // Failed
+                    showRouteCreationError.postValue(true)
                 }
             }
         }

@@ -166,4 +166,6 @@
     <string name="route_thumbnail_hint">Set a thumbnail for your view</string>
     <string name="no_category_selected_error">Please select a category</string>
     <string name="route_image_error">An error occured while loading your image, please try again.</string>
+    <string name="route_creation_error">Something went wrong while creating your route. Please try again later</string>
+    <string name="category_download_error">Could not get categories. Please try again later</string>
 </resources>

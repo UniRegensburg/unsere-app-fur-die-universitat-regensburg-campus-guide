@@ -1,5 +1,6 @@
 package de.ur.explure.model.route
 
+import android.net.Uri
 import android.os.Parcelable
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.ServerTimestamp
@@ -25,6 +26,7 @@ data class RouteDTO(
     var distance: Double = 0.0,
     var duration: Double = 0.0,
     var wayPoints: MutableList<WayPointDTO> = mutableListOf(),
+    var thumbnailUri: Uri? = null,
     @ServerTimestamp
     var createdAt: Date? = null
 ) : Parcelable {

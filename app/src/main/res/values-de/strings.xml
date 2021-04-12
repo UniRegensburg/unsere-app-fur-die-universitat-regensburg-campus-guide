@@ -162,5 +162,7 @@
     <string name="waypoint_description_error">Bitte beschreibe den Wegpunkt</string>
     <string name="no_category_selected_error">Bitte wähle eine Category aus</string>
     <string name="route_image_error">Leider konnte dein Bild nicht geladen werden, bitte versuche es noch einmal.</string>
+    <string name="route_creation_error">Leider konnte deine Route nicht erstellt werden, bitte versuche es noch einmal.</string>
+    <string name="category_download_error">Leider ist etwas schief gelaufen, bitte versuche es noch einmal.</string>
 
 </resources>

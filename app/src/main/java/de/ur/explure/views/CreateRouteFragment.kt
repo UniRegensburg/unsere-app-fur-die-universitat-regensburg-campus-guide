@@ -77,6 +77,8 @@ class CreateRouteFragment : Fragment(R.layout.fragment_create_route) {
         initWayPointListObserver()
         initCategoriesObserver()
         initCurrentImageObserver()
+        initRouteErrorObserver()
+        initCategoryErrorObserver()
     }
 
     private fun initImageResultLauncher() {
@@ -223,6 +225,37 @@ class CreateRouteFragment : Fragment(R.layout.fragment_create_route) {
             if (waypointsDTO != null) {
                 wayPointAdapter.items = waypointsDTO
                 wayPointAdapter.notifyDataSetChanged()
+            }
+        })
+    }
+
+    private fun initRouteErrorObserver(){
+        viewModel.showRouteCreationError.observe(viewLifecycleOwner,{ showError ->
+            if (showError){
+                showSnackbar(
+                    requireActivity(),
+                    R.string.route_creation_error,
+                    R.id.btn_save_route,
+                    Snackbar.LENGTH_LONG,
+                    colorRes = R.color.colorWarning
+                )
+                viewModel.showRouteCreationError.postValue(false)
+            }
+
+        })
+    }
+
+    private fun initCategoryErrorObserver(){
+        viewModel.showCategoryDownloadError.observe(viewLifecycleOwner,{showError ->
+            if (showError){
+                showSnackbar(
+                    requireActivity(),
+                    R.string.category_download_error,
+                    R.id.btn_save_route,
+                    Snackbar.LENGTH_LONG,
+                    colorRes = R.color.colorWarning
+                )
+                viewModel.showRouteCreationError.postValue(false)
             }
         })
     }
