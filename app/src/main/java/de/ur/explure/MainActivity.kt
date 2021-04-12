@@ -11,16 +11,19 @@ import androidx.navigation.ui.onNavDestinationSelected
 import androidx.navigation.ui.setupWithNavController
 import com.crazylegend.viewbinding.viewBinder
 import de.ur.explure.databinding.ActivityMainBinding
+import de.ur.explure.map.PermissionHelper
 import de.ur.explure.navigation.MainAppRouter
 import de.ur.explure.viewmodel.MainViewModel
+import de.ur.explure.views.MapFragment
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import timber.log.Timber
 
 /**
  * Main activity of the single activity application.
  */
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), MapFragment.MapFragmentListener {
 
     // Uses this library to reduce viewbinding boilerplate code: https://github.com/FunkyMuse/KAHelpers/tree/master/viewbinding
     private val activityMainBinding by viewBinder(ActivityMainBinding::inflate)
@@ -31,6 +34,8 @@ class MainActivity : AppCompatActivity() {
     private val navController: NavController by lazy { setupNavController() }
     private val appBarConfiguration by lazy { AppBarConfiguration(topLevelDestinations) }
     private var destinationChangeListener: NavController.OnDestinationChangedListener? = null
+
+    private val permissionHelper: PermissionHelper by inject()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,14 +49,6 @@ class MainActivity : AppCompatActivity() {
             mainViewModel.observeAuthState(this)
         }
     }
-
-    /*
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        super.onRestoreInstanceState(savedInstanceState)
-        // restore the old state
-        setupBottomNavigation()
-        setupToolbar()
-    }*/
 
     private fun setupBottomNavigation() {
         activityMainBinding.bottomNav.setupWithNavController(navController)
@@ -86,7 +83,7 @@ class MainActivity : AppCompatActivity() {
                 // Hide the bottom navigation bar in all views except the top level ones.
                 // Also hide the appbar in the login and register fragment as well.
                 when (destination.id) {
-                    in topLevelDestinations -> {
+                    in bottomNavDestinations -> {
                         activityMainBinding.bottomNav.visibility = View.VISIBLE
                         activityMainBinding.appBar.visibility = View.VISIBLE
                     }
@@ -94,12 +91,27 @@ class MainActivity : AppCompatActivity() {
                         activityMainBinding.appBar.visibility = View.GONE
                         activityMainBinding.bottomNav.visibility = View.GONE
                     }
+                    in nestedTopLevelDestinations -> {
+                        activityMainBinding.bottomNav.visibility = View.GONE
+                        supportActionBar?.setHomeButtonEnabled(false) // hide 'up'-button
+                    }
                     else -> {
                         activityMainBinding.bottomNav.visibility = View.GONE
                     }
                 }
             }
         navController.addOnDestinationChangedListener(destinationChangeListener ?: return)
+    }
+
+    override fun onRouteCreationActive(active: Boolean) {
+        // hide the bottom navigation bar when the user enters route creation mode on the map
+        // and show it again after leaving it; using a listener here is better than a shared viewModel
+        // as this prevents bugs when rotating the phone
+        if (active) {
+            activityMainBinding.bottomNav.visibility = View.GONE
+        } else {
+            activityMainBinding.bottomNav.visibility = View.VISIBLE
+        }
     }
 
     /**
@@ -120,27 +132,58 @@ class MainActivity : AppCompatActivity() {
         return item.onNavDestinationSelected(controller)
     }
 
-    override fun onResume() {
-        super.onResume()
+    override fun onStart() {
+        super.onStart()
+        Timber.d("in MainActivity onStart")
         setUpNavDestinationChangeListener()
     }
 
+    override fun onResume() {
+        super.onResume()
+        Timber.d("in MainActivity onResume")
+        // ! This onResume is always called after a permission request in any of the fragments!
+        //  -> because of this the navDestinationChangeListener MUST NOT be setup in here!
+    }
+
     override fun onPause() {
+        super.onPause()
+        Timber.d("in MainActivity onPause")
+    }
+
+    override fun onStop() {
+        Timber.d("in MainActivity onStop")
         // remove the destinationChangeListener to prevent memory leaks
         destinationChangeListener?.let {
             navController.removeOnDestinationChangedListener(it)
         }
-        super.onPause()
+        super.onStop()
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        permissionHelper.onRequestLocationPermissionsResult(requestCode, permissions, grantResults)
     }
 
     companion object {
 
-        // The top level views of the app
-        val topLevelDestinations = setOf(
+        // The bottom navigation tabs
+        val bottomNavDestinations = setOf(
             R.id.discoverFragment,
             R.id.mapFragment,
             R.id.profileFragment
         )
+        // no 'Up'-Button and no bottom navigation in these
+        // (normal nested views only have the bottom nav hidden but do have an up - button)
+        val nestedTopLevelDestinations = setOf(
+            R.id.editRouteFragment,
+            R.id.saveRouteFragment
+        )
+
+        val topLevelDestinations = bottomNavDestinations.plus(nestedTopLevelDestinations)
 
         // The views in the authentication process
         val authGraphDestinations = setOf(

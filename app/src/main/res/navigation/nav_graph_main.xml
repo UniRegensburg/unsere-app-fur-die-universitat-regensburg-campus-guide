@@ -19,16 +19,13 @@
         <action
             android:id="@+id/action_discoverFragment_to_routeDetails"
             app:destination="@id/singleRouteFragment" />
-        <action
-            android:id="@+id/action_discoverFragment_to_createRouteFragment"
-            app:destination="@id/createRouteFragment" />
     </fragment>
 
     <fragment
         android:id="@+id/textQueryFragment"
         android:name="de.ur.explure.views.TextQueryFragment"
         android:label="Search Results"
-        tools:layout="@layout/fragment_text_query" >
+        tools:layout="@layout/fragment_text_query">
         <argument
             android:name="textQueryKey"
             app:argType="string" />
@@ -70,7 +67,7 @@
         android:id="@+id/createdRoutesFragment"
         android:name="de.ur.explure.views.CreatedRoutesFragment"
         android:label="Created Routes"
-        tools:layout="@layout/fragment_created_routes" >
+        tools:layout="@layout/fragment_created_routes">
         <action
             android:id="@+id/action_createdRoutesFragment_to_routeDetails"
             app:destination="@id/singleRouteFragment" />
@@ -80,7 +77,7 @@
         android:id="@+id/favoriteRoutesFragment"
         android:name="de.ur.explure.views.FavoriteRoutesFragment"
         android:label="Favorite Routes"
-        tools:layout="@layout/fragment_favorite_routes" >
+        tools:layout="@layout/fragment_favorite_routes">
         <action
             android:id="@+id/action_favoriteRoutesFragment_to_routeDetails"
             app:destination="@id/singleRouteFragment" />
@@ -93,16 +90,10 @@
         tools:layout="@layout/fragment_statistics" />
 
     <fragment
-        android:id="@+id/mapFragment"
-        android:name="de.ur.explure.views.MapFragment"
-        android:label="Map"
-        tools:layout="@layout/fragment_map" />
-
-    <fragment
         android:id="@+id/singleRouteFragment"
         android:name="de.ur.explure.views.SingleRouteFragment"
         android:label="Route Information"
-        tools:layout="@layout/fragment_single_route" >
+        tools:layout="@layout/fragment_single_route">
         <argument
             android:name="routeID"
             app:argType="string" />
@@ -110,42 +101,99 @@
     </fragment>
 
     <fragment
-        android:id="@+id/createRouteFragment"
-        android:name="de.ur.explure.views.CreateRouteFragment"
-        android:label="CreateRouteFragment" >
+        android:id="@+id/mapFragment"
+        android:name="de.ur.explure.views.MapFragment"
+        android:label="Map"
+        tools:layout="@layout/fragment_map">
         <action
-            android:id="@+id/action_createRouteFragment_to_createWayPointDialog"
+            android:id="@+id/action_mapFragment_to_navigationFragment"
+            app:destination="@id/navigationFragment" />
+        <action
+            android:id="@+id/action_mapFragment_to_editRouteFragment"
+            app:destination="@id/editRouteFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/navigationFragment"
+        android:name="de.ur.explure.views.NavigationUIFragment"
+        android:label="Navigation"
+        tools:layout="@layout/fragment_navigation_ui">
+        <argument
+            android:name="route"
+            app:argType="string"
+            app:nullable="false" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/editRouteFragment"
+        android:name="de.ur.explure.views.EditRouteFragment"
+        android:label="Route bearbeiten"
+        tools:layout="@layout/fragment_edit_route">
+        <argument
+            android:name="routePolyline"
+            app:argType="string"
+            app:nullable="false" />
+        <argument
+            android:name="routeMarkers"
+            android:defaultValue="@null"
+            app:argType="de.ur.explure.model.MapMarker[]"
+            app:nullable="true" />
+
+        <action
+            android:id="@+id/action_editRouteFragment_to_createWayPointDialog"
             app:destination="@id/createWayPointDialog" />
         <action
-            android:id="@+id/action_createRouteFragment_to_singleRouteFragment"
+            android:id="@+id/action_editRouteFragment_to_saveRouteFragment"
+            app:destination="@id/saveRouteFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/saveRouteFragment"
+        android:name="de.ur.explure.views.SaveRouteFragment"
+        android:label="Route speichern"
+        tools:layout="@layout/fragment_save_route">
+        <action
+            android:id="@+id/action_saveRouteFragment_to_createWayPointDialog"
+            app:destination="@id/createWayPointDialog" />
+        <action
+            android:id="@+id/action_saveRouteFragment_to_singleRouteFragment"
             app:destination="@id/singleRouteFragment"
             app:popUpTo="@id/discoverFragment" />
+        <argument
+            android:name="route"
+            app:argType="string"
+            app:nullable="false" />
+        <argument
+            android:name="routeThumbnail"
+            app:argType="string"
+            app:nullable="false" />
         <argument
             android:name="waypoints"
             app:argType="de.ur.explure.model.waypoint.WayPointDTO[]" />
         <argument
             android:name="distance"
-            app:argType="long" />
-        <argument android:name="duration"
-            app:argType="long" />
+            app:argType="float" />
+        <argument
+            android:name="duration"
+            app:argType="float" />
     </fragment>
     <dialog
         android:id="@+id/createWayPointDialog"
         android:name="de.ur.explure.views.CreateWayPointDialogFragment"
-        android:label="CreateWayPointDialogFragment" >
+        android:label="CreateWayPointDialogFragment">
         <argument
             android:name="wayPointDTO"
+            android:defaultValue="@null"
             app:argType="de.ur.explure.model.waypoint.WayPointDTO"
-            app:nullable="true"
-            android:defaultValue="@null" />
+            app:nullable="true" />
         <argument
             android:name="longitude"
-            app:argType="long"
-            android:defaultValue="0L"/>
+            android:defaultValue="0L"
+            app:argType="long" />
         <argument
             android:name="latitude"
-            app:argType="long"
-            android:defaultValue="0L"/>
+            android:defaultValue="0L"
+            app:argType="long" />
     </dialog>
 
 </navigation>

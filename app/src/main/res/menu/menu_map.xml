@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!--
+    <item
+        android:id="@+id/startNavigationButton"
+        android:icon="@drawable/ic_navigation_24"
+        android:title="Start Navigation"
+        android:visible="false"
+        app:showAsAction="ifRoom"
+        tools:visible="true" />
+        -->
+
+    <item
+        android:id="@+id/cancelRouteCreationButton"
+        android:icon="@drawable/ic_baseline_close_24"
+        android:title="@string/menu_cancel_route_creation"
+        android:visible="false"
+        app:showAsAction="always"
+        tools:visible="true"
+        tools:ignore="AlwaysShowAction" />
+
+    <item
+        android:id="@+id/showMapMatchedButton"
+        android:icon="@drawable/ic_magnet"
+        android:title="@string/menu_align_created_route"
+        android:visible="false"
+        app:showAsAction="always"
+        tools:visible="true" />
+
+    <item
+        android:id="@+id/confirmRouteButton"
+        android:icon="@drawable/ic_baseline_done_24"
+        android:title="@string/menu_confirm_route"
+        android:visible="false"
+        app:showAsAction="always"
+        tools:visible="true" />
+
+    <item
+        android:id="@+id/show3DSwitch"
+        android:icon="@drawable/ic_baseline_domain_24"
+        android:title="@string/menu_show_buildings_extrusion"
+        android:checkable="true"
+        android:checked="true"
+        android:visible="true"
+        app:showAsAction="never" />
+
+</menu>

@@ -5,36 +5,49 @@
         <item name="colorPrimary">@color/themeColor</item>
         <item name="colorPrimaryDark">@color/themeColorDark</item>
         <item name="colorPrimaryVariant">@color/themeColorLight</item>
-        <item name="colorOnPrimary">@color/black</item>
+        <item name="colorOnPrimary">@color/colorOnTheme</item>
         <item name="colorAccent">@color/highlightColor</item>
         <item name="colorSecondary">@color/highlightColor</item>
         <item name="colorSecondaryVariant">@color/highlightColorDark</item>
-        <item name="colorOnSecondary">@color/white</item>
+        <item name="colorOnSecondary">@color/colorOnHighlight</item>
 
         <item name="colorError">@color/colorError</item>
         <item name="colorOnError">@color/colorOnError</item>
-        <item name="colorSurface">@color/surfaceColor</item> <!-- e.g. for dialogs, cardviews or bottomsheets -->
+        <item name="colorSurface">@color/surfaceColor
+        </item> <!-- e.g. for dialogs, cardviews, ... -->
         <item name="colorOnSurface">@color/colorOnSurface</item>
         <item name="android:colorBackground">@color/backgroundColor</item> <!-- app background -->
         <item name="colorOnBackground">@color/colorOnBackground</item>
         <!--<item name="android:textColor">@color/textColor</item>-->
 
         <!-- other custom styles -->
-        <item name="materialAlertDialogTheme">@style/MaterialDialogTheme</item>
+        <item name="materialAlertDialogTheme">@style/CustomMaterialDialogTheme</item>
+        <item name="actionButtonStyle">@style/ActionButton</item>
+    </style>
+
+    <!-- styling for the action buttons in the app toolbar -->
+    <style name="ActionButton" parent="@android:style/Widget.ActionButton">
+        <item name="android:paddingEnd">12dp</item>
     </style>
 
     <!-- Custom Material Alert Dialog Theme -->
-    <style name="MaterialDialogTheme" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+    <style name="CustomMaterialDialogTheme" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
         <item name="colorSurface">@color/materialDialogSurface</item>
         <item name="materialAlertDialogTitlePanelStyle">@style/TitlePaneStyleCenter</item>
+        <item name="materialAlertDialogTitleIconStyle">@style/TitleIconStyleCenter</item>
         <item name="materialAlertDialogTitleTextStyle">@style/TitleTextStyle</item>
         <item name="materialAlertDialogBodyTextStyle">@style/BodyTextStyle</item>
         <item name="buttonBarStyle">@style/ButtonBarStyle</item>
+        <item name="shapeAppearance">@style/ShapeAppearance.App.MediumComponent</item>
     </style>
 
     <style name="TitlePaneStyleCenter" parent="MaterialAlertDialog.MaterialComponents.Title.Panel.CenterStacked">
-        <item name="android:background">#FAF6D7</item>
+        <item name="android:background">@color/themeColor</item>
         <item name="android:padding">16dp</item>
+    </style>
+
+    <style name="TitleIconStyleCenter" parent="MaterialAlertDialog.MaterialComponents.Title.Icon">
+        <item name="android:layout_gravity">center</item>
     </style>
 
     <style name="TitleTextStyle" parent="MaterialAlertDialog.MaterialComponents.Title.Text">
@@ -46,11 +59,73 @@
     <style name="BodyTextStyle" parent="MaterialAlertDialog.MaterialComponents.Body.Text">
         <item name="android:paddingTop">6dp</item>
         <item name="android:paddingBottom">6dp</item>
-        <item name="android:textSize">14sp</item>
+        <item name="android:textSize">16sp</item>
     </style>
 
     <style name="ButtonBarStyle">
         <item name="android:paddingTop">8dp</item>
+    </style>
+
+    <style name="ShapeAppearance.App.MediumComponent" parent="ShapeAppearance.MaterialComponents.MediumComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">16dp</item>
+    </style>
+
+    <style name="RouteCreationMaterialDialogTheme" parent="CustomMaterialDialogTheme">
+        <item name="materialAlertDialogBodyTextStyle">@style/RouteCreationBodyTextStyle</item>
+        <item name="buttonBarPositiveButtonStyle">@style/RouteCreationDialogButtonStyle</item>
+        <item name="buttonBarNegativeButtonStyle">@style/RouteCreationDialogButtonStyle</item>
+        <item name="buttonBarNeutralButtonStyle">@style/RouteCreationDialogButtonStyle</item>
+    </style>
+
+    <style name="RouteCreationBodyTextStyle" parent="BodyTextStyle">
+        <item name="android:textSize">14sp</item>
+    </style>
+
+    <style name="RouteCreationDialogButtonStyle" parent="Widget.MaterialComponents.Button">
+        <item name="android:padding">6dp</item>
+        <item name="android:layout_marginBottom">4dp</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="backgroundTint">@color/white</item>
+        <item name="strokeWidth">1dp</item>
+        <item name="rippleColor">@color/highlightColor</item>
+        <item name="strokeColor">@color/highlightColor</item>
+    </style>
+
+    <!-- Custom Bottom Sheet Theme:
+    use ThemeOverlay instead of Theme so that changes to the main theme (e.g. when switching to dark
+    mode) are reflected in the bottomsheetdialog as well, see https://material.io/develop/android/components/bottom-sheet-dialog-fragment -->
+    <style name="BottomSheetDialogTheme" parent="@style/ThemeOverlay.MaterialComponents.BottomSheetDialog">
+        <item name="android:windowIsFloating">false</item>
+        <item name="bottomSheetStyle">@style/BottomSheet</item>
+
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/white</item>
+        <item name="android:colorPrimary">@color/themeColor</item>
+        <item name="colorAccent">@color/highlightColor</item>
+
+        <!-- adjust keyboard -->
+        <!-- <item name="android:windowSoftInputMode">adjustResize</item> -->
+    </style>
+
+    <style name="BottomSheet" parent="@style/Widget.Design.BottomSheet.Modal">
+        <item name="android:background">@drawable/background_bottomsheet_dialog</item>
+    </style>
+
+    <!-- Mapbox Navigation UI -->
+    <style name="NavigationMapRoute">
+        <!-- Colors -->
+        <item name="routeColor">@color/mapbox_blue</item>
+        <item name="routeModerateCongestionColor">@color/mapboxYellow</item>
+        <item name="routeSevereCongestionColor">@color/mapboxPink</item>
+        <!-- Scales -->
+        <item name="routeScale">1.0</item>
+    </style>
+
+    <style name="NavigationView" parent="Theme.AppCompat.NoActionBar">
+        <item name="navigationViewPrimary">@color/mapboxWhite</item>
+        <item name="navigationViewSecondary">@color/mapboxBlue</item>
+        <item name="navigationViewAccent">@color/mapboxPink</item>
     </style>
 
     <style name="TextInputHintStyle" parent="@android:style/TextAppearance">

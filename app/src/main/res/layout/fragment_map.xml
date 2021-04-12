@@ -5,7 +5,35 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mapContainer"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:elevation="2dp"
+        android:indeterminate="true"
+        android:indeterminateTint="@color/highlightColor"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="visible" />
+
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/buildRouteButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_normal"
+        android:text="@string/create_route"
+        app:elevation="16dp"
+        app:icon="@drawable/ic_baseline_construction_24"
+        app:iconSize="32dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <com.mapbox.mapboxsdk.maps.MapView
         android:id="@+id/mapView"
@@ -17,36 +45,103 @@
         mapbox:mapbox_cameraTilt="0"
         mapbox:mapbox_cameraZoom="14"
         mapbox:mapbox_cameraZoomMax="20"
-        mapbox:mapbox_cameraZoomMin="2" />
+        mapbox:mapbox_cameraZoomMin="14" />
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/changeStyleButton"
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/top_guideline"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/fab_margin"
-        android:layout_marginBottom="@dimen/margin_small"
-        app:backgroundTint="@color/mapbox_blue"
-        app:elevation="@dimen/fab_elevation"
-        app:fabSize="auto"
-        app:layout_constraintBottom_toTopOf="@id/ownLocationButton"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent=".20" />
+
+    <include
+        android:id="@+id/route_creation_options_layout"
+        layout="@layout/route_creation_options_panel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@id/bottom_guideline"
         app:layout_constraintEnd_toEndOf="parent"
-        app:pressedTranslationZ="12dp"
-        app:srcCompat="@drawable/ic_sharp_swap_horiz_24"
-        tools:ignore="ContentDescription" />
+        app:layout_constraintTop_toBottomOf="@+id/top_guideline" />
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/ownLocationButton"
+    <include
+        android:id="@+id/route_draw_options_layout"
+        layout="@layout/route_draw_options_panel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="@dimen/fab_margin"
-        android:layout_marginBottom="@dimen/fab_margin"
-        android:src="@drawable/ic_baseline_my_location_24"
-        app:borderWidth="0dp"
-        app:elevation="@dimen/fab_elevation"
-        app:fabSize="auto"
+        app:layout_constraintBottom_toTopOf="@id/bottom_guideline"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/top_guideline" />
+
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/bottom_guideline"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent=".55" />
+
+    <!-- ! the buttons need to be wrapped in a coordinatorLayout so the snackbar won't overlap them when shown -->
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/map_button_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:pressedTranslationZ="12dp"
-        tools:ignore="ContentDescription" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/route_creation_options_layout">
+
+        <RelativeLayout
+            android:id="@+id/fab_buttons"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="bottom|end"
+            android:gravity="bottom|end"
+            app:layout_dodgeInsetEdges="bottom">
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/changeStyleButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/ownLocationButton"
+                android:layout_marginBottom="12dp"
+                app:backgroundTint="@color/themeColorDark"
+                app:elevation="@dimen/fab_elevation"
+                app:fabSize="auto"
+                app:pressedTranslationZ="12dp"
+                app:srcCompat="@drawable/ic_layers"
+                tools:ignore="ContentDescription" />
+
+            <com.google.android.material.floatingactionbutton.FloatingActionButton
+                android:id="@+id/ownLocationButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|end"
+                android:layout_marginEnd="@dimen/fab_margin"
+                android:layout_marginBottom="@dimen/fab_margin"
+                app:elevation="@dimen/fab_elevation"
+                app:fabSize="auto"
+                app:pressedTranslationZ="12dp"
+                app:srcCompat="@drawable/ic_baseline_my_location_24"
+                tools:ignore="ContentDescription" />
+
+        </RelativeLayout>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <include
+            android:id="@+id/routeDrawConfirmSheet"
+            layout="@layout/route_draw_confirm_sheet"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:behavior_hideable="true"
+            app:layout_behavior="@string/bottom_sheet_behavior"
+            app:layout_insetEdge="bottom" />
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

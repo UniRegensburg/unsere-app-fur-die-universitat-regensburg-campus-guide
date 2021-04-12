@@ -20,10 +20,14 @@
             app:destination="@id/nav_graph_main"
             app:popUpTo="@id/nav_graph_main"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_hostFragment_to_nav_graph_onboarding"
+            app:destination="@id/nav_graph_onboarding" />
     </fragment>
 
     <include app:graph="@navigation/nav_graph_auth" />
 
     <include app:graph="@navigation/nav_graph_main" />
+    <include app:graph="@navigation/nav_graph_onboarding" />
 
 </navigation>

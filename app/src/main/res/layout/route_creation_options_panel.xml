@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/background_options_panel"
+    android:clickable="true"
+    android:elevation="24dp"
+    android:focusable="true"
+    android:orientation="vertical"
+    android:paddingHorizontal="10dp"
+    android:visibility="gone"
+    tools:visibility="visible">
+    <!-- the root layout must be clickable in order to consume clicks;
+    otherwise it will just pass the click events to the layout below! -->
+
+    <ImageButton
+        android:id="@+id/add_marker_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginVertical="8dp"
+        android:background="@drawable/background_icon_button"
+        android:src="@drawable/ic_baseline_add_location_alt_24"
+        android:tint="@color/themeColor"
+        tools:ignore="ContentDescription" />
+
+    <!-- TODO let user edit points (e.g. dragging) ?
+    <ImageButton
+        android:id="@+id/edit_marker_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/add_marker_button"
+        android:layout_centerHorizontal="true"
+        android:layout_marginVertical="8dp"
+        android:background="@drawable/background_icon_button"
+        android:src="@drawable/ic_baseline_edit_location_alt_24"
+        android:tint="@color/colorInfo"
+        tools:ignore="ContentDescription" />
+        -->
+
+    <ImageButton
+        android:id="@+id/delete_marker_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/add_marker_button"
+        android:layout_centerHorizontal="true"
+        android:layout_marginVertical="8dp"
+        android:background="@drawable/background_icon_button"
+        android:src="@drawable/ic_baseline_wrong_location_24"
+        android:tint="@color/colorError"
+        tools:ignore="ContentDescription" />
+
+    <ImageButton
+        android:id="@+id/reset_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/delete_marker_button"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="24dp"
+        android:layout_marginBottom="8dp"
+        android:background="@drawable/background_icon_button"
+        android:foreground="?attr/selectableItemBackgroundBorderless"
+        android:src="@drawable/ic_baseline_delete_24"
+        android:tint="@color/colorError"
+        tools:ignore="ContentDescription" />
+
+    <!-- alternativ auch so möglich mit Text dazu: -->
+    <!--
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/delete_marker_button"
+        android:layout_centerHorizontal="true"
+        android:layout_marginVertical="6dp"
+        android:background="@drawable/icon_button_border"
+        android:padding="6dp"
+        android:drawableTint="@color/colorAccent"
+        android:text="Karte"
+        app:drawableTopCompat="@drawable/ic_baseline_map_24" />
+        -->
+
+</RelativeLayout>
