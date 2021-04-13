@@ -6,7 +6,6 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import de.ur.explure.databinding.WaypointItemBinding
 import de.ur.explure.model.waypoint.WayPoint
-import java.util.*
 
 class WayPointAdapter : RecyclerView.Adapter<WayPointAdapter.ViewHolder>() {
 

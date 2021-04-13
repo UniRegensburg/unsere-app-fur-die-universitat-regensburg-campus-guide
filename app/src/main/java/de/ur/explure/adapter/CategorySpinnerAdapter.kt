@@ -13,10 +13,7 @@ import de.ur.explure.R
 import de.ur.explure.databinding.SpinnerCategoryItemBinding
 import de.ur.explure.model.category.Category
 import org.koin.core.component.KoinComponent
-import org.koin.core.component.bind
 import org.koin.core.component.inject
-import java.lang.Exception
-import java.util.*
 
 class CategorySpinnerAdapter(context: Context, categories: List<Category> = mutableListOf()) :
     ArrayAdapter<Category>(context, 0, categories), KoinComponent {
