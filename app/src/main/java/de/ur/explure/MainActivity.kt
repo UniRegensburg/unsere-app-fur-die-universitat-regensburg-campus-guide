@@ -44,7 +44,6 @@ class MainActivity : AppCompatActivity(), MapFragment.MapFragmentListener {
         setContentView(activityMainBinding.root)
         setupBottomNavigation()
         setupToolbar()
-        setupViewModelObservers()
 
         // only set the auth state observer if the activity is created from scratch
         if (savedInstanceState == null) {
