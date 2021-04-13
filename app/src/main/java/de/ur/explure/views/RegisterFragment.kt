@@ -1,12 +1,15 @@
 package de.ur.explure.views
 
+import android.content.Context
 import android.os.Bundle
 import android.view.View
-import android.widget.Toast
+import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.Fragment
 import com.crazylegend.viewbinding.viewBinding
+import com.google.android.material.snackbar.Snackbar
 import de.ur.explure.R
 import de.ur.explure.databinding.FragmentRegisterBinding
+import de.ur.explure.utils.showSnackbar
 import de.ur.explure.viewmodel.AuthenticationViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -22,9 +25,15 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
     }
 
     private fun observe() {
-        authenticationViewModel.toast.observe(viewLifecycleOwner, {
+        authenticationViewModel.userInfo.observe(viewLifecycleOwner, {
             it?.let {
-                Toast.makeText(context, it, Toast.LENGTH_LONG).show()
+                showSnackbar(
+                        requireActivity(),
+                        it,
+                        R.id.register_container,
+                        Snackbar.LENGTH_LONG,
+                        colorRes = R.color.colorError
+                )
             }
         })
     }
@@ -34,6 +43,8 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
             authenticationViewModel.goBackToLogin()
         }
         binding.registerButton.setOnClickListener {
+            // hides keyboard to show snackbar
+            hideKeyboard()
             register()
         }
     }
@@ -45,7 +56,18 @@ class RegisterFragment : Fragment(R.layout.fragment_register) {
         if (email.isNotEmpty() && password.isNotEmpty() && password == confPassword) {
             authenticationViewModel.register(email, password)
         } else {
-            Toast.makeText(context, R.string.registration_failed, Toast.LENGTH_SHORT).show()
+            showSnackbar(
+                    requireActivity(),
+                    R.string.registration_failed,
+                    R.id.register_container,
+                    Snackbar.LENGTH_LONG,
+                    colorRes = R.color.colorError
+            )
         }
+    }
+
+    private fun hideKeyboard() {
+        val imm = context?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(view?.windowToken, 0)
     }
 }

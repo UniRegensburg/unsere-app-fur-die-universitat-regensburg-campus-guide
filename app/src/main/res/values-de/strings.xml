@@ -75,6 +75,11 @@
     <string name="action_menu_tutorial_title">Aktionsmöglichkeiten während der Routenerstellung</string>
     <string name="action_menu_tutorial_description">Hier findest du nützliche Aktionsmöglichkeiten während der Routenerstellung. Du kannst die Routenerstellung abbrechen (x - Symbol), versuchen deine erstellte Route und deine Wegpunkte automatisch an bekannte Wege auf dem Campus anzugleichen (Magnet - Symbol) oder die erstellte Route bestätigen und mit dem nächsten Schritt weitermachen (Haken - Symbol).</string>
 
+    <string name="no_routes">Zu diesem Ziel gibt es keine verfügbaren Routen</string>
+    <string name="steps_in_route">Diese Route besteht aus %1$d Schritten</string>
+    <string name="route_request_failed">Die Routenanfrage ist fehlgeschlagen</string>
+
+
     <!-- Route Creation -->
     <string name="route_creation_options">Es gibt 3 Möglichkeiten, um Routen zu erstellen:
         \n<ul>
@@ -143,13 +148,6 @@
     <string name="confirm">Bestätigen</string>
     <string name="abort">Abbrechen</string>
 
-    <string name="route_item_title">Route Name</string>
-    <string name="route_item_rating">(%1d)</string>
-    <string name="route_item_waypoints">0</string>
-    <string name="route_item_distance">%1d km</string>
-    <string name="route_item_duration">%1d h</string>
-    <string name="route_item_author">von %1s</string>
-
     <!-- Authentication -->
     <string name="login_email">Email</string>
     <string name="login_password">Passwort</string>
@@ -178,6 +176,9 @@
     <string name="email_sent">Email wurde gesendet</string>
     <string name="registration_failed">Registrierung fehlgeschlagen</string>
     <string name="changeUserName">Benutzernamen ändern</string>
+    <string name="delete_account">Account löschen</string>
+    <string name="delete_text">Wenn du dein Konto löschen, werden deine Informationen aus der Datenbank entfernt. Dies kann nicht rückgängig gemacht werden</string>
+    <string name="account_deleted">Account wurde gelöscht</string>
 
     <!-- Single Route -->
     <string name="route_name">Route</string>
@@ -200,6 +201,8 @@
     <string name="hide_answers">Antworten verstecken</string>
     <string name="answer_input">Antwort</string>
     <string name="empty_answer">Bitte Antwort eingeben</string>
+    <string name="single_route_error">Beim Laden der Routendaten ist etwas schief gelaufen, bitte versuche es später wieder.</string>
+
     <string name="delete_answer">Antwort löschen?</string>
     <string name="answer_deleted">Antwort wurde gelöscht</string>
     <string name="delete_button">Löschen</string>
@@ -221,14 +224,11 @@
 
     <!--Test Strings-->
     <string name="lorem_ipsum">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.  </string>
-    <string name="arbeits_button">Arbeiten</string>
-
 
     <!--Create Route Strings-->
     <string name="category_spinner_header">Wähle eine Kategorie</string>
     <string name="create_route_descr_hint">Beschreibung</string>
     <string name="create_route_title_hint">Titel</string>
-    <string name="create_waypoint_media_title">Add Media</string>
     <string name="create_waypoint_save_btn">Speichern</string>
     <string name="create_waypoint_title">Wegpunkt Information</string>
     <string name="create_route_save_btn">Speichern</string>
@@ -239,6 +239,13 @@
     <!-- SearchFragment Strings-->
     <string name="title_page_searchresults">Ergebnisse deiner Suche</string>
     <string name="no_results">Keine Suchergebnisse</string>
+
+    <string name="route_item_title">Routenname</string>
+    <string name="route_item_rating">(%1d)</string>
+    <string name="route_item_waypoints">0</string>
+    <string name="route_item_distance">%1d m</string>
+    <string name="route_item_duration">%1d min</string>
+    <string name="route_item_author">von %1s</string>
 
     <!-- Category Strings-->
     <string name="default_title">Kategorie</string>

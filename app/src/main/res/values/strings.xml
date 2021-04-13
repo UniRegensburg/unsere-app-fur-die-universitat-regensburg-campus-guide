@@ -153,7 +153,6 @@
 
     <!-- Category Strings-->
     <string name="default_title">Category</string>
-
     <string name="login_email">Email</string>
     <string name="login_password">Password</string>
     <string name="login_button">Login</string>
@@ -165,7 +164,6 @@
     <string name="enter_email">Please enter your email</string>
     <string name="no_account">Dont have an account?</string>
     <string name="sign_up_button">Register?</string>
-    <string name="register_text">Register</string>
     <string name="new_email">Email</string>
 
 	<string name="new_password">Password</string>
@@ -194,7 +192,7 @@
     <string name="route_item_waypoints">0</string>
     <string name="route_item_distance">%1d m</string>
     <string name="route_item_duration">%1d min</string>
-    <string name="route_item_author">von %1s</string>
+    <string name="route_item_author">from %1s</string>
 
     <string name="discover_new_routes">New Routes</string>
     <string name="discover_popular_routes">Popular Routes</string>
@@ -236,6 +234,7 @@
     <string name="waypoint_image">Image</string>
     <string name="waypoint_title">Title</string>
     <string name="waypoint_description">Description</string>
+    <string name="single_route_error">Something went wrong while loading the data. Please try again later.</string>
 
     <string name="category_spinner_header">Set a Category</string>
     <string name="create_route_descr_hint">Description</string>
@@ -249,12 +248,12 @@
     <string name="audio_permission_not_granted">Without this permission the app is not able to record an audio message.</string>
     <string name="external_storage_permission_not_granted">Without this permission the app can\'t access files in your external storage.</string>
     <string name="universal_permission_not_granted">This action is not possible without the permission.</string>
-    <string name="audio_recording_error">An error occured while recording your audio message. Please try again.</string>
+    <string name="audio_recording_error">An error occurred while recording your audio message. Please try again.</string>
     <string name="waypoint_title_error">Please enter a title</string>
     <string name="waypoint_description_error">Please enter a description</string>
     <string name="route_thumbnail_hint">Set a thumbnail for your view</string>
     <string name="no_category_selected_error">Please select a category</string>
-    <string name="route_image_error">An error occured while loading your image, please try again.</string>
+    <string name="route_image_error">An error occurred while loading your image, please try again.</string>
     <string name="route_creation_error">Something went wrong while creating your route. Please try again later</string>
     <string name="category_download_error">Could not get categories. Please try again later</string>
     <string name="default_waypoint_title">No title</string>

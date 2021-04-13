@@ -67,7 +67,7 @@ class UserDataFragment : Fragment(R.layout.fragment_user_data) {
 
     private fun setErrorObserver() {
         userDataViewModel.showErrorMessage.observe(viewLifecycleOwner, { showError ->
-            if (showError != null && showError) {
+            if (showError == true) {
                 showSnackbar(
                     requireActivity(),
                     R.string.user_data_error,

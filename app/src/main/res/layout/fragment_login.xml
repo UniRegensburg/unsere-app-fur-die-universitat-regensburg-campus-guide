@@ -1,19 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/login_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fillViewport="true"
     tools:context="views.LoginFragment">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        >
-
         <TextView
-            android:id="@+id/loginText"
+            android:id="@+id/login_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="70dp"
@@ -21,29 +17,31 @@
             android:text="@string/login_text"
             android:textSize="40sp"
             android:textStyle="bold"
-            app:layout_constraintBottom_toTopOf="@id/tfEmail"
+            app:layout_constraintBottom_toTopOf="@id/tf_email"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.298" />
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/tfEmail"
+            android:id="@+id/tf_email"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/margin_normal"
             android:layout_marginTop="80dp"
+            android:layout_marginEnd="10dp"
+            app:layout_constraintBottom_toTopOf="@+id/tf_password"
             android:layout_marginEnd="@dimen/margin_normal"
             app:cardCornerRadius="@dimen/cardview_corner_radius"
             app:cardElevation="@dimen/cardview_default_elevation"
-            app:layout_constraintBottom_toTopOf="@+id/tfPassword"
+            app:layout_constraintBottom_toTopOf="@+id/tf_password"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/loginText"
+            app:layout_constraintTop_toBottomOf="@+id/login_text"
             app:layout_constraintVertical_bias="0.298">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/edLoginEmail"
+                android:id="@+id/ed_login_email"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@android:color/transparent"
@@ -53,22 +51,22 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/tfPassword"
+            android:id="@+id/tf_password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textSize="20sp"
             android:layout_marginStart="@dimen/margin_normal"
             android:layout_marginTop="@dimen/margin_normal"
             android:layout_marginEnd="@dimen/margin_normal"
-            app:layout_constraintBottom_toTopOf="@+id/loginButton"
+            app:layout_constraintBottom_toTopOf="@+id/login_button"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tfEmail"
+            app:layout_constraintTop_toBottomOf="@+id/tf_email"
             app:passwordToggleEnabled="true"
             tools:ignore="UnknownId">
 
             <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/edLoginPassword"
+                android:id="@+id/ed_login_password"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@android:color/transparent"
@@ -78,7 +76,7 @@
         </com.google.android.material.textfield.TextInputLayout>
 
         <Button
-            android:id="@+id/loginButton"
+            android:id="@+id/login_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="@dimen/margin_normal"
@@ -86,44 +84,44 @@
             android:elevation="@dimen/cardview_default_elevation"
             android:layout_marginTop="@dimen/margin_normal"
             android:text="@string/login_button"
-            android:textSize="16sp"
-            app:layout_constraintTop_toBottomOf="@+id/tfPassword" />
+            app:layout_constraintTop_toBottomOf="@+id/tf_password" />
+            android:textSize="16sp" />
 
         <TextView
-            android:id="@+id/resetPasswordTV"
+            android:id="@+id/reset_password_tV"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:layout_marginEnd="@dimen/margin_normal"
+            android:layout_marginEnd="10dp"
             android:gravity="end"
             android:text="@string/reset_password"
             android:textAllCaps="false"
             android:textColor="@color/themeColorDark"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/loginButton" />
+            app:layout_constraintTop_toBottomOf="@id/login_button" />
 
         <Button
-            android:id="@+id/withoutAccountButton"
+            android:id="@+id/without_account_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
             android:text="@string/without_account"
             android:textColor="@color/themeColorDark"
-            app:layout_constraintBottom_toTopOf="@id/orText"
+            app:layout_constraintBottom_toTopOf="@id/or_text"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
         <TextView
-            android:id="@+id/orText"
+            android:id="@+id/or_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/or_text"
-            app:layout_constraintBottom_toTopOf="@id/signUpButton"
+            app:layout_constraintBottom_toTopOf="@id/sign_up_button"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
         <Button
-            android:id="@+id/signUpButton"
+            android:id="@+id/sign_up_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="5dp"
@@ -133,5 +131,6 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</androidx.core.widget.NestedScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
