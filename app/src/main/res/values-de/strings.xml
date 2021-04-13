@@ -147,6 +147,13 @@
     <string name="confirm">Bestätigen</string>
     <string name="abort">Abbrechen</string>
 
+    <string name="route_item_title">Route Name</string>
+    <string name="route_item_rating">(%1d)</string>
+    <string name="route_item_waypoints">0</string>
+    <string name="route_item_distance">%1d km</string>
+    <string name="route_item_duration">%1d h</string>
+    <string name="route_item_author">von %1s</string>
+
     <!-- Authentication -->
     <string name="login_email">Email</string>
     <string name="login_password">Passwort</string>
@@ -181,28 +188,37 @@
 
     <!-- Single Route -->
     <string name="route_name">Route</string>
-    <string name="route_description">Beschreibung</string>
-    <string name="map_button">Karte</string>
-    <string name="waypoints_button">Wegpunkte</string>
-    <string name="picture_button">Bilder</string>
+    <string name="share_route">Teilen</string>
     <string name="route_duration">Dauer</string>
     <string name="route_distance">Strecke</string>
     <string name="route_rating">Bewertung</string>
-    <string name="waypoints">Wegpunkte</string>
-    <string name="share_route">Teilen</string>
     <string name="start_route">Route starten</string>
-    <string name="comment_author">Autor</string>
-    <string name="comment_text">Text</string>
-    <string name="show_answers">Zeige Antworten</string>
-    <string name="comment_date">Datum</string>
-    <string name="hide_answers">Verstecke Antworten</string>
+    <string name="description_button">Beschreibung</string>
+    <string name="comments_button">Kommentare</string>
     <string name="comment_input">Kommentar</string>
     <string name="add_comment">Posten</string>
+    <string name="empty_comment">Bitte Kommentar eingeben</string>
+    <string name="comment_author">Autor</string>
+    <string name="comment_text">Text</string>
+    <string name="comment_date">Datum</string>
+    <string name="delete_comment">Kommentar löschen?</string>
+    <string name="comment_deleted">Kommentar wurde gelöscht</string>
+    <string name="show_answers">Antworten zeigen (%1d)</string>
+    <string name="hide_answers">Antworten verstecken</string>
     <string name="answer_input">Antwort</string>
     <string name="empty_comment">Bitte Kommentar eingeben</string>
     <string name="empty_answer">Bitte Antwort eingeben</string>
     <string name="single_route_error">Beim Laden der Routendaten ist etwas schief gelaufen, bitte versuche es später wieder.</string>
 
+    <string name="empty_answer">Bitte Antwort eingeben</string>
+    <string name="delete_answer">Antwort löschen?</string>
+    <string name="answer_deleted">Antwort wurde gelöscht</string>
+    <string name="delete_button">Löschen</string>
+    <string name="back_button">Zurück</string>
+    <string name="waypoints_button">Wegpunkte</string>
+    <string name="waypoint_image">Bild</string>
+    <string name="waypoint_title">Titel</string>
+    <string name="waypoint_description">Description</string>
     <string name="discover_new_routes">Neue Routen</string>
     <string name="discover_popular_routes">Beliebte Routen</string>
     <string name="discover_route_error">Fehler beim Laden der Routen, bitte versuche es später nochmal!</string>
@@ -218,7 +234,6 @@
 
     <!--Create Route Strings-->
     <string name="category_spinner_header">Wähle eine Kategorie</string>
-    <string name="waypoint_title">Wegpunkte</string>
     <string name="create_route_descr_hint">Beschreibung</string>
     <string name="create_route_title_hint">Titel</string>
     <string name="create_waypoint_image_title">Bild hinzufügen</string>
