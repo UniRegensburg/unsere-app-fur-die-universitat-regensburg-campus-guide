@@ -16,9 +16,10 @@ import de.ur.explure.utils.FirebaseResult
 import kotlinx.coroutines.launch
 import java.util.*
 
-@Suppress("StringLiteralDuplication")
 class SingleRouteViewModel(private val routeRepository: RouteRepositoryImpl) : ViewModel() {
 
+    private val mutableMessage: MutableLiveData<Boolean> = MutableLiveData()
+    val showMessage: LiveData<Boolean> = mutableMessage
     private val mutableRoute: MutableLiveData<Route> = MutableLiveData()
     val route: LiveData<Route> = mutableRoute
 
@@ -28,6 +29,12 @@ class SingleRouteViewModel(private val routeRepository: RouteRepositoryImpl) : V
                 is FirebaseResult.Success -> {
                     mutableRoute.postValue(routeData.data)
                 }
+                is FirebaseResult.Error -> {
+                    mutableMessage.postValue(true)
+                }
+                is FirebaseResult.Canceled -> {
+                    mutableMessage.postValue(true)
+                }
             }
         }
     }
@@ -36,10 +43,10 @@ class SingleRouteViewModel(private val routeRepository: RouteRepositoryImpl) : V
         viewModelScope.launch {
             val commentDto = CommentDTO(comment)
             val routeId = route.value?.id ?: return@launch
-            when (routeRepository.addComment(routeId, commentDto)) {
-                is FirebaseResult.Success -> {
-                    getRouteData(routeId)
-                }
+            if (routeRepository.addComment(routeId, commentDto) is FirebaseResult.Success) {
+                getRouteData(routeId)
+            } else {
+                mutableMessage.postValue(true)
             }
         }
     }
@@ -48,10 +55,10 @@ class SingleRouteViewModel(private val routeRepository: RouteRepositoryImpl) : V
         viewModelScope.launch {
             val commentDto = CommentDTO(answerText)
             val routeId = route.value?.id ?: return@launch
-            when (routeRepository.addAnswer(routeId, commentId, commentDto)) {
-                is FirebaseResult.Success -> {
-                    getRouteData(routeId)
-                }
+            if (routeRepository.addAnswer(routeId, commentId, commentDto) is FirebaseResult.Success) {
+                getRouteData(routeId)
+            } else {
+                mutableMessage.postValue(true)
             }
         }
     }
@@ -59,10 +66,8 @@ class SingleRouteViewModel(private val routeRepository: RouteRepositoryImpl) : V
     fun deleteComment(commentId: String) {
         viewModelScope.launch {
             val routeId = route.value?.id ?: return@launch
-            when (routeRepository.deleteComment(commentId, routeId)) {
-                is FirebaseResult.Success -> {
+            if (routeRepository.deleteComment(commentId, routeId) is FirebaseResult.Success) {
                     getRouteData(routeId)
-                }
             }
         }
     }

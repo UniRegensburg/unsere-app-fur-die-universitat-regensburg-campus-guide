@@ -152,7 +152,6 @@
 
     <!-- Category Strings-->
     <string name="default_title">Category</string>
-
     <string name="login_email">Email</string>
     <string name="login_password">Password</string>
     <string name="login_button">Login</string>
@@ -166,7 +165,9 @@
     <string name="sign_up_button">Register?</string>
     <string name="register_text">Register</string>
     <string name="new_email">Email</string>
-
+    <string name="delete_account">Delete Account</string>
+    <string name="delete_text">Deleting your account will remove your information from the database. This cannot be undone</string>
+    <string name="account_deleted">Account has been deleted</string>
     <string name="new_password">Password</string>
     <string name="confirm_password">Conform password</string>
     <string name="register_button">Register</string>
@@ -193,7 +194,7 @@
     <string name="route_item_waypoints">0</string>
     <string name="route_item_distance">%1d m</string>
     <string name="route_item_duration">%1d min</string>
-    <string name="route_item_author">von %1s</string>
+    <string name="route_item_author">from %1s</string>
 
     <string name="discover_new_routes">New Routes</string>
     <string name="discover_popular_routes">Popular Routes</string>
@@ -235,6 +236,8 @@
     <string name="waypoint_image">Image</string>
     <string name="waypoint_title">Title</string>
     <string name="waypoint_description">Description</string>
+
+    <string name="single_route_error">Something went wrong while loading the data. Please try again later.</string>
 
     <string name="category_spinner_header">Set a Category</string>
     <string name="create_route_descr_hint">Description</string>
