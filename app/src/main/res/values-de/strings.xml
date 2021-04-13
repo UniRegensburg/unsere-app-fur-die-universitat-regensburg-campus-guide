@@ -50,9 +50,11 @@
 
     <!-- Menu Actions -->
     <string name="menu_cancel_route_creation">Routenerstellung abbrechen</string>
+    <string name="menu_cancel_route_editing">Routenbearbeitung abbrechen</string>
     <string name="menu_save_created_route">Route speichern</string>
     <string name="menu_align_created_route">Route automatisch anpassen</string>
     <string name="menu_show_buildings_extrusion">3D Gebäude anzeigen</string>
+    <string name="menu_confirm_route">Route bestätigen</string>
 
     <!-- Location Tracking -->
     <string name="gps_not_activated">GPS ist nicht aktiviert! Bitte aktiviere die Standortfreigabe in den Geräteeinstellungen, um diese Funktion zu nutzen!</string>
@@ -71,7 +73,7 @@
     <string name="build_route_tutorial_title">Routenerstellung</string>
     <string name="build_route_tutorial_description">Hier kannst du mit der Erstellung einer eigenen Route beginnen.</string>
     <string name="action_menu_tutorial_title">Aktionsmöglichkeiten während der Routenerstellung</string>
-    <string name="action_menu_tutorial_description">Hier findest du nützliche Aktionsmöglichkeiten während der Routenerstellung. Du kannst die Routenerstellung abbrechen (x - Symbol), versuchen deine erstellte Route und deine Wegpunkte automatisch an bekannte Wege auf dem Campus anzugleichen (Magnet - Symbol) und die erstellte Route speichern (Disk - Symbol).</string>
+    <string name="action_menu_tutorial_description">Hier findest du nützliche Aktionsmöglichkeiten während der Routenerstellung. Du kannst die Routenerstellung abbrechen (x - Symbol), versuchen deine erstellte Route und deine Wegpunkte automatisch an bekannte Wege auf dem Campus anzugleichen (Magnet - Symbol) oder die erstellte Route bestätigen und mit dem nächsten Schritt weitermachen (Haken - Symbol).</string>
 
     <!-- Route Creation -->
     <string name="route_creation_options">Es gibt 3 Möglichkeiten, um Routen zu erstellen:
@@ -101,10 +103,14 @@
     <string name="map_matching_succeeded">Für die Wegpunkte wurde erfolgreich eine Route erstellt!</string>
     <string name="save_created_route_confirmation">Erstellte Route speichern?</string>
     <string name="create_route_title">Route erstellen</string>
+    <string name="saving_route">Die Route wird gespeichert. Bitte warten …</string>
+    <string name="error_saving_route_snapshot">Beim Speichern der Route ist leider ein Fehler aufgetreten!</string>
+    <string name="route_edit_instructions">Du kannst deiner Route durch Klicken Wegpunkte hinzufügen und diese an eine neue Position ziehen, indem du sie etwas länger anklickst und dann bewegst. Sobald du fertig bist, klicke auf das "Disk"-Symbol oben rechts, um zu speichern.</string>
 
     <!-- Warnings -->
     <string name="attention">Achtung!</string>
     <string name="leave_route_creation_warning">Möchtest du die Routenerstellung abbrechen? Dein bisheriger Fortschritt geht dabei verloren!</string>
+    <string name="leave_route_editing_warning">Wenn du jetzt abbrichst, wird diese Route nicht gespeichert und dein bisheriger Fortschritt geht verloren! Möchtest du wirklich zurückgehen?</string>
     <string name="change_style_during_route_creation">Während der Routenerstellung kann der Kartenstil leider nicht geändert werden!</string>
     <string name="delete_waypoint_confirmation">Möchtest du diesen Wegpunkt wirklich löschen?</string>
     <string name="delete_marker_confirmation">Möchtest du diese Markierung wirklich löschen?</string>
@@ -112,8 +118,11 @@
     <string name="no_internet">Keine Internetverbindung!</string>
     <string name="no_internet_default_explanation">Es konnte keine Internetverbindung hergestellt werden! Überprüfe bitte deine Verbindung und versuch es dann erneut.</string>
     <string name="no_internet_map_matching">Um eine Route erstellen zu können, wird eine Internetverbindung benötigt!</string>
+    <string name="no_internet_save_route">Um die Route speichern zu können, wird eine Internetverbindung benötigt!</string>
     <string name="too_few_waypoints">Es müssen sich mindestens 2 Wegpunkte auf der Karte befinden, damit eine Route erstellt werden kann!</string>
     <string name="too_many_waypoints">Leider kann aktuell keine Route mit so vielen Wegpunkten erstellt werden! Bitte versuche ein paar unnötige Punkte zu entfernen.</string>
+    <string name="no_route_found">Es wurde keine Route gefunden! Du musst erst eine Route erstellen bevor du fortfahren kannst!</string>
+    <string name="confirm_route_creation_warning">Wenn du zum nächsten Schritt der Routenerstellung übergehst und dann wieder zurückkehrst, musst du von vorne mit der Routenerstellung beginnen! Trotzdem fortfahren?</string>
 
     <!-- Buttons and Options -->
     <string name="try_again">Erneut versuchen</string>
@@ -126,9 +135,19 @@
     <string name="save_route">Route speichern</string>
     <string name="reset_manual_route_creation">Möchtest du wirklich alles seit Beginn der Routenerstellung rückgängig machen?</string>
     <string name="reset_map_draw">Möchtest du wirklich alle gezeichneten Routen auf der Karte rückgängig machen?</string>
+    <string name="route_draw_confirm_option">Möchtest du deine eigene Route oder die automatisch daraus generierte Route verwenden?</string>
+    <string name="use_own_route">Eigene Route</string>
+    <string name="use_map_matching">Generierte Route</string>
 
     <string name="confirm">Bestätigen</string>
     <string name="abort">Abbrechen</string>
+
+    <string name="route_item_title">Route Name</string>
+    <string name="route_item_rating">(%1d)</string>
+    <string name="route_item_waypoints">0</string>
+    <string name="route_item_distance">%1d km</string>
+    <string name="route_item_duration">%1d h</string>
+    <string name="route_item_author">von %1s</string>
 
     <!-- Authentication -->
     <string name="login_email">Email</string>
@@ -161,28 +180,33 @@
 
     <!-- Single Route -->
     <string name="route_name">Route</string>
-    <string name="route_description">Beschreibung</string>
-    <string name="map_button">Karte</string>
-    <string name="waypoints_button">Wegpunkte</string>
-    <string name="picture_button">Bilder</string>
+    <string name="share_route">Teilen</string>
     <string name="route_duration">Dauer</string>
     <string name="route_distance">Strecke</string>
     <string name="route_rating">Bewertung</string>
-    <string name="waypoints">Wegpunkte</string>
-    <string name="share_route">Teilen</string>
     <string name="start_route">Route starten</string>
-    <string name="comment_author">Autor</string>
-    <string name="comment_text">Text</string>
-    <string name="show_answers">Zeige Antworten</string>
-    <string name="comment_date">Datum</string>
-    <string name="hide_answers">Verstecke Antworten</string>
+    <string name="description_button">Beschreibung</string>
+    <string name="comments_button">Kommentare</string>
     <string name="comment_input">Kommentar</string>
     <string name="add_comment">Posten</string>
-    <string name="answer_input">Antwort</string>
     <string name="empty_comment">Bitte Kommentar eingeben</string>
-    <string name="share_text">Hey, ich habe diese Route auf ExplURe gefunden: \n \n%1$s \n%2$d Wegpunkte \nDauer: %3$d min \nLänge: %4$d m \n \n%5$s \n \nKlicke auf den Link, um sie in deiner ExplURe App anzusehen. &#128506;</string>
-    <string name="share_option">Senden mit:</string>
-
+    <string name="comment_author">Autor</string>
+    <string name="comment_text">Text</string>
+    <string name="comment_date">Datum</string>
+    <string name="delete_comment">Kommentar löschen?</string>
+    <string name="comment_deleted">Kommentar wurde gelöscht</string>
+    <string name="show_answers">Antworten zeigen (%1d)</string>
+    <string name="hide_answers">Antworten verstecken</string>
+    <string name="answer_input">Antwort</string>
+    <string name="empty_answer">Bitte Antwort eingeben</string>
+    <string name="delete_answer">Antwort löschen?</string>
+    <string name="answer_deleted">Antwort wurde gelöscht</string>
+    <string name="delete_button">Löschen</string>
+    <string name="back_button">Zurück</string>
+    <string name="waypoints_button">Wegpunkte</string>
+    <string name="waypoint_image">Bild</string>
+    <string name="waypoint_title">Titel</string>
+    <string name="waypoint_description">Description</string>
     <string name="discover_new_routes">Neue Routen</string>
     <string name="discover_popular_routes">Beliebte Routen</string>
     <string name="discover_route_error">Fehler beim Laden der Routen, bitte versuche es später nochmal!</string>
@@ -191,6 +215,8 @@
     <string name="short_text_placeholder">abcde</string>
     <string name="middle_text_placeholder">ABCDEFGHIJKL</string>
     <string name="route_search_hint">Suche</string>
+    <string name="share_text">Hey, ich habe diese Route auf ExplURe gefunden: \n \n%1$s \n%2$d Wegpunkte \nDauer: %3$d min \nLänge: %4$d m \n \n%5$s \n \nKlicke auf den Link, um sie in deiner ExplURe App anzusehen. &#128506;</string>
+    <string name="share_option">Senden mit:</string>
 
     <!--Test Strings-->
     <string name="lorem_ipsum">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.  </string>
@@ -199,15 +225,15 @@
 
     <!--Create Route Strings-->
     <string name="category_spinner_header">Wähle eine Kategorie</string>
-    <string name="waypoint_title">Wegpunkte</string>
     <string name="create_route_descr_hint">Beschreibung</string>
     <string name="create_route_title_hint">Titel</string>
-    <string name="create_waypoint_image_title">Bild hinzufügen</string>
     <string name="create_waypoint_media_title">Add Media</string>
     <string name="create_waypoint_save_btn">Speichern</string>
     <string name="create_waypoint_title">Wegpunkt Information</string>
     <string name="create_route_save_btn">Speichern</string>
-
+    <string name="default_waypoint_title">Kein Titel</string>
+    <string name="route_duration_default">N.A.</string>
+    <string name="route_duration_text">Routendauer (in Minuten):</string>
 
     <!-- SearchFragment Strings-->
     <string name="title_page_searchresults">Ergebnisse deiner Suche</string>
@@ -215,5 +241,28 @@
 
     <!-- Category Strings-->
     <string name="default_title">Kategorie</string>
+    <string name="camera_permission_not_granted">Wir benötigen die Berechtigung auf deine Kamera zuzugreifen, um Bilder aufzunehmen.</string>
+    <string name="video_size_error">Das Video ist leider zu groß. Bitte wähle ein Video unter %1d MB.</string>
+    <string name="audio_permission_not_granted">Diese Berechtigung wird benötigt, um Audio Dateien aufzunehmen.</string>
+    <string name="external_storage_permission_not_granted">Diese Berechtigung wird benötigt, um Dateien aus deinem externen Speicher zu lesen.</string>
+    <string name="universal_permission_not_granted">Ohne diese Berechtigung kann die Aktion nicht ausgeführt werden.</string>
+    <string name="audio_recording_error">Leider ist etwas schief gelaufen, bitte versuche es noch einmal.</string>
+    <string name="route_thumbnail_hint">Setze ein Vorschaubild für deine Route</string>
+    <string name="waypoint_title_error">Bitte lege einen Titel fest</string>
+    <string name="waypoint_description_error">Bitte beschreibe den Wegpunkt</string>
+    <string name="no_category_selected_error">Bitte wähle eine Kategorie aus</string>
+    <string name="route_image_error">Leider konnte dein Bild nicht geladen werden, bitte versuche es noch einmal.</string>
+    <string name="route_creation_error">Leider konnte deine Route nicht erstellt werden, bitte versuche es noch einmal.</string>
+    <string name="category_download_error">Leider ist etwas schief gelaufen, bitte versuche es noch einmal.</string>
+
+    <!-- set user date -->
+    <string name="create_profile">Erstelle dein Profil</string>
+    <string name="add_picture_text">Profilbild hinzufügen</string>
+    <string name="profile_picture">Profilbild</string>
+    <string name="set_user_name">Benutzername</string>
+    <string name="text_changes">Du kannst Bild und Benutzernamen später ändern</string>
+    <string name="create_button">Profil erstellen</string>
+    <string name="empty_username">Bitte Benutzernamen eingeben</string>
+    <string name="user_data_error">Beim Erstellen deines Profiles ist etwas schief gelaufen, bitte versuche es später wieder.</string>
 
 </resources>

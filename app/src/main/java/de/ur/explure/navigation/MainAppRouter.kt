@@ -2,14 +2,19 @@ package de.ur.explure.navigation
 
 import androidx.core.net.toUri
 import androidx.navigation.NavController
+import androidx.navigation.NavDirections
+import com.mapbox.core.constants.Constants.PRECISION_6
+import com.mapbox.geojson.LineString
 import de.ur.explure.R
-import de.ur.explure.views.CreatedRoutesFragmentDirections
-import de.ur.explure.views.ProfileFragmentDirections
+import de.ur.explure.model.MapMarker
 import de.ur.explure.model.category.Category
 import de.ur.explure.views.CategoryQueryFragmentDirections
-import de.ur.explure.views.CreateRouteFragmentDirections
+import de.ur.explure.views.CreatedRoutesFragmentDirections
 import de.ur.explure.views.DiscoverFragmentDirections
 import de.ur.explure.views.FavoriteRoutesFragmentDirections
+import de.ur.explure.views.MapFragmentDirections
+import de.ur.explure.views.ProfileFragmentDirections
+import de.ur.explure.views.SaveRouteFragmentDirections
 import de.ur.explure.views.TextQueryFragmentDirections
 
 /**
@@ -71,6 +76,17 @@ class MainAppRouter {
         navController.setGraph(R.navigation.nav_graph_main)
     }
 
+    /**
+     * Changes the current Navigation graph to the onboarding graph and navigates to the start fragment in
+     * the main app while removing the fragments in the current nav graph from the backstack.
+     */
+
+    fun navigateToOnboarding() {
+        resetNavGraph()
+        navController.navigate(R.id.action_hostFragment_to_nav_graph_onboarding)
+        navController.setGraph(R.navigation.nav_graph_onboarding)
+    }
+
     fun navigateToRegister() {
         navController.navigate(R.id.navigateToRegister)
     }
@@ -117,7 +133,7 @@ class MainAppRouter {
     }
 
     fun navigateToRouteDetailsAfterCreation(routeId: String) {
-        val action = CreateRouteFragmentDirections.actionCreateRouteFragmentToSingleRouteFragment(routeId)
+        val action = SaveRouteFragmentDirections.actionSaveRouteFragmentToSingleRouteFragment(routeId)
         navController.navigate(action)
     }
 
@@ -145,6 +161,20 @@ class MainAppRouter {
         val uriString = "$SINGLE_ROUTE_DEEP_LINK?id=$routeId"
         val uri = uriString.toUri()
         navController.navigate(uri)
+    }
+
+    fun navigateToRouteEditFragment(route: LineString, markers: List<MapMarker>?) {
+        val encodedRoute = route.toPolyline(PRECISION_6)
+        val markerArray = markers?.toTypedArray()
+        val action = MapFragmentDirections.actionMapFragmentToEditRouteFragment(
+            routePolyline = encodedRoute,
+            routeMarkers = markerArray
+        )
+        navController.navigate(action)
+    }
+
+    fun navigateToSaveRouteFragment(action: NavDirections) {
+            navController.navigate(action)
     }
 
     companion object {

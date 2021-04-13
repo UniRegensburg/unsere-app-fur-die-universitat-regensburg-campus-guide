@@ -56,6 +56,28 @@ class SingleRouteViewModel(private val routeRepository: RouteRepositoryImpl) : V
         }
     }
 
+    fun deleteComment(commentId: String) {
+        viewModelScope.launch {
+            val routeId = route.value?.id ?: return@launch
+            when (routeRepository.deleteComment(commentId, routeId)) {
+                is FirebaseResult.Success -> {
+                    getRouteData(routeId)
+                }
+            }
+        }
+    }
+
+    fun deleteAnswer(answerId: String, commentId: String) {
+        viewModelScope.launch {
+            val routeId = route.value?.id ?: return@launch
+            when (routeRepository.deleteAnswer(answerId, commentId, routeId)) {
+                is FirebaseResult.Success -> {
+                    getRouteData(routeId)
+                }
+            }
+        }
+    }
+
     fun shareRoute(context: Context) {
             val route = route.value ?: return
             val shareLink = DeepLinkUtils.getURLforRouteId(route.id)
