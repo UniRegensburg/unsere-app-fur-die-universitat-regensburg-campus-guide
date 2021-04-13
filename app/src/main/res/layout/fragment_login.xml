@@ -12,7 +12,7 @@
             android:id="@+id/login_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="50dp"
+            android:layout_marginTop="80dp"
             android:fontFamily="serif-monospace"
             android:text="@string/login_text"
             android:textSize="40sp"
