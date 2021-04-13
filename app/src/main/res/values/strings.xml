@@ -221,18 +221,21 @@
     <string name="comment_date">Date</string>
     <string name="delete_comment">Delete comment?</string>
     <string name="comment_deleted">Comment has been deleted</string>
+    <string name="delete_comment_failed">Comment couldn\'t be deleted. Please try again later</string>
     <string name="show_answers">Show answers (%1d)</string>
     <string name="hide_answers">Hide answers</string>
     <string name="answer_input">Answer</string>
     <string name="empty_answer">Please enter answer</string>
     <string name="delete_answer">Delete answer?</string>
     <string name="answer_deleted">Answer has been deleted</string>
+    <string name="delete_answer_failed">Answer couldn\'t be deleted. Please try again later</string>
     <string name="delete_button">Delete</string>
     <string name="back_button">Back</string>
     <string name="waypoints_button">Waypoints</string>
     <string name="waypoint_image">Image</string>
     <string name="waypoint_title">Title</string>
     <string name="waypoint_description">Description</string>
+    <string name="single_route_error">Something went wrong while loading the data. Please try again later.</string>
 
     <string name="category_spinner_header">Set a Category</string>
     <string name="create_route_descr_hint">Description</string>

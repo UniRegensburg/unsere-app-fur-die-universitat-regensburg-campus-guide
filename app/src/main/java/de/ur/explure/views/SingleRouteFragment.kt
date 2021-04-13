@@ -3,12 +3,12 @@ package de.ur.explure.views
 import android.app.AlertDialog
 import android.os.Bundle
 import android.view.View
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.crazylegend.viewbinding.viewBinding
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.storage.FirebaseStorage
 import de.ur.explure.GlideApp
 import de.ur.explure.adapter.CommentInterface
@@ -17,6 +17,7 @@ import de.ur.explure.adapter.CommentAdapter
 import de.ur.explure.adapter.WayPointAdapter
 import de.ur.explure.databinding.FragmentSingleRouteBinding
 import de.ur.explure.model.route.Route
+import de.ur.explure.utils.showSnackbar
 import de.ur.explure.viewmodel.SingleRouteViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.component.KoinComponent
@@ -38,6 +39,7 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinCompon
         val routeId = args.routeID
         singleRouteViewModel.getRouteData(routeId)
         setOnClickListener()
+        setErrorObserver()
     }
 
     private fun initAdapters() {
@@ -121,7 +123,13 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinCompon
             singleRouteViewModel.addComment(commentInput)
             binding.commentInput.text.clear()
         } else {
-            Toast.makeText(context, R.string.empty_comment, Toast.LENGTH_LONG).show()
+            showSnackbar(
+                    requireActivity(),
+                    R.string.empty_comment,
+                    R.id.single_route_container,
+                    Snackbar.LENGTH_LONG,
+                    colorRes = R.color.colorError
+            )
         }
     }
 
@@ -129,7 +137,13 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinCompon
         if (answerText.isNotEmpty()) {
             singleRouteViewModel.addAnswer(commentId, answerText)
         } else {
-            Toast.makeText(context, R.string.empty_answer, Toast.LENGTH_LONG).show()
+            showSnackbar(
+                    requireActivity(),
+                    R.string.empty_answer,
+                    R.id.single_route_container,
+                    Snackbar.LENGTH_LONG,
+                    colorRes = R.color.colorError
+            )
         }
     }
 
@@ -138,7 +152,7 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinCompon
             .setTitle(R.string.delete_comment)
             .setPositiveButton(R.string.delete_button) { _, _ ->
                 singleRouteViewModel.deleteComment(commentId)
-                Toast.makeText(context, R.string.comment_deleted, Toast.LENGTH_LONG).show()
+                commentDeleted()
             }
             .setNegativeButton(R.string.back_button) { _, _ -> }
             .show()
@@ -149,9 +163,65 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinCompon
                 .setTitle(R.string.delete_answer)
                 .setPositiveButton(R.string.delete_button) { _, _ ->
                     singleRouteViewModel.deleteAnswer(answerId, commentId)
-                    Toast.makeText(context, R.string.answer_deleted, Toast.LENGTH_LONG).show()
+                    answerDeleted()
                 }
                 .setNegativeButton(R.string.back_button) { _, _ -> }
                 .show()
+    }
+
+    private fun setErrorObserver() {
+        singleRouteViewModel.errorMessage.observe(viewLifecycleOwner, { showError ->
+            if (showError == true) {
+                showSnackbar(
+                        requireActivity(),
+                        R.string.single_route_error,
+                        R.id.single_route_container,
+                        Snackbar.LENGTH_LONG,
+                        colorRes = R.color.colorError
+                )
+            }
+        })
+    }
+
+    private fun commentDeleted() {
+        singleRouteViewModel.successMessage.observe(viewLifecycleOwner, { successMessage ->
+            if (successMessage == true) {
+                showSnackbar(
+                        requireActivity(),
+                        R.string.comment_deleted,
+                        R.id.single_route_container,
+                        Snackbar.LENGTH_LONG,
+                        colorRes = R.color.themeColorDark
+                ) } else {
+                showSnackbar(
+                        requireActivity(),
+                        R.string.delete_comment_failed,
+                        R.id.single_route_container,
+                        Snackbar.LENGTH_LONG,
+                        colorRes = R.color.colorError
+                )
+            }
+        })
+    }
+
+    private fun answerDeleted() {
+        singleRouteViewModel.successMessage.observe(viewLifecycleOwner, { successMessage ->
+            if (successMessage == true) {
+                showSnackbar(
+                        requireActivity(),
+                        R.string.answer_deleted,
+                        R.id.single_route_container,
+                        Snackbar.LENGTH_LONG,
+                        colorRes = R.color.themeColorDark
+                ) } else {
+                showSnackbar(
+                        requireActivity(),
+                        R.string.delete_answer_failed,
+                        R.id.single_route_container,
+                        Snackbar.LENGTH_LONG,
+                        colorRes = R.color.colorError
+                )
+            }
+        })
     }
 }
