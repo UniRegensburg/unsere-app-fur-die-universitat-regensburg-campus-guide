@@ -1,12 +1,17 @@
 package de.ur.explure.utils
 
 import android.content.Context
+import android.graphics.Bitmap
 import android.net.Uri
 import androidx.core.content.FileProvider
+import timber.log.Timber
+import java.io.ByteArrayOutputStream
 import java.io.File
+import java.lang.Exception
 import java.text.SimpleDateFormat
 import java.util.*
 
+@Suppress("TooGenericExceptionCaught")
 object CachedFileUtils {
 
     private const val PROVIDER_AUTHORITY = "com.explure.fileprovider"
@@ -46,5 +51,28 @@ object CachedFileUtils {
 
     fun getUriForFile(context: Context, file: File): Uri {
         return FileProvider.getUriForFile(context, PROVIDER_AUTHORITY, file)
+    }
+
+    fun getUriFromBitmap(context: Context, bitmap: Bitmap): Uri? {
+        try {
+            val timeStamp = SimpleDateFormat.getDateTimeInstance().format(Date())
+            val file = File.createTempFile(
+                "JPEG_${timeStamp}_",
+                IMAGE_FILE_SUFFIX,
+                context.externalCacheDir
+            )
+            val fileOutputStream = file.outputStream()
+            val byteArrayOutputStream = ByteArrayOutputStream()
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
+            val byteArray = byteArrayOutputStream.toByteArray()
+            fileOutputStream.write(byteArray)
+            fileOutputStream.flush()
+            fileOutputStream.close()
+            byteArrayOutputStream.close()
+            return getUriForFile(context, file)
+        } catch (e: Exception) {
+            Timber.d("Failed to convert Bitmap to Uri with $e")
+            return null
+        }
     }
 }

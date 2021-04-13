@@ -20,7 +20,6 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.crazylegend.viewbinding.viewBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.firestore.GeoPoint
 import com.mapbox.core.constants.Constants.PRECISION_6
 import com.mapbox.geojson.Feature
@@ -53,8 +52,6 @@ import de.ur.explure.map.MarkerManager.Companion.selectedMarkerZoom
 import de.ur.explure.model.waypoint.WayPointDTO
 import de.ur.explure.utils.SharedPreferencesManager
 import de.ur.explure.utils.hasInternetConnection
-import de.ur.explure.utils.measureTimeFor
-import de.ur.explure.utils.showSnackbar
 import de.ur.explure.viewmodel.EditRouteViewModel
 import org.koin.android.ext.android.get
 import org.koin.android.ext.android.inject
@@ -87,8 +84,6 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route),
     private var infoWindowGenerator: InfoWindowGenerator? = null
 
     private var backPressedCallback: OnBackPressedCallback? = null
-
-    private var uploadSnackbar: Snackbar? = null
 
     // for info windows
     private var infoWindowMap = HashMap<String, View>()
@@ -143,12 +138,11 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route),
     }
 
     private fun setupViewModelObservers() {
+        /*
         editRouteViewModel.snapshotUploadSuccessful.observe(viewLifecycleOwner) { successful ->
-            uploadSnackbar?.dismiss()
             if (successful == null) return@observe // prevent this livedata from firing everytime after a reset
 
             if (successful) {
-                onSuccessfulSnapshot()
                 editRouteViewModel.resetSnapshotUpload()
             } else {
                 // inform user that something went horribly wrong...
@@ -159,6 +153,7 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route),
                 )
             }
         }
+        */
         editRouteViewModel.selectedMarker.observe(viewLifecycleOwner) { marker ->
             // move the camera to the selected marker
             if (mapHelper.isMapInitialized()) {
@@ -647,25 +642,13 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route),
         // alternatively, the Static Image API could be used for more flexibility!
         // (see. https://docs.mapbox.com/android/java/guides/static-image/)
         mapHelper.map.snapshot { mapSnapshot ->
-            uploadSnackbar = showSnackbar(
-                requireActivity(),
-                getString(R.string.saving_route),
-                colorRes = R.color.colorInfo,
-                length = Snackbar.LENGTH_INDEFINITE
-            )
-            measureTimeFor("uploading route snapshot") {
-                editRouteViewModel.uploadRouteSnapshot(mapSnapshot)
-            }
-
+            editRouteViewModel.setRouteSnapshot(requireContext(), mapSnapshot)
             // enable compass again after snapshot
             mapHelper.map.uiSettings.isCompassEnabled = true
-        }
-    }
 
-    @Suppress("ReturnCount")
-    private fun onSuccessfulSnapshot() {
-        editRouteViewModel.uploadRoute {
-            resetEditMap()
+            editRouteViewModel.uploadRoute {
+                resetEditMap()
+            }
         }
     }
 
@@ -759,8 +742,6 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route),
             mapHelper.map.removeOnMapLongClickListener(this::onMapLongClick)
             mapHelper.map.removeOnCameraIdleListener(this::takeSnapshot)
         }
-
-        uploadSnackbar?.dismiss()
         super.onDestroyView()
     }
 

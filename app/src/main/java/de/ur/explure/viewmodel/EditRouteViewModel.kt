@@ -1,10 +1,11 @@
 package de.ur.explure.viewmodel
 
+import android.content.Context
 import android.graphics.Bitmap
+import android.net.Uri
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.mapbox.core.constants.Constants
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.LineString
@@ -16,12 +17,10 @@ import de.ur.explure.extensions.toGeoPoint
 import de.ur.explure.model.waypoint.WayPointDTO
 import de.ur.explure.navigation.MainAppRouter
 import de.ur.explure.repository.route.RouteRepositoryImpl
-import de.ur.explure.utils.FirebaseResult
+import de.ur.explure.utils.CachedFileUtils
 import de.ur.explure.utils.reorderList
 import de.ur.explure.views.EditRouteFragment.Companion.PROPERTY_ID
 import de.ur.explure.views.EditRouteFragmentDirections
-import kotlinx.coroutines.launch
-import timber.log.Timber
 
 @Suppress("ReturnCount")
 class EditRouteViewModel(
@@ -49,6 +48,8 @@ class EditRouteViewModel(
 
     private val _snapshotUploadSuccessful: MutableLiveData<Boolean?> by lazy { MutableLiveData() }
     val snapshotUploadSuccessful = _snapshotUploadSuccessful
+
+    private var mapSnapshot: Uri? = null
 
     fun setInitialWayPoints(wayPoints: List<WayPointDTO>?) {
         if (wayPoints != null) {
@@ -132,26 +133,6 @@ class EditRouteViewModel(
         return route?.coordinates()
     }
 
-    fun uploadRouteSnapshot(routeBitmap: Bitmap) {
-        viewModelScope.launch {
-            when (val uploadResult = routeRepository.uploadRouteThumbnail(routeBitmap)) {
-                is FirebaseResult.Success -> {
-                    Timber.d("Uploading snapshot was successful")
-                    routeSnapshotUri = uploadResult.data.toString()
-                    _snapshotUploadSuccessful.postValue(true)
-                }
-                is FirebaseResult.Canceled -> {
-                    Timber.d("Uploading snapshot was canceled")
-                    _snapshotUploadSuccessful.postValue(false)
-                }
-                is FirebaseResult.Error -> {
-                    Timber.d("Uploading snapshot failed")
-                    _snapshotUploadSuccessful.postValue(false)
-                }
-            }
-        }
-    }
-
     fun navigateToWayPointDialogFragment(wayPointDTO: WayPointDTO) {
         val directions =
             EditRouteFragmentDirections.actionEditRouteFragmentToCreateWayPointDialog(wayPointDTO)
@@ -170,7 +151,7 @@ class EditRouteViewModel(
     fun uploadRoute(callback: () -> Unit) {
         val route = route ?: return
         val waypoints = getWayPoints()?.toTypedArray() ?: return
-        val snapShot = routeSnapshotUri ?: return
+        val snapShot = mapSnapshot
 
         val routeCoordinates: MutableList<Point> = route.coordinates()
         val routeLength = TurfMeasurement.length(routeCoordinates, TurfConstants.UNIT_METERS)
@@ -186,6 +167,10 @@ class EditRouteViewModel(
             duration = routeDuration.toFloat()
         )
         appRouter.navigateToSaveRouteFragment(action)
+    }
+
+    fun setRouteSnapshot(context: Context, snapshot: Bitmap) {
+        mapSnapshot = CachedFileUtils.getUriFromBitmap(context, snapshot)
     }
 
     companion object {

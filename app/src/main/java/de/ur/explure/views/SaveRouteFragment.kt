@@ -27,6 +27,7 @@ import de.ur.explure.model.category.Category
 import de.ur.explure.model.waypoint.WayPointDTO
 import de.ur.explure.utils.hasCameraPermission
 import de.ur.explure.utils.hasExternalReadPermission
+import de.ur.explure.utils.measureTimeFor
 import de.ur.explure.utils.showSnackbar
 import de.ur.explure.viewmodel.SaveRouteViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -46,6 +47,8 @@ class SaveRouteFragment : Fragment(R.layout.fragment_save_route) {
 
     private lateinit var categoryAdapter: CategorySpinnerAdapter
     private lateinit var wayPointAdapter: WayPointCreateAdapter
+
+    private var uploadSnackBar: Snackbar? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -129,7 +132,15 @@ class SaveRouteFragment : Fragment(R.layout.fragment_save_route) {
     private fun initSaveButtonListener() {
         binding.btnSaveRoute.setOnClickListener {
             if (validateInputs()) {
-                viewModel.saveRoute()
+                uploadSnackBar = showSnackbar(
+                    requireActivity(),
+                    getString(R.string.saving_route),
+                    colorRes = R.color.colorInfo,
+                    length = Snackbar.LENGTH_INDEFINITE
+                )
+                measureTimeFor("uploading route snapshot") {
+                    viewModel.saveRoute()
+                }
             }
         }
     }
@@ -234,6 +245,7 @@ class SaveRouteFragment : Fragment(R.layout.fragment_save_route) {
 
     private fun initRouteErrorObserver() {
         viewModel.showRouteCreationError.observe(viewLifecycleOwner, { showError ->
+            uploadSnackBar?.dismiss()
             if (showError) {
                 showSnackbar(
                     requireActivity(),
@@ -267,6 +279,7 @@ class SaveRouteFragment : Fragment(R.layout.fragment_save_route) {
         val routeWaypoints = args.waypoints.toList()
         val routeDuration = args.duration.toDouble()
         val routeDistance = args.distance.toDouble()
+        val mapSnapshot = args.routeThumbnail
 
         viewModel.setInitialRouteInformation(routeDistance, routeDuration, routeLine)
         viewModel.setWayPointDTOs(routeWaypoints)
@@ -276,15 +289,17 @@ class SaveRouteFragment : Fragment(R.layout.fragment_save_route) {
         )
         viewModel.routeTitle?.let { binding.etRouteTitle.setText(it) }
         viewModel.routeDescription?.let { binding.etRouteDescription.setText(it) }
+        if (!viewModel.initSnapShotWasSet) {
+            viewModel.currentImageUri.postValue(mapSnapshot)
+            viewModel.initSnapShotWasSet = true
+        }
     }
 
     private fun validateInputs(): Boolean {
-        var inputsAreValid = true
-        inputsAreValid = validateAndSaveTitle()
-        inputsAreValid = validateAndSaveDescription()
-        inputsAreValid = validateAndSaveCategory()
-        inputsAreValid = validateAndSaveDuration()
-        return inputsAreValid
+        return validateAndSaveTitle() &&
+                validateAndSaveDescription() &&
+                validateAndSaveCategory() &&
+                validateAndSaveDuration()
     }
 
     private fun validateAndSaveCategory(): Boolean {
@@ -353,6 +368,11 @@ class SaveRouteFragment : Fragment(R.layout.fragment_save_route) {
         val intentArray = arrayOf(cameraIntent)
         chooser.putExtra(Intent.EXTRA_INITIAL_INTENTS, intentArray)
         imageResultLauncher.launch(chooser)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        uploadSnackBar?.dismiss()
     }
 
     companion object {

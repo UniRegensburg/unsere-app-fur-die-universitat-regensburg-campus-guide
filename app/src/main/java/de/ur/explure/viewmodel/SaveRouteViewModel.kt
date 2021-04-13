@@ -37,6 +37,8 @@ class SaveRouteViewModel(
 
     var currentTempCameraUri: Uri? = null
 
+    var initSnapShotWasSet: Boolean = false
+
     private val routeDTO = RouteDTO()
 
     var routeTitle: String? = state[ROUTE_TITLE_KEY]
@@ -86,10 +88,11 @@ class SaveRouteViewModel(
 
     fun saveRoute() {
         routeDTO.wayPoints = wayPointDTOs.value ?: mutableListOf()
-        routeDTO.thumbnailUri = currentTempCameraUri
+        routeDTO.thumbnailUri = currentImageUri.value
         viewModelScope.launch {
             when (val routeCall = routeRepository.createRouteInFireStore(routeDTO)) {
                 is FirebaseResult.Success -> {
+                    showRouteCreationError.postValue(false)
                     appRouter.navigateToRouteDetailsAfterCreation(routeCall.data)
                 }
                 is FirebaseResult.Error -> {
