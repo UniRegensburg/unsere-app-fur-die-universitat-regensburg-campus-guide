@@ -170,6 +170,7 @@
     <string name="email_sent">Email wurde gesendet</string>
     <string name="registration_failed">Registrierung fehlgeschlagen</string>
     <string name="changeUserName">Benutzernamen ändern</string>
+    <string name="deleteAccount">Account löschen</string>
 
     <!-- Single Route -->
     <string name="route_name">Route</string>

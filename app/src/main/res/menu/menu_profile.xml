@@ -11,4 +11,9 @@
         android:icon="@android:drawable/ic_dialog_info"
         android:title="@string/logout" />
 
+    <item
+        android:id="@+id/deleteAccountButton"
+        android:icon="@android:drawable/ic_dialog_info"
+        android:title="@string/deleteAccount" />
+
 </menu>

@@ -181,6 +181,7 @@
     <string name="email_sent">Email sent</string>
     <string name="registration_failed">Registration failed</string>
     <string name="changeUserName">Change user name</string>
+    <string name="deleteAccount">Delete account</string>
 
     <string name="confirm">Confirm</string>
     <string name="abort">Abort</string>
