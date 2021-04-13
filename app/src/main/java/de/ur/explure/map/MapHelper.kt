@@ -112,6 +112,10 @@ class MapHelper(
         buildingPlugin?.setVisibility(visibility)
     }
 
+    fun boundsContainPosition(position: LatLng): Boolean {
+        return latLngBounds.contains(position)
+    }
+
     override fun onStart(owner: LifecycleOwner) {
         super.onStart(owner)
         mapView.onStart()

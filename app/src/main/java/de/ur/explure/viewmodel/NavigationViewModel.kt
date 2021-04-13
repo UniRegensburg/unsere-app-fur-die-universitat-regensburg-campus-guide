@@ -18,6 +18,11 @@ class NavigationViewModel(private val savedState: SavedStateHandle) : ViewModel(
 
     var directionsRoute: DirectionsRoute? = null
 
+    private val _locationPermissionGiven: MutableLiveData<Boolean> by lazy {
+        MutableLiveData(savedState[LOCATION_PERMISSION_GIVEN] ?: false)
+    }
+    val locationPermissionGranted: LiveData<Boolean> = _locationPermissionGiven
+
     private val _inNavigationMode: MutableLiveData<Event<Boolean>> by lazy {
         MutableLiveData(Event(savedState[NAVIGATION_ACTIVE] ?: false))
     }
@@ -54,11 +59,21 @@ class NavigationViewModel(private val savedState: SavedStateHandle) : ViewModel(
         savedState[NAVIGATION_ACTIVE] = false
     }
 
+    fun inNavigationMode(): Boolean {
+        return _inNavigationMode.value?.peekContent() == true
+    }
+
+    fun setLocationPermissionStatus(permissionGiven: Boolean) {
+        _locationPermissionGiven.value = permissionGiven
+        savedState[LOCATION_PERMISSION_GIVEN] = permissionGiven
+    }
+
     companion object {
         private const val USER_LOCATION_KEY = "currentLocation"
         private const val LOCATION_TRACKING_KEY = "trackingActive"
         private const val BUILDING_EXTRUSION_KEY = "3D_buildingExtrusionActive"
 
         private const val NAVIGATION_ACTIVE = "navigationActive"
+        private const val LOCATION_PERMISSION_GIVEN = "locationPermissionGiven"
     }
 }

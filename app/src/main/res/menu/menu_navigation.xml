@@ -11,13 +11,4 @@
         android:visible="true"
         app:showAsAction="never" />
 
-    <!-- TODO for debugging and demo only! -->
-    <item
-        android:id="@+id/simulateRouteProgress"
-        android:checkable="true"
-        android:checked="false"
-        android:title="Navigation simulieren"
-        android:visible="true"
-        app:showAsAction="never" />
-
 </menu>

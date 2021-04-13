@@ -190,7 +190,7 @@ class MarkerManager(
         return newMarker
     }
 
-    private fun deleteMarker(marker: Symbol) {
+    fun deleteMarker(marker: Symbol) {
         symbolManager.delete(marker)
         activeMarkers.remove(marker)
     }

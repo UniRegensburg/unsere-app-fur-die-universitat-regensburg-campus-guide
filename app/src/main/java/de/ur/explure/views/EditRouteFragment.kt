@@ -50,7 +50,6 @@ import de.ur.explure.extensions.toLatLng
 import de.ur.explure.map.InfoWindowGenerator
 import de.ur.explure.map.MapHelper
 import de.ur.explure.map.MarkerManager
-import de.ur.explure.map.MarkerManager.Companion.DESTINATION_ICON
 import de.ur.explure.map.MarkerManager.Companion.selectedMarkerZoom
 import de.ur.explure.model.waypoint.WayPointDTO
 import de.ur.explure.utils.SharedPreferencesManager
@@ -221,12 +220,6 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route),
     override fun onMapStyleLoaded(mapStyle: Style) {
         setupMapData(mapStyle)
         setupListeners()
-
-        // add a marker to the route destination
-        // TODO overlaps with marker if route was created manually!
-        val routeCoordinates = editRouteViewModel.getRouteCoordinates()
-        val lastRoutePoint = routeCoordinates?.last() ?: return
-        mapHelper.markerManager.addMarker(lastRoutePoint.toLatLng(), DESTINATION_ICON)
 
         // show bottom sheet panel
         slidingBottomPanel.panelState = SlidingUpPanelLayout.PanelState.COLLAPSED

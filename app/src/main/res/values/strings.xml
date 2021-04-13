@@ -79,10 +79,6 @@
     <string name="action_menu_tutorial_title">Actions during route creation</string>
     <string name="action_menu_tutorial_description">You can find useful options during the route creation process here. You can cancel the route creation (x - symbol), try to align your created route and waypoints to existing ways on the campus (magnet symbol) or confirm your route and continue (checkmark symbol).</string>
 
-    <string name="no_routes">No available routes to that destination</string>
-    <string name="steps_in_route">There are %1$d steps in the route</string>
-    <string name="route_request_failed">The route request failed</string>
-
     <!-- Route Creation -->
     <string name="route_creation_options">There are 3 options to create a route:
         \n<ul>

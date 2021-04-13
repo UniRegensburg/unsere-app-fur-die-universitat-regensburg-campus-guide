@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.app.Application
 import android.location.Location
 import android.os.Looper
-import android.widget.Toast
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
@@ -60,13 +59,14 @@ internal class LocationManager(
 
             override fun onFailure(exception: Exception) {
                 Timber.e(exception.localizedMessage)
-                Toast.makeText(
-                    context,
-                    exception.localizedMessage,
-                    Toast.LENGTH_SHORT
-                ).show()
             }
         }
+
+        locationEngine = LocationEngineProvider.getBestLocationEngine(context)
+    }
+
+    fun getCustomLocationEngine(): LocationEngine {
+        return locationEngine ?: LocationEngineProvider.getBestLocationEngine(context)
     }
 
     @SuppressLint("MissingPermission")
@@ -83,8 +83,8 @@ internal class LocationManager(
                 // thresholds without breaking tracking
                 .trackingGesturesManagement(true)
                 // show a pulsing circle around the user position
-                .pulseEnabled(true)
-                .pulseFadeEnabled(true)
+                .pulseEnabled(false)
+                .pulseFadeEnabled(false)
                 // disable animations to decrease battery and cpu usage
                 .compassAnimationEnabled(false)
                 .accuracyAnimationEnabled(false)
@@ -110,7 +110,6 @@ internal class LocationManager(
         }
 
         if (!useDefaultEngine) {
-            locationEngine = LocationEngineProvider.getBestLocationEngine(context)
             startLocationUpdates()
         }
     }
