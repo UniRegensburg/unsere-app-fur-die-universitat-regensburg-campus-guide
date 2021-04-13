@@ -57,7 +57,7 @@ class ProfileRouteAdapter(
             }
 
             binding.tvRouteTitle.text = currentRouteItem.title
-            binding.tvRouteDescription.text = currentRouteItem.description
+            //binding.tvRouteDescription.text = currentRouteItem.description
             binding.tvRatingCount.text = itemView.context.resources.getString(
                 R.string.route_item_rating, currentRouteItem.rating.size)
             binding.tvDistance.text = itemView.context.resources.getString(
