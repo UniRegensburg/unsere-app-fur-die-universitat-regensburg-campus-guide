@@ -206,28 +206,35 @@
 
     <!-- Single Route -->
     <string name="route_name">Route</string>
-    <string name="route_description">Description</string>
-    <string name="map_button">Map</string>
-    <string name="waypoints_button">Waypoints</string>
-    <string name="picture_button">Image</string>
+    <string name="share_route">Share</string>
     <string name="route_duration">Duration</string>
     <string name="route_distance">Distance</string>
     <string name="route_rating">Rating</string>
-    <string name="waypoints">Waypoints</string>
-    <string name="share_route">Share</string>
-    <string name="start_route">Start Route</string>
-    <string name="comment_author">Author</string>
-    <string name="comment_text">Text</string>
-    <string name="show_answers">Show answers</string>
-    <string name="comment_date">Date</string>
-    <string name="hide_answers">Hide answers</string>
+    <string name="start_route">Start route</string>
+    <string name="description_button">Description</string>
+    <string name="comments_button">Comments</string>
     <string name="comment_input">Comment</string>
     <string name="add_comment">Add</string>
-    <string name="answer_input">Answer</string>
     <string name="empty_comment">Please enter comment</string>
+    <string name="comment_author">Author</string>
+    <string name="comment_text">Text</string>
+    <string name="comment_date">Date</string>
+    <string name="delete_comment">Delete comment?</string>
+    <string name="comment_deleted">Comment has been deleted</string>
+    <string name="show_answers">Show answers (%1d)</string>
+    <string name="hide_answers">Hide answers</string>
+    <string name="answer_input">Answer</string>
+    <string name="empty_answer">Please enter answer</string>
+    <string name="delete_answer">Delete answer?</string>
+    <string name="answer_deleted">Answer has been deleted</string>
+    <string name="delete_button">Delete</string>
+    <string name="back_button">Back</string>
+    <string name="waypoints_button">Waypoints</string>
+    <string name="waypoint_image">Image</string>
+    <string name="waypoint_title">Title</string>
+    <string name="waypoint_description">Description</string>
 
     <string name="category_spinner_header">Set a Category</string>
-    <string name="waypoint_title">Waypoints</string>
     <string name="create_route_descr_hint">Description</string>
     <string name="create_route_title_hint">Title</string>
     <string name="create_waypoint_media_title">Add Media</string>
@@ -260,4 +267,5 @@
     <string name="create_button">Create profile</string>
     <string name="empty_username">Please enter a username</string>
     <string name="user_data_error">Something went wrong while creating your profile. Please try again later.</string>
+
 </resources>
