@@ -160,7 +160,6 @@
     <string name="enter_email">Bitte Emailadresse eingeben</string>
     <string name="no_account">Noch kein Account?</string>
     <string name="sign_up_button">Registrieren?</string>
-    <string name="register_text">Registrieren</string>
     <string name="new_email">Email</string>
     <string name="new_password">Passwort</string>
     <string name="confirm_password">Bestätige Passwort</string>
@@ -176,9 +175,6 @@
     <string name="email_sent">Email wurde gesendet</string>
     <string name="registration_failed">Registrierung fehlgeschlagen</string>
     <string name="changeUserName">Benutzernamen ändern</string>
-    <string name="delete_account">Account löschen</string>
-    <string name="delete_text">Wenn du dein Konto löschen, werden deine Informationen aus der Datenbank entfernt. Dies kann nicht rückgängig gemacht werden</string>
-    <string name="account_deleted">Account wurde gelöscht</string>
 
     <!-- Single Route -->
     <string name="route_name">Route</string>
@@ -229,6 +225,7 @@
     <string name="category_spinner_header">Wähle eine Kategorie</string>
     <string name="create_route_descr_hint">Beschreibung</string>
     <string name="create_route_title_hint">Titel</string>
+    <string name="create_waypoint_media_title">Füge Medien hinzu</string>
     <string name="create_waypoint_save_btn">Speichern</string>
     <string name="create_waypoint_title">Wegpunkt Information</string>
     <string name="create_route_save_btn">Speichern</string>
