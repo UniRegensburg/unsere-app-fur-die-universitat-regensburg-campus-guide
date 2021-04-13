@@ -44,11 +44,11 @@
 
     <ImageView
         android:id="@+id/wayPoint_has_image"
-        android:layout_width="15dp"
-        android:layout_height="15dp"
+        android:layout_width="10dp"
+        android:layout_height="10dp"
         android:layout_alignParentEnd="true"
         android:layout_alignParentTop="true"
-        android:src="@drawable/ic_image_small"
+        android:background="@drawable/ic_image"
         android:contentDescription="@string/waypoints"
         android:visibility="gone"/>
 

@@ -90,17 +90,6 @@
         tools:layout="@layout/fragment_statistics" />
 
     <fragment
-        android:id="@+id/singleRouteFragment"
-        android:name="de.ur.explure.views.SingleRouteFragment"
-        android:label="Route Information"
-        tools:layout="@layout/fragment_single_route">
-        <argument
-            android:name="routeID"
-            app:argType="string" />
-
-    </fragment>
-
-    <fragment
         android:id="@+id/mapFragment"
         android:name="de.ur.explure.views.MapFragment"
         android:label="Map"
@@ -122,6 +111,20 @@
             android:name="route"
             app:argType="string"
             app:nullable="false" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/singleRouteFragment"
+        android:name="de.ur.explure.views.SingleRouteFragment"
+        android:label="Route Information"
+        tools:layout="@layout/fragment_single_route" >
+        <argument
+            android:name="routeID"
+            app:argType="string" />
+        <deepLink
+            android:id="@+id/singleRouteDeepLink"
+            app:uri="explure://route_preview?id={routeID}" />
+
     </fragment>
 
     <fragment
@@ -165,8 +168,8 @@
             app:nullable="false" />
         <argument
             android:name="routeThumbnail"
-            app:argType="string"
-            app:nullable="false" />
+            app:argType="android.net.Uri"
+            app:nullable="true" />
         <argument
             android:name="waypoints"
             app:argType="de.ur.explure.model.waypoint.WayPointDTO[]" />

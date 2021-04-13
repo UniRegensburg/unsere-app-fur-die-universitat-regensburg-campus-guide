@@ -1,12 +1,17 @@
 package de.ur.explure.viewmodel
 
+import android.content.Context
+import android.content.Intent
+import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import de.ur.explure.R
 import de.ur.explure.model.comment.CommentDTO
 import de.ur.explure.model.route.Route
 import de.ur.explure.repository.route.RouteRepositoryImpl
+import de.ur.explure.utils.DeepLinkUtils
 import de.ur.explure.utils.FirebaseResult
 import kotlinx.coroutines.launch
 import java.util.*
@@ -49,5 +54,47 @@ class SingleRouteViewModel(private val routeRepository: RouteRepositoryImpl) : V
                 }
             }
         }
+    }
+
+    fun deleteComment(commentId: String) {
+        viewModelScope.launch {
+            val routeId = route.value?.id ?: return@launch
+            when (routeRepository.deleteComment(commentId, routeId)) {
+                is FirebaseResult.Success -> {
+                    getRouteData(routeId)
+                }
+            }
+        }
+    }
+
+    fun deleteAnswer(answerId: String, commentId: String) {
+        viewModelScope.launch {
+            val routeId = route.value?.id ?: return@launch
+            when (routeRepository.deleteAnswer(answerId, commentId, routeId)) {
+                is FirebaseResult.Success -> {
+                    getRouteData(routeId)
+                }
+            }
+        }
+    }
+
+    fun shareRoute(context: Context) {
+            val route = route.value ?: return
+            val shareLink = DeepLinkUtils.getURLforRouteId(route.id)
+            val intent = Intent()
+            intent.action = Intent.ACTION_SEND
+            intent.putExtra(Intent.EXTRA_TEXT, context.getString(R.string.share_text,
+                route.title,
+                route.wayPointCount,
+                route.duration.toInt(),
+                route.distance.toInt(),
+                shareLink))
+            intent.type = "text/plain"
+            context.startActivity(
+                Intent.createChooser(
+                    intent,
+                    context.getString(R.string.share_option)
+                )
+            )
     }
 }

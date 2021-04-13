@@ -11,7 +11,6 @@ import de.ur.explure.databinding.RouteElementBinding
 import de.ur.explure.model.route.Route
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import org.koin.java.KoinJavaComponent.inject
 
 class ProfileRouteAdapter(
     private val onItemClickListener: OnItemClickListener,

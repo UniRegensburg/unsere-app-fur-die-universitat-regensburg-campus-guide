@@ -1,6 +1,5 @@
 package de.ur.explure.repository.route
 
-import android.graphics.Bitmap
 import android.net.Uri
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.DocumentSnapshot
@@ -14,19 +13,23 @@ import de.ur.explure.config.ErrorConfig
 import de.ur.explure.config.FirebaseCollections.ANSWER_COLLECTION_NAME
 import de.ur.explure.config.FirebaseCollections.COMMENT_COLLECTION_NAME
 import de.ur.explure.config.FirebaseCollections.WAYPOINT_COLLECTION_NAME
+import de.ur.explure.config.FirestoreStorageDirectories
 import de.ur.explure.config.RouteDocumentConfig
 import de.ur.explure.extensions.await
+import de.ur.explure.extensions.toRouteObject
 import de.ur.explure.model.comment.Comment
 import de.ur.explure.model.comment.CommentDTO
 import de.ur.explure.model.rating.RatingValues
 import de.ur.explure.model.route.Route
 import de.ur.explure.model.route.RouteDTO
 import de.ur.explure.model.waypoint.WayPoint
+import de.ur.explure.model.waypoint.WayPointDTO
 import de.ur.explure.services.FireStoreInstance
 import de.ur.explure.services.FirebaseAuthService
+import de.ur.explure.utils.CachedFileUtils
+import de.ur.explure.utils.CachedFileUtils.IMAGE_FILE_SUFFIX
 import de.ur.explure.utils.FirebaseResult
 import timber.log.Timber
-import java.io.ByteArrayOutputStream
 import java.util.*
 
 @Suppress("TooGenericExceptionCaught", "UnnecessaryParentheses", "ReturnCount")
@@ -58,6 +61,7 @@ class RouteRepositoryImpl(
                 is FirebaseResult.Canceled -> FirebaseResult.Canceled(routeBatch.exception)
             }
         } catch (exception: Exception) {
+            Timber.d(exception)
             FirebaseResult.Error(exception)
         }
     }
@@ -78,7 +82,7 @@ class RouteRepositoryImpl(
             when (val routeCall = fireStore.routeCollection.document(routeId).get().await()) {
                 is FirebaseResult.Success -> {
                     if (getAsPreview) {
-                        val routeList = routeCall.data.toObject(Route::class.java)
+                        val routeList = routeCall.data.toRouteObject()
                             ?: return ErrorConfig.DESERIALIZATION_FAILED_RESULT
                         FirebaseResult.Success(routeList)
                     } else {
@@ -167,6 +171,27 @@ class RouteRepositoryImpl(
     }
 
     /**
+     * Deletes a comment document in FireStore
+     *
+     * @param commentId [String] of the comments's ID
+     * @param routeId [String] of the routes's ID
+     * @return On Success: Returns [FirebaseResult.Success] with empty return\
+     * On Failure: Returns [FirebaseResult.Error] with exception\
+     * On Cancellation: Returns [FirebaseResult.Canceled] with exception
+     */
+
+    override suspend fun deleteComment(commentId: String, routeId: String): FirebaseResult<Void> {
+        return try {
+            return fireStore.routeCollection.document(routeId)
+                    .collection(COMMENT_COLLECTION_NAME)
+                    .document(commentId)
+                    .delete().await()
+        } catch (exception: Exception) {
+            FirebaseResult.Error(exception)
+        }
+    }
+
+    /**
      * Adds a new answer to a comment.
      *
      * @param routeId [String] of the route's ID
@@ -190,6 +215,30 @@ class RouteRepositoryImpl(
                 .collection(ANSWER_COLLECTION_NAME)
                 .document()
                 .set(commentDTO.toMap(userId)).await()
+        } catch (exception: Exception) {
+            FirebaseResult.Error(exception)
+        }
+    }
+
+    /**
+     * Adds a new answer to a comment.
+     *
+     * @param routeId [String] of the route's ID
+     * @param commentId [String] of the comment's ID
+     * @param answerId [String] of the answers's ID
+     * @return On Success: Returns [FirebaseResult.Success] with empty return\
+     * On Failure: Returns [FirebaseResult.Error] with exception\
+     * On Cancellation: Returns [FirebaseResult.Canceled] with exception
+     */
+
+    override suspend fun deleteAnswer(answerId: String, commentId: String, routeId: String): FirebaseResult<Void> {
+        return try {
+            return fireStore.routeCollection.document(routeId)
+                    .collection(COMMENT_COLLECTION_NAME)
+                    .document(commentId)
+                    .collection(ANSWER_COLLECTION_NAME)
+                    .document(answerId)
+                    .delete().await()
         } catch (exception: Exception) {
             FirebaseResult.Error(exception)
         }
@@ -249,7 +298,7 @@ class RouteRepositoryImpl(
         val comments =
             getComments(data.id) ?: mutableListOf()
         val routeObject =
-            data.toObject(Route::class.java) ?: return ErrorConfig.DESERIALIZATION_FAILED_RESULT
+            data.toRouteObject() ?: return ErrorConfig.DESERIALIZATION_FAILED_RESULT
         routeObject.fillComments(comments)
         routeObject.fillWayPoints(wayPoints)
         return FirebaseResult.Success(routeObject)
@@ -310,18 +359,60 @@ class RouteRepositoryImpl(
         return FirebaseResult.Success(resultList)
     }
 
-    private fun createRouteWriteBatch(
+    private suspend fun createRouteWriteBatch(
         userId: String,
         routeDTO: RouteDTO,
         routeDocument: DocumentReference
     ): WriteBatch {
         val batch = fireStore.getWriteBatch()
-        batch.set(routeDocument, routeDTO.toMap(userId))
+        var storageRef = ""
+        routeDTO.thumbnailUri?.run {
+            storageRef = uploadRouteThumbnail(routeDocument.id, this) ?: ""
+        }
+        batch.set(routeDocument, routeDTO.toMap(userId, storageRef))
         val wayPointCollection = routeDocument.collection(WAYPOINT_COLLECTION_NAME)
         routeDTO.wayPoints.forEach { wayPoint ->
-            batch.set(wayPointCollection.document(), wayPoint)
+            val wayPointDocument = wayPointCollection.document()
+            val waypointWithRefs =
+                uploadMediaToStorage(wayPoint, wayPointDocument.id, routeDocument.id)
+            batch.set(wayPointDocument, waypointWithRefs.toMap())
         }
         return batch
+    }
+
+    private fun uploadMediaToStorage(wayPoint: WayPointDTO, waypointId: String, routeId: String):
+            WayPointDTO {
+        wayPoint.audioUri?.run {
+            val secretId = UUID.randomUUID().toString()
+            val reference =
+                fireStorage.reference.child(FirestoreStorageDirectories.WAYPOINT_DATA_DIRECTORY)
+                    .child(
+                        "$routeId-$waypointId-$secretId${CachedFileUtils.AUDIO_FILE_SUFFIX}"
+                    )
+            wayPoint.audioURL = reference.toString()
+            reference.putFile(this)
+        }
+        wayPoint.videoUri?.run {
+            val secretId = UUID.randomUUID().toString()
+            val reference =
+                fireStorage.reference.child(FirestoreStorageDirectories.WAYPOINT_DATA_DIRECTORY)
+                    .child(
+                        "$routeId-$waypointId-$secretId${CachedFileUtils.VIDEO_FILE_SUFFIX}"
+                    )
+            wayPoint.videoURL = reference.toString()
+            reference.putFile(this)
+        }
+        wayPoint.imageUri?.run {
+            val secretId = UUID.randomUUID().toString()
+            val reference =
+                fireStorage.reference.child(FirestoreStorageDirectories.WAYPOINT_DATA_DIRECTORY)
+                    .child(
+                        "$routeId-$waypointId-$secretId${CachedFileUtils.IMAGE_FILE_SUFFIX}"
+                    )
+            wayPoint.imageURL = reference.toString()
+            reference.putFile(this)
+        }
+        return wayPoint
     }
 
     suspend fun getCategoryRoutes(category: String): FirebaseResult<List<Route>> {
@@ -341,29 +432,21 @@ class RouteRepositoryImpl(
         }
     }
 
-    override suspend fun uploadRouteThumbnail(bitmap: Bitmap): FirebaseResult<Uri> {
-        return try {
-            val userId = authService.getCurrentUserId() ?: return ErrorConfig.NO_USER_RESULT
+    override suspend fun uploadRouteThumbnail(routeId: String, uri: Uri): String? {
+        try {
             val secretId = UUID.randomUUID().toString()
-            val storageRef = fireStorage.reference.child("route_thumbnails/$userId-$secretId")
-
-            // TODO should probably save to file first so we don't need to keep all of this in memory!
-            val baos = ByteArrayOutputStream()
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos)
-            val byteArray = baos.toByteArray()
-            // val byteArray = bitmap.convertToByteArray()
-            bitmap.recycle()
-            val uploadTask = storageRef.putBytes(byteArray)
-
-            when (val uploadResult = uploadTask.await()) {
-                is FirebaseResult.Success -> {
-                    uploadResult.data.storage.downloadUrl.await()
-                }
-                is FirebaseResult.Error -> FirebaseResult.Error(uploadResult.exception)
-                is FirebaseResult.Canceled -> FirebaseResult.Canceled(uploadResult.exception)
+            val storageRef =
+                fireStorage.reference
+                    .child(FirestoreStorageDirectories.ROUTE_THUMBNAILS_DIRECTORY)
+                    .child("$routeId-$secretId$IMAGE_FILE_SUFFIX")
+            return if (storageRef.putFile(uri).await() is FirebaseResult.Success) {
+                storageRef.toString()
+            } else {
+                null
             }
         } catch (exception: Exception) {
-            FirebaseResult.Error(exception)
+            Timber.d("Failed to upload image with $exception")
+            return null
         }
     }
 }

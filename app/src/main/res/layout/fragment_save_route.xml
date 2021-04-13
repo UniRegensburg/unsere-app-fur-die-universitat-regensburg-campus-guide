@@ -11,30 +11,61 @@
         android:layout_height="wrap_content"
         android:paddingBottom="10dp">
 
+        <TextView
+            android:id="@+id/tv_route_image_hint"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:text="@string/route_thumbnail_hint"
+            android:elevation="1dp"
+            android:textAlignment="center"
+            android:textColor="@color/textColorGrey"
+            android:textSize="14sp"
+            app:layout_constraintBottom_toBottomOf="@+id/iv_route_image"
+            app:layout_constraintEnd_toEndOf="@+id/iv_route_image"
+            app:layout_constraintStart_toStartOf="@+id/iv_route_image"
+            app:layout_constraintTop_toTopOf="@+id/iv_route_image" />
+
+
         <ImageView
-            android:id="@+id/route_thumbnail"
-            android:layout_width="0dp"
-            android:layout_height="250dp"
-            android:scaleType="fitCenter"
-            android:adjustViewBounds="true"
+            android:id="@+id/iv_route_image"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="10dp"
+            android:src="@drawable/highlight_square_outline"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:ignore="ContentDescription" />
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+        <ImageView
+            android:id="@+id/iv_delete_button"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:visibility="invisible"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:padding="10dp"
+            android:src="@drawable/ic_delete"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/iv_route_image"
+            app:tint="@color/highlightColor" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/text_layout_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="20dp"
-            android:layout_marginTop="10dp"
             android:hint="@string/create_route_title_hint"
+            android:layout_marginTop="10dp"
             android:textColorHint="@color/grey"
             app:boxBackgroundColor="@android:color/transparent"
             app:boxStrokeColor="@color/themeColor"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/route_thumbnail">
+            app:layout_constraintTop_toBottomOf="@+id/iv_delete_button">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/et_route_title"
