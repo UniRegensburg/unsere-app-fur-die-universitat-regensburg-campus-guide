@@ -11,5 +11,5 @@ object RouteDocumentConfig {
     const val THUMBNAIL_URL_FIELD = "thumbnailUrl"
     const val RATING_LIST_FIELD = "rating"
     const val CURRENT_RATING_FIELD = "currentRating"
-    const val WAYPOINT_COUNT_FIELD = "wayPointCount"
+    const val ROUTE_LINE_FIELD = "routeLine"
 }

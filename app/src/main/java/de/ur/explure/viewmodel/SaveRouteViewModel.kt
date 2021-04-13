@@ -1,5 +1,7 @@
 package de.ur.explure.viewmodel
 
+import android.content.Context
+import android.net.Uri
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
@@ -10,6 +12,7 @@ import de.ur.explure.model.waypoint.WayPointDTO
 import de.ur.explure.navigation.MainAppRouter
 import de.ur.explure.repository.category.CategoryRepositoryImpl
 import de.ur.explure.repository.route.RouteRepositoryImpl
+import de.ur.explure.utils.CachedFileUtils
 import de.ur.explure.utils.FirebaseResult
 import de.ur.explure.views.SaveRouteFragmentDirections
 import kotlinx.coroutines.launch
@@ -26,12 +29,27 @@ class SaveRouteViewModel(
 
     val wayPointDTOs: MutableLiveData<MutableList<WayPointDTO>> = MutableLiveData()
 
-    val routeDTO = RouteDTO()
+    val currentImageUri: MutableLiveData<Uri> = MutableLiveData()
+
+    val showRouteCreationError: MutableLiveData<Boolean> = MutableLiveData(false)
+
+    val showCategoryDownloadError: MutableLiveData<Boolean> = MutableLiveData(false)
+
+    var currentTempCameraUri: Uri? = null
+
+    var initSnapShotWasSet: Boolean = false
+
+    private val routeDTO = RouteDTO()
 
     var routeTitle: String? = state[ROUTE_TITLE_KEY]
     var routeDescription: String? = state[ROUTE_DESCRIPTION_KEY]
-    var routeCategory: String? = state[ROUTE_CATEGORY_KEY]
     var routeDuration: Double? = state[ROUTE_DURATION_KEY]
+
+    fun createNewCameraUri(context: Context): Uri {
+        val newUri = CachedFileUtils.getNewImageUri(context)
+        currentTempCameraUri = newUri
+        return newUri
+    }
 
     fun getCategories() {
         viewModelScope.launch {
@@ -39,7 +57,7 @@ class SaveRouteViewModel(
             if (categoryCall is FirebaseResult.Success) {
                 categories.postValue(categoryCall.data)
             } else {
-                Timber.d("Failed to get Categories")
+                showCategoryDownloadError.postValue(true)
             }
         }
     }
@@ -68,6 +86,39 @@ class SaveRouteViewModel(
         wayPointDTOs.postValue(wayPointArray)
     }
 
+    fun saveRoute() {
+        routeDTO.wayPoints = wayPointDTOs.value ?: mutableListOf()
+        routeDTO.thumbnailUri = currentImageUri.value
+        viewModelScope.launch {
+            when (val routeCall = routeRepository.createRouteInFireStore(routeDTO)) {
+                is FirebaseResult.Success -> {
+                    showRouteCreationError.postValue(false)
+                    appRouter.navigateToRouteDetailsAfterCreation(routeCall.data)
+                }
+                is FirebaseResult.Error -> {
+                    Timber.d(routeCall.exception)
+                    showRouteCreationError.postValue(true)
+                }
+            }
+        }
+    }
+
+    fun setDuration(duration: Double) {
+        routeDTO.duration = duration
+        state[ROUTE_DURATION_KEY] = duration
+    }
+
+    fun setInitialRouteInformation(distance: Double, duration: Double, routeLine: String) {
+        routeDTO.routeLine = routeLine
+        routeDTO.distance = distance
+        routeDTO.duration = duration
+        state[ROUTE_DURATION_KEY] = duration
+    }
+
+    fun setImageUri(data: Uri) {
+        currentImageUri.postValue(data)
+    }
+
     fun setTitle(title: String) {
         routeDTO.title = title
         state[ROUTE_TITLE_KEY] = title
@@ -83,30 +134,8 @@ class SaveRouteViewModel(
         state[ROUTE_CATEGORY_KEY] = categoryId
     }
 
-    fun updateRouteDuration(duration: Double) {
-        routeDTO.duration = duration
-        state[ROUTE_DURATION_KEY] = duration
-    }
-
-    fun setInitialRouteInformation(distance: Double, duration: Double) {
-        routeDTO.distance = distance
-        routeDTO.duration = duration
-        state[ROUTE_DURATION_KEY] = duration
-    }
-
-    // TODO only update the route here! saving it should probably be done in the editRouteFragment ?
-    fun saveRoute() {
-        routeDTO.wayPoints = wayPointDTOs.value ?: mutableListOf()
-        viewModelScope.launch {
-            when (val routeCall = routeRepository.createRouteInFireStore(routeDTO)) {
-                is FirebaseResult.Success -> {
-                    appRouter.navigateToRouteDetailsAfterCreation(routeCall.data)
-                }
-                is FirebaseResult.Error -> {
-                    // Failed
-                }
-            }
-        }
+    fun deleteCurrentUri() {
+        currentImageUri.postValue(null)
     }
 
     companion object {

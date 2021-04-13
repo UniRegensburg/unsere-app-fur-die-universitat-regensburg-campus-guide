@@ -1,6 +1,5 @@
 package de.ur.explure.repository.route
 
-import android.graphics.Bitmap
 import android.net.Uri
 import de.ur.explure.model.comment.CommentDTO
 import de.ur.explure.model.route.Route
@@ -30,5 +29,5 @@ interface RouteRepository {
 
     suspend fun getMostPopularRoutes(lastRating: Double?, batchSize: Long): FirebaseResult<List<Route>>
 
-    suspend fun uploadRouteThumbnail(bitmap: Bitmap): FirebaseResult<Uri>
+    suspend fun uploadRouteThumbnail(routeId: String, uri: Uri): String?
 }

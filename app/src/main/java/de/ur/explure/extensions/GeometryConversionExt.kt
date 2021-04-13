@@ -26,6 +26,12 @@ fun LatLng.toPoint(): Point = Point.fromLngLat(this.longitude, this.latitude)
 
 fun LatLng.toGeoPoint(): GeoPoint = GeoPoint(latitude, longitude)
 
+fun String.toLatLngList(): List<LatLng> {
+    val lineString = LineString.fromPolyline(this, PRECISION_6)
+    val coordinates = lineString.coordinates()
+    return coordinates.map { it.toLatLng() }
+}
+
 fun Point.toLatLng(): LatLng =
     if (this.hasAltitude()) {
         LatLng(this.latitude(), this.longitude(), this.altitude())

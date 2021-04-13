@@ -5,7 +5,6 @@ import de.ur.explure.model.category.Category
 import de.ur.explure.services.FireStoreInstance
 import de.ur.explure.services.FirebaseAuthService
 import de.ur.explure.utils.FirebaseResult
-import java.lang.Exception
 
 @Suppress("TooGenericExceptionCaught")
 class CategoryRepositoryImpl(
