@@ -105,13 +105,7 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
                     )
                 } else {
                     authenticationViewModel.resetPassword(email)
-                    showSnackbar(
-                            requireActivity(),
-                            R.string.email_sent,
-                            R.id.login_container,
-                            Snackbar.LENGTH_LONG,
-                            colorRes = R.color.colorInfo
-                    )
+                    setSuccessObserver()
                 }
             }
             .setNegativeButton(R.string.negative_button) { _, _ -> }
@@ -125,5 +119,19 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
     private fun hideKeyboard() {
         val imm = context?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(view?.windowToken, 0)
+    }
+
+    private fun setSuccessObserver() {
+        authenticationViewModel.resetSuccessful.observe(viewLifecycleOwner, { showError ->
+            if (showError == true) {
+                showSnackbar(
+                        requireActivity(),
+                        R.string.email_sent,
+                        R.id.login_container,
+                        Snackbar.LENGTH_LONG,
+                        colorRes = R.color.themeColorDark
+                )
+            }
+        })
     }
 }

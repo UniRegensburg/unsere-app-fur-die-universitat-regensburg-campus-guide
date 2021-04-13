@@ -16,6 +16,8 @@ class AuthenticationViewModel(
 
     private val mutableUserInfo = MutableLiveData<String?>()
     val userInfo: LiveData<String?> = mutableUserInfo
+    private val mutableResetSuccessful: MutableLiveData<Boolean> = MutableLiveData()
+    val resetSuccessful: LiveData<Boolean> = mutableResetSuccessful
 
     fun signIn(email: String, password: String) {
         viewModelScope.launch {
@@ -53,7 +55,7 @@ class AuthenticationViewModel(
         viewModelScope.launch {
             when (val resetTask = authService.resetPassword(email)) {
                 is FirebaseResult.Success -> {
-                    // doesn't need to do anything
+                    mutableResetSuccessful.postValue(true)
                 }
                 is FirebaseResult.Error -> {
                     mutableUserInfo.value = resetTask.exception.message
