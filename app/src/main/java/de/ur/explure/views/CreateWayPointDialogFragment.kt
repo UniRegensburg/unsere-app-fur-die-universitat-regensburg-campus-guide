@@ -6,6 +6,8 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.View
 import android.widget.ImageView
 import androidx.activity.result.ActivityResultLauncher
@@ -34,13 +36,14 @@ import de.ur.explure.utils.hasExternalReadPermission
 import de.ur.explure.utils.showSnackbar
 import de.ur.explure.viewmodel.CreateWayPointViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.androidx.viewmodel.scope.emptyState
 
 @Suppress("TooManyFunctions")
 class CreateWayPointDialogFragment : DialogFragment(R.layout.dialog_create_waypoint),
     WayPointMediaInterface {
 
     private val binding by viewBinding(DialogCreateWaypointBinding::bind)
-    private val viewModel: CreateWayPointViewModel by viewModel()
+    private val viewModel: CreateWayPointViewModel by viewModel(state = emptyState())
     private val args: CreateWayPointDialogFragmentArgs by navArgs()
 
     private lateinit var imageResultLauncher: ActivityResultLauncher<Intent>
@@ -74,10 +77,40 @@ class CreateWayPointDialogFragment : DialogFragment(R.layout.dialog_create_waypo
     }
 
     private fun initObservers() {
-        initEditObserver()
+        initWaypointObserver()
         initMediaListObserver()
         initAudioRecordingObserver()
         initAudioErrorObserver()
+        initEditTextObservers()
+    }
+
+    private fun initEditTextObservers() {
+        binding.etWayPointTitle.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                // not needed
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                // not needed
+            }
+
+            override fun afterTextChanged(s: Editable) {
+                viewModel.setTitle(s.toString())
+            }
+        })
+        binding.etWayPointDescription.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                // not needed
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                // not needed
+            }
+
+            override fun afterTextChanged(s: Editable) {
+                viewModel.setDescription(s.toString())
+            }
+        })
     }
 
     private fun initClickListeners() {
@@ -208,7 +241,7 @@ class CreateWayPointDialogFragment : DialogFragment(R.layout.dialog_create_waypo
         binding.ivAddVideo.isEnabled = !mediaList.any { it is WayPointVideoItem }
     }
 
-    private fun initEditObserver() {
+    private fun initWaypointObserver() {
         viewModel.oldWayPointDTO.observe(viewLifecycleOwner, { wayPoint ->
             if (wayPoint != null) {
                 binding.etWayPointTitle.setText(wayPoint.title)
