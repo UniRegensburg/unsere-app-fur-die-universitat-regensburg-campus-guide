@@ -5,7 +5,7 @@ interface RouteCreationMode
 
 enum class ManualRouteCreationModes : RouteCreationMode {
     MODE_ADD,
-    MODE_EDIT,
+    // MODE_EDIT,
     MODE_DELETE
 }
 

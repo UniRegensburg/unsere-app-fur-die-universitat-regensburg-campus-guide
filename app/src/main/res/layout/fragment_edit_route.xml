@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.sothree.slidinguppanel.SlidingUpPanelLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:mapbox="http://schemas.android.com/apk/res-auto"
+    xmlns:sothree="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/slidingRootLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="bottom"
+    sothree:umanoAnchorPoint="0.45"
+    sothree:umanoDragView="@+id/dragView"
+    sothree:umanoFadeColor="@android:color/transparent"
+    sothree:umanoOverlay="false"
+    sothree:umanoPanelHeight="@dimen/bottom_nav_height"
+    sothree:umanoScrollableView="@+id/recycler_waypoint_list"
+    sothree:umanoShadowHeight="6dp">
+    <!-- set the panel height to the same size as the bottom navigation bar size
+    per material design guidelines to prevent the buttons from switching their position ! -->
+
+    <!-- Main Content -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/mapEditContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/editRouteTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="@color/materialDialogSurface"
+            android:elevation="2dp"
+            android:paddingHorizontal="@dimen/margin_normal"
+            android:paddingVertical="@dimen/margin_small"
+            android:text="@string/route_edit_instructions"
+            android:textAppearance="@style/TextAppearance.AppCompat.Subhead"
+            app:layout_constraintBottom_toTopOf="@+id/editMapView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.mapbox.mapboxsdk.maps.MapView
+            android:id="@+id/editMapView"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/editRouteTitle"
+            mapbox:mapbox_cameraBearing="0"
+            mapbox:mapbox_cameraTargetLat="48.997040"
+            mapbox:mapbox_cameraTargetLng="12.094922"
+            mapbox:mapbox_cameraTilt="0"
+            mapbox:mapbox_cameraZoom="14"
+            mapbox:mapbox_cameraZoomMax="20"
+            mapbox:mapbox_cameraZoomMin="14" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- Sliding Layout -->
+    <FrameLayout
+        android:id="@+id/dragView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/surfaceColor">
+
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/dragViewFragmentContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </FrameLayout>
+
+</com.sothree.slidinguppanel.SlidingUpPanelLayout>

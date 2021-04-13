@@ -83,4 +83,6 @@ class FirebaseAuthService(private val firebaseAuth: FirebaseAuth) {
     }
 
     fun getCurrentUserId(): String? = currentUser.value?.uid
+
+    fun getCurrentUserEmail(): String? = currentUser.value?.email
 }

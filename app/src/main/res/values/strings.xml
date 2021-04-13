@@ -54,6 +54,8 @@
 
     <!-- Menu Actions -->
     <string name="menu_cancel_route_creation">Cancel route creation</string>
+    <string name="menu_cancel_route_editing">Cancel route editing</string>
+    <string name="menu_confirm_route">Confirm created route</string>
     <string name="menu_save_created_route">Save created route</string>
     <string name="menu_align_created_route">Align created route</string>
     <string name="menu_show_buildings_extrusion">Show 3D buildings</string>
@@ -75,7 +77,7 @@
     <string name="build_route_tutorial_title">Route Creation</string>
     <string name="build_route_tutorial_description">Here you can start to create your own route.</string>
     <string name="action_menu_tutorial_title">Actions during route creation</string>
-    <string name="action_menu_tutorial_description">You can find useful options during the route creation process here. You can cancel the route creation (x - symbol), try to align your created route and waypoints to existing ways on the campus (magnet symbol) and save your route (disk symbol).</string>
+    <string name="action_menu_tutorial_description">You can find useful options during the route creation process here. You can cancel the route creation (x - symbol), try to align your created route and waypoints to existing ways on the campus (magnet symbol) or confirm your route and continue (checkmark symbol).</string>
 
     <string name="no_routes">No available routes to that destination</string>
     <string name="steps_in_route">There are %1$d steps in the route</string>
@@ -109,10 +111,14 @@
     <string name="map_matching_succeeded">Successfully created a route from the given waypoints!</string>
     <string name="save_created_route_confirmation">Save created route?</string>
     <string name="create_route_title">Create Route</string>
+    <string name="saving_route">Saving route. Please wait …</string>
+    <string name="error_saving_route_snapshot">Unfortunately, an error occurred while saving the route!</string>
+    <string name="route_edit_instructions">You can add waypoints to your route by clicking on the map and drag markers by long clicking them and moving them to a new place. When you are done, you can click on the "disk" symbol in the top right to save your route.</string>
 
     <!-- Warnings -->
     <string name="attention">Attention!</string>
     <string name="leave_route_creation_warning">Do you want to leave the route creation mode? Your current progress will be lost!</string>
+    <string name="leave_route_editing_warning">If you leave now, this route will not be saved and you lose your progress! Do you really want to go back?</string>
     <string name="change_style_during_route_creation">Unfortunately, it isn\'t possible to change the map style during route creation!</string>
     <string name="delete_waypoint_confirmation">Do you really want to delete this waypoint?</string>
     <string name="delete_marker_confirmation">Do you really want to delete this marker?</string>
@@ -120,8 +126,11 @@
     <string name="no_internet">No internet connection!</string>
     <string name="no_internet_default_explanation">No internet connection could be established! Please check your connection and try again.</string>
     <string name="no_internet_map_matching">An internet connection is required to create a route!</string>
+    <string name="no_internet_save_route">To save the route an internet connection is required!</string>
     <string name="too_few_waypoints">There must be at least 2 way points on the map to create a route!</string>
     <string name="too_many_waypoints">Unfortunately, a route with so many waypoints cannot be created! Please try to remove some unnecessary points.</string>
+    <string name="no_route_found">No route was found! You have to create a route first before you can continue!</string>
+    <string name="confirm_route_creation_warning">If you go to the next step of route creation and then return, you have to start route creation from the beginning! Continue anyway?</string>
 
     <!-- Buttons and Options -->
     <string name="try_again">Try again</string>
@@ -134,6 +143,9 @@
     <string name="save_route">Save Route</string>
     <string name="reset_manual_route_creation">Do you really want to reset all markers?</string>
     <string name="reset_map_draw">Do you really want to remove all drawn routes on the map?</string>
+    <string name="route_draw_confirm_option">Do you want to use your own route or the automatically generated route?</string>
+    <string name="use_own_route">Own Route</string>
+    <string name="use_map_matching">Generated Route</string>
 
     <!--Test Strings-->
     <string name="lorem_ipsum">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.  </string>
@@ -155,7 +167,7 @@
     <string name="register_text">Register</string>
     <string name="new_email">Email</string>
 
-	<string name="new_password">Password</string>
+    <string name="new_password">Password</string>
     <string name="confirm_password">Conform password</string>
     <string name="register_button">Register</string>
     <string name="already_account">Already have an account?</string>
@@ -179,8 +191,8 @@
     <string name="route_item_title">Route Name</string>
     <string name="route_item_rating">(%1d)</string>
     <string name="route_item_waypoints">0</string>
-    <string name="route_item_distance">%1d km</string>
-    <string name="route_item_duration">%1d h</string>
+    <string name="route_item_distance">%1d m</string>
+    <string name="route_item_duration">%1d min</string>
     <string name="route_item_author">von %1s</string>
 
     <string name="discover_new_routes">New Routes</string>
@@ -232,5 +244,18 @@
     <string name="create_waypoint_save_btn">Save</string>
     <string name="create_waypoint_title">Waypoint Information</string>
     <string name="create_route_save_btn">Save</string>
+    <string name="default_waypoint_title">No title</string>
+    <string name="route_duration_default">N.A.</string>
+    <string name="route_duration_text">Routeduration (in minutes):</string>
+
+    <!-- set user date -->
+    <string name="create_profile">Create your profile</string>
+    <string name="add_picture_text">Add your profile picture</string>
+    <string name="profile_picture">Profile Picture</string>
+    <string name="set_user_name">Username</string>
+    <string name="text_changes">You can change your picture and username later</string>
+    <string name="create_button">Create profile</string>
+    <string name="empty_username">Please enter a username</string>
+    <string name="user_data_error">Something went wrong while creating your profile. Please try again later.</string>
 
 </resources>

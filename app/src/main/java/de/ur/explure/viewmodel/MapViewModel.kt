@@ -5,18 +5,19 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import com.google.firebase.firestore.GeoPoint
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.LineString
 import com.mapbox.mapboxsdk.camera.CameraPosition
 import com.mapbox.mapboxsdk.maps.Style
 import com.mapbox.mapboxsdk.plugins.annotation.Symbol
 import de.ur.explure.extensions.combineWith
+import de.ur.explure.extensions.toGeoPoint
 import de.ur.explure.map.ManualRouteCreationModes
 import de.ur.explure.map.RouteDrawModes
 import de.ur.explure.map.RouteLineManager.Companion.ID_PROPERTY_KEY
 import de.ur.explure.model.MapMarker
-import de.ur.explure.model.waypoint.WayPoint
+import de.ur.explure.model.waypoint.WayPointDTO
+import de.ur.explure.navigation.MainAppRouter
 import de.ur.explure.utils.Event
 import java.util.*
 
@@ -24,7 +25,7 @@ import java.util.*
  * Map Viewmodel to handle and preserve map state.
  */
 @Suppress("TooManyFunctions")
-class MapViewModel(private val state: SavedStateHandle) : ViewModel() {
+class MapViewModel(private val state: SavedStateHandle, private val appRouter: MainAppRouter) : ViewModel() {
 
     private val _mapReady = MutableLiveData<Event<Boolean>>()
     val mapReady: LiveData<Event<Boolean>> = _mapReady
@@ -44,6 +45,7 @@ class MapViewModel(private val state: SavedStateHandle) : ViewModel() {
     val inRouteCreationMode = _inRouteCreationMode
 
     private var currentMapStyle: Style? = null
+    private var goToRouteEdit = false
 
     val buildingExtrusionActive by lazy { MutableLiveData(state[BUILDING_EXTRUSION_KEY] ?: true) }
 
@@ -54,33 +56,34 @@ class MapViewModel(private val state: SavedStateHandle) : ViewModel() {
     private val currentRouteLinePoints: MutableLiveData<MutableList<Point>> by lazy {
         MutableLiveData(state[ACTIVE_ROUTE_LINE_POINTS_KEY] ?: mutableListOf())
     }*/
-    private val activeMapMatching: MutableLiveData<LineString> by lazy {
+    private val _activeMapMatching: MutableLiveData<LineString> by lazy {
         MutableLiveData(state[ACTIVE_MAP_MATCHED_ROUTE_KEY])
     }
+    val activeMapMatching = _activeMapMatching
 
-    val mapMarkers: MutableLiveData<MutableList<MapMarker>> by lazy {
+    private val mapMarkers: MutableLiveData<MutableList<MapMarker>> by lazy {
         MutableLiveData(state[ACTIVE_MARKERS_KEY] ?: mutableListOf())
     }
-    val selectedMarker: MutableLiveData<MapMarker> by lazy { MutableLiveData<MapMarker>() }
 
-    // TODO schönere lösung hierfür finden, wenn Zeit
-    // used to update the map marker symbols when a waypoint is deleted from the bottomsheet
-    val deletedWaypoint: MutableLiveData<MapMarker> by lazy { MutableLiveData<MapMarker>() }
+    fun shouldGoToEditing(): Boolean {
+        return goToRouteEdit
+    }
 
-    fun addNewMapMarker(symbol: Symbol) {
+    fun shouldGoToEditing(flag: Boolean) {
+        goToRouteEdit = flag
+    }
+
+    fun addNewMapMarker(symbol: Symbol, defaultTitle: String) {
         val coordinates = symbol.latLng
 
-        // TODO bessere default-Werte!
-        val waypoint = WayPoint(
-            UUID.randomUUID().toString(),
-            "Marker ${mapMarkers.value?.size}",
-            "Keine Beschreibung (Position: ${coordinates.latitude}, ${coordinates.longitude})",
-            GeoPoint(coordinates.latitude, coordinates.longitude)
+        val wayPoint = WayPointDTO(
+            title = defaultTitle,
+            geoPoint = coordinates.toGeoPoint()
         )
 
         val mapMarker = MapMarker(
             id = UUID.randomUUID().toString(),
-            wayPoint = waypoint,
+            wayPoint = wayPoint,
             markerPosition = coordinates
         )
         mapMarkers.value?.add(mapMarker)
@@ -88,27 +91,12 @@ class MapViewModel(private val state: SavedStateHandle) : ViewModel() {
         mapMarkers.value = mapMarkers.value
     }
 
-    /**
-     * Used when a marker symbol has been removed directly from the map.
-     * Removes this marker from the mapMarker list and from the bottom sheet.
-     */
     fun removeMarker(marker: Symbol) {
         val removedWaypoint = mapMarkers.value?.find {
             it.markerPosition == marker.latLng
         }
         mapMarkers.value?.remove(removedWaypoint)
         mapMarkers.value = mapMarkers.value
-    }
-
-    /**
-     * Used when a waypoint item has been removed from the bottom sheet.
-     * Removes this marker from the mapMarker list and sets the deleted marker livedata to delete it
-     * from the marker symbols as well.
-     */
-    fun removeWaypoint(waypointMarker: MapMarker) {
-        mapMarkers.value?.remove(waypointMarker)
-        mapMarkers.value = mapMarkers.value
-        deletedWaypoint.value = waypointMarker
     }
 
     fun getAllActiveMarkers(): List<MapMarker>? {
@@ -125,19 +113,19 @@ class MapViewModel(private val state: SavedStateHandle) : ViewModel() {
     }
 
     fun setActiveMapMatching(mapMatchedRoute: LineString) {
-        activeMapMatching.value = mapMatchedRoute
+        _activeMapMatching.value = mapMatchedRoute
     }
 
     fun saveActiveMapMatching() {
-        state[ACTIVE_MAP_MATCHED_ROUTE_KEY] = activeMapMatching.value
+        state[ACTIVE_MAP_MATCHED_ROUTE_KEY] = _activeMapMatching.value
     }
 
     fun removeActiveMapMatching() {
-        activeMapMatching.value = null
+        _activeMapMatching.value = null
     }
 
     fun getActiveMapMatching(): LineString? {
-        return activeMapMatching.value
+        return _activeMapMatching.value
     }
 
     fun addActiveLine(drawnLine: Feature) {
@@ -236,6 +224,10 @@ class MapViewModel(private val state: SavedStateHandle) : ViewModel() {
     fun setBuildingExtrusionStatus(active: Boolean) {
         buildingExtrusionActive.value = active
         state[BUILDING_EXTRUSION_KEY] = active
+    }
+
+    fun navigateToEditScreen(route: LineString, routeMarkers: List<MapMarker>? = null) {
+        appRouter.navigateToRouteEditFragment(route, routeMarkers)
     }
 
     companion object {
