@@ -5,6 +5,7 @@ import android.net.Uri
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldPath
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.QueryDocumentSnapshot
 import com.google.firebase.firestore.QuerySnapshot
@@ -15,6 +16,7 @@ import de.ur.explure.config.FirebaseCollections.ANSWER_COLLECTION_NAME
 import de.ur.explure.config.FirebaseCollections.COMMENT_COLLECTION_NAME
 import de.ur.explure.config.FirebaseCollections.WAYPOINT_COLLECTION_NAME
 import de.ur.explure.config.RouteDocumentConfig
+import de.ur.explure.config.UserDocumentConfig
 import de.ur.explure.extensions.await
 import de.ur.explure.model.comment.Comment
 import de.ur.explure.model.comment.CommentDTO
@@ -157,6 +159,8 @@ class RouteRepositoryImpl(
     override suspend fun addComment(routeId: String, commentDTO: CommentDTO): FirebaseResult<Void> {
         return try {
             val userId = authService.getCurrentUserId() ?: return ErrorConfig.NO_USER_RESULT
+            fireStore.userCollection.document()
+                    .update(UserDocumentConfig.COMMENT_COUNT_KEY, FieldValue.increment(1)).await()
             return fireStore.routeCollection.document(routeId)
                 .collection(COMMENT_COLLECTION_NAME)
                 .document()
@@ -184,6 +188,8 @@ class RouteRepositoryImpl(
     ): FirebaseResult<Void> {
         return try {
             val userId = authService.getCurrentUserId() ?: return ErrorConfig.NO_USER_RESULT
+            fireStore.userCollection.document()
+                    .update(UserDocumentConfig.COMMENT_COUNT_KEY, FieldValue.increment(1)).await()
             return fireStore.routeCollection.document(routeId)
                 .collection(COMMENT_COLLECTION_NAME)
                 .document(commentId)
