@@ -8,7 +8,6 @@
     <ImageView
         android:id="@+id/wayPoint_image"
         android:layout_alignParentStart="true"
-        android:contentDescription="@string/waypoints"
         android:layout_width="45dp"
         android:layout_height="45dp"
         android:layout_marginStart="10dp"
@@ -39,7 +38,6 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
-        android:text="@string/route_description"
         android:textColor="@color/textColorGrey"/>
 
     <ImageView
@@ -49,7 +47,6 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentTop="true"
         android:background="@drawable/ic_image"
-        android:contentDescription="@string/waypoints"
         android:visibility="gone"/>
 
     <ImageView
@@ -60,7 +57,6 @@
         android:layout_alignParentEnd="true"
         android:layout_below="@id/wayPoint_has_image"
         android:src="@drawable/ic_videocam"
-        android:contentDescription="@string/waypoints"
         android:visibility="gone"/>
 
     <ImageView
@@ -71,7 +67,6 @@
         android:layout_alignParentEnd="true"
         android:layout_below="@id/wayPoint_has_video"
         android:src="@drawable/ic_mic"
-        android:contentDescription="@string/waypoints"
         android:visibility="gone"/>
 
 </RelativeLayout>
