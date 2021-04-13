@@ -53,8 +53,11 @@ class StatisticsFragment : Fragment(R.layout.fragment_statistics) {
                     } catch (_: Exception) {
                     }
                 }
-                binding.endedRoutesTextView.text = user.finishedRoutes.size.toString()
+                binding.startedRoutesTextView.text = user.startedRoutes.toString()
+                binding.endedRoutesTextView.text = user.endedRoutes.toString()
                 binding.createdRoutesTextView.text = user.createdRoutes.size.toString()
+                binding.createdCommentsTextView.text = user.commentCount.toString()
+                binding.createdRatingsTextView.text = user.ratingCount.toString()
             }
         })
     }
