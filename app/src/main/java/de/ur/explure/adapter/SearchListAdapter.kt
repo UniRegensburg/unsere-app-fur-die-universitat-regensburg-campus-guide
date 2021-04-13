@@ -44,7 +44,7 @@ class SearchListAdapter(private val onClick: (Route) -> Unit) :
             }
 
             binding.tvRouteTitle.text = data.title
-            binding.tvRouteDescription.text = data.description
+            // binding.tvRouteDescription.text = data.description
             binding.tvRatingCount.text =
                     itemView.context.resources.getString(R.string.route_item_rating, data.rating.size)
             binding.tvDistance.text =

@@ -12,34 +12,37 @@
             android:id="@+id/login_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="70dp"
+            android:layout_marginTop="80dp"
+            android:fontFamily="serif-monospace"
             android:text="@string/login_text"
-            android:textSize="30sp"
+            android:textSize="40sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toTopOf="@id/tf_email"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.298" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/tf_email"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="80dp"
-            android:layout_marginEnd="10dp"
+            android:layout_marginStart="@dimen/margin_normal"
+            android:layout_marginTop="50dp"
             app:layout_constraintBottom_toTopOf="@+id/tf_password"
+            android:layout_marginEnd="@dimen/margin_normal"
+            app:cardCornerRadius="@dimen/cardview_corner_radius"
+            app:cardElevation="@dimen/cardview_default_elevation"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/login_text"
-            app:layout_constraintVertical_bias="0.298">
+            app:layout_constraintTop_toBottomOf="@+id/login_text">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/ed_login_email"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
                 android:hint="@string/login_email"
+                android:textSize="16sp"
                 android:inputType="textEmailAddress" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -47,9 +50,10 @@
             android:id="@+id/tf_password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="10dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginEnd="10dp"
+            android:textSize="16sp"
+            android:layout_marginStart="@dimen/margin_normal"
+            android:layout_marginTop="@dimen/margin_normal"
+            android:layout_marginEnd="@dimen/margin_normal"
             app:layout_constraintBottom_toTopOf="@+id/login_button"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -61,7 +65,9 @@
                 android:id="@+id/ed_login_password"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
                 android:hint="@string/login_password"
+                android:textSize="16sp"
                 android:inputType="textPassword" />
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -69,10 +75,13 @@
             android:id="@+id/login_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:layout_marginTop="8dp"
+            android:layout_margin="@dimen/margin_normal"
+            android:stateListAnimator="@null"
+            android:elevation="@dimen/cardview_default_elevation"
+            android:layout_marginTop="@dimen/margin_normal"
             android:text="@string/login_button"
-            app:layout_constraintTop_toBottomOf="@+id/tf_password" />
+            app:layout_constraintTop_toBottomOf="@+id/tf_password"
+            android:textSize="16sp" />
 
         <TextView
             android:id="@+id/reset_password_tV"
@@ -111,7 +120,6 @@
             android:id="@+id/sign_up_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="5dp"
             android:background="@android:color/transparent"
             android:text="@string/sign_up_button"
             android:textColor="@color/themeColorDark"

@@ -9,7 +9,6 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.widget.ArrayAdapter
-import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.addCallback
 import androidx.appcompat.widget.ListPopupWindow
@@ -352,11 +351,12 @@ class MapFragment : Fragment(R.layout.fragment_map), MapMatchingClient.MapMatchi
                 setupManualRouteCreationMode()
             }
             .setNeutralButton(R.string.route_track_option) { _, _ ->
-                Toast.makeText(
-                    activity,
-                    "Dieses Feature ist leider noch nicht implementiert!",
-                    Toast.LENGTH_SHORT
-                ).show()
+                showSnackbar(
+                        getString(R.string.not_yet_implemented),
+                        binding.mapButtonContainer,
+                        colorRes = R.color.colorError,
+                        length = Snackbar.LENGTH_LONG
+                )
                 // TODO route tracking mode
                 // mapViewModel.getCurrentMapStyle()?.let { style -> startLocationTracking(style) }
                 // setupRouteRecordingMode()
