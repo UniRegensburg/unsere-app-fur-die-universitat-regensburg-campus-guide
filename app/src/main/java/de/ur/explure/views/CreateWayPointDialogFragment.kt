@@ -252,13 +252,21 @@ class CreateWayPointDialogFragment : DialogFragment(R.layout.dialog_create_waypo
 
     private fun initAudioMediaButton() {
         binding.ivAddAudio.setOnClickListener {
-            if (binding.llRecordAudioView.visibility == View.GONE) {
-                setInitialAudioButtons()
-                binding.llRecordAudioView.visibility = View.VISIBLE
-                binding.ivExitAudioBtn.visibility = View.VISIBLE
-            } else if (binding.llRecordAudioView.visibility == View.VISIBLE) {
-                binding.llRecordAudioView.visibility = View.GONE
-                binding.ivExitAudioBtn.visibility = View.GONE
+            if (hasAudioPermission(requireContext())) {
+                if (binding.llRecordAudioView.visibility == View.GONE) {
+                    setInitialAudioButtons()
+                    binding.llRecordAudioView.visibility = View.VISIBLE
+                    binding.ivExitAudioBtn.visibility = View.VISIBLE
+                } else if (binding.llRecordAudioView.visibility == View.VISIBLE) {
+                    binding.llRecordAudioView.visibility = View.GONE
+                    binding.ivExitAudioBtn.visibility = View.GONE
+                }
+            } else {
+                multiplePermissionLauncher.launch(
+                    arrayOf(
+                        Manifest.permission.RECORD_AUDIO
+                    )
+                )
             }
         }
     }
