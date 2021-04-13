@@ -56,9 +56,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setHasOptionsMenu(true)
-
         setOnClickListeners()
-
         observeUserModel()
         viewModel.getUserInfo()
     }
@@ -104,22 +102,6 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
 
         binding.logOutButton.setOnClickListener {
             viewModel.signOut()
-        }
-        // button needs to be implemented
-        /*binding.deleteAccountButton.setOnClickListener {
-            deleteAccount()
-        }*/
-    }
-
-    private fun deleteAccount() {
-        with(AlertDialog.Builder(requireContext())) {
-            setTitle(R.string.delete_account)
-            setMessage(R.string.delete_text)
-            setPositiveButton(R.string.delete_account) { _, _ ->
-                viewModel.deleteAccount()
-            }
-            setNegativeButton(R.string.negative_button) { _, _ -> }
-            show()
         }
     }
 

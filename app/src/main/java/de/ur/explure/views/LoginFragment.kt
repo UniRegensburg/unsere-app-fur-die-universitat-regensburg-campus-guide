@@ -95,8 +95,7 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
                             Snackbar.LENGTH_LONG,
                             colorRes = R.color.colorError
                     )
-                }
-                if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                } else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
                     showSnackbar(requireActivity(),
                             R.string.wrong_email,
                             R.id.login_container,

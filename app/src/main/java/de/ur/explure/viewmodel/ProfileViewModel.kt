@@ -48,13 +48,6 @@ class ProfileViewModel(
         }
     }
 
-    fun deleteAccount() {
-        viewModelScope.launch {
-            authService.delete()
-            appRouter.navigateToLogin()
-        }
-    }
-
     fun showCreatedRoutes() {
         appRouter.navigateToCreatedRoutes()
     }
