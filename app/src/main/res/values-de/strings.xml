@@ -180,7 +180,8 @@
     <string name="add_comment">Posten</string>
     <string name="answer_input">Antwort</string>
     <string name="empty_comment">Bitte Kommentar eingeben</string>
-    <string name="share_text">Schau dir diese Route an: %1$s</string>
+    <string name="share_text">Hey, ich habe diese Route auf ExplURe gefunden: \n \n%1$s \n%2$d Wegpunkte \nDauer: %3$d min \nLänge: %4$d m \n \n%5$s \n \nKlicke auf den Link, um sie in deiner ExplURe App anzusehen. &#128506;</string>
+    <string name="share_option">Senden mit:</string>
 
     <string name="discover_new_routes">Neue Routen</string>
     <string name="discover_popular_routes">Beliebte Routen</string>

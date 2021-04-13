@@ -1,11 +1,9 @@
 package de.ur.explure.views
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.navigation.NavDeepLinkBuilder
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
@@ -120,7 +118,7 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinCompon
             // start route
         }
         binding.shareRouteButton.setOnClickListener {
-            shareRoute()
+            singleRouteViewModel.shareRoute(requireContext())
         }
         binding.addCommentButton.setOnClickListener {
             val commentInput = binding.commentInput.text.toString()
@@ -130,22 +128,6 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinCompon
             } else {
                 Toast.makeText(context, R.string.empty_comment, Toast.LENGTH_LONG).show()
             }
-        }
-    }
-
-    private fun shareRoute() {
-        val intent = Intent()
-        intent.action = Intent.ACTION_SEND
-        intent.putExtra(Intent.EXTRA_TEXT, getString(R.string.share_text, routeName))
-        intent.type = "text/plain"
-        startActivity(Intent.createChooser(intent, "Share To:"))
-
-        val pendingIntent = context?.let {
-            NavDeepLinkBuilder(it)
-                    .setGraph(R.navigation.nav_graph_main)
-                    .setDestination(R.id.singleRouteFragment)
-                    .setArguments(args.toBundle())
-                    .createPendingIntent()
         }
     }
 }

@@ -14,6 +14,7 @@ import com.crazylegend.viewbinding.viewBinder
 import de.ur.explure.databinding.ActivityMainBinding
 import de.ur.explure.map.PermissionHelper
 import de.ur.explure.navigation.MainAppRouter
+import de.ur.explure.utils.DeepLinkUtils.ID_PARAMETER_KEY
 import de.ur.explure.viewmodel.MainViewModel
 import de.ur.explure.viewmodel.MapViewModel
 import org.koin.android.ext.android.inject
@@ -56,7 +57,7 @@ class MainActivity : AppCompatActivity() {
     private fun parseDeepLink() {
         val data: Uri? = this.intent.data
         if (data != null && data.isHierarchical) {
-            val routeId = data.getQueryParameter("id")
+            val routeId = data.getQueryParameter(ID_PARAMETER_KEY)
             mainViewModel.setDeepLinkId(routeId)
         }
     }
