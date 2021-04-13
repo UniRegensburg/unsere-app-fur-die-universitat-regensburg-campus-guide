@@ -13,7 +13,8 @@ import java.util.*
 
 class SingleRouteViewModel(private val routeRepository: RouteRepositoryImpl) : ViewModel() {
 
-    val showErrorMessage: MutableLiveData<Boolean> = MutableLiveData()
+    private val mutableMessage: MutableLiveData<Boolean> = MutableLiveData()
+    val showMessage: LiveData<Boolean> = mutableMessage
     private val mutableRoute: MutableLiveData<Route> = MutableLiveData()
     val route: LiveData<Route> = mutableRoute
 
@@ -24,10 +25,10 @@ class SingleRouteViewModel(private val routeRepository: RouteRepositoryImpl) : V
                     mutableRoute.postValue(routeData.data)
                 }
                 is FirebaseResult.Error -> {
-                    showErrorMessage.postValue(true)
+                    mutableMessage.postValue(true)
                 }
                 is FirebaseResult.Canceled -> {
-                    showErrorMessage.postValue(true)
+                    mutableMessage.postValue(true)
                 }
             }
         }
@@ -40,7 +41,7 @@ class SingleRouteViewModel(private val routeRepository: RouteRepositoryImpl) : V
             if (routeRepository.addComment(routeId, commentDto) is FirebaseResult.Success) {
                 getRouteData(routeId)
             } else {
-                showErrorMessage.postValue(true)
+                mutableMessage.postValue(true)
             }
         }
     }
@@ -52,7 +53,7 @@ class SingleRouteViewModel(private val routeRepository: RouteRepositoryImpl) : V
             if (routeRepository.addAnswer(routeId, commentId, commentDto) is FirebaseResult.Success) {
                 getRouteData(routeId)
             } else {
-                showErrorMessage.postValue(true)
+                mutableMessage.postValue(true)
             }
         }
     }
@@ -60,10 +61,8 @@ class SingleRouteViewModel(private val routeRepository: RouteRepositoryImpl) : V
     fun deleteComment(commentId: String) {
         viewModelScope.launch {
             val routeId = route.value?.id ?: return@launch
-            when (routeRepository.deleteComment(commentId, routeId)) {
-                is FirebaseResult.Success -> {
+            if (routeRepository.deleteComment(commentId, routeId) is FirebaseResult.Success) {
                     getRouteData(routeId)
-                }
             }
         }
     }

@@ -236,8 +236,7 @@
     <string name="waypoint_image">Image</string>
     <string name="waypoint_title">Title</string>
     <string name="waypoint_description">Description</string>
-    <string name="empty_comment">Please enter comment</string>
-    <string name="empty_answer">Plwase enter answer</string>
+
     <string name="single_route_error">Something went wrong while loading the data. Please try again later.</string>
 
     <string name="category_spinner_header">Set a Category</string>

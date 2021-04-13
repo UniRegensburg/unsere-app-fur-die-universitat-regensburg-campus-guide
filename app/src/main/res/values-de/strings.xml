@@ -147,13 +147,6 @@
     <string name="confirm">Bestätigen</string>
     <string name="abort">Abbrechen</string>
 
-    <string name="route_item_title">Route Name</string>
-    <string name="route_item_rating">(%1d)</string>
-    <string name="route_item_waypoints">0</string>
-    <string name="route_item_distance">%1d km</string>
-    <string name="route_item_duration">%1d h</string>
-    <string name="route_item_author">von %1s</string>
-
     <!-- Authentication -->
     <string name="login_email">Email</string>
     <string name="login_password">Passwort</string>
@@ -206,11 +199,9 @@
     <string name="show_answers">Antworten zeigen (%1d)</string>
     <string name="hide_answers">Antworten verstecken</string>
     <string name="answer_input">Antwort</string>
-    <string name="empty_comment">Bitte Kommentar eingeben</string>
     <string name="empty_answer">Bitte Antwort eingeben</string>
     <string name="single_route_error">Beim Laden der Routendaten ist etwas schief gelaufen, bitte versuche es später wieder.</string>
 
-    <string name="empty_answer">Bitte Antwort eingeben</string>
     <string name="delete_answer">Antwort löschen?</string>
     <string name="answer_deleted">Antwort wurde gelöscht</string>
     <string name="delete_button">Löschen</string>
