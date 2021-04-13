@@ -28,6 +28,7 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinCompon
     private val args: SingleRouteFragmentArgs by navArgs()
     private val singleRouteViewModel: SingleRouteViewModel by viewModel()
     private val fireStorage: FirebaseStorage by inject()
+    private var routeName: String = ""
 
     private lateinit var wayPointAdapter: WayPointAdapter
     private lateinit var commentAdapter: CommentAdapter
@@ -48,6 +49,7 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinCompon
     private fun observeRouteInformation() {
         singleRouteViewModel.route.observe(viewLifecycleOwner, { route ->
             if (route != null) {
+                routeName = route.title
                 binding.routeName.text = route.title
                 binding.routeDescription.text = route.description
                 binding.routeDuration.text = getString(R.string.route_item_duration, route.duration.toInt())
@@ -108,7 +110,7 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinCompon
             // start route
         }
         binding.shareRouteButton.setOnClickListener {
-            // share Route
+            singleRouteViewModel.shareRoute(requireContext())
         }
         binding.addCommentButton.setOnClickListener {
             addComment()

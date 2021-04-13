@@ -215,6 +215,8 @@
     <string name="short_text_placeholder">abcde</string>
     <string name="middle_text_placeholder">ABCDEFGHIJKL</string>
     <string name="route_search_hint">Suche</string>
+    <string name="share_text">Hey, ich habe diese Route auf ExplURe gefunden: \n \n%1$s \n%2$d Wegpunkte \nDauer: %3$d min \nLänge: %4$d m \n \n%5$s \n \nKlicke auf den Link, um sie in deiner ExplURe App anzusehen. &#128506;</string>
+    <string name="share_option">Senden mit:</string>
 
     <!--Test Strings-->
     <string name="lorem_ipsum">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.  </string>

@@ -19,6 +19,8 @@ class MainViewModel(
     private val userRepo: UserRepositoryImpl
 ) : ViewModel() {
 
+    var currentDeepLinkId: String? = null
+
     /**
      * Observe auth state of Firebase. Navigates to LoginFragment when no user is logged in.
      * Navigates to main application when user is logged in.
@@ -32,6 +34,10 @@ class MainViewModel(
                 viewModelScope.launch {
                     if (user.isAnonymous || userRepo.isProfileCreated(user.uid)) {
                         mainAppRouter.navigateToMainApp()
+                        currentDeepLinkId?.run {
+                            mainAppRouter.deepLinkToSingleRoutePage(this)
+                        }
+                        currentDeepLinkId = null
                     } else {
                         mainAppRouter.navigateToOnboarding()
                     }
@@ -40,5 +46,9 @@ class MainViewModel(
                 mainAppRouter.navigateToLogin()
             }
         })
+    }
+
+    fun setDeepLinkId(routeId: String?) {
+        currentDeepLinkId = routeId
     }
 }

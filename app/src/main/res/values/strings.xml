@@ -224,6 +224,8 @@
     <string name="show_answers">Show answers (%1d)</string>
     <string name="hide_answers">Hide answers</string>
     <string name="answer_input">Answer</string>
+    <string name="share_text">Hey, I found this route on ExplURe: \n \n%1$s \n%2$d Waypoints \nDuration: %3$d min \nDistance: %4$d m \n \n%5$s \n \nClick on the link to open it in your ExplURe app. &#128506;</string>
+    <string name="share_option">Share with:</string>
     <string name="empty_answer">Please enter answer</string>
     <string name="delete_answer">Delete answer?</string>
     <string name="answer_deleted">Answer has been deleted</string>

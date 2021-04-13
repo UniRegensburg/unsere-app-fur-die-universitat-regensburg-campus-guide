@@ -1,5 +1,6 @@
 package de.ur.explure.navigation
 
+import androidx.core.net.toUri
 import androidx.navigation.NavController
 import androidx.navigation.NavDirections
 import com.mapbox.core.constants.Constants.PRECISION_6
@@ -156,6 +157,12 @@ class MainAppRouter {
         navController.navigate(action)
     }
 
+    fun deepLinkToSingleRoutePage(routeId: String) {
+        val uriString = "$SINGLE_ROUTE_DEEP_LINK?id=$routeId"
+        val uri = uriString.toUri()
+        navController.navigate(uri)
+    }
+
     fun navigateToRouteEditFragment(route: LineString, markers: List<MapMarker>?) {
         val encodedRoute = route.toPolyline(PRECISION_6)
         val markerArray = markers?.toTypedArray()
@@ -168,5 +175,9 @@ class MainAppRouter {
 
     fun navigateToSaveRouteFragment(action: NavDirections) {
             navController.navigate(action)
+    }
+
+    companion object {
+        private const val SINGLE_ROUTE_DEEP_LINK = "explure://route_preview"
     }
 }
