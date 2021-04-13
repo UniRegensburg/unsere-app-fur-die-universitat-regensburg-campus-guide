@@ -1,5 +1,6 @@
 package de.ur.explure
 
+import android.net.Uri
 import android.os.Bundle
 import android.view.MenuItem
 import android.view.View
@@ -42,14 +43,21 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(activityMainBinding.root)
-
         setupBottomNavigation()
         setupToolbar()
         setupViewModelObservers()
-
         // only set the auth state observer if the activity is created from scratch
         if (savedInstanceState == null) {
             mainViewModel.observeAuthState(this)
+        }
+        parseDeepLink()
+    }
+
+    private fun parseDeepLink() {
+        val data: Uri? = this.intent.data
+        if (data != null && data.isHierarchical) {
+            val routeId = data.getQueryParameter("id")
+            mainViewModel.setDeepLinkId(routeId)
         }
     }
 

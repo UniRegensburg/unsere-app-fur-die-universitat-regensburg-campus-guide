@@ -121,6 +121,9 @@
         <argument
             android:name="routeID"
             app:argType="string" />
+        <deepLink
+            android:id="@+id/singleRouteDeepLink"
+            app:uri="explure://route_preview?id={routeID}" />
 
     </fragment>
 

@@ -1,5 +1,6 @@
 package de.ur.explure.navigation
 
+import androidx.core.net.toUri
 import androidx.navigation.NavController
 import de.ur.explure.R
 import de.ur.explure.views.CreatedRoutesFragmentDirections
@@ -138,5 +139,15 @@ class MainAppRouter {
     fun navigateToFavoriteRouteDetails(routeId: String) {
         val action = FavoriteRoutesFragmentDirections.actionFavoriteRoutesFragmentToRouteDetails(routeId)
         navController.navigate(action)
+    }
+
+    fun deepLinkToSingleRoutePage(routeId: String) {
+        val uriString = "$SINGLE_ROUTE_DEEP_LINK?id=$routeId"
+        val uri = uriString.toUri()
+        navController.navigate(uri)
+    }
+
+    companion object {
+        private const val SINGLE_ROUTE_DEEP_LINK = "explure://route_preview"
     }
 }

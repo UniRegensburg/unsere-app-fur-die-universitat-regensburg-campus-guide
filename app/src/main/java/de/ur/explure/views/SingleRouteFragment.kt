@@ -138,7 +138,7 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinCompon
         intent.action = Intent.ACTION_SEND
         intent.putExtra(Intent.EXTRA_TEXT, getString(R.string.share_text, routeName))
         intent.type = "text/plain"
-        startActivity(Intent.createChooser(intent,"Share To:"))
+        startActivity(Intent.createChooser(intent, "Share To:"))
 
         val pendingIntent = context?.let {
             NavDeepLinkBuilder(it)
