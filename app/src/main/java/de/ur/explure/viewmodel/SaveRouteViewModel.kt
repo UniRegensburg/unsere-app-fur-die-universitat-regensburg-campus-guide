@@ -24,6 +24,7 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.json.json
 import timber.log.Timber
 
+@Suppress("TooGenericExceptionCaught")
 class SaveRouteViewModel(
     private val state: SavedStateHandle,
     private val appRouter: MainAppRouter,
@@ -144,13 +145,6 @@ class SaveRouteViewModel(
         currentImageUri.postValue(null)
     }
 
-    companion object {
-        private const val ROUTE_TITLE_KEY = "routeTitle"
-        private const val ROUTE_DESCRIPTION_KEY = "routeDescription"
-        private const val ROUTE_CATEGORY_KEY = "routeCategory"
-        private const val ROUTE_DURATION_KEY = "routeDuration"
-    }
-
     fun setupAlgolia(routeID: String) {
         viewModelScope.launch {
             val applicationID = ApplicationID("CRDAJVEWKR")
@@ -190,5 +184,12 @@ class SaveRouteViewModel(
                 FirebaseResult.Error(exception)
             }
         }
+    }
+
+    companion object {
+        private const val ROUTE_TITLE_KEY = "routeTitle"
+        private const val ROUTE_DESCRIPTION_KEY = "routeDescription"
+        private const val ROUTE_CATEGORY_KEY = "routeCategory"
+        private const val ROUTE_DURATION_KEY = "routeDuration"
     }
 }
