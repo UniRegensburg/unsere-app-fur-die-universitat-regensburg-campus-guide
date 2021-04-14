@@ -21,7 +21,7 @@
             android:layout_marginTop="5dp"
             android:text="@string/waypoint_description"
             android:textColor="@color/textColorGrey"
-            android:textSize="17sp"
+            android:textSize="15sp"
             card_view:layout_constraintEnd_toEndOf="parent"
             card_view:layout_constraintStart_toStartOf="parent"
             card_view:layout_constraintTop_toTopOf="parent" />

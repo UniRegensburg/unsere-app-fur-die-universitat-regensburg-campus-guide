@@ -21,6 +21,7 @@ import com.google.android.material.snackbar.Snackbar
 import de.ur.explure.GlideApp
 import de.ur.explure.R
 import de.ur.explure.databinding.CardviewSingleWaypointDescrBinding
+import de.ur.explure.databinding.CardviewSingleWaypointImageBinding
 import de.ur.explure.databinding.DialogSingleWaypointBinding
 import de.ur.explure.extensions.isEllipsized
 import de.ur.explure.model.waypoint.WayPoint
@@ -36,6 +37,7 @@ class SingleWaypointDialogFragment : DialogFragment(R.layout.dialog_single_waypo
     private val navArgs: SingleWaypointDialogFragmentArgs by navArgs()
     private val binding by viewBinding(DialogSingleWaypointBinding::bind)
     private val descriptionBinding by viewBinding(CardviewSingleWaypointDescrBinding::bind)
+    private val imageBinding by viewBinding(CardviewSingleWaypointImageBinding::bind)
 
     private var fullScreenButton: FrameLayout? = null
     private var fullScreenIcon: ImageView? = null
@@ -281,7 +283,7 @@ class SingleWaypointDialogFragment : DialogFragment(R.layout.dialog_single_waypo
                     .with(this)
                     .load(imageRef)
                     .transition(DrawableTransitionOptions.withCrossFade())
-                    .into(binding.ivImagePreview)
+                    .into(binding.cardImageView.ivImagePreview)
             } catch (e: Exception) {
                 showErrorSnackBar(R.string.waypoint_image_error)
             }
@@ -342,9 +344,8 @@ class SingleWaypointDialogFragment : DialogFragment(R.layout.dialog_single_waypo
     }
 
     private fun showImageView() {
-        binding.tvImageTitle.visibility = View.VISIBLE
-        binding.verticalImageView.visibility = View.VISIBLE
-        binding.ivImagePreview.visibility = View.VISIBLE
+        binding.cardImageView.tvImageTitle.visibility = View.VISIBLE
+        binding.cardImageView.ivImagePreview.visibility = View.VISIBLE
     }
 
     private fun showVideoView() {
