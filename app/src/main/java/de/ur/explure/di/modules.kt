@@ -97,12 +97,12 @@ val mainModule = module {
     viewModel { MainViewModel(get(), get(), get()) }
     viewModel { MapViewModel(get(), get()) }
     viewModel { EditRouteViewModel(get(), get(), get()) }
-    viewModel { SaveRouteViewModel(get(), get(), get(), get()) }
+    viewModel { SaveRouteViewModel(get(), get(), get(), get(), get()) }
     viewModel { CreateWayPointViewModel() }
     viewModel { ProfileViewModel(get(), get(), get()) }
     viewModel { CreatedRoutesViewModel(get(), get(), get()) }
     viewModel { FavoriteRoutesViewModel(get(), get(), get()) }
     viewModel { StatisticsViewModel(get(), get(), get(), get()) }
-    viewModel { SingleRouteViewModel(get()) }
+    viewModel { SingleRouteViewModel(get(), get()) }
     viewModel { UserDataViewModel(get(), get()) }
 }
