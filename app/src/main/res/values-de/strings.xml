@@ -209,7 +209,6 @@
     <string name="waypoint_image">Bild</string>
     <string name="waypoint_title">Titel</string>
     <string name="waypoint_description">Description</string>
-    <string name="single_route_error">Beim Laden der Daten ist etwas schief gelaufen, bitte versuche es später noch einmal.</string>
 
     <string name="discover_new_routes">Neue Routen</string>
     <string name="discover_popular_routes">Beliebte Routen</string>
