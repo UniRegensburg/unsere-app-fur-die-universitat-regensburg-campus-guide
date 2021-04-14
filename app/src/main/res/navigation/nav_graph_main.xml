@@ -114,19 +114,6 @@
             app:nullable="false" />
     </fragment>
 
-    <!-- TODO unused
-    <fragment
-        android:id="@+id/navigationUIFragment"
-        android:name="de.ur.explure.views.NavigationUIFragment"
-        android:label="Navigation"
-        tools:layout="@layout/fragment_navigation_ui">
-        <argument
-            android:name="route"
-            app:argType="string"
-            app:nullable="false" />
-    </fragment>
-    -->
-
     <fragment
         android:id="@+id/singleRouteFragment"
         android:name="de.ur.explure.views.SingleRouteFragment"
