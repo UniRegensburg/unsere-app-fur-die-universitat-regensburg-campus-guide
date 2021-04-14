@@ -6,11 +6,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.algolia.search.client.ClientSearch
-import com.algolia.search.client.Index
-import com.algolia.search.model.APIKey
-import com.algolia.search.model.ApplicationID
-import com.algolia.search.model.IndexName
 import de.ur.explure.model.category.Category
 import de.ur.explure.model.route.RouteDTO
 import de.ur.explure.model.waypoint.WayPointDTO
@@ -21,7 +16,6 @@ import de.ur.explure.utils.CachedFileUtils
 import de.ur.explure.utils.FirebaseResult
 import de.ur.explure.views.SaveRouteFragmentDirections
 import kotlinx.coroutines.launch
-import kotlinx.serialization.json.json
 import timber.log.Timber
 
 @Suppress("TooGenericExceptionCaught")
@@ -75,11 +69,11 @@ class SaveRouteViewModel(
 
     fun openWayPointDialogFragment(wayPointDTO: WayPointDTO) {
         val directions =
-                SaveRouteFragmentDirections.actionSaveRouteFragmentToCreateWayPointDialog(
-                        wayPointDTO
-                )
+            SaveRouteFragmentDirections.actionSaveRouteFragmentToCreateWayPointDialog(
+                wayPointDTO
+            )
         appRouter.getNavController()?.navigate(
-                directions
+            directions
         )
     }
 
@@ -97,7 +91,11 @@ class SaveRouteViewModel(
         routeDTO.wayPoints = wayPointDTOs.value ?: mutableListOf()
         routeDTO.thumbnailUri = currentImageUri.value
         viewModelScope.launch {
-            when (val routeCall = routeRepository.createRouteInFireStore(routeDTO, routeDTO.title, routeDTO.description)) {
+            when (val routeCall = routeRepository.createRouteInFireStore(
+                routeDTO,
+                routeDTO.title,
+                routeDTO.description
+            )) {
                 is FirebaseResult.Success -> {
                     showRouteCreationError.postValue(false)
                     appRouter.navigateToRouteDetailsAfterCreation(routeCall.data)
@@ -144,47 +142,6 @@ class SaveRouteViewModel(
     fun deleteCurrentUri() {
         currentImageUri.postValue(null)
     }
-/*
-    fun setupAlgolia(routeID: String) {
-        viewModelScope.launch {
-            val applicationID = ApplicationID("CRDAJVEWKR")
-            val apiKey = APIKey("19805d168da9d1f8b1f5ffb70283a0c2")
-            val client = ClientSearch(applicationID, apiKey)
-            val indexName = IndexName("listOfRoutes")
-
-            val index = client.initIndex(indexName)
-
-            addRouteInfo(routeID, index)
-        }
-    }
-
-    fun addRouteInfo(routeID: String, index: Index) {
-        viewModelScope.launch {
-            try {
-                when (val newRoute = routeRepository.getRoute(routeID, true)) {
-                    is FirebaseResult.Success -> {
-                        val newRouteTitle = newRoute.data.title
-                        val newRouteDescription = newRoute.data.description
-                        val json = listOf(
-
-                                json {
-                                    "objectID" to routeID
-                                    "routeID" to routeID
-                                    "title" to newRouteTitle
-                                    "description" to newRouteDescription
-                                }
-                        )
-                        index.saveObjects(json)
-                        appRouter.navigateToRouteDetailsAfterCreation(routeID)
-                    }
-                    is FirebaseResult.Error -> FirebaseResult.Error(newRoute.exception)
-                    is FirebaseResult.Canceled -> FirebaseResult.Canceled(newRoute.exception)
-                }
-            } catch (exception: Exception) {
-                FirebaseResult.Error(exception)
-            }
-        }
-    }*/
 
     companion object {
         private const val ROUTE_TITLE_KEY = "routeTitle"

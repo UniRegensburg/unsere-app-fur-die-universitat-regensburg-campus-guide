@@ -25,6 +25,7 @@ import de.ur.explure.services.FireStoreInstance
 import de.ur.explure.services.FirebaseAuthService
 import de.ur.explure.map.InfoWindowGenerator
 import de.ur.explure.map.MapHelper
+import de.ur.explure.services.AlgoliaService
 import de.ur.explure.utils.SharedPreferencesManager
 import de.ur.explure.viewmodel.AuthenticationViewModel
 import de.ur.explure.viewmodel.CategoryViewModel
@@ -83,9 +84,12 @@ val mainModule = module {
     factory { FireStoreInstance(get()) }
     single { FirebaseAuthService(get()) }
 
+    // algolia
+    single { AlgoliaService() }
+
     // repositories
     single { RatingRepositoryImpl(get(), get()) }
-    single { RouteRepositoryImpl(get(), get(), get()) }
+    single { RouteRepositoryImpl(get(), get(), get(), get()) }
     single { UserRepositoryImpl(get(), get(), get()) }
     single { CategoryRepositoryImpl(get(), get()) }
 
