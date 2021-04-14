@@ -166,7 +166,7 @@
     <string name="sign_up_button">Register?</string>
     <string name="new_email">Email</string>
 
-	<string name="new_password">Password</string>
+    <string name="new_password">Password</string>
     <string name="confirm_password">Confirm password</string>
     <string name="register_button">Register</string>
     <string name="already_account">Already have an account?</string>
@@ -193,6 +193,7 @@
     <string name="route_item_distance">%1d m</string>
     <string name="route_item_duration">%1d min</string>
     <string name="route_item_author">from %1s</string>
+
 
     <string name="discover_new_routes">New Routes</string>
     <string name="discover_popular_routes">Popular Routes</string>
@@ -271,5 +272,8 @@
     <string name="create_button">Create profile</string>
     <string name="empty_username">Please enter a username</string>
     <string name="user_data_error">Something went wrong while creating your profile. Please try again later.</string>
+    <string name="rating_text">Please leave a rating if you liked the route</string>
+    <string name="rating_button">Submit</string>
+    <string name="rating_error">Something went wrong. Please try again later</string>
 
 </resources>
