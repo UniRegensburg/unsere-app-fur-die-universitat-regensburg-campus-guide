@@ -9,7 +9,7 @@
     android:background="@color/colorContentBackground"
     android:elevation="5dp"
     android:paddingHorizontal="12dp"
-    android:paddingTop="20dp">
+    android:paddingVertical="20dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -17,10 +17,11 @@
 
         <ImageView
             android:id="@+id/tv_back_btn"
-            android:layout_width="18dp"
-            android:layout_height="18dp"
+            android:layout_width="12dp"
+            android:layout_height="12dp"
             android:clickable="true"
             android:focusable="true"
+            android:scaleType="fitXY"
             android:foreground="?android:attr/selectableItemBackground"
             android:src="@drawable/ic_cross"
             app:layout_constraintEnd_toEndOf="parent"
@@ -191,13 +192,6 @@
             app:primaryColor="@color/highlightColor"
             app:selectControls="false"
             app:showTitle="false" />
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="10dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
