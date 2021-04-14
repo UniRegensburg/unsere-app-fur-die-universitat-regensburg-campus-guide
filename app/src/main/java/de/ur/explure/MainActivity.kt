@@ -56,7 +56,7 @@ class MainActivity : AppCompatActivity(), MapFragment.MapFragmentListener {
 
     private fun setupToolbar() {
         setSupportActionBar(activityMainBinding.toolbar)
-        supportActionBar?.setLogo(R.drawable.ic_home)
+        supportActionBar?.setLogo(R.drawable.ic_launcher_icon_toolbar)
         // link the toolbar with the navigation controller
         activityMainBinding.toolbar.setupWithNavController(navController, appBarConfiguration)
     }
