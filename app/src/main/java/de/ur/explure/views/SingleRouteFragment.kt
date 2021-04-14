@@ -95,7 +95,7 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinCompon
     }
 
     private fun initWayPointAdapter() {
-        wayPointAdapter = WayPointAdapter{
+        wayPointAdapter = WayPointAdapter {
             singleRouteViewModel.showWayPointDialog(it)
         }
         binding.waypoints.adapter = wayPointAdapter

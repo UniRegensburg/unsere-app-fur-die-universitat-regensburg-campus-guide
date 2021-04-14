@@ -271,5 +271,8 @@
     <string name="create_button">Create profile</string>
     <string name="empty_username">Please enter a username</string>
     <string name="user_data_error">Something went wrong while creating your profile. Please try again later.</string>
+    <string name="waypoint_empty_description">No description available</string>
+    <string name="waypoint_show_more">Show more</string>
+    <string name="waypoint_show_less">Show less</string>
 
 </resources>

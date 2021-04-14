@@ -179,7 +179,7 @@ class MainAppRouter {
         navController.navigate(action)
     }
 
-    fun navigateToSingleWayPointDialog(wayPoint: WayPoint){
+    fun navigateToSingleWayPointDialog(wayPoint: WayPoint) {
         val actions = SingleRouteFragmentDirections.actionSingleRouteFragmentToSingleWaypointDialogFragment(wayPoint)
         navController.navigate(actions)
     }

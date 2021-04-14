@@ -109,7 +109,7 @@ class SingleRouteViewModel(
         appRouter.popUpToDiscover()
     }
 
-    fun showWayPointDialog(wayPoint: WayPoint){
+    fun showWayPointDialog(wayPoint: WayPoint) {
         appRouter.navigateToSingleWayPointDialog(wayPoint)
     }
 

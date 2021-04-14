@@ -160,7 +160,7 @@ class CreateWayPointDialogFragment : DialogFragment(R.layout.dialog_create_waypo
                             else ->
                                 R.string.universal_permission_not_granted
                         }
-                        view?.run{
+                        view?.run {
                             showSnackbar(
                                 requireActivity(),
                                 message,

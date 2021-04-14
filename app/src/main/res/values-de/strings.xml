@@ -272,5 +272,8 @@
     <string name="create_button">Profil erstellen</string>
     <string name="empty_username">Bitte Benutzernamen eingeben</string>
     <string name="user_data_error">Beim Erstellen deines Profiles ist etwas schief gelaufen, bitte versuche es später wieder.</string>
+    <string name="waypoint_empty_description">Keine Beschreibung vorhanden</string>
+    <string name="waypoint_show_more">Mehr anzeigen</string>
+    <string name="waypoint_show_less">Weniger anzeigen</string>
 
 </resources>
