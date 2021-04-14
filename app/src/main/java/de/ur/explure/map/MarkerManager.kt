@@ -17,7 +17,6 @@ import com.mapbox.mapboxsdk.plugins.annotation.Symbol
 import com.mapbox.mapboxsdk.plugins.annotation.SymbolManager
 import com.mapbox.mapboxsdk.plugins.annotation.SymbolOptions
 import com.mapbox.mapboxsdk.style.layers.Property
-import com.mapbox.mapboxsdk.utils.ColorUtils
 import de.ur.explure.R
 import de.ur.explure.extensions.moveCameraToPosition
 import de.ur.explure.extensions.toLatLng
@@ -73,9 +72,10 @@ class MarkerManager(
     }
 
     fun setupNavigationWaypoints(waypoints: LinkedList<WayPoint>, onClick: (waypoint: WayPoint) -> Unit) {
+        /*
         waypoints.forEach {
             createNavigationPoint(it)
-        }
+        }*/
 
         symbolManager.addClickListener { clickedSymbol ->
             val wayPoint = navigationWaypoints[clickedSymbol]
@@ -86,18 +86,18 @@ class MarkerManager(
         }
     }
 
-    private fun createNavigationPoint(waypoint: WayPoint, icon: String = MARKER_ICON): Symbol? {
+    fun createNavigationPoint(waypoint: WayPoint, icon: String = MARKER_ICON): Symbol? {
         val wayPointSymbol = symbolManager.create(
             SymbolOptions()
                 .withLatLng(waypoint.geoPoint.toLatLng())
                 .withIconImage(icon)
                 .withIconAnchor(Property.ICON_ANCHOR_BOTTOM)
                 .withIconSize(1.0f)
-                .withTextField(waypoint.title)
-                .withTextColor(ColorUtils.colorToRgbaString(context.getColor(R.color.colorInfo)))
+                // .withTextField(waypoint.title)
+                // .withTextColor(ColorUtils.colorToRgbaString(context.getColor(R.color.colorInfo)))
                 // .withTextHaloColor(ColorUtils.colorToRgbaString(context.getColor(R.color.backgroundColor)))
                 // .withTextHaloWidth(20f)
-                .withTextAnchor(Property.TEXT_ANCHOR_BOTTOM)
+                // .withTextAnchor(Property.TEXT_ANCHOR_BOTTOM)
                 .withDraggable(false)
         )
 

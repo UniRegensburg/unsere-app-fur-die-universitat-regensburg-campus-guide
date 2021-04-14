@@ -63,4 +63,6 @@ fun LineString.toFeature(): Feature = Feature.fromGeometry(this)
 
 fun GeoPoint.toLatLng(): LatLng = LatLng(latitude, longitude)
 
+fun GeoPoint.toPoint(): Point = this.toLatLng().toPoint()
+
 fun GeoPoint.toFeature(): Feature = Feature.fromGeometry(this.toLatLng().toPoint())

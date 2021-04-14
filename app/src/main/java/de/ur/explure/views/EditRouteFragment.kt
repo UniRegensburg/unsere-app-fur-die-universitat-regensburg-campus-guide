@@ -617,9 +617,9 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route),
         val routeCoordinates = editRouteViewModel.getRouteCoordinates()?.map { it.toLatLng() }
         if (routeCoordinates != null) {
             val latLngBounds = LatLngBounds.Builder()
-                // .includes(routeCoordinates)
-                .include(routeCoordinates.first())
-                .include(routeCoordinates.last())
+                .includes(routeCoordinates)
+                // .include(routeCoordinates.first())
+                // .include(routeCoordinates.last())
                 .build()
             mapHelper.map.moveCamera(CameraUpdateFactory.newLatLngBounds(latLngBounds, 0))
         }

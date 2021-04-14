@@ -2,7 +2,6 @@
 package de.ur.explure.views
 
 import android.annotation.SuppressLint
-import android.content.pm.ActivityInfo
 import android.location.Location
 import android.os.Bundle
 import android.view.Gravity
@@ -28,6 +27,7 @@ import com.mapbox.api.directions.v5.DirectionsCriteria
 import com.mapbox.api.directions.v5.models.BannerInstructions
 import com.mapbox.api.directions.v5.models.DirectionsRoute
 import com.mapbox.api.directions.v5.models.RouteOptions
+import com.mapbox.api.matching.v5.models.MapMatchingMatching
 import com.mapbox.geojson.Point
 import com.mapbox.geojson.utils.PolylineUtils
 import com.mapbox.mapboxsdk.location.LocationUpdate
@@ -41,14 +41,12 @@ import com.mapbox.navigation.base.internal.extensions.applyDefaultParams
 import com.mapbox.navigation.base.trip.model.RouteLegProgress
 import com.mapbox.navigation.base.trip.model.RouteProgress
 import com.mapbox.navigation.core.MapboxNavigation
-import com.mapbox.navigation.core.MapboxNavigationProvider
 import com.mapbox.navigation.core.arrival.ArrivalController
 import com.mapbox.navigation.core.arrival.ArrivalObserver
 import com.mapbox.navigation.core.arrival.ArrivalOptions
 import com.mapbox.navigation.core.directions.session.RoutesRequestCallback
 import com.mapbox.navigation.core.replay.MapboxReplayer
 import com.mapbox.navigation.core.replay.ReplayLocationEngine
-import com.mapbox.navigation.core.replay.route.ReplayProgressObserver
 import com.mapbox.navigation.core.replay.route.ReplayRouteMapper
 import com.mapbox.navigation.core.trip.session.BannerInstructionsObserver
 import com.mapbox.navigation.core.trip.session.RouteProgressObserver
@@ -58,14 +56,17 @@ import com.mapbox.navigation.ui.camera.DynamicCamera
 import com.mapbox.navigation.ui.camera.NavigationCamera
 import com.mapbox.navigation.ui.map.NavigationMapboxMap
 import com.mapbox.navigation.ui.map.OnWayNameChangedListener
-import com.mapbox.navigation.ui.route.NavigationMapRoute
 import com.mapbox.navigation.ui.summary.SummaryBottomSheet
+import com.mapbox.turf.TurfConstants
+import com.mapbox.turf.TurfJoins
+import com.mapbox.turf.TurfTransformation
 import de.ur.explure.R
 import de.ur.explure.databinding.FragmentNavigationBinding
 import de.ur.explure.extensions.toLatLng
 import de.ur.explure.extensions.toPoint
 import de.ur.explure.map.LocationManager
 import de.ur.explure.map.MapHelper
+import de.ur.explure.map.MapMatchingClient
 import de.ur.explure.map.MarkerManager
 import de.ur.explure.map.PermissionHelper
 import de.ur.explure.model.route.Route
@@ -86,12 +87,8 @@ import timber.log.Timber
 import java.util.*
 
 /**
- * TODO show waypoint markers only if the user is near them!! otherwise we would probably clutter
- * the navigation completely!
- */
-
-/**
- * TODO allow user to move the camera more freely!
+ * TODO um den mapstyle während der navigation zu ändern muss nur das gemacht werden:
+ * navigationMapboxMap?.retrieveMap()?.setStyle(...)
  */
 
 /**
@@ -101,7 +98,9 @@ import java.util.*
 
 @Suppress("TooManyFunctions")
 class NavigationFragment : Fragment(R.layout.fragment_navigation), MapHelper.MapHelperListener,
-    OnWayNameChangedListener {
+    OnWayNameChangedListener, MapMatchingClient.MapMatchingListener {
+
+    private var shouldSimulateRoute: Boolean = true // TODO true for debugging and demo only
 
     private val binding by viewBinding(FragmentNavigationBinding::bind)
     private val navigationViewModel: NavigationViewModel by viewModel(state = emptyState())
@@ -118,11 +117,12 @@ class NavigationFragment : Fragment(R.layout.fragment_navigation), MapHelper.Map
     private var mapView: MapView? = null
     private lateinit var mapHelper: MapHelper
     private var routeDestinationMarker: Symbol? = null
+    private val mapMatchingClient: MapMatchingClient by inject()
 
     // navigation
     private lateinit var mapboxNavigation: MapboxNavigation
     private var navigationMapboxMap: NavigationMapboxMap? = null
-    private var navigationMapRoute: NavigationMapRoute? = null
+    // private var navigationMapRoute: NavigationMapRoute? = null
     private var navIntroSnackbar: Snackbar? = null
     private lateinit var summaryBehavior: BottomSheetBehavior<SummaryBottomSheet>
     private lateinit var cancelBtn: AppCompatImageButton
@@ -130,10 +130,6 @@ class NavigationFragment : Fragment(R.layout.fragment_navigation), MapHelper.Map
 
     // for testing routes
     private val mapboxReplayer = MapboxReplayer()
-    private val replayProgressObserver = ReplayProgressObserver(mapboxReplayer)
-    private val replayLocationEngine = ReplayLocationEngine(mapboxReplayer)
-    private val replayRouteMapper = ReplayRouteMapper()
-    private var shouldSimulateRoute: Boolean = true // TODO for debugging and demo only
 
     // SharedPrefs
     private val preferencesManager: SharedPreferencesManager by inject()
@@ -146,21 +142,41 @@ class NavigationFragment : Fragment(R.layout.fragment_navigation), MapHelper.Map
     private val permissionHelper: PermissionHelper by inject()
     private var permissionExplanationSnackbar: Snackbar? = null
 
-    // navigation observers
+    // setup navigation observers
     private val routeProgressObserver = object : RouteProgressObserver {
         override fun onRouteProgressChanged(routeProgress: RouteProgress) {
             binding.instructionView.updateDistanceWith(routeProgress)
             binding.summaryBottomSheet.update(routeProgress)
 
-            // TODO
+            // check for near waypoints
+            // TODO this is called far too often! Move this somewhere else so it'll be more efficient!
+            val location = routeProgress.currentLegProgress?.currentStepProgress?.step?.maneuver()?.location()
+            // val location = mapHelper.map.locationComponent.lastKnownLocation
+            val threshold = 15.0 // within 15m radius of each waypoint
+
             /*
-            val routeOptions = routeProgress.route.routeOptions()
-            val waypoints = routeOptions?.coordinates()?.size ?: 0
-            val silentWaypoints = waypoints - (routeOptions?.waypointIndicesList()?.size ?: 0)
-            val remainingWaypoints = routeProgress.remainingWaypoints
-            tvDebugInfo.text = "Waypoints: $waypoints\nSilent waypoints: $silentWaypoints\n" +
-                    "RemainingWaypoints: $remainingWaypoints"
+            // get the nearest waypoint for the current user
+            val nearestWaypoint = location?.let { userLocation ->
+                TurfClassification.nearestPoint(
+                    userLocation,
+                    routeWayPoints.map { it.geoPoint.toPoint() })
+            }
+
+            // create a marker for this waypoint and show it on the map (overrides itself if already shown)
+            routeWayPoints.forEach {
+                if (it.geoPoint.toPoint() == nearestWaypoint) {
+                    mapHelper.markerManager.createNavigationPoint(it)
+                }
+            }
             */
+            routeWayPoints.forEach {
+                val routePoint = it.geoPoint.toPoint()
+                val polygonArea = TurfTransformation.circle(routePoint, threshold, 360, TurfConstants.UNIT_METERS)
+
+                if (TurfJoins.inside(location, polygonArea)) {
+                    mapHelper.markerManager.createNavigationPoint(it)
+                }
+            }
         }
     }
 
@@ -222,12 +238,8 @@ class NavigationFragment : Fragment(R.layout.fragment_navigation), MapHelper.Map
         override fun arrivalOptions(): ArrivalOptions = arrivalOptions
 
         override fun navigateNextRouteLeg(routeLegProgress: RouteLegProgress): Boolean {
+            Timber.d("Nächster Routenabschnitt erreicht")
             // Move to the next step when the distance is small
-            Toast.makeText(
-                requireActivity(),
-                "navigateNextRouteLeg: ${routeLegProgress.upcomingStep?.name()}",
-                Toast.LENGTH_SHORT
-            ).show()
             return routeLegProgress.distanceRemaining < 3.0
         }
     }
@@ -238,11 +250,7 @@ class NavigationFragment : Fragment(R.layout.fragment_navigation), MapHelper.Map
          * NavigateNextRouteLeg will also be true when this happens
          */
         override fun onNextRouteLegStart(routeLegProgress: RouteLegProgress) {
-            Toast.makeText(
-                requireActivity(),
-                "onNextRouteLegStart: ${routeLegProgress.distanceRemaining}",
-                Toast.LENGTH_SHORT
-            ).show()
+            Timber.d("Wegpunkt erreicht")
         }
 
         /**
@@ -252,8 +260,9 @@ class NavigationFragment : Fragment(R.layout.fragment_navigation), MapHelper.Map
         override fun onFinalDestinationArrival(routeProgress: RouteProgress) {
             showSnackbar(
                 requireActivity(),
-                "Gut gemacht! Du hast das Ziel der Route erreicht!",
-                colorRes = R.color.themeColor
+                R.string.goal_reached,
+                colorRes = R.color.themeColor,
+                length = Snackbar.LENGTH_LONG
             )
 
             // TODO show dialog fragment and give user the option to rate this route!
@@ -262,21 +271,11 @@ class NavigationFragment : Fragment(R.layout.fragment_navigation), MapHelper.Map
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        // lock the screen rotation, sry :(
-        activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_NOSENSOR
+        // lock the screen rotation
+        // activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_NOSENSOR
+        // TODO unlock with: activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR
 
         setHasOptionsMenu(true)
-
-        // TODO for testing only:
-        /*
-        routeCoordinates = listOf<Point>(
-            Point.fromLngLat(12.091897088615497, 48.9986755276432),
-            Point.fromLngLat(12.093398779683042, 48.99790078797133),
-            Point.fromLngLat(12.095176764949287, 48.99759573694382),
-            Point.fromLngLat(12.095045596693524, 48.99696500867813),
-            Point.fromLngLat(12.092009249797059, 48.996774307308414),
-            Point.fromLngLat(12.091600540864277, 48.99278790637206),
-        )*/
 
         route = args.route
         routeCoordinates = route.routeCoordinates.map { it.toPoint() }
@@ -302,7 +301,7 @@ class NavigationFragment : Fragment(R.layout.fragment_navigation), MapHelper.Map
         setupInitialUI()
 
         // create a navigable route
-        generateRoute() // TODO generate route erst in startNavigation onClickListener?
+        generateRoute() // TODO call this in onClickListener and not here?
     }
 
     private fun setupBackButtonClickObserver() {
@@ -343,7 +342,7 @@ class NavigationFragment : Fragment(R.layout.fragment_navigation), MapHelper.Map
     }
 
     private fun setupMapboxNavigation(isRecreated: Boolean) {
-        mapboxNavigation = if (isRecreated) {
+        /*mapboxNavigation = if (isRecreated) {
             // fragment was recreated so retrieve the already existing mapboxNavigation instance
             MapboxNavigationProvider.retrieve()
         } else {
@@ -355,7 +354,15 @@ class NavigationFragment : Fragment(R.layout.fragment_navigation), MapHelper.Map
                 .build()
 
             MapboxNavigationProvider.create(navigationOptions)
-        }
+        }*/
+        val navigationOptions = MapboxNavigation.defaultNavigationOptionsBuilder(
+            requireContext(), getMapboxAccessToken(requireContext())
+        )
+            .locationEngine(getLocationEngine())
+            // .isRouteRefreshEnabled(false)
+            .build()
+
+        mapboxNavigation = MapboxNavigation(navigationOptions)
 
         mapboxNavigation.apply {
             registerTripSessionStateObserver(tripSessionStateObserver)
@@ -373,6 +380,8 @@ class NavigationFragment : Fragment(R.layout.fragment_navigation), MapHelper.Map
     private fun setupInitialUI() {
         binding.startNavigationButton.visibility = View.VISIBLE
         binding.navigationProgressBar.visibility = View.VISIBLE
+
+        mapMatchingClient.setMapMatchingListener(this)
 
         navIntroSnackbar = showSnackbar(
             requireActivity(),
@@ -410,6 +419,7 @@ class NavigationFragment : Fragment(R.layout.fragment_navigation), MapHelper.Map
                         binding.recenterBtn.show()
                     }
                 }
+
                 override fun onSlide(bottomSheet: View, slideOffset: Float) {
                     // not needed
                 }
@@ -448,8 +458,8 @@ class NavigationFragment : Fragment(R.layout.fragment_navigation), MapHelper.Map
         // routeDestinationMarker?.let { mapHelper.markerManager.deleteMarker(it) }
 
         // setup the waypoints
-        // TODO jetzt schon anzeigen oder nur wenn in der Nähe?
         mapHelper.markerManager.setupNavigationWaypoints(routeWayPoints) { clickedPoint ->
+            // TODO show dialog
             Toast.makeText(
                 requireActivity(),
                 "Hier befindet sich der Wegpunkt: ${clickedPoint.title}",
@@ -460,16 +470,13 @@ class NavigationFragment : Fragment(R.layout.fragment_navigation), MapHelper.Map
 
     private fun buildRouteOverviewPadding(): IntArray {
         val leftRightPadding =
-            resources.getDimension(com.mapbox.navigation.ui.R.dimen.mapbox_route_overview_left_right_padding)
-                .toInt()
+            resources.getDimension(com.mapbox.navigation.ui.R.dimen.mapbox_route_overview_left_right_padding).toInt()
         val paddingBuffer =
-            resources.getDimension(com.mapbox.navigation.ui.R.dimen.mapbox_route_overview_buffer_padding)
-                .toInt()
+            resources.getDimension(com.mapbox.navigation.ui.R.dimen.mapbox_route_overview_buffer_padding).toInt()
         val instructionHeight = (resources
             .getDimension(com.mapbox.navigation.ui.R.dimen.mapbox_instruction_content_height) + paddingBuffer).toInt()
         val summaryHeight = resources
-            .getDimension(com.mapbox.navigation.ui.R.dimen.mapbox_summary_bottom_sheet_height)
-            .toInt()
+            .getDimension(com.mapbox.navigation.ui.R.dimen.mapbox_summary_bottom_sheet_height).toInt()
         return intArrayOf(leftRightPadding, instructionHeight, leftRightPadding, summaryHeight)
     }
 
@@ -480,6 +487,7 @@ class NavigationFragment : Fragment(R.layout.fragment_navigation), MapHelper.Map
             setCancelable(false)
             setPositiveButton(R.string.yes) { _, _ ->
                 navigationViewModel.leaveNavigationMode()
+                // TODO activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR
                 findNavController().navigateUp()
             }
             setNegativeButton(R.string.no) { _, _ ->
@@ -532,6 +540,7 @@ class NavigationFragment : Fragment(R.layout.fragment_navigation), MapHelper.Map
             MarkerManager.DESTINATION_ICON
         )
 
+        // TODO jetzt in mapMatching callback statt hier?
         if (!navigationViewModel.inNavigationMode()) {
             // if not in navigation mode show the route on the map
             mapHelper.routeLineManager?.addLineToMap(routeCoordinates)
@@ -588,7 +597,7 @@ class NavigationFragment : Fragment(R.layout.fragment_navigation), MapHelper.Map
             pushEvents(replayEvents)
             seekTo(replayEvents.first())
         }
-        mapboxReplayer.playbackSpeed(2.5) // TODO schneller für demo setzen?
+        mapboxReplayer.playbackSpeed(PLAYBACK_SPEED)
         mapboxReplayer.play()
     }
 
@@ -642,6 +651,10 @@ class NavigationFragment : Fragment(R.layout.fragment_navigation), MapHelper.Map
     }
 
     private fun generateRoute() {
+        // TODO mapMatching instead?
+        // mapMatchingClient.requestMapMatchedRoute(routeCoordinates)
+        // return
+
         val coordinateList = cleanCoordinates()
 
         // sanity check to make sure the algorithm above does work as intended!
@@ -689,7 +702,7 @@ class NavigationFragment : Fragment(R.layout.fragment_navigation), MapHelper.Map
                     binding.navigationProgressBar.visibility = View.GONE
                     navigationViewModel.directionsRoute = routes[0]
 
-                    navigationMapboxMap?.drawRoutes(routes) // TODO only for debugging! don't show this to user!
+                    // navigationMapboxMap?.drawRoutes(routes) // TODO only for debugging! don't show this to user!
                     mapboxNavigation.setRoutes(routes)
 
                     // TODO navigationMapRoute?.addRoutes(routes)
@@ -707,7 +720,10 @@ class NavigationFragment : Fragment(R.layout.fragment_navigation), MapHelper.Map
                     }*/
                 }
 
-                override fun onRoutesRequestFailure(throwable: Throwable, routeOptions: RouteOptions) {
+                override fun onRoutesRequestFailure(
+                    throwable: Throwable,
+                    routeOptions: RouteOptions
+                ) {
                     Timber.e("route request failure %s", throwable.toString())
                 }
 
@@ -761,12 +777,35 @@ class NavigationFragment : Fragment(R.layout.fragment_navigation), MapHelper.Map
 
         var simplifiedCoords: MutableList<Point>? = null
         var simplifiedCoords2: MutableList<Point>? = null
+        var simplifiedCoords3: MutableList<Point>? = null
         if (routeCoordinates.size > 25) {
-            simplifiedCoords = PolylineUtils.simplify(routeCoordinates, 0.001, true)
-            simplifiedCoords2 = PolylineUtils.simplify(routeCoordinates, 0.01, true)
+            simplifiedCoords = PolylineUtils.simplify(routeCoordinates, 0.00001, true)
+            simplifiedCoords2 = PolylineUtils.simplify(routeCoordinates, 0.000001, true)
+            simplifiedCoords3 = PolylineUtils.simplify(routeCoordinates, 0.000001, true)
         }
 
-        return coordinateList
+        return simplifiedCoords ?: coordinateList
+    }
+
+    /**
+     * Called when the map matching api successfully matched a route on the campus.
+     */
+    override fun onRouteMatched(allMatchings: MutableList<MapMatchingMatching>) {
+        binding.navigationProgressBar.visibility = View.GONE
+        val bestMatching = allMatchings[0]
+        val directionsRoute = bestMatching.toDirectionRoute()
+        // TODO besser als das oben?
+        navigationViewModel.directionsRoute = directionsRoute
+        mapboxNavigation.setRoutes(listOf(directionsRoute))
+    }
+
+    override fun onNoRouteMatchings() {
+        Timber.e("No route map matchings in navigation fragment!")
+    }
+
+    override fun onRouteMatchingFailed(message: String) {
+        Timber.e("Route map matching failed because: $message")
+        showSnackbar(requireActivity(), R.string.direction_route_fetch_error, colorRes = R.color.colorError)
     }
 
     /**
@@ -924,6 +963,7 @@ class NavigationFragment : Fragment(R.layout.fragment_navigation), MapHelper.Map
         super.onDestroyView()
 
         // cleanup
+        mapMatchingClient.setMapMatchingListener(null)
         navigationMapboxMap?.removeProgressChangeListener()
         mapboxReplayer.finish()
 
@@ -945,6 +985,8 @@ class NavigationFragment : Fragment(R.layout.fragment_navigation), MapHelper.Map
         const val ROUTE_BUNDLE_KEY = "routeBundleKey"
         // custom margins of the mapbox compass
         private const val compassMarginLeft = 10
-        private const val compassMarginBottom = 200
+        private const val compassMarginBottom = 250
+
+        private const val PLAYBACK_SPEED = 1.5
     }
 }

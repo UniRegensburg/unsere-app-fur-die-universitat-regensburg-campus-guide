@@ -116,6 +116,7 @@
     <string name="route_still_loading">The route is still loading. One moment!</string>
     <string name="direction_route_fetch_error">An error has occurred! Unfortunately, there is no navigation available for this route at the moment!</string>
     <string name="not_on_campus_error">You must be on the campus to use your location for navigation!</string>
+    <string name="goal_reached">Good job! You have reached the end of this route!</string>
 
     <!-- Warnings -->
     <string name="attention">Attention!</string>

@@ -112,6 +112,7 @@
     <string name="route_still_loading">Die Route wird noch geladen. Einen Moment!</string>
     <string name="direction_route_fetch_error">Ein Fehler ist aufgetreten! Für diese Route ist im Moment leider keine Navigation verfügbar!</string>
     <string name="not_on_campus_error">Du musst dich auf dem Campusgelände befinden, damit dein Standort für die Navigation verwendet werden kann!</string>
+    <string name="goal_reached">Gut gemacht! Du hast das Ziel der Route erreicht!</string>
 
     <!-- Warnings -->
     <string name="attention">Achtung!</string>
