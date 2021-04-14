@@ -20,6 +20,7 @@ import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.material.snackbar.Snackbar
 import de.ur.explure.GlideApp
 import de.ur.explure.R
+import de.ur.explure.databinding.CardviewSingleWaypointDescrBinding
 import de.ur.explure.databinding.DialogSingleWaypointBinding
 import de.ur.explure.extensions.isEllipsized
 import de.ur.explure.model.waypoint.WayPoint
@@ -34,6 +35,7 @@ class SingleWaypointDialogFragment : DialogFragment(R.layout.dialog_single_waypo
     private val viewModel: SingleWaypointViewModel by viewModel()
     private val navArgs: SingleWaypointDialogFragmentArgs by navArgs()
     private val binding by viewBinding(DialogSingleWaypointBinding::bind)
+    private val descriptionBinding by viewBinding(CardviewSingleWaypointDescrBinding::bind)
 
     private var fullScreenButton: FrameLayout? = null
     private var fullScreenIcon: ImageView? = null
@@ -358,39 +360,39 @@ class SingleWaypointDialogFragment : DialogFragment(R.layout.dialog_single_waypo
     }
 
     private fun initShowMoreClickListener() {
-        binding.btnShowMore.setOnClickListener {
+        binding.cardDescriptionView.btnShowMore.setOnClickListener {
             toggleDescription()
         }
     }
 
     private fun toggleDescription() {
-        if (binding.tvWaypointDescription.maxLines != Integer.MAX_VALUE) {
-            binding.tvWaypointDescription.maxLines = Integer.MAX_VALUE
-            binding.btnShowMore.text = getString(R.string.waypoint_show_less)
+        if (binding.cardDescriptionView.tvWaypointDescription.maxLines != Integer.MAX_VALUE) {
+            binding.cardDescriptionView.tvWaypointDescription.maxLines = Integer.MAX_VALUE
+            binding.cardDescriptionView.btnShowMore.text = getString(R.string.waypoint_show_less)
         } else {
-            binding.tvWaypointDescription.maxLines = DESCRIPTION_MAX_LINES
-            binding.btnShowMore.text = getString(R.string.waypoint_show_more)
+            binding.cardDescriptionView.tvWaypointDescription.maxLines = DESCRIPTION_MAX_LINES
+            binding.cardDescriptionView.btnShowMore.text = getString(R.string.waypoint_show_more)
         }
     }
 
     private fun initShowMoreButton() {
-        binding.tvWaypointDescription.doOnLayout {
-            if (binding.tvWaypointDescription.isEllipsized()) {
-                binding.btnShowMore.visibility = View.VISIBLE
-                if (binding.tvWaypointDescription.maxLines != Integer.MAX_VALUE) {
-                    binding.btnShowMore.text = getString(R.string.waypoint_show_more)
+        binding.cardDescriptionView.tvWaypointDescription.doOnLayout {
+            if (binding.cardDescriptionView.tvWaypointDescription.isEllipsized()) {
+                binding.cardDescriptionView.btnShowMore.visibility = View.VISIBLE
+                if (binding.cardDescriptionView.tvWaypointDescription.maxLines != Integer.MAX_VALUE) {
+                    binding.cardDescriptionView.btnShowMore.text = getString(R.string.waypoint_show_more)
                 } else {
-                    binding.btnShowMore.text = getString(R.string.waypoint_show_less)
+                    binding.cardDescriptionView.btnShowMore.text = getString(R.string.waypoint_show_less)
                 }
             } else {
-                binding.btnShowMore.visibility = View.GONE
+                binding.cardDescriptionView.btnShowMore.visibility = View.GONE
             }
         }
     }
 
     private fun setDescription(description: String) {
         if (description.isNotEmpty()) {
-            binding.tvWaypointDescription.text = description
+            binding.cardDescriptionView.tvWaypointDescription.text = description
         }
     }
 

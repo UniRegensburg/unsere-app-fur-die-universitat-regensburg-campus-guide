@@ -39,56 +39,15 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_back_btn" />
 
-        <TextView
-            android:id="@+id/tv_waypoint_description_title"
+        <include layout="@layout/cardview_single_waypoint_descr"
             android:layout_width="match_parent"
+            android:id="@+id/card_description_view"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:text="@string/waypoint_description"
-            android:textColor="@color/textColorGrey"
-            android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tv_waypoint_title" />
 
-        <View
-            android:id="@+id/vertical_view_1"
-            android:layout_width="match_parent"
-            android:layout_height="2dp"
-            android:layout_marginTop="1dp"
-            android:background="@color/themeColor"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_waypoint_description_title" />
-
-        <TextView
-            android:id="@+id/tv_waypoint_description"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:maxLines="7"
-            android:text="@string/waypoint_empty_description"
-            android:textColor="@color/textColorGrey"
-            android:textSize="16sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/vertical_view_1" />
-
-        <TextView
-            android:id="@+id/btn_show_more"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:background="?attr/selectableItemBackground"
-            android:clickable="true"
-            android:focusable="true"
-            android:text="@string/waypoint_show_more"
-            android:textAlignment="center"
-            android:textColor="@color/themeColor"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_waypoint_description" />
 
         <TextView
             android:id="@+id/tv_image_title"
@@ -101,7 +60,7 @@
             android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btn_show_more" />
+            app:layout_constraintTop_toBottomOf="@+id/card_description_view" />
 
         <View
             android:id="@+id/vertical_image_view"
