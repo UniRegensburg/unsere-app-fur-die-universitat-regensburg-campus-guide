@@ -160,13 +160,15 @@ class CreateWayPointDialogFragment : DialogFragment(R.layout.dialog_create_waypo
                             else ->
                                 R.string.universal_permission_not_granted
                         }
-                        showSnackbar(
-                            requireActivity(),
-                            message,
-                            R.id.btn_save_route,
-                            Snackbar.LENGTH_LONG,
-                            colorRes = R.color.colorWarning
-                        )
+                        view?.run{
+                            showSnackbar(
+                                requireActivity(),
+                                message,
+                                this,
+                                Snackbar.LENGTH_LONG,
+                                colorRes = R.color.colorWarning
+                            )
+                        }
                     }
                 }
             }
@@ -196,13 +198,14 @@ class CreateWayPointDialogFragment : DialogFragment(R.layout.dialog_create_waypo
                     if (fileSize != 0L && fileSize <= MAX_VIDEO_SIZE) {
                         viewModel.setVideoMedia(data)
                     } else {
-                        showSnackbar(
-                            requireActivity(),
-                            resources.getString(R.string.video_size_error, MAX_VIDEO_SIZE_MB),
-                            R.id.btn_save_route,
-                            Snackbar.LENGTH_LONG,
-                            colorRes = R.color.colorWarning
-                        )
+                        view?.run {
+                            showSnackbar(
+                                resources.getString(R.string.video_size_error, MAX_VIDEO_SIZE_MB),
+                                this,
+                                Snackbar.LENGTH_LONG,
+                                colorRes = R.color.colorWarning
+                            )
+                        }
                     }
                     viewModel.currentTempUri = null
                 }
@@ -222,13 +225,15 @@ class CreateWayPointDialogFragment : DialogFragment(R.layout.dialog_create_waypo
     private fun initAudioErrorObserver() {
         viewModel.showAudioError.observe(viewLifecycleOwner, { showAudioError ->
             if (showAudioError) {
-                showSnackbar(
-                    requireActivity(),
-                    R.string.audio_recording_error,
-                    R.id.btn_save_route,
-                    Snackbar.LENGTH_LONG,
-                    colorRes = R.color.colorWarning
-                )
+                view?.run {
+                    showSnackbar(
+                        requireActivity(),
+                        R.string.audio_recording_error,
+                        R.id.btn_save_route,
+                        Snackbar.LENGTH_LONG,
+                        colorRes = R.color.colorWarning
+                    )
+                }
                 viewModel.showAudioError.postValue(false)
                 viewModel.resetMediaPlayerAndRecorder()
             }
