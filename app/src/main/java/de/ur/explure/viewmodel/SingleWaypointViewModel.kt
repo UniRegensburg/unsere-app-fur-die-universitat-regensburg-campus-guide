@@ -20,11 +20,24 @@ class SingleWaypointViewModel(private val storageRepo: StorageRepositoryImpl) : 
 
     val showImageError: MutableLiveData<Boolean> = MutableLiveData(false)
     val showVideoError: MutableLiveData<Boolean> = MutableLiveData(false)
+    val showAudioError: MutableLiveData<Boolean> = MutableLiveData(false)
 
     fun setWayPoint(wayPointData: WayPoint) {
         wayPoint.postValue(wayPointData)
         wayPointData.imageURL?.run { getImageData(this) }
         wayPointData.videoURL?.run { getVideoData(this) }
+        wayPointData.audioURL?.run { getAudioData(this) }
+    }
+
+    private fun getAudioData(audioURL: String) {
+        viewModelScope.launch {
+            val downloadTask = storageRepo.getDownloadURL(audioURL)
+            if (downloadTask is FirebaseResult.Success) {
+                audioUri.postValue(downloadTask.data)
+            } else {
+                showAudioError.postValue(true)
+            }
+        }
     }
 
     private fun getVideoData(videoURL: String) {

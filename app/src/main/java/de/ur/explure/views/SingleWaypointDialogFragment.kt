@@ -72,6 +72,25 @@ class SingleWaypointDialogFragment : DialogFragment(R.layout.dialog_single_waypo
         initImageErrorObserver()
         initVideoUriObserver()
         initVideoErrorObserver()
+        initAudioUriObserver()
+        initAudioErrorObserver()
+    }
+
+    private fun initAudioErrorObserver() {
+        viewModel.showAudioError.observe(viewLifecycleOwner, { showError ->
+            if (showError) {
+                showErrorSnackBar(R.string.waypoint_audio_error)
+                viewModel.showAudioError.postValue(false)
+            }
+        })
+    }
+
+    private fun initAudioUriObserver() {
+        viewModel.audioUri.observe(viewLifecycleOwner, { audioUri ->
+            if (audioUri != null) {
+                binding.ivAudioPreview.setDataSource(audioUri)
+            }
+        })
     }
 
     private fun initClickListeners() {
