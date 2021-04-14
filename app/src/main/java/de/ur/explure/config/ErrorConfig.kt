@@ -1,7 +1,6 @@
 package de.ur.explure.config
 
 import de.ur.explure.utils.FirebaseResult
-import java.lang.Exception
 
 /**
  * Object holding constants for error handling

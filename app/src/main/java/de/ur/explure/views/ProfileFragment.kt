@@ -56,9 +56,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setHasOptionsMenu(true)
-
         setOnClickListeners()
-
         observeUserModel()
         viewModel.getUserInfo()
     }
@@ -122,12 +120,9 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
 
     private fun showDialog() {
         val builder = AlertDialog.Builder(this.requireContext())
-
-        builder.setTitle(resources.getString(R.string.change_user_name))
-
+                .setTitle(resources.getString(R.string.change_user_name))
         val constraintLayout = getEditUserNameLayout(this.requireContext())
-        builder.setView(constraintLayout)
-
+            builder.setView(constraintLayout)
         val textInputLayout =
             constraintLayout.findViewWithTag<TextInputLayout>("textInputLayoutTag")
         val textInputEditText =

@@ -41,6 +41,7 @@ import de.ur.explure.viewmodel.SingleRouteViewModel
 import de.ur.explure.viewmodel.StatisticsViewModel
 import de.ur.explure.viewmodel.WordSearchViewModel
 import org.koin.android.ext.koin.androidApplication
+import de.ur.explure.viewmodel.UserDataViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
@@ -90,15 +91,16 @@ val mainModule = module {
     viewModel { WordSearchViewModel(get(), get()) }
     viewModel { CategoryViewModel(get(), get()) }
     viewModel { DiscoverViewModel(get(), get(), get()) }
-    viewModel { MainViewModel(get(), get()) }
+    viewModel { MainViewModel(get(), get(), get()) }
     viewModel { MapViewModel(get(), get()) }
     viewModel { EditRouteViewModel(get(), get(), get()) }
     viewModel { SaveRouteViewModel(get(), get(), get(), get()) }
-    viewModel { CreateWayPointViewModel() }
+    viewModel { CreateWayPointViewModel(get()) }
     viewModel { ProfileViewModel(get(), get(), get()) }
     viewModel { CreatedRoutesViewModel(get(), get(), get()) }
     viewModel { FavoriteRoutesViewModel(get(), get(), get()) }
     viewModel { StatisticsViewModel(get(), get(), get(), get()) }
     viewModel { SingleRouteViewModel(get(), get()) }
+    viewModel { UserDataViewModel(get(), get()) }
     viewModel { NavigationViewModel(get()) }
 }

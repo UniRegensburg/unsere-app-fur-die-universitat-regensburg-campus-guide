@@ -1,140 +1,270 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/dialog_layout_view"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_centerInParent="true"
     android:layout_marginHorizontal="40dp"
     android:background="@color/colorContentBackground"
     android:elevation="5dp"
-    android:paddingHorizontal="15dp"
+    android:paddingHorizontal="12dp"
     android:paddingVertical="20dp">
 
-    <TextView
-        android:id="@+id/tv_create_waypoint_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/create_waypoint_title"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/text_layout_title"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="10dp"
-        android:layout_marginTop="20dp"
-        android:textColorHint="@color/grey"
-        app:boxBackgroundColor="@android:color/transparent"
-        app:boxStrokeColor="@color/themeColor"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_create_waypoint_title">
+        android:layout_height="wrap_content">
 
-        <EditText
-            android:id="@+id/et_wayPoint_title"
+        <TextView
+            android:id="@+id/tv_create_waypoint_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/create_waypoint_title"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/text_layout_title"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginHorizontal="10dp"
+            android:layout_marginTop="20dp"
+            android:textColorHint="@color/grey"
+            app:boxBackgroundColor="@android:color/transparent"
+            app:boxStrokeColor="@color/themeColor"
             android:hint="@string/create_route_title_hint"
-            android:maxLength="25"
-            android:maxLines="1"
-            android:textColor="@color/textColorGrey"
-            android:textSize="14sp" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_create_waypoint_title">
 
-    </com.google.android.material.textfield.TextInputLayout>
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_wayPoint_title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:autofillHints=""
+                android:maxLength="25"
+                android:maxLines="1"
+                android:textColor="@color/textColorGrey"
+                android:textSize="14sp" />
+
+        </com.google.android.material.textfield.TextInputLayout>
 
 
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/input_layout_description"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginHorizontal="10dp"
-        android:layout_marginTop="10dp"
-        android:textColorHint="@color/grey"
-        app:boxBackgroundColor="@android:color/transparent"
-        app:boxStrokeColor="@color/themeColor"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/text_layout_title">
-
-        <EditText
-            android:id="@+id/et_wayPoint_description"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/input_layout_description"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="start"
+            android:layout_marginHorizontal="10dp"
+            android:layout_marginTop="10dp"
+            android:textColorHint="@color/grey"
             android:hint="@string/create_route_descr_hint"
-            android:lines="4"
-            android:maxLength="400"
-            android:textColor="@color/textColorGrey"
-            android:textSize="14sp" />
+            app:boxBackgroundColor="@android:color/transparent"
+            app:boxStrokeColor="@color/themeColor"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/text_layout_title">
 
-    </com.google.android.material.textfield.TextInputLayout>
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/et_wayPoint_description"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="start"
+                android:lines="4"
+                android:maxLength="400"
+                android:textColor="@color/textColorGrey"
+                android:textSize="14sp" />
 
-    <ImageView
-        android:id="@+id/iv_add_image"
-        android:layout_width="35dp"
-        android:layout_height="35dp"
-        android:layout_marginTop="30dp"
-        android:layout_marginEnd="25dp"
-        android:background="@drawable/circular_background"
-        android:backgroundTint="@color/themeColor"
-        android:clickable="true"
-        android:focusable="true"
-        android:foreground="?android:attr/selectableItemBackground"
-        android:padding="7dp"
-        android:src="@drawable/ic_image_small"
-        app:layout_constraintEnd_toStartOf="@+id/iv_add_video"
-        app:layout_constraintTop_toBottomOf="@+id/input_layout_description"
-        app:tint="@color/white" />
+        </com.google.android.material.textfield.TextInputLayout>
 
-    <ImageView
-        android:id="@+id/iv_add_video"
-        android:layout_width="35dp"
-        android:layout_height="35dp"
-        android:layout_marginTop="30dp"
-        android:background="@drawable/circular_background"
-        android:backgroundTint="@color/themeColor"
-        android:clickable="true"
-        android:focusable="true"
-        android:foreground="?android:attr/selectableItemBackground"
-        android:padding="7dp"
-        android:src="@drawable/ic_videocam"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/input_layout_description"
-        app:tint="@color/white" />
+        <ImageView
+            android:id="@+id/iv_add_image"
+            style="@style/Widget.MaterialComponents.Button"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_marginTop="30dp"
+            android:layout_marginEnd="25dp"
+            android:background="@drawable/circular_background"
+            android:backgroundTint="@color/themeColor"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:padding="7dp"
+            android:src="@drawable/ic_image_small"
+            app:layout_constraintEnd_toStartOf="@+id/iv_add_video"
+            app:layout_constraintTop_toBottomOf="@+id/input_layout_description"
+            app:tint="@color/white" />
+
+        <ImageView
+            android:id="@+id/iv_add_video"
+            style="@style/Widget.MaterialComponents.Button"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_marginTop="30dp"
+            android:background="@drawable/circular_background"
+            android:backgroundTint="@color/themeColor"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:padding="7dp"
+            android:src="@drawable/ic_videocam"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/input_layout_description"
+            app:tint="@color/white" />
 
 
-    <ImageView
-        android:id="@+id/iv_add_audio"
-        android:layout_width="35dp"
-        android:layout_height="35dp"
-        android:layout_marginStart="25dp"
-        android:layout_marginTop="30dp"
-        android:background="@drawable/circular_background"
-        android:backgroundTint="@color/themeColor"
-        android:clickable="true"
-        android:focusable="true"
-        android:foreground="?android:attr/selectableItemBackground"
-        android:padding="7dp"
-        android:src="@drawable/ic_mic"
-        app:layout_constraintStart_toEndOf="@+id/iv_add_video"
-        app:layout_constraintTop_toBottomOf="@+id/input_layout_description"
-        app:tint="@color/white" />
+        <ImageView
+            android:id="@+id/iv_add_audio"
+            style="@style/Widget.MaterialComponents.Button"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_marginStart="25dp"
+            android:layout_marginTop="30dp"
+            android:background="@drawable/circular_background"
+            android:backgroundTint="@color/themeColor"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:padding="7dp"
+            android:src="@drawable/ic_mic"
+            app:layout_constraintStart_toEndOf="@+id/iv_add_video"
+            app:layout_constraintTop_toBottomOf="@+id/input_layout_description"
+            app:tint="@color/white" />
 
-    <Button
-        android:id="@+id/btn_save_waypoint"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="30dp"
-        android:backgroundTint="@color/highlightColor"
-        android:text="@string/create_waypoint_save_btn"
-        android:textColor="@color/white"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/iv_add_video" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <ImageView
+            android:id="@+id/iv_exit_audio_btn"
+            android:layout_width="15dp"
+            android:layout_height="15dp"
+            android:layout_gravity="top"
+            android:layout_marginEnd="10dp"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?android:attr/selectableItemBackground"
+            android:src="@drawable/ic_cross"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/iv_add_video"
+            app:tint="@color/textColorGrey" />
+
+        <LinearLayout
+            android:id="@+id/ll_record_audio_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clipToPadding="false"
+            android:visibility="gone"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:paddingTop="10dp"
+            android:paddingBottom="5dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/iv_add_video">
+
+            <ImageView
+                android:id="@+id/iv_play_audio_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="10dp"
+                android:background="@drawable/circular_background"
+                android:backgroundTint="@color/colorLightGrey"
+                android:clickable="true"
+                android:elevation="3dp"
+                android:focusable="true"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:padding="9dp"
+                android:src="@drawable/ic_play_arrow"
+                app:tint="@color/grey" />
+
+            <ImageView
+                android:id="@+id/iv_record_audio_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/circular_background"
+                android:backgroundTint="@color/white"
+                android:clickable="true"
+                android:elevation="3dp"
+                android:focusable="true"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:padding="13dp"
+                android:src="@drawable/ic_circle"
+                app:tint="@color/highlightColor" />
+
+            <ImageView
+                android:id="@+id/iv_stop_audio_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="10dp"
+                android:background="@drawable/circular_background"
+                android:backgroundTint="@color/colorLightGrey"
+                android:clickable="true"
+                android:elevation="3dp"
+                android:focusable="true"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:padding="16dp"
+                android:src="@drawable/ic_square"
+                app:tint="@color/grey" />
+
+            <ImageView
+                android:id="@+id/iv_save_audio_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/circular_background"
+                android:backgroundTint="@color/colorLightGrey"
+                android:clickable="true"
+                android:elevation="3dp"
+                android:focusable="true"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:padding="13dp"
+                android:src="@drawable/ic_baseline_save_24"
+                app:tint="@color/grey" />
+
+            <ImageView
+                android:id="@+id/iv_delete_audio_btn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:background="@drawable/circular_background"
+                android:backgroundTint="@color/colorLightGrey"
+                android:clickable="true"
+                android:elevation="3dp"
+                android:focusable="true"
+                android:foreground="?android:attr/selectableItemBackground"
+                android:padding="13dp"
+                android:src="@drawable/ic_delete"
+                app:tint="@color/grey" />
+
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_media_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="10dp"
+            android:layout_marginTop="10dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ll_record_audio_view"
+            tools:itemCount="3"
+            tools:listitem="@layout/cardview_waypoint_image" />
+
+
+        <Button
+            android:id="@+id/btn_save_waypoint"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="30dp"
+            android:backgroundTint="@color/highlightColor"
+            android:text="@string/create_waypoint_save_btn"
+            android:textColor="@color/white"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/rv_media_list" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</ScrollView>

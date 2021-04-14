@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="false"
+    android:id="@+id/single_route_container"
     tools:context=".views.SingleRouteFragment">
 
     <ScrollView
@@ -34,8 +35,8 @@
 
         <ImageButton
             android:id="@+id/share_route_button"
-            android:layout_width="16dp"
-            android:layout_height="13dp"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
             android:layout_marginEnd="16dp"
             android:background="?attr/actionModeShareDrawable"
             android:contentDescription="@string/share_route"
@@ -146,8 +147,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
             android:background="@android:color/transparent"
-            android:text="@string/route_description"
-            android:textColor="@color/themeColorDark"
+            android:text="@string/description_button"
+            android:textColor="@color/themeColor"
             android:textSize="12sp"
             android:textAllCaps="false"
             android:textStyle="bold"
@@ -161,8 +162,8 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
-            android:text="@string/comments"
-            android:textColor="@color/themeColorDark"
+            android:text="@string/comments_button"
+            android:textColor="@color/themeColor"
             android:textSize="12sp"
             android:textAllCaps="false"
             android:textStyle="bold"
@@ -176,7 +177,7 @@
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
             android:text="@string/waypoints_button"
-            android:textColor="@color/themeColorDark"
+            android:textColor="@color/themeColor"
             android:textSize="12sp"
             android:textAllCaps="false"
             android:textStyle="bold"
@@ -199,7 +200,7 @@
                 android:layout_marginTop="8dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginEnd="8dp"
-                android:text="@string/route_description"
+                android:text="@string/description_button"
                 app:layout_constraintEnd_toEndOf="@id/route_distance"
                 app:layout_constraintStart_toStartOf="@id/route_image"
                 app:layout_constraintTop_toBottomOf="@+id/view_flipper" />
