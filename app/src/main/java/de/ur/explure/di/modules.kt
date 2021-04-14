@@ -26,22 +26,8 @@ import de.ur.explure.services.FirebaseAuthService
 import de.ur.explure.map.InfoWindowGenerator
 import de.ur.explure.map.MapHelper
 import de.ur.explure.utils.SharedPreferencesManager
-import de.ur.explure.viewmodel.AuthenticationViewModel
-import de.ur.explure.viewmodel.CategoryViewModel
-import de.ur.explure.viewmodel.CreateWayPointViewModel
-import de.ur.explure.viewmodel.CreatedRoutesViewModel
-import de.ur.explure.viewmodel.DiscoverViewModel
-import de.ur.explure.viewmodel.EditRouteViewModel
-import de.ur.explure.viewmodel.FavoriteRoutesViewModel
-import de.ur.explure.viewmodel.MainViewModel
-import de.ur.explure.viewmodel.MapViewModel
-import de.ur.explure.viewmodel.ProfileViewModel
-import de.ur.explure.viewmodel.SaveRouteViewModel
-import de.ur.explure.viewmodel.SingleRouteViewModel
-import de.ur.explure.viewmodel.StatisticsViewModel
-import de.ur.explure.viewmodel.WordSearchViewModel
+import de.ur.explure.viewmodel.*
 import org.koin.android.ext.koin.androidApplication
-import de.ur.explure.viewmodel.UserDataViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
@@ -105,4 +91,5 @@ val mainModule = module {
     viewModel { StatisticsViewModel(get(), get(), get(), get()) }
     viewModel { SingleRouteViewModel(get(), get()) }
     viewModel { UserDataViewModel(get(), get()) }
+    viewModel { SingleWaypointViewModel(get()) }
 }

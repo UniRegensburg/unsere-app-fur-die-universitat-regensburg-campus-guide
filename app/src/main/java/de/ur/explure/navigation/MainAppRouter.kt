@@ -8,6 +8,7 @@ import com.mapbox.geojson.LineString
 import de.ur.explure.R
 import de.ur.explure.model.MapMarker
 import de.ur.explure.model.category.Category
+import de.ur.explure.model.waypoint.WayPoint
 import de.ur.explure.views.CategoryQueryFragmentDirections
 import de.ur.explure.views.CreatedRoutesFragmentDirections
 import de.ur.explure.views.DiscoverFragmentDirections
@@ -15,6 +16,7 @@ import de.ur.explure.views.FavoriteRoutesFragmentDirections
 import de.ur.explure.views.MapFragmentDirections
 import de.ur.explure.views.ProfileFragmentDirections
 import de.ur.explure.views.SaveRouteFragmentDirections
+import de.ur.explure.views.SingleRouteFragmentDirections
 import de.ur.explure.views.TextQueryFragmentDirections
 
 /**
@@ -175,6 +177,11 @@ class MainAppRouter {
 
     fun navigateToSaveRouteFragment(action: NavDirections) {
         navController.navigate(action)
+    }
+
+    fun navigateToSingleWayPointDialog(wayPoint: WayPoint){
+        val actions = SingleRouteFragmentDirections.actionSingleRouteFragmentToSingleWaypointDialogFragment(wayPoint)
+        navController.navigate(actions)
     }
 
     fun popUpToDiscover() {

@@ -433,20 +433,20 @@ class RouteRepositoryImpl(
     }
 
     override suspend fun uploadRouteThumbnail(routeId: String, uri: Uri): String? {
-        try {
+        return try {
             val secretId = UUID.randomUUID().toString()
             val storageRef =
                 fireStorage.reference
                     .child(FirestoreStorageDirectories.ROUTE_THUMBNAILS_DIRECTORY)
                     .child("$routeId-$secretId$IMAGE_FILE_SUFFIX")
-            return if (storageRef.putFile(uri).await() is FirebaseResult.Success) {
+            if (storageRef.putFile(uri).await() is FirebaseResult.Success) {
                 storageRef.toString()
             } else {
                 null
             }
         } catch (exception: Exception) {
             Timber.d("Failed to upload image with $exception")
-            return null
+            null
         }
     }
 }

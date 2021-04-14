@@ -117,13 +117,16 @@
         android:id="@+id/singleRouteFragment"
         android:name="de.ur.explure.views.SingleRouteFragment"
         android:label="Route Information"
-        tools:layout="@layout/fragment_single_route" >
+        tools:layout="@layout/fragment_single_route">
         <argument
             android:name="routeID"
             app:argType="string" />
         <deepLink
             android:id="@+id/singleRouteDeepLink"
             app:uri="explure://route_preview?id={routeID}" />
+        <action
+            android:id="@+id/action_singleRouteFragment_to_singleWaypointDialogFragment"
+            app:destination="@id/singleWaypointDialogFragment" />
 
     </fragment>
 
@@ -197,6 +200,14 @@
             android:name="latitude"
             android:defaultValue="0L"
             app:argType="long" />
+    </dialog>
+    <dialog
+        android:id="@+id/singleWaypointDialogFragment"
+        android:name="de.ur.explure.views.SingleWaypointDialogFragment"
+        android:label="SingleWaypointDialogFragment">
+        <argument
+            android:name="waypoint"
+            app:argType="de.ur.explure.model.waypoint.WayPoint" />
     </dialog>
 
 </navigation>

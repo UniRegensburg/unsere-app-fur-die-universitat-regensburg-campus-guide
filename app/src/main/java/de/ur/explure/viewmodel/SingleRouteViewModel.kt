@@ -10,6 +10,7 @@ import androidx.lifecycle.viewModelScope
 import de.ur.explure.R
 import de.ur.explure.model.comment.CommentDTO
 import de.ur.explure.model.route.Route
+import de.ur.explure.model.waypoint.WayPoint
 import de.ur.explure.navigation.MainAppRouter
 import de.ur.explure.repository.route.RouteRepositoryImpl
 import de.ur.explure.utils.DeepLinkUtils
@@ -106,6 +107,10 @@ class SingleRouteViewModel(
 
     fun popToDiscover() {
         appRouter.popUpToDiscover()
+    }
+
+    fun showWayPointDialog(wayPoint: WayPoint){
+        appRouter.navigateToSingleWayPointDialog(wayPoint)
     }
 
     fun shareRoute(context: Context) {
