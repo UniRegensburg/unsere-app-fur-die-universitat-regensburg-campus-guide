@@ -1,5 +1,6 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/dialog_layout_view"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -8,7 +9,7 @@
     android:background="@color/colorContentBackground"
     android:elevation="5dp"
     android:paddingHorizontal="12dp"
-    android:paddingVertical="20dp">
+    android:paddingTop="20dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -43,6 +44,8 @@
             android:layout_height="2dp"
             android:layout_marginTop="1dp"
             android:background="@color/themeColor"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tv_waypoint_description_title" />
 
         <TextView
@@ -62,18 +65,128 @@
             android:id="@+id/btn_show_more"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
             android:background="?attr/selectableItemBackground"
             android:clickable="true"
             android:focusable="true"
-            android:textAlignment="center"
-            android:layout_marginTop="5dp"
             android:text="@string/waypoint_show_more"
+            android:textAlignment="center"
             android:textColor="@color/themeColor"
             android:textStyle="bold"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tv_waypoint_description" />
 
+        <TextView
+            android:id="@+id/tv_image_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="@string/waypoint_image_title"
+            android:textColor="@color/textColorGrey"
+            android:textSize="16sp"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/btn_show_more" />
+
+        <View
+            android:id="@+id/vertical_image_view"
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_marginTop="1dp"
+            android:background="@color/themeColor"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_image_title" />
+
+
+        <ImageView
+            android:id="@+id/iv_image_preview"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_marginTop="10dp"
+            android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@+id/vertical_image_view" />
+
+        <TextView
+            android:id="@+id/tv_video_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="@string/waypoint_video_title"
+            android:textColor="@color/textColorGrey"
+            android:textSize="16sp"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/iv_image_preview" />
+
+        <View
+            android:id="@+id/vertical_video_view"
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_marginTop="1dp"
+            android:background="@color/themeColor"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_video_title" />
+
+        <VideoView
+            android:id="@+id/iv_video_preview"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_marginTop="10dp"
+            android:visibility="gone"
+            app:layout_constraintTop_toBottomOf="@+id/vertical_video_view"
+            tools:layout_editor_absoluteX="0dp" />
+
+        <TextView
+            android:id="@+id/tv_audio_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="@string/waypoint_audio_title"
+            android:textColor="@color/textColorGrey"
+            android:textSize="16sp"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/iv_video_preview" />
+
+        <View
+            android:id="@+id/vertical_audio_view"
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_marginTop="1dp"
+            android:background="@color/themeColor"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_audio_title" />
+
+        <com.keenfin.audioview.AudioView
+            android:id="@+id/iv_audio_preview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/vertical_audio_view"
+            app:minified="true"
+            app:primaryColor="@color/highlightColor"
+            app:selectControls="false"
+            app:showTitle="false" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="10dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

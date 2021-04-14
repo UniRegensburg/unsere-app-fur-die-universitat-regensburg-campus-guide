@@ -10,6 +10,7 @@ import com.crazylegend.viewbinding.viewBinding
 import de.ur.explure.R
 import de.ur.explure.databinding.DialogSingleWaypointBinding
 import de.ur.explure.extensions.isEllipsized
+import de.ur.explure.model.waypoint.WayPoint
 import de.ur.explure.viewmodel.SingleWaypointViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -27,12 +28,15 @@ class SingleWaypointDialogFragment : DialogFragment(R.layout.dialog_single_waypo
         )
     }
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        viewModel.setWayPoint(navArgs.waypoint)
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initObservers()
         initClickListeners()
-        initShowMoreButton()
-        viewModel.setWayPoint(navArgs.waypoint)
     }
 
     private fun initObservers() {
@@ -48,8 +52,40 @@ class SingleWaypointDialogFragment : DialogFragment(R.layout.dialog_single_waypo
             wayPoint?.run {
                 setTitle(wayPoint.title)
                 setDescription(wayPoint.description)
+                setMediaViews(wayPoint)
+                initShowMoreButton()
             }
         })
+    }
+
+    private fun setMediaViews(waypoint: WayPoint) {
+        if (!waypoint.audioURL.isNullOrEmpty()) {
+            showAudioView()
+        }
+        if (!waypoint.videoURL.isNullOrEmpty()) {
+            showVideoView()
+        }
+        if (!waypoint.imageURL.isNullOrEmpty()) {
+            showImageView()
+        }
+    }
+
+    private fun showImageView(){
+        binding.tvImageTitle.visibility = View.VISIBLE
+        binding.verticalImageView.visibility = View.VISIBLE
+        binding.ivImagePreview.visibility = View.VISIBLE
+    }
+
+    private fun showVideoView(){
+        binding.tvVideoTitle.visibility = View.VISIBLE
+        binding.verticalVideoView.visibility = View.VISIBLE
+        binding.ivVideoPreview.visibility = View.VISIBLE
+    }
+
+    private fun showAudioView(){
+        binding.tvAudioTitle.visibility = View.VISIBLE
+        binding.verticalAudioView.visibility = View.VISIBLE
+        binding.ivAudioPreview.visibility = View.VISIBLE
     }
 
     private fun initShowMoreClickListener() {

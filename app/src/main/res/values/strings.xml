@@ -274,5 +274,8 @@
     <string name="waypoint_empty_description">No description available</string>
     <string name="waypoint_show_more">Show more</string>
     <string name="waypoint_show_less">Show less</string>
+    <string name="waypoint_image_title">Image</string>
+    <string name="waypoint_video_title">Video</string>
+    <string name="waypoint_audio_title">Audio</string>
 
 </resources>
