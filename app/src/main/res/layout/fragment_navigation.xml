@@ -26,7 +26,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/margin_normal"
-        android:text="Navigation starten"
+        android:text="@string/start_navigation"
         app:elevation="16dp"
         app:icon="@drawable/ic_navigation_24"
         app:iconSize="32dp"
@@ -45,28 +45,36 @@
         mapbox:mapbox_cameraZoom="14"
         mapbox:mapbox_cameraZoomMin="13" />
 
+    <!-- set a higher elevation so it won't overlap with the bottomsheet -->
     <com.mapbox.navigation.ui.instruction.InstructionView
         android:id="@+id/instructionView"
+        style="@style/CustomInstructionView"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:elevation="12dp"
         android:visibility="invisible"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/bottomSheetCoordinator"
+        app:layout_constraintVertical_bias="0.0"
         tools:visibility="visible" />
 
     <com.mapbox.navigation.ui.RecenterButton
         android:id="@+id/recenterBtn"
+        style="@style/CustomRecenterButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="12dp"
+        android:layout_marginHorizontal="@dimen/mapbox_dimen_8dp"
         android:paddingTop="@dimen/mapbox_dimen_8dp"
+        android:paddingBottom="@dimen/mapbox_dimen_8dp"
         android:visibility="invisible"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
 
     <com.mapbox.navigation.ui.map.WayNameView
         android:id="@+id/wayNameView"
+        style="@style/CustomWayNameView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:visibility="invisible"
@@ -84,6 +92,7 @@
 
         <com.mapbox.navigation.ui.summary.SummaryBottomSheet
             android:id="@+id/summaryBottomSheet"
+            style="@style/CustomSummaryBottomSheet"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior" />

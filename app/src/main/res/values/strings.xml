@@ -115,6 +115,7 @@
     <string name="attention">Attention!</string>
     <string name="leave_route_creation_warning">Do you want to leave the route creation mode? Your current progress will be lost!</string>
     <string name="leave_route_editing_warning">If you leave now, this route will not be saved and you lose your progress! Do you really want to go back?</string>
+    <string name="leave_navigation_warning">Do you want to leave the navigation? Your current route progress will be lost!</string>
     <string name="change_style_during_route_creation">Unfortunately, it isn\'t possible to change the map style during route creation!</string>
     <string name="delete_waypoint_confirmation">Do you really want to delete this waypoint?</string>
     <string name="delete_marker_confirmation">Do you really want to delete this marker?</string>
@@ -142,6 +143,7 @@
     <string name="route_draw_confirm_option">Do you want to use your own route or the automatically generated route?</string>
     <string name="use_own_route">Own Route</string>
     <string name="use_map_matching">Generated Route</string>
+    <string name="start_navigation">Navigation starten</string>
 
     <!--Test Strings-->
     <string name="lorem_ipsum">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.  </string>

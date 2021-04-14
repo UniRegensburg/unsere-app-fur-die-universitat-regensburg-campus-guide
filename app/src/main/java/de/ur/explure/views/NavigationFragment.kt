@@ -1,22 +1,25 @@
 @file:Suppress("MagicNumber")
-
 package de.ur.explure.views
 
 import android.annotation.SuppressLint
 import android.location.Location
 import android.os.Bundle
+import android.view.Gravity
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
-import android.view.ViewTreeObserver
 import android.widget.ImageButton
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.addCallback
 import androidx.appcompat.widget.AppCompatImageButton
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.crazylegend.viewbinding.viewBinding
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.mapbox.android.core.location.LocationEngine
 import com.mapbox.android.core.permissions.PermissionsManager
@@ -79,20 +82,7 @@ import org.koin.core.parameter.parametersOf
 import timber.log.Timber
 
 /**
- * TODO bei drehung wird wieder die original karte dargestellt!!! -> liegt das am Event() ??
- */
-
-/**
- * TODO um den mapstyle während der navigation zu ändern muss nur das gemacht werden:
- * navigationMapboxMap?.retrieveMap()?.setStyle(...)
- */
-
-/**
  * TODO show waypoint markers only if the user is near them!! otherwise we would probably the navigation completely!
- */
-
-/**
- * TODO vllt sinnvoll auch die directionsRoute als Polyline string in der datenbank gleich zu speichern für mapMatching?
  */
 
 /**
@@ -106,6 +96,8 @@ class NavigationFragment : Fragment(R.layout.fragment_navigation), MapHelper.Map
 
     private val binding by viewBinding(FragmentNavigationBinding::bind)
     private val navigationViewModel: NavigationViewModel by viewModel(state = emptyState())
+
+    private var backPressedCallback: OnBackPressedCallback? = null
 
     // arguments
     private val args: NavigationFragmentArgs by navArgs()
@@ -133,7 +125,7 @@ class NavigationFragment : Fragment(R.layout.fragment_navigation), MapHelper.Map
     private val replayProgressObserver = ReplayProgressObserver(mapboxReplayer)
     private val replayLocationEngine = ReplayLocationEngine(mapboxReplayer)
     private val replayRouteMapper = ReplayRouteMapper()
-    private var shouldSimulateRoute: Boolean = true // TODO for debugging and demo only
+    private var shouldSimulateRoute: Boolean = false // TODO for debugging and demo only
 
     // SharedPrefs
     private val preferencesManager: SharedPreferencesManager by inject()
@@ -164,16 +156,14 @@ class NavigationFragment : Fragment(R.layout.fragment_navigation), MapHelper.Map
         override fun onSessionStateChanged(tripSessionState: TripSessionState) {
             when (tripSessionState) {
                 TripSessionState.STARTED -> {
-                    // Todo stop location updates and start in STopped again because navigation has
-                    //  own location updates?
-                    updateViews(TripSessionState.STARTED)
+                    updateNavigationViews(TripSessionState.STARTED)
 
                     navigationMapboxMap?.addOnWayNameChangedListener(this@NavigationFragment)
                     navigationMapboxMap?.updateWaynameQueryMap(true)
                 }
 
                 TripSessionState.STOPPED -> {
-                    updateViews(TripSessionState.STOPPED)
+                    updateNavigationViews(TripSessionState.STOPPED)
 
                     if (mapboxNavigation.getRoutes().isNotEmpty()) {
                         navigationMapboxMap?.hideRoute()
@@ -243,12 +233,21 @@ class NavigationFragment : Fragment(R.layout.fragment_navigation), MapHelper.Map
          * RouteProgress.currentState() will equal RouteProgressState.ROUTE_ARRIVED
          */
         override fun onFinalDestinationArrival(routeProgress: RouteProgress) {
-            showSnackbar(requireActivity(), "Ziel erreicht!", colorRes = R.color.themeColor)
+            showSnackbar(
+                requireActivity(),
+                "Gut gemacht! Du hast das Ziel erreicht!",
+                colorRes = R.color.themeColor
+            )
+
+            // TODO show dialog fragment and give user the option to rate this route!
         }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        // lock the screen rotation, sry :(
+        // activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_NOSENSOR
+
         setHasOptionsMenu(true)
 
         // TODO for testing only:
@@ -264,10 +263,9 @@ class NavigationFragment : Fragment(R.layout.fragment_navigation), MapHelper.Map
         route = args.route
         // val routeCoordinates = route. // TODO
         val routeWayPoints = route.wayPoints
-        val routeDuration = route.duration
-        val routeDistance = route.distance
 
         setupViewModelObservers()
+        setupBackButtonClickObserver()
 
         // init map
         mapView = binding.mapView
@@ -287,32 +285,37 @@ class NavigationFragment : Fragment(R.layout.fragment_navigation), MapHelper.Map
 
         // create a navigable route
         generateRoute()
+    }
 
-        /**
-        navigationViewModel.leaveNavigationMode()
-        findNavController().navigateUp()
-         */
+    private fun setupBackButtonClickObserver() {
+        // This callback will show an alert dialog when the back button is pressed
+        backPressedCallback = activity?.onBackPressedDispatcher?.addCallback(
+            viewLifecycleOwner,
+            enabled = false // not enabled at the start!
+        ) {
+            showCancelNavigationWarning()
+        }
     }
 
     private fun setupViewModelObservers() {
         navigationViewModel.inNavigationMode.observe(viewLifecycleOwner, EventObserver { active ->
             if (active) {
+                backPressedCallback?.isEnabled = true
+
                 if (shouldSimulateRoute) {
                     setupNavUI()
                     startSimulation()
-                    Toast.makeText(requireActivity(), "Starting simulation", Toast.LENGTH_SHORT).show()
                 } else {
-                    Toast.makeText(requireActivity(), "Preparing navigation", Toast.LENGTH_SHORT).show()
                     prepareNavigation()
                 }
             } else {
+                backPressedCallback?.isEnabled = false
                 setupInitialUI()
             }
         })
         navigationViewModel.locationPermissionGranted.observe(viewLifecycleOwner) { granted ->
             if (granted && navigationViewModel.inNavigationMode()) {
                 setupNavUI()
-                Toast.makeText(requireActivity(), "Starting navigation", Toast.LENGTH_SHORT).show()
                 startNavigation()
             }
         }
@@ -343,6 +346,10 @@ class NavigationFragment : Fragment(R.layout.fragment_navigation), MapHelper.Map
             setArrivalController(arrivalController)
             registerArrivalObserver(arrivalObserver)
         }
+        // disable off-route detection for now because we don't want new routes when leaving the route
+        // see https://docs.mapbox.com/android/navigation/guides/off-route/
+        // ! Could later be used to inform the user that he is no longer on the route
+        mapboxNavigation.setRerouteController(null)
     }
 
     private fun setupInitialUI() {
@@ -400,7 +407,7 @@ class NavigationFragment : Fragment(R.layout.fragment_navigation), MapHelper.Map
          */
         cancelBtn = requireView().findViewById(R.id.cancelBtn)
         cancelBtn.setOnClickListener {
-            mapboxNavigation.stopTripSession()
+            showCancelNavigationWarning()
         }
 
         binding.recenterBtn.apply {
@@ -419,13 +426,27 @@ class NavigationFragment : Fragment(R.layout.fragment_navigation), MapHelper.Map
             visibility = View.GONE
         }
 
-        // remove the initial map overlays after starting the route
+        // remove the initial route overlay after starting the route
         mapHelper.routeLineManager?.removeMapMatching()
-        routeDestinationMarker?.let { mapHelper.markerManager.deleteMarker(it) } // TODO oder den lassen?
+        // routeDestinationMarker?.let { mapHelper.markerManager.deleteMarker(it) }
+    }
+
+    private fun showCancelNavigationWarning() {
+        with(MaterialAlertDialogBuilder(requireActivity())) {
+            setMessage(R.string.leave_navigation_warning)
+            setPositiveButton(R.string.yes) { _, _ ->
+                navigationViewModel.leaveNavigationMode()
+                findNavController().navigateUp()
+            }
+            setNegativeButton(R.string.no) { _, _ -> }
+            show()
+        }
     }
 
     override fun onMapLoaded(map: MapboxMap) {
-        // not needed
+        // adjust the compass position
+        map.uiSettings.compassGravity = Gravity.BOTTOM or Gravity.START
+        map.uiSettings.setCompassMargins(compassMarginLeft, 0, 0, compassMarginBottom)
     }
 
     override fun onMapStyleLoaded(mapStyle: Style) {
@@ -435,7 +456,8 @@ class NavigationFragment : Fragment(R.layout.fragment_navigation), MapHelper.Map
             // setup navigation ui sdk (some parts of it are needed)
             navigationMapboxMap =
                 NavigationMapboxMap.Builder(mapview, mapHelper.map, viewLifecycleOwner)
-                    .useSpecializedLocationLayer(true) // Todo das macht das icon glaub ich?
+                    .withSourceTolerance(0.001f) // TODO play with different values !
+                    .useSpecializedLocationLayer(true)
                     .vanishRouteLineEnabled(true)
                     .build().apply {
                         addProgressChangeListener(mapboxNavigation)
@@ -451,21 +473,23 @@ class NavigationFragment : Fragment(R.layout.fragment_navigation), MapHelper.Map
             navigationMapRoute =
                 NavigationMapRoute.Builder(mapview, mapHelper.map, viewLifecycleOwner)
                     .withVanishRouteLineEnabled(true)
+                    .withStyle(styleRes)
                     // .withMapboxNavigation(mapboxNavigation)
                     .build()  // FIXME: Crash: Source mapbox-navigation-waypoint-source already exists
 
             // navigationMapRoute.addRoutes(TODO())
         }*/
 
+        // add a destination marker to the end
+        val lastRoutePoint = routeCoordinates.last()
+        routeDestinationMarker = mapHelper.markerManager.addMarker(
+            lastRoutePoint.toLatLng(),
+            MarkerManager.DESTINATION_ICON
+        )
+
         if (!navigationViewModel.inNavigationMode()) {
             // if not in navigation mode show the route on the map
             mapHelper.routeLineManager?.addLineToMap(routeCoordinates)
-            // and add a destination marker to the end
-            val lastRoutePoint = routeCoordinates.last()
-            routeDestinationMarker = mapHelper.markerManager.addMarker(
-                lastRoutePoint.toLatLng(),
-                MarkerManager.DESTINATION_ICON
-            )
         }
     }
 
@@ -493,8 +517,6 @@ class NavigationFragment : Fragment(R.layout.fragment_navigation), MapHelper.Map
         updateCameraOnNavigationStateChange(true)
         navigationMapboxMap?.startCamera(route)
         mapboxNavigation.startTripSession()
-
-        // TODO stop own location updates for navigation??
     }
 
     // TODO das hier in onMapStyle, falls die directionsRoute schon existiert, aufrufen ?
@@ -503,7 +525,7 @@ class NavigationFragment : Fragment(R.layout.fragment_navigation), MapHelper.Map
         navigationViewModel.directionsRoute?.let {
             mapboxNavigation.setRoutes(listOf(it))
             navigationMapboxMap?.addProgressChangeListener(mapboxNavigation)
-            navigationMapboxMap?.startCamera(mapboxNavigation.getRoutes()[0])
+            navigationMapboxMap?.startCamera(it)
             updateCameraOnNavigationStateChange(true)
             mapboxNavigation.startTripSession()
         }
@@ -513,8 +535,18 @@ class NavigationFragment : Fragment(R.layout.fragment_navigation), MapHelper.Map
         val route = navigationViewModel.directionsRoute ?: return
         mapboxNavigation.navigationOptions.toBuilder().locationEngine(getLocationEngine())
 
+        mapboxReplayer.clearEvents()
+
         mapboxNavigation.registerRouteProgressObserver(ReplayProgressObserver(mapboxReplayer))
         mapboxReplayer.pushRealLocation(requireContext(), 0.0) // TODO originPoint stattdessen?
+
+        /*
+        mapboxReplayer.apply {
+            val replayEvents = ReplayRouteMapper().mapGeometry(directionsRoute.geometry()!!)
+            pushEvents(replayEvents)
+            seekTo(replayEvents.first())
+        }
+        */
 
         // TODO oder:
         /*
@@ -542,6 +574,24 @@ class NavigationFragment : Fragment(R.layout.fragment_navigation), MapHelper.Map
         }
     }
 
+    private fun updateNavigationViews(tripSessionState: TripSessionState) {
+        when (tripSessionState) {
+            TripSessionState.STARTED -> {
+                binding.summaryBottomSheet.visibility = View.VISIBLE
+                binding.recenterBtn.hide()
+                binding.instructionView.visibility = View.VISIBLE
+                // instructionSoundButton.show()
+            }
+            TripSessionState.STOPPED -> {
+                binding.summaryBottomSheet.visibility = View.GONE
+                binding.recenterBtn.hide()
+                hideWayNameView()
+                binding.instructionView.visibility = View.GONE
+                // instructionSoundButton.hide()
+            }
+        }
+    }
+
     override fun onWayNameChanged(wayName: String) {
         binding.wayNameView.updateWayNameText(wayName)
         if (summaryBehavior.state == BottomSheetBehavior.STATE_HIDDEN) {
@@ -549,51 +599,6 @@ class NavigationFragment : Fragment(R.layout.fragment_navigation), MapHelper.Map
         } else {
             showWayNameView()
         }
-    }
-
-    private fun updateViews(tripSessionState: TripSessionState) {
-        when (tripSessionState) {
-            TripSessionState.STARTED -> {
-                binding.summaryBottomSheet.visibility = View.VISIBLE
-                binding.recenterBtn.hide()
-
-                binding.instructionView.visibility = View.VISIBLE
-                // feedbackButton.show()
-                // instructionSoundButton.show()
-                showLogoAndAttribution()
-            }
-            TripSessionState.STOPPED -> {
-                binding.summaryBottomSheet.visibility = View.GONE
-                binding.recenterBtn.hide()
-                hideWayNameView()
-
-                binding.instructionView.visibility = View.GONE
-                // feedbackButton.hide()
-                // instructionSoundButton.hide()
-            }
-        }
-    }
-
-    private fun showLogoAndAttribution() {
-        // move the mapbox logo and attribution above the bottom sheet so they will still be shown!
-        binding.summaryBottomSheet.viewTreeObserver.addOnGlobalLayoutListener(
-            object : ViewTreeObserver.OnGlobalLayoutListener {
-                override fun onGlobalLayout() {
-                    navigationMapboxMap?.retrieveMap()?.uiSettings?.apply {
-                        val bottomMargin = binding.summaryBottomSheet.measuredHeight
-                        setLogoMargins(logoMarginLeft, logoMarginTop, logoMarginRight, bottomMargin)
-                        setAttributionMargins(
-                            attributionMarginLeft,
-                            attributionMarginTop,
-                            attributionMarginRight,
-                            bottomMargin
-                        )
-                    }
-                    // remove to prevent leaks!
-                    binding.summaryBottomSheet.viewTreeObserver.removeOnGlobalLayoutListener(this)
-                }
-            }
-        )
     }
 
     private fun showWayNameView() {
@@ -824,7 +829,6 @@ class NavigationFragment : Fragment(R.layout.fragment_navigation), MapHelper.Map
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         menu.clear()
         inflater.inflate(R.menu.menu_navigation, menu)
-
         menu.findItem(R.id.show3dBuildings).isChecked = preferencesManager.getBuildingExtrusionShown()
     }
 
@@ -841,32 +845,20 @@ class NavigationFragment : Fragment(R.layout.fragment_navigation), MapHelper.Map
         }
     }
 
-    override fun onStart() {
-        super.onStart()
-        /*
-        mapboxNavigation.run {
-            startTripSession()
-            registerArrivalObserver(arrivalObserver)
-            registerTripSessionStateObserver(tripSessionStateObserver)
-            registerRouteProgressObserver(routeProgressObserver)
-            registerLocationObserver(locationObserver)
-        }*/
-    }
+    /**
+     * Lifecycle
+     */
 
     override fun onStop() {
         super.onStop()
         // TODO save current navigation state and progress!
-        //  -> is saving the camera position necessary ?
+        // -> bottom sheet and instructionView as well as waypointName! And user position!!
+        //  -> is saving the camera position necessary too?
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
         mapView?.onSaveInstanceState(outState)
-
-        // This is not the most efficient way to preserve the route on a device rotation.
-        // This is here to demonstrate that this event needs to be handled in order to
-        // redraw the route line after a rotation.
-        // TODO save current route in viewmodel with saved state handle instead!
         navigationViewModel.directionsRoute?.let {
             outState.putString(ROUTE_BUNDLE_KEY, it.toJson())
         }
@@ -888,22 +880,27 @@ class NavigationFragment : Fragment(R.layout.fragment_navigation), MapHelper.Map
         super.onDestroyView()
 
         // cleanup
-        mapboxReplayer.finish()
         navigationMapboxMap?.removeProgressChangeListener()
+        mapboxReplayer.finish()
+
         mapboxNavigation.run {
             unregisterArrivalObserver(arrivalObserver)
             unregisterTripSessionStateObserver(tripSessionStateObserver)
             unregisterRouteProgressObserver(routeProgressObserver)
             unregisterBannerInstructionsObserver(bannerInstructionObserver)
-            stopTripSession() // TODO crashes ??
+            stopTripSession() // TODO causes crash in updateCameraOnNavigationStateChange sometimes?
             onDestroy()
         }
 
+        backPressedCallback?.remove()
         gpsWarning?.dismiss()
         navIntroSnackbar?.dismiss()
     }
 
     companion object {
         const val ROUTE_BUNDLE_KEY = "routeBundleKey"
+        // custom margins of the mapbox compass
+        private const val compassMarginLeft = 10
+        private const val compassMarginBottom = 200
     }
 }
