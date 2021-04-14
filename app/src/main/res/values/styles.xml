@@ -199,7 +199,7 @@
         <!-- Color of primary route shield
         <item name="routeShieldColor">@color/mapbox_navigation_route_shield_layer_color</item>
         -->
-        <item name="routeCasingColor">@color/themeColor</item>
+        <item name="routeCasingColor">@color/themeColorDark</item>
         <item name="routeLineCasingTraveledColor">@color/colorTransparentGrey</item>
         <!-- Color of primary route traveled -->
         <item name="routeLineTraveledColor">@color/colorTransparentGrey</item>

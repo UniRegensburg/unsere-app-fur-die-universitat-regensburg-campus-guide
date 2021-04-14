@@ -17,10 +17,13 @@ import com.mapbox.mapboxsdk.plugins.annotation.Symbol
 import com.mapbox.mapboxsdk.plugins.annotation.SymbolManager
 import com.mapbox.mapboxsdk.plugins.annotation.SymbolOptions
 import com.mapbox.mapboxsdk.style.layers.Property
+import com.mapbox.mapboxsdk.utils.ColorUtils
 import de.ur.explure.R
 import de.ur.explure.extensions.moveCameraToPosition
 import de.ur.explure.extensions.toLatLng
+import de.ur.explure.model.waypoint.WayPoint
 import de.ur.explure.model.waypoint.WayPointDTO
+import java.util.*
 
 // use the application context instead of the activity context to make sure it doesn't leak memory,
 // see https://proandroiddev.com/everything-you-need-to-know-about-memory-leaks-in-android-d7a59faaf46a
@@ -48,6 +51,8 @@ class MarkerManager(
     // TODO for testing: this list size should ALWAYS equal the routeWaypoints list size in the editViewmodel!
     private var activeWaypoints: MutableMap<Symbol, WayPointDTO> = mutableMapOf() // only used in editRouteFragment
 
+    private var navigationWaypoints: MutableMap<Symbol, WayPoint> = mutableMapOf() // only used in navigationFragment
+
     init {
         initMapSymbols()
     }
@@ -65,6 +70,39 @@ class MarkerManager(
 
     fun setMarkerEditListener(listener: MarkerEditListener) {
         markerEditListener = listener
+    }
+
+    fun setupNavigationWaypoints(waypoints: LinkedList<WayPoint>, onClick: (waypoint: WayPoint) -> Unit) {
+        waypoints.forEach {
+            createNavigationPoint(it)
+        }
+
+        symbolManager.addClickListener { clickedSymbol ->
+            val wayPoint = navigationWaypoints[clickedSymbol]
+            if (wayPoint != null) {
+                onClick(wayPoint)
+            }
+            true
+        }
+    }
+
+    private fun createNavigationPoint(waypoint: WayPoint, icon: String = MARKER_ICON): Symbol? {
+        val wayPointSymbol = symbolManager.create(
+            SymbolOptions()
+                .withLatLng(waypoint.geoPoint.toLatLng())
+                .withIconImage(icon)
+                .withIconAnchor(Property.ICON_ANCHOR_BOTTOM)
+                .withIconSize(1.0f)
+                .withTextField(waypoint.title)
+                .withTextColor(ColorUtils.colorToRgbaString(context.getColor(R.color.colorInfo)))
+                // .withTextHaloColor(ColorUtils.colorToRgbaString(context.getColor(R.color.backgroundColor)))
+                // .withTextHaloWidth(20f)
+                .withTextAnchor(Property.TEXT_ANCHOR_BOTTOM)
+                .withDraggable(false)
+        )
+
+        navigationWaypoints[wayPointSymbol] = waypoint
+        return wayPointSymbol
     }
 
     /**
@@ -199,6 +237,7 @@ class MarkerManager(
         symbolManager.deleteAll()
         activeMarkers.clear()
         activeWaypoints.clear()
+        navigationWaypoints.clear()
     }
 
     fun setDefaultMarkerClickListenerBehavior() {
