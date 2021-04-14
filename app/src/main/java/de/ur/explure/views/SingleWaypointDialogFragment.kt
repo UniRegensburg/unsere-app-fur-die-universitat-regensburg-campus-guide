@@ -12,6 +12,7 @@ import de.ur.explure.databinding.DialogSingleWaypointBinding
 import de.ur.explure.extensions.isEllipsized
 import de.ur.explure.model.waypoint.WayPoint
 import de.ur.explure.viewmodel.SingleWaypointViewModel
+import org.koin.android.ext.android.bind
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SingleWaypointDialogFragment : DialogFragment(R.layout.dialog_single_waypoint) {
@@ -45,6 +46,13 @@ class SingleWaypointDialogFragment : DialogFragment(R.layout.dialog_single_waypo
 
     private fun initClickListeners() {
         initShowMoreClickListener()
+        initDimissClickListener()
+    }
+
+    private fun initDimissClickListener() {
+        binding.tvBackBtn.setOnClickListener {
+            dismiss()
+        }
     }
 
     private fun initWayPointObserver() {
