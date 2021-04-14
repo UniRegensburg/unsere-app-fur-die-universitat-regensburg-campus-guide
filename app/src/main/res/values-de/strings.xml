@@ -272,5 +272,6 @@
     <string name="create_button">Profil erstellen</string>
     <string name="empty_username">Bitte Benutzernamen eingeben</string>
     <string name="user_data_error">Beim Erstellen deines Profiles ist etwas schief gelaufen, bitte versuche es später wieder.</string>
+    <string name="anonymous_user_error">Leider kannst du diese Funktion ohne Account nicht nutzen. Erstelle einen und versuchen es dann noch mal.</string>
 
 </resources>
