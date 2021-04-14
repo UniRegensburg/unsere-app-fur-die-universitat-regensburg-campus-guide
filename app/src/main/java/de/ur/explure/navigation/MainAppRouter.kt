@@ -167,6 +167,10 @@ class MainAppRouter {
     }
 
     fun navigateToSaveRouteFragment(action: NavDirections) {
-            navController.navigate(action)
+        navController.navigate(action)
+    }
+
+    fun popUpToDiscover() {
+        navController.popBackStack(R.id.discoverFragment, false)
     }
 }
