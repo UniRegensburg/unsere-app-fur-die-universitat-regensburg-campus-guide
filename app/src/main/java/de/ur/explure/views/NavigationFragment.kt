@@ -63,6 +63,7 @@ import com.mapbox.navigation.ui.summary.SummaryBottomSheet
 import de.ur.explure.R
 import de.ur.explure.databinding.FragmentNavigationBinding
 import de.ur.explure.extensions.toLatLng
+import de.ur.explure.extensions.toPoint
 import de.ur.explure.map.LocationManager
 import de.ur.explure.map.MapHelper
 import de.ur.explure.map.MarkerManager
@@ -85,7 +86,8 @@ import timber.log.Timber
 import java.util.*
 
 /**
- * TODO show waypoint markers only if the user is near them!! otherwise we would probably the navigation completely!
+ * TODO show waypoint markers only if the user is near them!! otherwise we would probably clutter
+ * the navigation completely!
  */
 
 /**
@@ -266,6 +268,7 @@ class NavigationFragment : Fragment(R.layout.fragment_navigation), MapHelper.Map
         setHasOptionsMenu(true)
 
         // TODO for testing only:
+        /*
         routeCoordinates = listOf<Point>(
             Point.fromLngLat(12.091897088615497, 48.9986755276432),
             Point.fromLngLat(12.093398779683042, 48.99790078797133),
@@ -273,10 +276,10 @@ class NavigationFragment : Fragment(R.layout.fragment_navigation), MapHelper.Map
             Point.fromLngLat(12.095045596693524, 48.99696500867813),
             Point.fromLngLat(12.092009249797059, 48.996774307308414),
             Point.fromLngLat(12.091600540864277, 48.99278790637206),
-        )
+        )*/
 
         route = args.route
-        // val routeCoordinates = route. // TODO
+        routeCoordinates = route.routeCoordinates.map { it.toPoint() }
         routeWayPoints = route.wayPoints
 
         setupViewModelObservers()

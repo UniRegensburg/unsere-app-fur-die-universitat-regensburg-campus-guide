@@ -554,7 +554,6 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route),
         }
     }
 
-    // TODO almost identical to the code in the saveRouteFragment
     private fun initWayPointEditObserver() {
         val navBackStackEntry = findNavController().getBackStackEntry(R.id.editRouteFragment)
 
@@ -739,10 +738,6 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route),
     }
 
     companion object {
-        // in m/s, see https://en.wikipedia.org/wiki/Preferred_walking_speed
-        private const val WALKING_SPEED = 1.4
-        // private const val WALKING_SPEED = 0.83 // Spaziergang
-
         private const val CALLOUT_SOURCE_ID = "mapbox.poi.callout_source"
         private const val CALLOUT_LAYER_ID = "mapbox.poi.callout_layer"
         const val PROPERTY_SELECTED = "selectedStatus"

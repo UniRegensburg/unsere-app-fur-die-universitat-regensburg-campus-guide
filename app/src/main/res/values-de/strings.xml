@@ -75,11 +75,6 @@
     <string name="action_menu_tutorial_title">Aktionsmöglichkeiten während der Routenerstellung</string>
     <string name="action_menu_tutorial_description">Hier findest du nützliche Aktionsmöglichkeiten während der Routenerstellung. Du kannst die Routenerstellung abbrechen (x - Symbol), versuchen deine erstellte Route und deine Wegpunkte automatisch an bekannte Wege auf dem Campus anzugleichen (Magnet - Symbol) oder die erstellte Route bestätigen und mit dem nächsten Schritt weitermachen (Haken - Symbol).</string>
 
-    <string name="no_routes">Zu diesem Ziel gibt es keine verfügbaren Routen</string>
-    <string name="steps_in_route">Diese Route besteht aus %1$d Schritten</string>
-    <string name="route_request_failed">Die Routenanfrage ist fehlgeschlagen</string>
-
-
     <!-- Route Creation -->
     <string name="route_creation_options">Es gibt 3 Möglichkeiten, um Routen zu erstellen:
         \n<ul>

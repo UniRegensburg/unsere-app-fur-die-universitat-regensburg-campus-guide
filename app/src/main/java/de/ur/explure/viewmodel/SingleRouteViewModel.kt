@@ -1,8 +1,7 @@
 package de.ur.explure.viewmodel
 
-import android.content.Intent
-import androidx.core.content.ContextCompat.startActivity
 import android.content.Context
+import android.content.Intent
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
