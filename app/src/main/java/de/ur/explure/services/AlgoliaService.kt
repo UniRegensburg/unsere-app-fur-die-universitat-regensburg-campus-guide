@@ -26,7 +26,6 @@ class AlgoliaService {
         val json = listOf(
             json {
                 OBJECT_ID_FIELD to routeID
-                ROUTE_ID_FIELD to routeID
                 TITLE_FIELD to routeTitle
                 DESCRIPTION_FIELD to routeDescr
             }
@@ -40,7 +39,6 @@ class AlgoliaService {
         private const val INDEX_NAME = "listOfRoutes"
 
         private const val OBJECT_ID_FIELD = "objectID"
-        private const val ROUTE_ID_FIELD = "routeID"
         private const val TITLE_FIELD = "title"
         private const val DESCRIPTION_FIELD = "description"
     }
