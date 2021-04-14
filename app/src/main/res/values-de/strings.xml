@@ -75,6 +75,11 @@
     <string name="action_menu_tutorial_title">Aktionsmöglichkeiten während der Routenerstellung</string>
     <string name="action_menu_tutorial_description">Hier findest du nützliche Aktionsmöglichkeiten während der Routenerstellung. Du kannst die Routenerstellung abbrechen (x - Symbol), versuchen deine erstellte Route und deine Wegpunkte automatisch an bekannte Wege auf dem Campus anzugleichen (Magnet - Symbol) oder die erstellte Route bestätigen und mit dem nächsten Schritt weitermachen (Haken - Symbol).</string>
 
+    <string name="no_routes">Zu diesem Ziel gibt es keine verfügbaren Routen</string>
+    <string name="steps_in_route">Diese Route besteht aus %1$d Schritten</string>
+    <string name="route_request_failed">Die Routenanfrage ist fehlgeschlagen</string>
+
+
     <!-- Route Creation -->
     <string name="route_creation_options">Es gibt 3 Möglichkeiten, um Routen zu erstellen:
         \n<ul>
@@ -122,6 +127,7 @@
     <string name="too_few_waypoints">Es müssen sich mindestens 2 Wegpunkte auf der Karte befinden, damit eine Route erstellt werden kann!</string>
     <string name="too_many_waypoints">Leider kann aktuell keine Route mit so vielen Wegpunkten erstellt werden! Bitte versuche ein paar unnötige Punkte zu entfernen.</string>
     <string name="no_route_found">Es wurde keine Route gefunden! Du musst erst eine Route erstellen bevor du fortfahren kannst!</string>
+    <string name="not_yet_implemented">"Dieses Feature ist leider noch nicht implementiert!"</string>
     <string name="confirm_route_creation_warning">Wenn du zum nächsten Schritt der Routenerstellung übergehst und dann wieder zurückkehrst, musst du von vorne mit der Routenerstellung beginnen! Trotzdem fortfahren?</string>
 
     <!-- Buttons and Options -->
@@ -142,18 +148,11 @@
     <string name="confirm">Bestätigen</string>
     <string name="abort">Abbrechen</string>
 
-    <string name="route_item_title">Route Name</string>
-    <string name="route_item_rating">(%1d)</string>
-    <string name="route_item_waypoints">0</string>
-    <string name="route_item_distance">%1d km</string>
-    <string name="route_item_duration">%1d h</string>
-    <string name="route_item_author">von %1s</string>
-
     <!-- Authentication -->
     <string name="login_email">Email</string>
     <string name="login_password">Passwort</string>
     <string name="login_button">Anmelden</string>
-    <string name="login_text">Anmelden</string>
+    <string name="login_text">ExplURe</string>
     <string name="tv_register">Registrieren?</string>
     <string name="reset_password">Passwort vergessen?</string>
     <string name="or_text">oder</string>
@@ -161,7 +160,6 @@
     <string name="enter_email">Bitte Emailadresse eingeben</string>
     <string name="no_account">Noch kein Account?</string>
     <string name="sign_up_button">Registrieren?</string>
-    <string name="register_text">Registrieren</string>
     <string name="new_email">Email</string>
     <string name="new_password">Passwort</string>
     <string name="confirm_password">Bestätige Passwort</string>
@@ -200,6 +198,8 @@
     <string name="hide_answers">Antworten verstecken</string>
     <string name="answer_input">Antwort</string>
     <string name="empty_answer">Bitte Antwort eingeben</string>
+    <string name="single_route_error">Beim Laden der Routendaten ist etwas schief gelaufen, bitte versuche es später wieder.</string>
+
     <string name="delete_answer">Antwort löschen?</string>
     <string name="answer_deleted">Antwort wurde gelöscht</string>
     <string name="delete_answer_failed">Antwort konnte nicht gelöscht werden, bitte versuche es später noch einmal</string>
@@ -219,17 +219,17 @@
     <string name="short_text_placeholder">abcde</string>
     <string name="middle_text_placeholder">ABCDEFGHIJKL</string>
     <string name="route_search_hint">Suche</string>
+    <string name="share_text">Hey, ich habe diese Route auf ExplURe gefunden: \n \n%1$s \n%2$d Wegpunkte \nDauer: %3$d min \nLänge: %4$d m \n \n%5$s \n \nKlicke auf den Link, um sie in deiner ExplURe App anzusehen. &#128506;</string>
+    <string name="share_option">Senden mit:</string>
 
     <!--Test Strings-->
     <string name="lorem_ipsum">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.  </string>
-    <string name="arbeits_button">Arbeiten</string>
-
 
     <!--Create Route Strings-->
     <string name="category_spinner_header">Wähle eine Kategorie</string>
     <string name="create_route_descr_hint">Beschreibung</string>
     <string name="create_route_title_hint">Titel</string>
-    <string name="create_waypoint_media_title">Add Media</string>
+    <string name="create_waypoint_media_title">Füge Medien hinzu</string>
     <string name="create_waypoint_save_btn">Speichern</string>
     <string name="create_waypoint_title">Wegpunkt Information</string>
     <string name="create_route_save_btn">Speichern</string>
@@ -240,6 +240,13 @@
     <!-- SearchFragment Strings-->
     <string name="title_page_searchresults">Ergebnisse deiner Suche</string>
     <string name="no_results">Keine Suchergebnisse</string>
+
+    <string name="route_item_title">Routenname</string>
+    <string name="route_item_rating">(%1d)</string>
+    <string name="route_item_waypoints">0</string>
+    <string name="route_item_distance">%1d m</string>
+    <string name="route_item_duration">%1d min</string>
+    <string name="route_item_author">von %1s</string>
 
     <!-- Category Strings-->
     <string name="default_title">Kategorie</string>

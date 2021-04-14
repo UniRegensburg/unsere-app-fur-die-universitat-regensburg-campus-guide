@@ -130,6 +130,7 @@
     <string name="too_few_waypoints">There must be at least 2 way points on the map to create a route!</string>
     <string name="too_many_waypoints">Unfortunately, a route with so many waypoints cannot be created! Please try to remove some unnecessary points.</string>
     <string name="no_route_found">No route was found! You have to create a route first before you can continue!</string>
+    <string name="not_yet_implemented">"This feature is unfortunately not yet implemented!"</string>
     <string name="confirm_route_creation_warning">If you go to the next step of route creation and then return, you have to start route creation from the beginning! Continue anyway?</string>
 
     <!-- Buttons and Options -->
@@ -152,11 +153,10 @@
 
     <!-- Category Strings-->
     <string name="default_title">Category</string>
-
     <string name="login_email">Email</string>
     <string name="login_password">Password</string>
     <string name="login_button">Login</string>
-    <string name="login_text">Login</string>
+    <string name="login_text">ExplURe</string>
     <string name="tv_register">Register ?</string>
     <string name="reset_password">Forgot password?</string>
     <string name="or_text">or</string>
@@ -164,11 +164,10 @@
     <string name="enter_email">Please enter your email</string>
     <string name="no_account">Dont have an account?</string>
     <string name="sign_up_button">Register?</string>
-    <string name="register_text">Register</string>
     <string name="new_email">Email</string>
 
-    <string name="new_password">Password</string>
-    <string name="confirm_password">Conform password</string>
+	<string name="new_password">Password</string>
+    <string name="confirm_password">Confirm password</string>
     <string name="register_button">Register</string>
     <string name="already_account">Already have an account?</string>
     <string name="back_to_login_button">Login</string>
@@ -193,7 +192,7 @@
     <string name="route_item_waypoints">0</string>
     <string name="route_item_distance">%1d m</string>
     <string name="route_item_duration">%1d min</string>
-    <string name="route_item_author">von %1s</string>
+    <string name="route_item_author">from %1s</string>
 
     <string name="discover_new_routes">New Routes</string>
     <string name="discover_popular_routes">Popular Routes</string>
@@ -225,6 +224,8 @@
     <string name="show_answers">Show answers (%1d)</string>
     <string name="hide_answers">Hide answers</string>
     <string name="answer_input">Answer</string>
+    <string name="share_text">Hey, I found this route on ExplURe: \n \n%1$s \n%2$d Waypoints \nDuration: %3$d min \nDistance: %4$d m \n \n%5$s \n \nClick on the link to open it in your ExplURe app. &#128506;</string>
+    <string name="share_option">Share with:</string>
     <string name="empty_answer">Please enter answer</string>
     <string name="delete_answer">Delete answer?</string>
     <string name="answer_deleted">Answer has been deleted</string>
@@ -249,12 +250,12 @@
     <string name="audio_permission_not_granted">Without this permission the app is not able to record an audio message.</string>
     <string name="external_storage_permission_not_granted">Without this permission the app can\'t access files in your external storage.</string>
     <string name="universal_permission_not_granted">This action is not possible without the permission.</string>
-    <string name="audio_recording_error">An error occured while recording your audio message. Please try again.</string>
+    <string name="audio_recording_error">An error occurred while recording your audio message. Please try again.</string>
     <string name="waypoint_title_error">Please enter a title</string>
     <string name="waypoint_description_error">Please enter a description</string>
     <string name="route_thumbnail_hint">Set a thumbnail for your view</string>
     <string name="no_category_selected_error">Please select a category</string>
-    <string name="route_image_error">An error occured while loading your image, please try again.</string>
+    <string name="route_image_error">An error occurred while loading your image, please try again.</string>
     <string name="route_creation_error">Something went wrong while creating your route. Please try again later</string>
     <string name="category_download_error">Could not get categories. Please try again later</string>
     <string name="default_waypoint_title">No title</string>

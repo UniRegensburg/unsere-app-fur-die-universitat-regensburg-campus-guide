@@ -1,16 +1,19 @@
 package de.ur.explure.views
 
 import android.app.AlertDialog
+import android.content.Context
 import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.util.Patterns
 import android.view.View
-import android.widget.Toast
+import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.Fragment
 import com.crazylegend.viewbinding.viewBinding
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
 import de.ur.explure.R
 import de.ur.explure.databinding.FragmentLoginBinding
+import de.ur.explure.utils.showSnackbar
 import de.ur.explure.viewmodel.AuthenticationViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -30,9 +33,15 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
     }
 
     private fun observe() {
-        authenticationViewModel.toast.observe(viewLifecycleOwner, {
+        authenticationViewModel.userInfo.observe(viewLifecycleOwner, {
             it?.let {
-                Toast.makeText(context, it, Toast.LENGTH_LONG).show()
+                showSnackbar(
+                        requireActivity(),
+                        it,
+                        R.id.login_container,
+                        Snackbar.LENGTH_LONG,
+                        colorRes = R.color.colorError
+                )
             }
         })
     }
@@ -42,6 +51,8 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
             authenticationViewModel.navigateToRegister()
         }
         binding.loginButton.setOnClickListener {
+            // hides keyboard to show snackbar
+            hideKeyboard()
             login()
         }
         binding.resetPasswordTV.setOnClickListener {
@@ -58,7 +69,13 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
         if (email.isNotEmpty() && password.isNotEmpty()) {
             authenticationViewModel.signIn(email, password)
         } else {
-            Toast.makeText(context, R.string.login_failed, Toast.LENGTH_LONG).show()
+            showSnackbar(
+                    requireActivity(),
+                    R.string.login_failed,
+                    R.id.login_container,
+                    Snackbar.LENGTH_LONG,
+                    colorRes = R.color.colorError
+            )
         }
     }
 
@@ -71,13 +88,23 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
                 val email =
                     resetPasswordView.findViewById<TextInputEditText>(R.id.edResetEmail).text.toString()
                 if (email.isEmpty()) {
-                    Toast.makeText(context, R.string.empty_email, Toast.LENGTH_LONG).show()
-                }
-                if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-                    Toast.makeText(context, R.string.wrong_email, Toast.LENGTH_LONG).show()
+                    showSnackbar(
+                            requireActivity(),
+                            R.string.empty_email,
+                            R.id.login_container,
+                            Snackbar.LENGTH_LONG,
+                            colorRes = R.color.colorError
+                    )
+                } else if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+                    showSnackbar(requireActivity(),
+                            R.string.wrong_email,
+                            R.id.login_container,
+                            Snackbar.LENGTH_LONG,
+                            colorRes = R.color.colorError
+                    )
                 } else {
                     authenticationViewModel.resetPassword(email)
-                    Toast.makeText(context, R.string.email_sent, Toast.LENGTH_LONG).show()
+                    setSuccessObserver()
                 }
             }
             .setNegativeButton(R.string.negative_button) { _, _ -> }
@@ -86,5 +113,24 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
 
     private fun signInAnonymously() {
         authenticationViewModel.signInAnonymously()
+    }
+
+    private fun hideKeyboard() {
+        val imm = context?.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(view?.windowToken, 0)
+    }
+
+    private fun setSuccessObserver() {
+        authenticationViewModel.resetSuccessful.observe(viewLifecycleOwner, { showError ->
+            if (showError == true) {
+                showSnackbar(
+                        requireActivity(),
+                        R.string.email_sent,
+                        R.id.login_container,
+                        Snackbar.LENGTH_LONG,
+                        colorRes = R.color.themeColorDark
+                )
+            }
+        })
     }
 }
