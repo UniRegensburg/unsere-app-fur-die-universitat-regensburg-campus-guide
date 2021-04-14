@@ -18,6 +18,7 @@ import de.ur.explure.views.SaveRouteFragmentDirections
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
+@Suppress("TooGenericExceptionCaught")
 class SaveRouteViewModel(
     private val state: SavedStateHandle,
     private val appRouter: MainAppRouter,
@@ -90,7 +91,11 @@ class SaveRouteViewModel(
         routeDTO.wayPoints = wayPointDTOs.value ?: mutableListOf()
         routeDTO.thumbnailUri = currentImageUri.value
         viewModelScope.launch {
-            when (val routeCall = routeRepository.createRouteInFireStore(routeDTO)) {
+            when (val routeCall = routeRepository.createRouteInFireStore(
+                routeDTO,
+                routeDTO.title,
+                routeDTO.description
+            )) {
                 is FirebaseResult.Success -> {
                     showRouteCreationError.postValue(false)
                     appRouter.navigateToRouteDetailsAfterCreation(routeCall.data)
