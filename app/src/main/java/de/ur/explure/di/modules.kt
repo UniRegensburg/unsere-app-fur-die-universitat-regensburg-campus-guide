@@ -43,6 +43,7 @@ import de.ur.explure.viewmodel.StatisticsViewModel
 import de.ur.explure.viewmodel.WordSearchViewModel
 import org.koin.android.ext.koin.androidApplication
 import de.ur.explure.viewmodel.UserDataViewModel
+import de.ur.explure.viewmodel.RatingViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
@@ -109,4 +110,5 @@ val mainModule = module {
     viewModel { StatisticsViewModel(get(), get(), get(), get()) }
     viewModel { SingleRouteViewModel(get(), get()) }
     viewModel { UserDataViewModel(get(), get()) }
+    viewModel { RatingViewModel(get()) }
 }
