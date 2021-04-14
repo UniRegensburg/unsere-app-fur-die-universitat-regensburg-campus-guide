@@ -272,5 +272,6 @@
     <string name="empty_username">Please enter a username</string>
     <string name="user_data_error">Something went wrong while creating your profile. Please try again later.</string>
     <string name="anonymous_user_error">Unfortunately, you can\'t use this feature without an account. Create one and try again.</string>
+    <string name="anonymous_user_name">Anonymous user</string>
 
 </resources>

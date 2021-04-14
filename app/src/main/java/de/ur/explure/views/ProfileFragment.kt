@@ -85,7 +85,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         })
     }
 
-    // Checks if user is logged in with account and if not certain features are blocked
+    //Checks if user is logged in with account and if not certain features are blocked
     private fun setOnClickListeners() {
         binding.profilePicture.setOnClickListener {
             if (viewModel.anonymousUser == false) {

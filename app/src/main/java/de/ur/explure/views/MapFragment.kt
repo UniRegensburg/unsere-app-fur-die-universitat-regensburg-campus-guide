@@ -280,9 +280,9 @@ class MapFragment : Fragment(R.layout.fragment_map), MapMatchingClient.MapMatchi
 
         //disables create route function if user is signed in anonymously
         binding.buildRouteButton.setOnClickListener {
-            if(mapViewModel.anonymousUser == false) {
+            if (mapViewModel.anonymousUser == false) {
                 showEnterRouteCreationDialog()
-            }else {
+            } else {
                 isAnonymousUserError()
             }
         }

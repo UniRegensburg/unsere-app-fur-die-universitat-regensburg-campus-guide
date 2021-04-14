@@ -2,6 +2,7 @@ package de.ur.explure.viewmodel
 
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -11,14 +12,15 @@ import de.ur.explure.model.comment.CommentDTO
 import de.ur.explure.model.route.Route
 import de.ur.explure.navigation.MainAppRouter
 import de.ur.explure.repository.route.RouteRepositoryImpl
+import de.ur.explure.repository.user.UserRepositoryImpl
 import de.ur.explure.utils.DeepLinkUtils
 import de.ur.explure.utils.FirebaseResult
 import kotlinx.coroutines.launch
 import java.util.*
 
-@Suppress("StringLiteralDuplication")
 class SingleRouteViewModel(
     private val routeRepository: RouteRepositoryImpl,
+    private val userRepository: UserRepositoryImpl,
     private val appRouter: MainAppRouter
 ) : ViewModel() {
 
@@ -28,6 +30,7 @@ class SingleRouteViewModel(
     val errorMessage: LiveData<Boolean> = mutableErrorMessage
     private val mutableSuccessMessage: MutableLiveData<Boolean> = MutableLiveData()
     val successMessage: LiveData<Boolean> = mutableSuccessMessage
+    var userName = String()
 
     fun getRouteData(routeId: String) {
         viewModelScope.launch {
@@ -45,11 +48,28 @@ class SingleRouteViewModel(
         }
     }
 
-    fun addComment(comment: String) {
+    fun getUserName() {
         viewModelScope.launch {
-            val commentDto = CommentDTO(comment)
+            when (val userData = userRepository.getUserInfo()) {
+                is FirebaseResult.Success -> {
+                    userName = userData.data.name
+                }
+                is FirebaseResult.Canceled -> {
+                    mutableErrorMessage.postValue(true)
+                }
+                is FirebaseResult.Error -> {
+                    mutableErrorMessage.postValue(true)
+                }
+            }
+        }
+    }
+
+    fun addComment(comment: String, userName: String) {
+        viewModelScope.launch {
+            val commentDto = CommentDTO(comment, userName)
             val routeId = route.value?.id ?: return@launch
             if (routeRepository.addComment(routeId, commentDto) is FirebaseResult.Success) {
+                Log.i("SRVM___________________", "addComment Success")
                 getRouteData(routeId)
             } else {
                 mutableErrorMessage.postValue(true)
@@ -57,9 +77,9 @@ class SingleRouteViewModel(
         }
     }
 
-    fun addAnswer(commentId: String, answerText: String) {
+    fun addAnswer(commentId: String, answerText: String, userName: String) {
         viewModelScope.launch {
-            val commentDto = CommentDTO(answerText)
+            val commentDto = CommentDTO(answerText, userName)
             val routeId = route.value?.id ?: return@launch
             if (routeRepository.addAnswer(
                     routeId,
@@ -67,6 +87,7 @@ class SingleRouteViewModel(
                     commentDto
                 ) is FirebaseResult.Success
             ) {
+                Log.i("SRVM___________________", "addAnswer Success")
                 getRouteData(routeId)
             } else {
                 mutableErrorMessage.postValue(true)
