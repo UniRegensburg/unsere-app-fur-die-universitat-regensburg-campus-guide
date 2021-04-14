@@ -97,10 +97,10 @@ class SaveRouteViewModel(
         routeDTO.wayPoints = wayPointDTOs.value ?: mutableListOf()
         routeDTO.thumbnailUri = currentImageUri.value
         viewModelScope.launch {
-            when (val routeCall = routeRepository.createRouteInFireStore(routeDTO)) {
+            when (val routeCall = routeRepository.createRouteInFireStore(routeDTO, routeDTO.title, routeDTO.description)) {
                 is FirebaseResult.Success -> {
                     showRouteCreationError.postValue(false)
-                    setupAlgolia(routeCall.data)
+                    appRouter.navigateToRouteDetailsAfterCreation(routeCall.data)
                 }
                 is FirebaseResult.Error -> {
                     Timber.d(routeCall.exception)
@@ -144,7 +144,7 @@ class SaveRouteViewModel(
     fun deleteCurrentUri() {
         currentImageUri.postValue(null)
     }
-
+/*
     fun setupAlgolia(routeID: String) {
         viewModelScope.launch {
             val applicationID = ApplicationID("CRDAJVEWKR")
@@ -184,7 +184,7 @@ class SaveRouteViewModel(
                 FirebaseResult.Error(exception)
             }
         }
-    }
+    }*/
 
     companion object {
         private const val ROUTE_TITLE_KEY = "routeTitle"

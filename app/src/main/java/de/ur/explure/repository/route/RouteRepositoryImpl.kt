@@ -1,6 +1,12 @@
 package de.ur.explure.repository.route
 
 import android.net.Uri
+import androidx.lifecycle.viewModelScope
+import com.algolia.search.client.ClientSearch
+import com.algolia.search.client.Index
+import com.algolia.search.model.APIKey
+import com.algolia.search.model.ApplicationID
+import com.algolia.search.model.IndexName
 import com.google.firebase.firestore.DocumentReference
 import com.google.firebase.firestore.DocumentSnapshot
 import com.google.firebase.firestore.FieldPath
@@ -31,6 +37,8 @@ import de.ur.explure.utils.CachedFileUtils.IMAGE_FILE_SUFFIX
 import de.ur.explure.utils.FirebaseResult
 import timber.log.Timber
 import java.util.*
+import kotlinx.coroutines.launch
+import kotlinx.serialization.json.json
 
 @Suppress("TooGenericExceptionCaught", "UnnecessaryParentheses", "ReturnCount")
 class RouteRepositoryImpl(
@@ -38,6 +46,12 @@ class RouteRepositoryImpl(
     private val fireStore: FireStoreInstance,
     private val fireStorage: FirebaseStorage
 ) : RouteRepository {
+    val applicationID = ApplicationID("CRDAJVEWKR")
+    val apiKey = APIKey("19805d168da9d1f8b1f5ffb70283a0c2")
+    val client = ClientSearch(applicationID, apiKey)
+    val indexName = IndexName("listOfRoutes")
+
+    val index = client.initIndex(indexName)
 
     /**
      * Creates a Route Document in FireStore
@@ -48,13 +62,14 @@ class RouteRepositoryImpl(
      * On Cancellation: Returns [FirebaseResult.Canceled] with exception
      */
 
-    override suspend fun createRouteInFireStore(routeDTO: RouteDTO): FirebaseResult<String> {
+    override suspend fun createRouteInFireStore(routeDTO: RouteDTO, routeTitle: String, routeDescr: String): FirebaseResult<String> {
         return try {
             val userId = authService.getCurrentUserId() ?: return ErrorConfig.NO_USER_RESULT
             val routeDocument = fireStore.routeCollection.document()
             val routeCreationBatch = createRouteWriteBatch(userId, routeDTO, routeDocument)
             when (val routeBatch = routeCreationBatch.commit().await()) {
                 is FirebaseResult.Success -> {
+                    addRouteInfo(routeDocument.id, routeTitle, routeDescr)
                     return FirebaseResult.Success(routeDocument.id)
                 }
                 is FirebaseResult.Error -> FirebaseResult.Error(routeBatch.exception)
@@ -448,5 +463,18 @@ class RouteRepositoryImpl(
             Timber.d("Failed to upload image with $exception")
             return null
         }
+    }
+
+    suspend fun addRouteInfo(routeID: String, routeTitle: String?, routeDescr: String?) {
+
+        val json = listOf(
+                json {
+                                    "objectID" to routeID
+                                    "routeID" to routeID
+                                    "title" to routeTitle
+                                    "description" to routeDescr
+                }
+        )
+        index.saveObjects(json)
     }
 }

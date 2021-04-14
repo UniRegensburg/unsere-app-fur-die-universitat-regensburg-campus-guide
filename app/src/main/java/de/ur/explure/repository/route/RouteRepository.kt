@@ -9,7 +9,7 @@ import java.util.*
 
 interface RouteRepository {
 
-    suspend fun createRouteInFireStore(routeDTO: RouteDTO): FirebaseResult<String>
+    suspend fun createRouteInFireStore(routeDTO: RouteDTO, routeTitle: String, routeDescr: String): FirebaseResult<String>
 
     suspend fun getRoute(routeId: String, getAsPreview: Boolean = false): FirebaseResult<Route>
 
