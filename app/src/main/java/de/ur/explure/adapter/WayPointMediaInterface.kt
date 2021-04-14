@@ -1,4 +1,4 @@
-package de.ur.explure
+package de.ur.explure.adapter
 
 import de.ur.explure.model.view.WayPointMediaItem
 

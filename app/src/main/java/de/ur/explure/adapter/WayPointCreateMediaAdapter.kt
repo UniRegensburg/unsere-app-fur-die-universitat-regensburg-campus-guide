@@ -9,7 +9,6 @@ import com.hannesdorfmann.adapterdelegates4.ListDelegationAdapter
 import com.hannesdorfmann.adapterdelegates4.dsl.adapterDelegateViewBinding
 import de.ur.explure.GlideApp
 import de.ur.explure.R
-import de.ur.explure.WayPointMediaInterface
 import de.ur.explure.databinding.CardviewWaypointAudioBinding
 import de.ur.explure.databinding.CardviewWaypointImageBinding
 import de.ur.explure.databinding.CardviewWaypointVideoBinding

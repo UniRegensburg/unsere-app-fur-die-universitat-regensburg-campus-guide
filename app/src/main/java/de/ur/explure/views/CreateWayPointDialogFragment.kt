@@ -21,7 +21,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.crazylegend.viewbinding.viewBinding
 import com.google.android.material.snackbar.Snackbar
 import de.ur.explure.R
-import de.ur.explure.WayPointMediaInterface
+import de.ur.explure.adapter.WayPointMediaInterface
 import de.ur.explure.adapter.WayPointCreateMediaAdapter
 import de.ur.explure.databinding.DialogCreateWaypointBinding
 import de.ur.explure.model.view.WayPointAudioItem
