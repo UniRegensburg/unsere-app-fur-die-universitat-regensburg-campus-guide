@@ -196,10 +196,11 @@ class MainActivity : AppCompatActivity(), MapFragment.MapFragmentListener {
 
         val topLevelDestinations = bottomNavDestinations.plus(nestedTopLevelDestinations)
 
-        // The views in the authentication process
+        // The views in the authentication and onboarding process
         val authGraphDestinations = setOf(
             R.id.loginFragment,
-            R.id.registerFragment
+            R.id.registerFragment,
+            R.id.userDataFragment
         )
     }
 }
