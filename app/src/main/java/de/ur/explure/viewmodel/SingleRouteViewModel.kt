@@ -30,7 +30,7 @@ class SingleRouteViewModel(
     val errorMessage: LiveData<Boolean> = mutableErrorMessage
     private val mutableSuccessMessage: MutableLiveData<Boolean> = MutableLiveData()
     val successMessage: LiveData<Boolean> = mutableSuccessMessage
-    var userName = String()
+    private var userName: String = DEFAULT_USERNAME
 
     fun getRouteData(routeId: String) {
         viewModelScope.launch {
@@ -50,21 +50,17 @@ class SingleRouteViewModel(
 
     fun getUserName() {
         viewModelScope.launch {
-            when (val userData = userRepository.getUserInfo()) {
-                is FirebaseResult.Success -> {
-                    userName = userData.data.name
-                }
-                is FirebaseResult.Canceled -> {
-                    mutableErrorMessage.postValue(true)
-                }
-                is FirebaseResult.Error -> {
-                    mutableErrorMessage.postValue(true)
-                }
+            val userData = userRepository.getUserInfo()
+            userName = if (userData is FirebaseResult.Success) {
+                userData.data.name
+            } else {
+                DEFAULT_USERNAME
             }
+
         }
     }
 
-    fun addComment(comment: String, userName: String) {
+    fun addComment(comment: String) {
         viewModelScope.launch {
             val commentDto = CommentDTO(comment, userName)
             val routeId = route.value?.id ?: return@launch
@@ -77,7 +73,7 @@ class SingleRouteViewModel(
         }
     }
 
-    fun addAnswer(commentId: String, answerText: String, userName: String) {
+    fun addAnswer(commentId: String, answerText: String) {
         viewModelScope.launch {
             val commentDto = CommentDTO(answerText, userName)
             val routeId = route.value?.id ?: return@launch
@@ -129,22 +125,30 @@ class SingleRouteViewModel(
     }
 
     fun shareRoute(context: Context) {
-            val route = route.value ?: return
-            val shareLink = DeepLinkUtils.getURLforRouteId(route.id)
-            val intent = Intent()
-            intent.action = Intent.ACTION_SEND
-            intent.putExtra(Intent.EXTRA_TEXT, context.getString(R.string.share_text,
+        val route = route.value ?: return
+        val shareLink = DeepLinkUtils.getURLforRouteId(route.id)
+        val intent = Intent()
+        intent.action = Intent.ACTION_SEND
+        intent.putExtra(
+            Intent.EXTRA_TEXT, context.getString(
+                R.string.share_text,
                 route.title,
                 route.wayPointCount,
                 route.duration.toInt(),
                 route.distance.toInt(),
-                shareLink))
-            intent.type = "text/plain"
-            context.startActivity(
-                Intent.createChooser(
-                    intent,
-                    context.getString(R.string.share_option)
-                )
+                shareLink
             )
+        )
+        intent.type = "text/plain"
+        context.startActivity(
+            Intent.createChooser(
+                intent,
+                context.getString(R.string.share_option)
+            )
+        )
+    }
+
+    companion object {
+        private const val DEFAULT_USERNAME = "Anonymous"
     }
 }

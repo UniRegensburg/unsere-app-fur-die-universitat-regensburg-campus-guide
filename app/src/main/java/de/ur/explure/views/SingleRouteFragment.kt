@@ -39,9 +39,9 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinCompon
         super.onViewCreated(view, savedInstanceState)
         observeRouteInformation()
         val routeId = args.routeID
-        singleRouteViewModel.getRouteData(routeId)
         setOnClickListener()
         setErrorObserver()
+        singleRouteViewModel.getRouteData(routeId)
         singleRouteViewModel.getUserName()
     }
 
@@ -123,10 +123,9 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinCompon
     }
 
     private fun addComment() {
-        val userName = singleRouteViewModel.userName
         val commentInput = binding.commentInput.text.toString()
         if (commentInput.isNotEmpty()) {
-            singleRouteViewModel.addComment(commentInput, userName)
+            singleRouteViewModel.addComment(commentInput)
             binding.commentInput.text.clear()
         } else {
             showSnackbar(
@@ -141,8 +140,7 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinCompon
 
     override fun addAnswer(commentId: String, answerText: String) {
         if (answerText.isNotEmpty()) {
-            val userName = singleRouteViewModel.userName
-            singleRouteViewModel.addAnswer(commentId, answerText, userName)
+            singleRouteViewModel.addAnswer(commentId, answerText)
         } else {
             showSnackbar(
                 requireActivity(),

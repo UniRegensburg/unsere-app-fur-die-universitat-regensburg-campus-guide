@@ -103,6 +103,6 @@ val mainModule = module {
     viewModel { CreatedRoutesViewModel(get(), get(), get()) }
     viewModel { FavoriteRoutesViewModel(get(), get(), get()) }
     viewModel { StatisticsViewModel(get(), get(), get(), get()) }
-    viewModel { SingleRouteViewModel(get(), get(), get(), get()) }
+    viewModel { SingleRouteViewModel(get(), get(), get()) }
     viewModel { UserDataViewModel(get(), get()) }
 }
