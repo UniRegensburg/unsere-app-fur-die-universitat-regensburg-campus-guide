@@ -2,7 +2,6 @@ package de.ur.explure.viewmodel
 
 import android.content.Context
 import android.content.Intent
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -56,7 +55,6 @@ class SingleRouteViewModel(
             } else {
                 DEFAULT_USERNAME
             }
-
         }
     }
 
@@ -65,7 +63,6 @@ class SingleRouteViewModel(
             val commentDto = CommentDTO(comment, userName)
             val routeId = route.value?.id ?: return@launch
             if (routeRepository.addComment(routeId, commentDto) is FirebaseResult.Success) {
-                Log.i("SRVM___________________", "addComment Success")
                 getRouteData(routeId)
             } else {
                 mutableErrorMessage.postValue(true)
@@ -83,7 +80,6 @@ class SingleRouteViewModel(
                     commentDto
                 ) is FirebaseResult.Success
             ) {
-                Log.i("SRVM___________________", "addAnswer Success")
                 getRouteData(routeId)
             } else {
                 mutableErrorMessage.postValue(true)

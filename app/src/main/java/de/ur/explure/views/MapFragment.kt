@@ -278,7 +278,7 @@ class MapFragment : Fragment(R.layout.fragment_map), MapMatchingClient.MapMatchi
             mapViewModel.getCurrentMapStyle()?.let { style -> startLocationTracking(style) }
         }
 
-        //disables create route function if user is signed in anonymously
+        // disables create route function if user is signed in anonymously
         binding.buildRouteButton.setOnClickListener {
             if (mapViewModel.anonymousUser == false) {
                 showEnterRouteCreationDialog()
