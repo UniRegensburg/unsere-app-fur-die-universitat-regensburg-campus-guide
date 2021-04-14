@@ -165,4 +165,7 @@ dependencies {
     //Audio View
     implementation 'com.4ert:audioview:1.4.12'
 
+    //Video View
+    implementation 'com.google.android.exoplayer:exoplayer:2.13.3'
+
 }

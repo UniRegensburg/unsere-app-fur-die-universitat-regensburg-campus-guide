@@ -278,5 +278,6 @@
     <string name="waypoint_video_title">Video</string>
     <string name="waypoint_audio_title">Audio</string>
     <string name="waypoint_image_error">An error occured while loading the image of the waypoint.</string>
+    <string name="waypoint_video_error">An error occured while loading the video of the waypoint. Please try again later</string>
 
 </resources>

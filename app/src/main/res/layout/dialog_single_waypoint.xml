@@ -12,6 +12,7 @@
     android:paddingVertical="20dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/dialog_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
@@ -21,8 +22,8 @@
             android:layout_height="12dp"
             android:clickable="true"
             android:focusable="true"
-            android:scaleType="fitXY"
             android:foreground="?android:attr/selectableItemBackground"
+            android:scaleType="fitXY"
             android:src="@drawable/ic_cross"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -146,14 +147,27 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tv_video_title" />
 
-        <VideoView
-            android:id="@+id/iv_video_preview"
+        <FrameLayout
+            android:id="@+id/main_media_frame"
             android:layout_width="match_parent"
-            android:layout_height="200dp"
+            android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:visibility="gone"
-            app:layout_constraintTop_toBottomOf="@+id/vertical_video_view"
-            tools:layout_editor_absoluteX="0dp" />
+            android:background="#000000"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/vertical_video_view">
+
+            <com.google.android.exoplayer2.ui.PlayerView
+                android:id="@+id/iv_video_preview"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_marginTop="10dp"
+                android:visibility="gone"
+                app:controller_layout_id="@layout/expo_player_control_view"
+                app:resize_mode="fixed_width"
+                app:use_controller="true"/>
+
+        </FrameLayout>
 
         <TextView
             android:id="@+id/tv_audio_title"
@@ -167,7 +181,7 @@
             app:layout_constraintEnd_toEndOf="parent"
 
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/iv_video_preview" />
+            app:layout_constraintTop_toBottomOf="@+id/main_media_frame" />
 
         <View
             android:id="@+id/vertical_audio_view"
