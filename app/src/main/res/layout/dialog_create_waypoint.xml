@@ -36,16 +36,16 @@
             android:textColorHint="@color/grey"
             app:boxBackgroundColor="@android:color/transparent"
             app:boxStrokeColor="@color/themeColor"
+            android:hint="@string/create_route_title_hint"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tv_create_waypoint_title">
 
-            <EditText
+            <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/et_wayPoint_title"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:autofillHints=""
-                android:hint="@string/create_route_title_hint"
                 android:maxLength="25"
                 android:maxLines="1"
                 android:textColor="@color/textColorGrey"
@@ -61,18 +61,18 @@
             android:layout_marginHorizontal="10dp"
             android:layout_marginTop="10dp"
             android:textColorHint="@color/grey"
+            android:hint="@string/create_route_descr_hint"
             app:boxBackgroundColor="@android:color/transparent"
             app:boxStrokeColor="@color/themeColor"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/text_layout_title">
 
-            <EditText
+            <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/et_wayPoint_description"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:gravity="start"
-                android:hint="@string/create_route_descr_hint"
                 android:lines="4"
                 android:maxLength="400"
                 android:textColor="@color/textColorGrey"

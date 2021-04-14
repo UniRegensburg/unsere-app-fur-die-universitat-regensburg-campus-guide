@@ -6,6 +6,8 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.View
 import android.widget.ImageView
 import androidx.activity.result.ActivityResultLauncher
@@ -34,13 +36,14 @@ import de.ur.explure.utils.hasExternalReadPermission
 import de.ur.explure.utils.showSnackbar
 import de.ur.explure.viewmodel.CreateWayPointViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
+import org.koin.androidx.viewmodel.scope.emptyState
 
 @Suppress("TooManyFunctions")
 class CreateWayPointDialogFragment : DialogFragment(R.layout.dialog_create_waypoint),
     WayPointMediaInterface {
 
     private val binding by viewBinding(DialogCreateWaypointBinding::bind)
-    private val viewModel: CreateWayPointViewModel by viewModel()
+    private val viewModel: CreateWayPointViewModel by viewModel(state = emptyState())
     private val args: CreateWayPointDialogFragmentArgs by navArgs()
 
     private lateinit var imageResultLauncher: ActivityResultLauncher<Intent>
@@ -74,10 +77,40 @@ class CreateWayPointDialogFragment : DialogFragment(R.layout.dialog_create_waypo
     }
 
     private fun initObservers() {
-        initEditObserver()
+        initWaypointObserver()
         initMediaListObserver()
         initAudioRecordingObserver()
         initAudioErrorObserver()
+        initEditTextObservers()
+    }
+
+    private fun initEditTextObservers() {
+        binding.etWayPointTitle.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                // not needed
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                // not needed
+            }
+
+            override fun afterTextChanged(s: Editable) {
+                viewModel.setTitle(s.toString())
+            }
+        })
+        binding.etWayPointDescription.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                // not needed
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                // not needed
+            }
+
+            override fun afterTextChanged(s: Editable) {
+                viewModel.setDescription(s.toString())
+            }
+        })
     }
 
     private fun initClickListeners() {
@@ -127,13 +160,15 @@ class CreateWayPointDialogFragment : DialogFragment(R.layout.dialog_create_waypo
                             else ->
                                 R.string.universal_permission_not_granted
                         }
-                        showSnackbar(
-                            requireActivity(),
-                            message,
-                            R.id.btn_save_route,
-                            Snackbar.LENGTH_LONG,
-                            colorRes = R.color.colorWarning
-                        )
+                        view?.run{
+                            showSnackbar(
+                                requireActivity(),
+                                message,
+                                this,
+                                Snackbar.LENGTH_LONG,
+                                colorRes = R.color.colorWarning
+                            )
+                        }
                     }
                 }
             }
@@ -163,13 +198,14 @@ class CreateWayPointDialogFragment : DialogFragment(R.layout.dialog_create_waypo
                     if (fileSize != 0L && fileSize <= MAX_VIDEO_SIZE) {
                         viewModel.setVideoMedia(data)
                     } else {
-                        showSnackbar(
-                            requireActivity(),
-                            resources.getString(R.string.video_size_error, MAX_VIDEO_SIZE_MB),
-                            R.id.btn_save_route,
-                            Snackbar.LENGTH_LONG,
-                            colorRes = R.color.colorWarning
-                        )
+                        view?.run {
+                            showSnackbar(
+                                resources.getString(R.string.video_size_error, MAX_VIDEO_SIZE_MB),
+                                this,
+                                Snackbar.LENGTH_LONG,
+                                colorRes = R.color.colorWarning
+                            )
+                        }
                     }
                     viewModel.currentTempUri = null
                 }
@@ -189,13 +225,15 @@ class CreateWayPointDialogFragment : DialogFragment(R.layout.dialog_create_waypo
     private fun initAudioErrorObserver() {
         viewModel.showAudioError.observe(viewLifecycleOwner, { showAudioError ->
             if (showAudioError) {
-                showSnackbar(
-                    requireActivity(),
-                    R.string.audio_recording_error,
-                    R.id.btn_save_route,
-                    Snackbar.LENGTH_LONG,
-                    colorRes = R.color.colorWarning
-                )
+                view?.run {
+                    showSnackbar(
+                        requireActivity(),
+                        R.string.audio_recording_error,
+                        R.id.btn_save_route,
+                        Snackbar.LENGTH_LONG,
+                        colorRes = R.color.colorWarning
+                    )
+                }
                 viewModel.showAudioError.postValue(false)
                 viewModel.resetMediaPlayerAndRecorder()
             }
@@ -208,7 +246,7 @@ class CreateWayPointDialogFragment : DialogFragment(R.layout.dialog_create_waypo
         binding.ivAddVideo.isEnabled = !mediaList.any { it is WayPointVideoItem }
     }
 
-    private fun initEditObserver() {
+    private fun initWaypointObserver() {
         viewModel.oldWayPointDTO.observe(viewLifecycleOwner, { wayPoint ->
             if (wayPoint != null) {
                 binding.etWayPointTitle.setText(wayPoint.title)
@@ -219,13 +257,21 @@ class CreateWayPointDialogFragment : DialogFragment(R.layout.dialog_create_waypo
 
     private fun initAudioMediaButton() {
         binding.ivAddAudio.setOnClickListener {
-            if (binding.llRecordAudioView.visibility == View.GONE) {
-                setInitialAudioButtons()
-                binding.llRecordAudioView.visibility = View.VISIBLE
-                binding.ivExitAudioBtn.visibility = View.VISIBLE
-            } else if (binding.llRecordAudioView.visibility == View.VISIBLE) {
-                binding.llRecordAudioView.visibility = View.GONE
-                binding.ivExitAudioBtn.visibility = View.GONE
+            if (hasAudioPermission(requireContext())) {
+                if (binding.llRecordAudioView.visibility == View.GONE) {
+                    setInitialAudioButtons()
+                    binding.llRecordAudioView.visibility = View.VISIBLE
+                    binding.ivExitAudioBtn.visibility = View.VISIBLE
+                } else if (binding.llRecordAudioView.visibility == View.VISIBLE) {
+                    binding.llRecordAudioView.visibility = View.GONE
+                    binding.ivExitAudioBtn.visibility = View.GONE
+                }
+            } else {
+                multiplePermissionLauncher.launch(
+                    arrayOf(
+                        Manifest.permission.RECORD_AUDIO
+                    )
+                )
             }
         }
     }

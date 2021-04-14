@@ -41,6 +41,15 @@ class DiscoverFragment : Fragment(R.layout.fragment_discover) {
         setOnClickListeners()
         setupSearchBar()
         getData()
+        setOnSwipeListener()
+    }
+
+    private fun setOnSwipeListener() {
+        binding.pullToRefresh.setOnRefreshListener {
+            discoverViewModel.getPopularRoutes()
+            discoverViewModel.getLatestRoutes()
+            discoverViewModel.getCategories()
+        }
     }
 
     private fun startShimmer() {
@@ -80,6 +89,7 @@ class DiscoverFragment : Fragment(R.layout.fragment_discover) {
                 categoryAdapter.setList(categories)
                 stopShimmerAndVisibilityOfCategories()
             }
+            binding.pullToRefresh.isRefreshing = false
         })
     }
 
@@ -89,6 +99,7 @@ class DiscoverFragment : Fragment(R.layout.fragment_discover) {
                 latestRoutesAdapter.items = latestRoutes
                 stopShimmerAndVisibilityOfLatestRoutes()
             }
+            binding.pullToRefresh.isRefreshing = false
         })
     }
 
@@ -98,6 +109,7 @@ class DiscoverFragment : Fragment(R.layout.fragment_discover) {
                 popularRoutesAdapter.items = popularRoutes
                 stopShimmerAndVisibilityOfPopularRoutes()
             }
+            binding.pullToRefresh.isRefreshing = false
         })
     }
 
@@ -193,6 +205,7 @@ class DiscoverFragment : Fragment(R.layout.fragment_discover) {
                 }
                 return false
             }
+
             override fun onQueryTextChange(newText: String): Boolean = false
         })
     }
