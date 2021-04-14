@@ -15,6 +15,17 @@ buildscript {
         google()
         jcenter()
         mavenCentral {url "https://dl.bintray.com/algolia/maven"}
+        maven {
+            url 'https://api.mapbox.com/downloads/v2/snapshots/maven'
+            authentication {
+                basic(BasicAuthentication)
+            }
+            credentials {
+                // This should always be `mapbox` (not your username).
+                username = 'mapbox'
+                password = System.getenv("MAPBOX_DOWNLOADS_TOKEN") != null ? System.getenv("MAPBOX_DOWNLOADS_TOKEN") : project.properties['MAPBOX_DOWNLOADS_TOKEN']
+            }
+        }
     }
 
     dependencies {

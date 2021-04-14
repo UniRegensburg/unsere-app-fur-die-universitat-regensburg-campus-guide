@@ -12,6 +12,7 @@ import de.ur.explure.model.waypoint.WayPointDTO
 import de.ur.explure.navigation.MainAppRouter
 import de.ur.explure.repository.category.CategoryRepositoryImpl
 import de.ur.explure.repository.route.RouteRepositoryImpl
+import de.ur.explure.repository.user.UserRepositoryImpl
 import de.ur.explure.utils.CachedFileUtils
 import de.ur.explure.utils.FirebaseResult
 import de.ur.explure.views.SaveRouteFragmentDirections
@@ -22,7 +23,8 @@ class SaveRouteViewModel(
     private val state: SavedStateHandle,
     private val appRouter: MainAppRouter,
     private val categoryRepo: CategoryRepositoryImpl,
-    private val routeRepository: RouteRepositoryImpl
+    private val routeRepository: RouteRepositoryImpl,
+    private val userRepository: UserRepositoryImpl
 ) : ViewModel() {
 
     val categories: MutableLiveData<List<Category>> = MutableLiveData()
@@ -92,6 +94,7 @@ class SaveRouteViewModel(
         viewModelScope.launch {
             when (val routeCall = routeRepository.createRouteInFireStore(routeDTO)) {
                 is FirebaseResult.Success -> {
+                    userRepository.addRouteToCreatedRoutes(routeCall.data)
                     showRouteCreationError.postValue(false)
                     appRouter.navigateToRouteDetailsAfterCreation(routeCall.data)
                 }
