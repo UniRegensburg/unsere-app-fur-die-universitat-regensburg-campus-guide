@@ -107,6 +107,12 @@
     <string name="error_saving_route_snapshot">Beim Speichern der Route ist leider ein Fehler aufgetreten!</string>
     <string name="route_edit_instructions">Du kannst deiner Route durch Klicken Wegpunkte hinzufügen und diese an eine neue Position ziehen, indem du sie etwas länger anklickst und dann bewegst. Sobald du fertig bist, klicke auf das "Disk"-Symbol oben rechts, um zu speichern.</string>
 
+    <!-- Navigation -->
+    <string name="navigation_intro">Bitte begib dich an den Startpunkt der Route, um mit der Navigation zu beginnen. Wenn du da bist, klicke oben auf \"Navigation starten\".</string>
+    <string name="route_still_loading">Die Route wird noch geladen. Einen Moment!</string>
+    <string name="direction_route_fetch_error">Ein Fehler ist aufgetreten! Für diese Route ist im Moment leider keine Navigation verfügbar!</string>
+    <string name="not_on_campus_error">Du musst dich auf dem Campusgelände befinden, damit dein Standort für die Navigation verwendet werden kann!</string>
+
     <!-- Warnings -->
     <string name="attention">Achtung!</string>
     <string name="leave_route_creation_warning">Möchtest du die Routenerstellung abbrechen? Dein bisheriger Fortschritt geht dabei verloren!</string>

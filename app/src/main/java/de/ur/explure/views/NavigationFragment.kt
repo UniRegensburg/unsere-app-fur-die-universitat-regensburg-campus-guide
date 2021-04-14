@@ -238,7 +238,7 @@ class NavigationFragment : Fragment(R.layout.fragment_navigation), MapHelper.Map
         override fun onNextRouteLegStart(routeLegProgress: RouteLegProgress) {
             Toast.makeText(
                 requireActivity(),
-                "onNextRouteLegStart: ${routeLegProgress.currentStepProgress}; ${routeLegProgress.distanceRemaining}",
+                "onNextRouteLegStart: ${routeLegProgress.distanceRemaining}",
                 Toast.LENGTH_SHORT
             ).show()
         }
@@ -373,8 +373,7 @@ class NavigationFragment : Fragment(R.layout.fragment_navigation), MapHelper.Map
 
         navIntroSnackbar = showSnackbar(
             requireActivity(),
-            "Bitte begib dich an den markierten Startpunkt der Route, um mit der Navigation" +
-                    " zu beginnen. Wenn du da bist, klicke oben auf \"Navigation starten\".",
+            R.string.navigation_intro,
             colorRes = R.color.colorInfo,
             length = Snackbar.LENGTH_INDEFINITE
         )
@@ -384,9 +383,10 @@ class NavigationFragment : Fragment(R.layout.fragment_navigation), MapHelper.Map
             if (navigationViewModel.directionsRoute != null) {
                 navigationViewModel.enterNavigationMode()
             } else {
+                // toast so it looks better in combination with the navigation intro snackbar
                 Toast.makeText(
                     requireContext(),
-                    "Die Route wird noch geladen. Einen Moment!",
+                    R.string.route_still_loading,
                     Toast.LENGTH_SHORT
                 ).show()
             }
@@ -585,7 +585,7 @@ class NavigationFragment : Fragment(R.layout.fragment_navigation), MapHelper.Map
             pushEvents(replayEvents)
             seekTo(replayEvents.first())
         }
-        // mapboxReplayer.playbackSpeed(1.5) // TODO schneller für demo setzen?
+        mapboxReplayer.playbackSpeed(2.5) // TODO schneller für demo setzen?
         mapboxReplayer.play()
     }
 
@@ -644,16 +644,16 @@ class NavigationFragment : Fragment(R.layout.fragment_navigation), MapHelper.Map
         // sanity check to make sure the algorithm above does work as intended!
         if (coordinateList.size > 25) {
             // ! This SHOULD never happen in production!
-            Timber.e("Die Route übersteigt das Limit von 25 Koordinaten!")
+            Timber.e("The direction route builder limit of 25 coordinates was exceeded!")
             showSnackbar(
                 requireActivity(),
-                "Ein Fehler ist aufgetreten! Für diese Route ist" +
-                        " im Moment leider keine Navigation verfügbar!",
+                R.string.direction_route_fetch_error,
                 colorRes = R.color.colorError
             )
             return
         }
 
+        // TODO vermutlich wäre das mapMatching ergebnis hier wichtig, um waypoints richtig zu erkennen ...
         val token = getMapboxAccessToken(requireActivity().applicationContext)
         val routeOptions = RouteOptions.builder()
             .applyDefaultParams()
@@ -835,8 +835,8 @@ class NavigationFragment : Fragment(R.layout.fragment_navigation), MapHelper.Map
         if (!mapHelper.boundsContainPosition(location.toLatLng())) {
             if (gpsWarning == null || gpsWarning?.isShown == false) {
                 gpsWarning = showSnackbar(
-                    requireActivity(), "Du musst dich auf dem Campusgelände befinden, damit" +
-                            " dein Standort für die Navigation verwendet werden kann!",
+                    requireActivity(),
+                    R.string.not_on_campus_error,
                     colorRes = R.color.colorWarning,
                     length = Snackbar.LENGTH_INDEFINITE
                 )

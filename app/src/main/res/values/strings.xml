@@ -111,6 +111,12 @@
     <string name="error_saving_route_snapshot">Unfortunately, an error occurred while saving the route!</string>
     <string name="route_edit_instructions">You can add waypoints to your route by clicking on the map and drag markers by long clicking them and moving them to a new place. When you are done, you can click on the "disk" symbol in the top right to save your route.</string>
 
+    <!-- Navigation -->
+    <string name="navigation_intro">Please move to the starting position of the route to start the navigation. Once you are there, click on \"Start Navigation\" at the top.</string>
+    <string name="route_still_loading">The route is still loading. One moment!</string>
+    <string name="direction_route_fetch_error">An error has occurred! Unfortunately, there is no navigation available for this route at the moment!</string>
+    <string name="not_on_campus_error">You must be on the campus to use your location for navigation!</string>
+
     <!-- Warnings -->
     <string name="attention">Attention!</string>
     <string name="leave_route_creation_warning">Do you want to leave the route creation mode? Your current progress will be lost!</string>
