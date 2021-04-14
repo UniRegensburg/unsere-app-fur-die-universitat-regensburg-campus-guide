@@ -71,7 +71,7 @@ class MarkerManager(
         markerEditListener = listener
     }
 
-    fun setupNavigationWaypoints(waypoints: LinkedList<WayPoint>, onClick: (waypoint: WayPoint) -> Unit) {
+    fun enableNavigationWaypointListener(waypoints: LinkedList<WayPoint>, onClick: (waypoint: WayPoint) -> Unit) {
         /*
         waypoints.forEach {
             createNavigationPoint(it)
