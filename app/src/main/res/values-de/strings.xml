@@ -247,6 +247,7 @@
     <string name="route_item_duration">%1d min</string>
     <string name="route_item_author">von %1s</string>
 
+
     <!-- Category Strings-->
     <string name="default_title">Kategorie</string>
     <string name="camera_permission_not_granted">Wir benötigen die Berechtigung auf deine Kamera zuzugreifen, um Bilder aufzunehmen.</string>
@@ -272,6 +273,9 @@
     <string name="create_button">Profil erstellen</string>
     <string name="empty_username">Bitte Benutzernamen eingeben</string>
     <string name="user_data_error">Beim Erstellen deines Profiles ist etwas schief gelaufen, bitte versuche es später wieder.</string>
+    <string name="rating_text">Bitte hinterlasse eine Bewertung, wenn dir die Route gefallen hat</string>
+    <string name="rating_button">Abschicken</string>
+    <string name="rating_error">Etwas ist schiefgelaufen, bitte versuche es später wieder</string>
     <string name="anonymous_user_error">Leider kannst du diese Funktion ohne Account nicht nutzen. Erstelle einen und versuchen es dann noch mal.</string>
     <string name="anonymous_user_name">Anonymer Nutzer</string>
 

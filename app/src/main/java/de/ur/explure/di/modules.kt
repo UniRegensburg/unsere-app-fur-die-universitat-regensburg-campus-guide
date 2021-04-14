@@ -25,6 +25,7 @@ import de.ur.explure.services.FireStoreInstance
 import de.ur.explure.services.FirebaseAuthService
 import de.ur.explure.map.InfoWindowGenerator
 import de.ur.explure.map.MapHelper
+import de.ur.explure.services.AlgoliaService
 import de.ur.explure.utils.SharedPreferencesManager
 import de.ur.explure.viewmodel.AuthenticationViewModel
 import de.ur.explure.viewmodel.CategoryViewModel
@@ -42,6 +43,7 @@ import de.ur.explure.viewmodel.StatisticsViewModel
 import de.ur.explure.viewmodel.WordSearchViewModel
 import org.koin.android.ext.koin.androidApplication
 import de.ur.explure.viewmodel.UserDataViewModel
+import de.ur.explure.viewmodel.RatingViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
@@ -83,9 +85,12 @@ val mainModule = module {
     factory { FireStoreInstance(get()) }
     single { FirebaseAuthService(get()) }
 
+    // algolia
+    single { AlgoliaService() }
+
     // repositories
     single { RatingRepositoryImpl(get(), get()) }
-    single { RouteRepositoryImpl(get(), get(), get()) }
+    single { RouteRepositoryImpl(get(), get(), get(), get()) }
     single { UserRepositoryImpl(get(), get(), get()) }
     single { CategoryRepositoryImpl(get(), get()) }
 
@@ -105,4 +110,5 @@ val mainModule = module {
     viewModel { StatisticsViewModel(get(), get(), get(), get()) }
     viewModel { SingleRouteViewModel(get(), get(), get()) }
     viewModel { UserDataViewModel(get(), get()) }
+    viewModel { RatingViewModel(get()) }
 }
