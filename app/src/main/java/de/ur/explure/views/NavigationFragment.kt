@@ -256,7 +256,9 @@ class NavigationFragment : Fragment(R.layout.fragment_navigation), MapHelper.Map
                 length = Snackbar.LENGTH_LONG
             )
 
-            // TODO show dialog fragment and give user the option to rate this route!
+            // TODO save the final destination reached state
+
+            binding.finishNavigationButton.visibility = View.VISIBLE
         }
     }
 
@@ -363,6 +365,7 @@ class NavigationFragment : Fragment(R.layout.fragment_navigation), MapHelper.Map
 
     private fun setupInitialUI() {
         binding.startNavigationButton.visibility = View.VISIBLE
+        binding.finishNavigationButton.visibility = View.GONE
         binding.navigationProgressBar.visibility = View.VISIBLE
 
         mapMatchingClient.setMapMatchingListener(this)
@@ -379,13 +382,16 @@ class NavigationFragment : Fragment(R.layout.fragment_navigation), MapHelper.Map
             if (navigationViewModel.directionsRoute != null) {
                 navigationViewModel.enterNavigationMode()
             } else {
-                // toast so it looks better in combination with the navigation intro snackbar
+                // use a toast so it looks better in combination with the navigation intro snackbar
                 Toast.makeText(
                     requireContext(),
                     R.string.route_still_loading,
                     Toast.LENGTH_SHORT
                 ).show()
             }
+        }
+        binding.finishNavigationButton.setOnClickListener {
+            showFinishNavigationDialog()
         }
 
         // TODO also allow changing the mapStyle during navigation with:
@@ -488,6 +494,21 @@ class NavigationFragment : Fragment(R.layout.fragment_navigation), MapHelper.Map
         }
     }
 
+    private fun showFinishNavigationDialog() {
+        with(MaterialAlertDialogBuilder(requireActivity())) {
+            setMessage(R.string.finish_navigation_message)
+            setPositiveButton(R.string.yes) { _, _ ->
+                // TODO show dialog fragment and give user the option to rate this route!
+
+                navigationViewModel.leaveNavigationMode()
+                // TODO activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR
+                findNavController().navigateUp()
+            }
+            setNegativeButton(R.string.no) { _, _ -> }
+            show()
+        }
+    }
+
     override fun onMapLoaded(map: MapboxMap) {
         // adjust the compass position
         map.uiSettings.compassGravity = Gravity.BOTTOM or Gravity.START
@@ -507,7 +528,7 @@ class NavigationFragment : Fragment(R.layout.fragment_navigation), MapHelper.Map
                         addProgressChangeListener(mapboxNavigation)
                         addOnCameraTrackingChangedListener(cameraTrackingChangedListener)
                         setCamera(DynamicCamera(mapHelper.map))
-                        showAlternativeRoutes(false)
+                        showAlternativeRoutes(false) // we don't want alternatives!
                     }
         }
         // add a destination marker to the end
@@ -541,6 +562,7 @@ class NavigationFragment : Fragment(R.layout.fragment_navigation), MapHelper.Map
     }
 
     // TODO call this in onMapStyleLoaded if the directionRoute already exists ?
+    /*
     @SuppressLint("MissingPermission")
     private fun restoreNavigation() {
         navigationViewModel.directionsRoute?.let {
@@ -550,7 +572,7 @@ class NavigationFragment : Fragment(R.layout.fragment_navigation), MapHelper.Map
             updateCameraOnNavigationStateChange(true)
             mapboxNavigation.startTripSession()
         }
-    }
+    }*/
 
     @SuppressLint("MissingPermission")
     private fun startSimulation() {
@@ -579,7 +601,7 @@ class NavigationFragment : Fragment(R.layout.fragment_navigation), MapHelper.Map
             } else {
                 // stop tracking user position if not in navigation mode
                 updateCameraTrackingMode(NavigationCamera.NAVIGATION_TRACKING_MODE_NONE)
-                updateLocationLayerRenderMode(RenderMode.COMPASS) // TODO sometimes crashes here when leaving!
+                updateLocationLayerRenderMode(RenderMode.COMPASS)
             }
         }
     }
@@ -689,43 +711,6 @@ class NavigationFragment : Fragment(R.layout.fragment_navigation), MapHelper.Map
         // ! shouldn't be a problem in most cases. But as there is the possibility to use his own drawn
         // ! route we need to remove some coordinates from these unfortunately to be able to navigate
         val cleanedCoordinateList = mutableListOf<Point>()
-
-        /*
-        val startLocation = routeCoordinates.first()
-        val destinationLocation = routeCoordinates.last()
-        when {
-            routeCoordinates.size <= 100 -> {
-                // if we have 100 or less coordinates, everything's fine :)
-                coordinateList.addAll(routeCoordinates)
-            }
-            routeCoordinates.size in 26..50 -> {
-                // if we have between 25 and 50 coords we can simply take the first and last point and
-                // from the list between every second so we simply take half of the coordinates
-                coordinateList.add(startLocation)
-                routeCoordinates.subList(1, routeCoordinates.size - 2)
-                    .forEachIndexed { index, point ->
-                        if (index % 2 == 0) {
-                            coordinateList.add(point)
-                        }
-                    }
-                coordinateList.add(destinationLocation)
-            }
-            else -> {
-                // if we have more than 50 coordinates we use the same algorithm as above but take every
-                // 4th element instead because the maximum is 100 (because of the mapMatching - API - Limit
-                // during route creation (so we take only a quarter of all coordinates)
-                coordinateList.add(startLocation)
-                /*val tooManyCount = routeCoordinates.size - 25
-                for (i in 2..46 step 2) {
-                    coordinateList.add(routeCoordinates[i])
-                }*/
-                for (i in 4..routeCoordinates.size - 2 step 4) {
-                    coordinateList.add(routeCoordinates[i])
-                }
-                coordinateList.add(destinationLocation)
-            }
-        }*/
-
         if (routeCoordinates.size <= 100) {
             // if we have 100 or less coordinates, everything's fine :)
             cleanedCoordinateList.addAll(routeCoordinates)
@@ -748,6 +733,7 @@ class NavigationFragment : Fragment(R.layout.fragment_navigation), MapHelper.Map
     override fun onRouteMatched(allMatchings: MutableList<MapMatchingMatching>) {
         binding.navigationProgressBar.visibility = View.GONE
         val bestMatching = allMatchings[0]
+        // get a navigable route from the mapMatching response
         val directionsRoute = bestMatching.toDirectionRoute()
 
         navigationViewModel.directionsRoute = directionsRoute
