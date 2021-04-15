@@ -23,7 +23,7 @@ import java.util.*
 @Suppress("StringLiteralDuplication")
 class SingleRouteViewModel(
     private val routeRepository: RouteRepositoryImpl,
-    private val userRepository: UserRepositoryImpl
+    private val userRepository: UserRepositoryImpl,
     private val appRouter: MainAppRouter
 ) : ViewModel() {
 
@@ -165,10 +165,6 @@ class SingleRouteViewModel(
         appRouter.getNavController()?.navigate(action)
     }
 
-    companion object {
-        private const val DEFAULT_USERNAME = "Anonymous"
-    }
-
     fun favorRoute(routeId: String) {
         viewModelScope.launch {
             when (val userInfo = userRepository.getUserInfo()) {
@@ -179,5 +175,9 @@ class SingleRouteViewModel(
                 }
             }
         }
+    }
+
+    companion object {
+        private const val DEFAULT_USERNAME = "Anonymous"
     }
 }
