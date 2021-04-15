@@ -8,7 +8,7 @@
     <fragment
         android:id="@+id/discoverFragment"
         android:name="de.ur.explure.views.DiscoverFragment"
-        android:label="DiscoverPage"
+        android:label="Entdecken"
         tools:layout="@layout/fragment_discover">
         <action
             android:id="@+id/action_discoverFragment_to_textQueryFragment"
@@ -24,7 +24,7 @@
     <fragment
         android:id="@+id/textQueryFragment"
         android:name="de.ur.explure.views.TextQueryFragment"
-        android:label="Search Results"
+        android:label="Suchergebnisse"
         tools:layout="@layout/fragment_text_query">
         <argument
             android:name="textQueryKey"
@@ -37,7 +37,7 @@
     <fragment
         android:id="@+id/categoryQueryFragment"
         android:name="de.ur.explure.views.CategoryQueryFragment"
-        android:label="Category Search Results"
+        android:label="Kategorie-Suchergebnisse"
         tools:layout="@layout/fragment_category_query">
         <argument
             android:name="categoryQueryKey"
@@ -50,7 +50,7 @@
     <fragment
         android:id="@+id/profileFragment"
         android:name="de.ur.explure.views.ProfileFragment"
-        android:label="Profile"
+        android:label="Profil"
         tools:layout="@layout/fragment_profile">
         <action
             android:id="@+id/action_discoverFragment_to_createdRoutes"
@@ -66,7 +66,7 @@
     <fragment
         android:id="@+id/createdRoutesFragment"
         android:name="de.ur.explure.views.CreatedRoutesFragment"
-        android:label="Created Routes"
+        android:label="Erstellte Routen"
         tools:layout="@layout/fragment_created_routes">
         <action
             android:id="@+id/action_createdRoutesFragment_to_routeDetails"
@@ -76,7 +76,7 @@
     <fragment
         android:id="@+id/favoriteRoutesFragment"
         android:name="de.ur.explure.views.FavoriteRoutesFragment"
-        android:label="Favorite Routes"
+        android:label="Favorisierte Routen"
         tools:layout="@layout/fragment_favorite_routes">
         <action
             android:id="@+id/action_favoriteRoutesFragment_to_routeDetails"
@@ -86,7 +86,7 @@
     <fragment
         android:id="@+id/statisticsFragment"
         android:name="de.ur.explure.views.StatisticsFragment"
-        android:label="Statistics"
+        android:label="Statistiken"
         tools:layout="@layout/fragment_statistics" />
 
     <fragment
@@ -125,7 +125,7 @@
     <fragment
         android:id="@+id/singleRouteFragment"
         android:name="de.ur.explure.views.SingleRouteFragment"
-        android:label="Route Information"
+        android:label="Routen-Informationen"
         tools:layout="@layout/fragment_single_route">
         <argument
             android:name="routeID"
@@ -198,7 +198,7 @@
     <dialog
         android:id="@+id/createWayPointDialog"
         android:name="de.ur.explure.views.CreateWayPointDialogFragment"
-        android:label="CreateWayPointDialogFragment"
+        android:label="Wegpunkt erstellen"
         tools:layout="@layout/dialog_create_waypoint">
         <argument
             android:name="wayPointDTO"
@@ -229,7 +229,7 @@
     <dialog
         android:id="@+id/singleWaypointDialogFragment"
         android:name="de.ur.explure.views.SingleWaypointDialogFragment"
-        android:label="SingleWaypointDialogFragment">
+        android:label="Wegpunkt-Detailansicht">
         <argument
             android:name="waypoint"
             app:argType="de.ur.explure.model.waypoint.WayPoint" />

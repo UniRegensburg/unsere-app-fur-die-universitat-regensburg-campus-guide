@@ -8,7 +8,7 @@
     <fragment
         android:id="@+id/loginFragment"
         android:name="de.ur.explure.views.LoginFragment"
-        android:label="Login"
+        android:label="Anmelden"
         tools:layout="@layout/fragment_login">
         <action
             android:id="@+id/navigateToRegister"
@@ -18,7 +18,7 @@
     <fragment
         android:id="@+id/registerFragment"
         android:name="de.ur.explure.views.RegisterFragment"
-        android:label="Register"
+        android:label="Registrieren"
         tools:layout="@layout/fragment_register" />
 
 </navigation>
