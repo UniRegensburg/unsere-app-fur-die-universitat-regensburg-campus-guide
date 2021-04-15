@@ -146,10 +146,6 @@ class SingleRouteViewModel(
         )
     }
 
-    companion object {
-        private const val DEFAULT_USERNAME = "Anonymous"
-    }
-
     fun startNavigation() {
         val route = mutableRoute.value
         if (route == null) {
@@ -161,5 +157,9 @@ class SingleRouteViewModel(
             routeTitle = route.title
         )
         appRouter.getNavController()?.navigate(action)
+    }
+
+    companion object {
+        private const val DEFAULT_USERNAME = "Anonymous"
     }
 }
