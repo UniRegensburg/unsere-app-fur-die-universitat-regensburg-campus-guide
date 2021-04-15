@@ -39,7 +39,6 @@
     <string name="ratings_value">0</string>
 
     <!-- Logout Button (Profile) -->
-
     <string name="logout">Logout</string>
 
     <!-- Statistics Page -->
@@ -275,5 +274,7 @@
     <string name="rating_text">Please leave a rating if you liked the route</string>
     <string name="rating_button">Submit</string>
     <string name="rating_error">Something went wrong. Please try again later</string>
+    <string name="anonymous_user_error">Unfortunately, you can\'t use this feature without an account. Create one and try again.</string>
+    <string name="anonymous_user_name">Anonymous user</string>
 
 </resources>

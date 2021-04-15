@@ -278,8 +278,13 @@ class MapFragment : Fragment(R.layout.fragment_map), MapMatchingClient.MapMatchi
             mapViewModel.getCurrentMapStyle()?.let { style -> startLocationTracking(style) }
         }
 
+        // disables create route function if user is signed in anonymously
         binding.buildRouteButton.setOnClickListener {
-            showEnterRouteCreationDialog()
+            if (mapViewModel.anonymousUser == false) {
+                showEnterRouteCreationDialog()
+            } else {
+                isAnonymousUserError()
+            }
         }
 
         // if location tracking was enabled before, start it again to prevent forcing the user to
@@ -296,6 +301,16 @@ class MapFragment : Fragment(R.layout.fragment_map), MapMatchingClient.MapMatchi
         } else if (mapViewModel.routeDrawModeActive.value == true) {
             setupRouteDrawMode()
         }
+    }
+
+    private fun isAnonymousUserError() {
+        showSnackbar(
+            requireActivity(),
+            R.string.anonymous_user_error,
+            R.id.map_button_container,
+            Snackbar.LENGTH_LONG,
+            colorRes = R.color.colorError
+        )
     }
 
     /**

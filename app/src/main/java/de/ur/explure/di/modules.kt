@@ -100,7 +100,7 @@ val mainModule = module {
     viewModel { CategoryViewModel(get(), get()) }
     viewModel { DiscoverViewModel(get(), get(), get()) }
     viewModel { MainViewModel(get(), get(), get()) }
-    viewModel { MapViewModel(get(), get()) }
+    viewModel { MapViewModel(get(), get(), get()) }
     viewModel { EditRouteViewModel(get(), get(), get()) }
     viewModel { SaveRouteViewModel(get(), get(), get(), get()) }
     viewModel { CreateWayPointViewModel(get()) }
@@ -108,7 +108,7 @@ val mainModule = module {
     viewModel { CreatedRoutesViewModel(get(), get(), get()) }
     viewModel { FavoriteRoutesViewModel(get(), get(), get()) }
     viewModel { StatisticsViewModel(get(), get(), get(), get()) }
-    viewModel { SingleRouteViewModel(get(), get()) }
+    viewModel { SingleRouteViewModel(get(), get(), get()) }
     viewModel { UserDataViewModel(get(), get()) }
     viewModel { RatingViewModel(get()) }
 }

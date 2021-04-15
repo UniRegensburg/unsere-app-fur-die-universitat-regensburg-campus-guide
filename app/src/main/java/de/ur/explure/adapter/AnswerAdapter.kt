@@ -35,7 +35,7 @@ class AnswerAdapter(private val listener: (String) -> Unit) : RecyclerView.Adapt
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val currentItem = answerList[position]
-        holder.answerAuthor.text = currentItem.authorId
+        holder.answerAuthor.text = currentItem.userName
         holder.answerText.text = currentItem.message
         val date = dateFormat.format(currentItem.createdAt)
         holder.answerDate.text = date.toString()

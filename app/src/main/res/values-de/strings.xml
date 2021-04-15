@@ -276,5 +276,7 @@
     <string name="rating_text">Bitte hinterlasse eine Bewertung, wenn dir die Route gefallen hat</string>
     <string name="rating_button">Abschicken</string>
     <string name="rating_error">Etwas ist schiefgelaufen, bitte versuche es später wieder</string>
+    <string name="anonymous_user_error">Leider kannst du diese Funktion ohne Account nicht nutzen. Erstelle einen und versuchen es dann noch mal.</string>
+    <string name="anonymous_user_name">Anonymer Nutzer</string>
 
 </resources>
