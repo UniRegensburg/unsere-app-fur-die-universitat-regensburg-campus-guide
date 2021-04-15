@@ -200,7 +200,6 @@
     <string name="route_item_duration">%1d min</string>
     <string name="route_item_author">from %1s</string>
 
-
     <string name="discover_new_routes">New Routes</string>
     <string name="discover_popular_routes">Popular Routes</string>
     <string name="discover_route_error">Failed Loading Routes, please try again</string>
@@ -284,5 +283,15 @@
     <string name="rating_error">Something went wrong. Please try again later</string>
     <string name="anonymous_user_error">Unfortunately, you can\'t use this feature without an account. Create one and try again.</string>
     <string name="anonymous_user_name">Anonymous user</string>
+    <string name="waypoint_empty_description">No description available</string>
+    <string name="waypoint_show_more">Show more</string>
+    <string name="waypoint_show_less">Show less</string>
+    <string name="waypoint_image_title">Image</string>
+    <string name="waypoint_video_title">Video</string>
+    <string name="waypoint_audio_title">Audio</string>
+    <string name="waypoint_image_error">An error occured while loading the image of the waypoint.</string>
+    <string name="waypoint_video_error">An error occured while loading the video of the waypoint. Please try again later</string>
+    <string name="waypoint_audio_error">An error occured loading the audio file, please try again later.</string>
+    <string name="continue_navigation">Continue Navigation</string>
 
 </resources>

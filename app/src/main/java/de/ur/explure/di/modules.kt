@@ -25,6 +25,7 @@ import de.ur.explure.repository.user.UserRepositoryImpl
 import de.ur.explure.services.AlgoliaService
 import de.ur.explure.services.FireStoreInstance
 import de.ur.explure.services.FirebaseAuthService
+import de.ur.explure.repository.storage.StorageRepositoryImpl
 import de.ur.explure.utils.SharedPreferencesManager
 import de.ur.explure.viewmodel.AuthenticationViewModel
 import de.ur.explure.viewmodel.CategoryViewModel
@@ -40,6 +41,7 @@ import de.ur.explure.viewmodel.ProfileViewModel
 import de.ur.explure.viewmodel.RatingViewModel
 import de.ur.explure.viewmodel.SaveRouteViewModel
 import de.ur.explure.viewmodel.SingleRouteViewModel
+import de.ur.explure.viewmodel.SingleWaypointViewModel
 import de.ur.explure.viewmodel.StatisticsViewModel
 import de.ur.explure.viewmodel.UserDataViewModel
 import de.ur.explure.viewmodel.WordSearchViewModel
@@ -90,6 +92,7 @@ val mainModule = module {
     single { RouteRepositoryImpl(get(), get(), get(), get()) }
     single { UserRepositoryImpl(get(), get(), get()) }
     single { CategoryRepositoryImpl(get(), get()) }
+    single { StorageRepositoryImpl(get()) }
 
     // viewmodels
     viewModel { AuthenticationViewModel(get(), get()) }
@@ -109,4 +112,5 @@ val mainModule = module {
     viewModel { UserDataViewModel(get(), get()) }
     viewModel { NavigationViewModel(get(), get()) }
     viewModel { RatingViewModel(get()) }
+    viewModel { SingleWaypointViewModel(get()) }
 }
