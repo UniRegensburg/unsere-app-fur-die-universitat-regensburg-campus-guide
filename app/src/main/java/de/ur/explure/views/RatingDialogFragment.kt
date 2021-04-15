@@ -35,14 +35,11 @@ class RatingDialogFragment : DialogFragment(R.layout.fragment_rating_dialog) {
          dismiss()
       }
        binding.submitRating.setOnClickListener {
-          setRating()
-          dismiss()
+          val rating = binding.setRatingBar.rating.toInt()
+          ratingViewModel.setRating(rating, routeId) {
+             dismiss()
+          }
        }
-   }
-
-   private fun setRating() {
-      val rating = binding.setRatingBar.rating.toInt()
-      ratingViewModel.setRating(rating, routeId)
    }
 
    private fun setErrorObserver() {
