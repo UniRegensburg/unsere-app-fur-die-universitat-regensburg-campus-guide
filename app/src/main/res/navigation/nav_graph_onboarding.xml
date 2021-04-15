@@ -7,6 +7,6 @@
     <fragment
         android:id="@+id/userDataFragment"
         android:name="de.ur.explure.views.UserDataFragment"
-        android:label="fragment_user_data"
+        android:label="Profil einrichten"
         tools:layout="@layout/fragment_user_data" />
 </navigation>
