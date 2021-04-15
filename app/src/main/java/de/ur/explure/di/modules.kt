@@ -42,6 +42,7 @@ import de.ur.explure.viewmodel.SaveRouteViewModel
 import de.ur.explure.viewmodel.SingleRouteViewModel
 import de.ur.explure.viewmodel.SingleWaypointViewModel
 import de.ur.explure.viewmodel.StatisticsViewModel
+import de.ur.explure.viewmodel.UserDataViewModel
 import de.ur.explure.viewmodel.WordSearchViewModel
 import org.koin.android.ext.koin.androidApplication
 import de.ur.explure.viewmodel.UserDataViewModel
