@@ -114,6 +114,10 @@
             app:nullable="false" />
 
         <action
+            android:id="@+id/action_navigationFragment_to_singleWaypointDialogFragment"
+            app:destination="@id/singleWaypointDialogFragment" />
+
+        <action
             android:id="@+id/action_navigationFragment_to_rateRouteDialog"
             app:destination="@id/rateRouteDialog" />
     </fragment>

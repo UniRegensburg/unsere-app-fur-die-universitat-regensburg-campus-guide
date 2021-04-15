@@ -118,6 +118,8 @@ class NavigationFragment : Fragment(R.layout.fragment_navigation), MapHelper.Map
 
     // for testing routes
     private val mapboxReplayer = MapboxReplayer()
+    private var stopReplayMenuButton: MenuItem? = null
+    private var resumeReplayMenuButton: MenuItem? = null
 
     // SharedPrefs
     private val preferencesManager: SharedPreferencesManager by inject()
@@ -323,6 +325,8 @@ class NavigationFragment : Fragment(R.layout.fragment_navigation), MapHelper.Map
                 }
             } else {
                 backPressedCallback?.isEnabled = false
+                stopReplayMenuButton?.isVisible = false
+                resumeReplayMenuButton?.isVisible = false
                 setupInitialUI()
             }
         })
@@ -437,14 +441,23 @@ class NavigationFragment : Fragment(R.layout.fragment_navigation), MapHelper.Map
 
         // setup a click listener on the waypoints
         mapHelper.markerManager.enableNavigationWaypointListener(routeWayPoints) { clickedPoint ->
-
-            // TODO show waypoint dialog
-            Toast.makeText(
-                requireActivity(),
-                "Hier befindet sich der Wegpunkt: ${clickedPoint.title}",
-                Toast.LENGTH_SHORT
-            ).show()
+            stopRouteReplay() // pause replay while watching the waypoint information
+            navigationViewModel.openWayPointDialog(clickedPoint)
         }
+    }
+
+    private fun stopRouteReplay() {
+        // stop the route simulation
+        mapboxReplayer.stop()
+        stopReplayMenuButton?.isVisible = false
+        resumeReplayMenuButton?.isVisible = true
+    }
+
+    private fun startRouteReplay() {
+        // (re-)start or resume the route simulation
+        mapboxReplayer.play()
+        stopReplayMenuButton?.isVisible = true
+        resumeReplayMenuButton?.isVisible = false
     }
 
     private fun setupNavigationBottomSheet() {
@@ -478,7 +491,7 @@ class NavigationFragment : Fragment(R.layout.fragment_navigation), MapHelper.Map
     }
 
     private fun showCancelNavigationWarning() {
-        mapboxReplayer.stop() // stop replaying while showing this dialog
+        stopRouteReplay() // stop replaying while showing this dialog
         with(MaterialAlertDialogBuilder(requireActivity())) {
             setMessage(R.string.leave_navigation_warning)
             setCancelable(false)
@@ -488,7 +501,7 @@ class NavigationFragment : Fragment(R.layout.fragment_navigation), MapHelper.Map
                 findNavController().navigateUp()
             }
             setNegativeButton(R.string.no) { _, _ ->
-                mapboxReplayer.play() // start simulation again
+                startRouteReplay() // start simulation again
             }
             show()
         }
@@ -588,7 +601,7 @@ class NavigationFragment : Fragment(R.layout.fragment_navigation), MapHelper.Map
             seekTo(replayEvents.first())
         }
         mapboxReplayer.playbackSpeed(PLAYBACK_SPEED)
-        mapboxReplayer.play()
+        startRouteReplay()
     }
 
     private fun updateCameraOnNavigationStateChange(navigationStarted: Boolean) {
@@ -852,16 +865,26 @@ class NavigationFragment : Fragment(R.layout.fragment_navigation), MapHelper.Map
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         menu.clear()
         inflater.inflate(R.menu.menu_navigation, menu)
+        stopReplayMenuButton = menu.findItem(R.id.stopReplayButton)
+        resumeReplayMenuButton = menu.findItem(R.id.resumeReplayButton)
+
         menu.findItem(R.id.show3dBuildings).isChecked = preferencesManager.getBuildingExtrusionShown()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        @Suppress("UseIfInsteadOfWhen") // for further updates when is better!
         return when (item.itemId) {
             R.id.show3dBuildings -> {
                 item.isChecked = !item.isChecked
                 navigationViewModel.setBuildingExtrusionStatus(item.isChecked)
                 preferencesManager.setBuildingExtrusionShown(item.isChecked)
+                true
+            }
+            R.id.stopReplayButton -> {
+                stopRouteReplay()
+                true
+            }
+            R.id.resumeReplayButton -> {
+                startRouteReplay()
                 true
             }
             else -> super.onOptionsItemSelected(item)

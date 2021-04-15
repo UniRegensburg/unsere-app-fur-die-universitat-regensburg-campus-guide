@@ -25,7 +25,6 @@ import de.ur.explure.extensions.isEllipsized
 import de.ur.explure.model.waypoint.WayPoint
 import de.ur.explure.utils.showSnackbar
 import de.ur.explure.viewmodel.SingleWaypointViewModel
-import org.koin.android.ext.android.bind
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 @Suppress("TooManyFunctions", "TooGenericExceptionCaught", "SwallowedException")

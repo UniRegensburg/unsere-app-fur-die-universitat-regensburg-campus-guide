@@ -14,6 +14,7 @@ import de.ur.explure.views.CreatedRoutesFragmentDirections
 import de.ur.explure.views.DiscoverFragmentDirections
 import de.ur.explure.views.FavoriteRoutesFragmentDirections
 import de.ur.explure.views.MapFragmentDirections
+import de.ur.explure.views.NavigationFragmentDirections
 import de.ur.explure.views.ProfileFragmentDirections
 import de.ur.explure.views.SaveRouteFragmentDirections
 import de.ur.explure.views.SingleRouteFragmentDirections
@@ -180,7 +181,18 @@ class MainAppRouter {
     }
 
     fun navigateToSingleWayPointDialog(wayPoint: WayPoint) {
-        val actions = SingleRouteFragmentDirections.actionSingleRouteFragmentToSingleWaypointDialogFragment(wayPoint)
+        val actions = SingleRouteFragmentDirections.actionSingleRouteFragmentToSingleWaypointDialogFragment(
+            waypoint = wayPoint,
+            fromNavigation = false
+        )
+        navController.navigate(actions)
+    }
+
+    fun showRouteWayPointDialog(wayPoint: WayPoint) {
+        val actions = NavigationFragmentDirections.actionNavigationFragmentToSingleWaypointDialogFragment(
+            waypoint = wayPoint,
+            fromNavigation = true
+        )
         navController.navigate(actions)
     }
 

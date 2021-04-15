@@ -7,6 +7,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import com.mapbox.api.directions.v5.models.DirectionsRoute
 import de.ur.explure.model.route.Route
+import de.ur.explure.model.waypoint.WayPoint
 import de.ur.explure.navigation.MainAppRouter
 import de.ur.explure.utils.Event
 import de.ur.explure.views.NavigationFragmentDirections
@@ -72,6 +73,10 @@ class NavigationViewModel(
     fun setLocationPermissionStatus(permissionGiven: Boolean) {
         _locationPermissionGiven.value = permissionGiven
         savedState[LOCATION_PERMISSION_GIVEN] = permissionGiven
+    }
+
+    fun openWayPointDialog(wayPoint: WayPoint) {
+        appRouter.showRouteWayPointDialog(wayPoint)
     }
 
     fun showRouteRatingOption(route: Route) {

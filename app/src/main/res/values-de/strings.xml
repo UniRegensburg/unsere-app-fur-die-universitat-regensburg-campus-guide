@@ -215,7 +215,7 @@
     <string name="waypoints_button">Wegpunkte</string>
     <string name="waypoint_image">Bild</string>
     <string name="waypoint_title">Titel</string>
-    <string name="waypoint_description">Description</string>
+    <string name="waypoint_description">Beschreibung</string>
 
     <string name="discover_new_routes">Neue Routen</string>
     <string name="discover_popular_routes">Beliebte Routen</string>
