@@ -27,7 +27,7 @@
             android:src="@drawable/ic_cross"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:tint="@color/highlightColor" />
+            app:tint="@color/themeColor" />
 
         <TextView
             android:id="@+id/tv_waypoint_title"
@@ -39,18 +39,20 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_back_btn" />
 
-        <include layout="@layout/cardview_single_waypoint_descr"
-            android:layout_width="match_parent"
+        <include
             android:id="@+id/card_description_view"
+            layout="@layout/cardview_single_waypoint_descr"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tv_waypoint_title" />
 
-        <include layout="@layout/cardview_single_waypoint_image"
-            android:layout_width="match_parent"
+        <include
             android:id="@+id/card_image_view"
+            layout="@layout/cardview_single_waypoint_image"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             app:layout_constraintEnd_toEndOf="parent"
@@ -58,52 +60,38 @@
             app:layout_constraintTop_toBottomOf="@+id/card_description_view" />
 
 
-        <include layout="@layout/cardview_single_waypoint_video"
-            android:layout_width="match_parent"
+        <include
             android:id="@+id/card_video_view"
+            layout="@layout/cardview_single_waypoint_video"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/card_image_view" />
 
-
-        <TextView
-            android:id="@+id/tv_audio_title"
+        <include
+            android:id="@+id/card_audio_view"
+            layout="@layout/cardview_single_waypoint_audio"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:text="@string/waypoint_audio_title"
-            android:textColor="@color/textColorGrey"
-            android:textSize="16sp"
-            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/card_video_view" />
 
-        <View
-            android:id="@+id/vertical_audio_view"
-            android:layout_width="match_parent"
-            android:layout_height="2dp"
-            android:layout_marginTop="1dp"
-            android:background="@color/themeColor"
-            android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_audio_title" />
-
-        <com.keenfin.audioview.AudioView
-            android:id="@+id/iv_audio_preview"
+        <Button
+            android:id="@+id/continue_nav_btn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_margin="@dimen/margin_normal"
+            android:layout_marginTop="@dimen/margin_normal"
+            android:elevation="@dimen/cardview_default_elevation"
+            android:text="@string/continue_navigation"
+            android:textSize="15sp"
             android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/vertical_audio_view"
-            app:minified="true"
-            app:primaryColor="@color/highlightColor"
-            app:selectControls="false"
-            app:showTitle="false" />
+            app:layout_constraintTop_toBottomOf="@+id/card_audio_view" />
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

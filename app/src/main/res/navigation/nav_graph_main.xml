@@ -208,6 +208,10 @@
         <argument
             android:name="waypoint"
             app:argType="de.ur.explure.model.waypoint.WayPoint" />
+        <argument
+            android:name="fromNavigation"
+            app:argType="boolean"
+            android:defaultValue="false" />
     </dialog>
 
 </navigation>

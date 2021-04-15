@@ -281,5 +281,6 @@
     <string name="waypoint_image_error">Leider konnte das Bild nicht geladen werden, bitte versuche es später wieder.</string>
     <string name="waypoint_video_error">Leider konnte das Video nicht geladen werden, bitte versuche es später wieder.</string>
     <string name="waypoint_audio_error">Leider konnte die Audiodatei nicht geladen werden, bitte versuche es später wieder.</string>
+    <string name="continue_navigation">Navigation fortsetzen</string>
 
 </resources>

@@ -64,6 +64,7 @@ class SingleWaypointDialogFragment : DialogFragment(R.layout.dialog_single_waypo
         initFullScreenViews()
         initClickListeners()
         initFullScreenDialog()
+        setContinueNavigationButton(navArgs.fromNavigation)
     }
 
     private fun initObservers() {
@@ -88,7 +89,7 @@ class SingleWaypointDialogFragment : DialogFragment(R.layout.dialog_single_waypo
     private fun initAudioUriObserver() {
         viewModel.audioUri.observe(viewLifecycleOwner, { audioUri ->
             if (audioUri != null) {
-                binding.ivAudioPreview.setDataSource(audioUri)
+                binding.cardAudioView.ivAudioPreview.setDataSource(audioUri)
             }
         })
     }
@@ -340,19 +341,26 @@ class SingleWaypointDialogFragment : DialogFragment(R.layout.dialog_single_waypo
     }
 
     private fun showImageView() {
-        binding.cardImageView.tvImageTitle.visibility = View.VISIBLE
-        binding.cardImageView.ivImagePreview.visibility = View.VISIBLE
+        binding.cardImageView.imageContainer.visibility = View.VISIBLE
     }
 
     private fun showVideoView() {
-        binding.cardVideoView.tvVideoTitle.visibility = View.VISIBLE
-        binding.cardVideoView.ivVideoPreview.visibility = View.VISIBLE
+        binding.cardVideoView.videoContainer.visibility = View.VISIBLE
     }
 
     private fun showAudioView() {
-        binding.tvAudioTitle.visibility = View.VISIBLE
-        binding.verticalAudioView.visibility = View.VISIBLE
-        binding.ivAudioPreview.visibility = View.VISIBLE
+        binding.cardAudioView.audioContainer.visibility = View.VISIBLE
+    }
+
+    private fun setContinueNavigationButton(fromNavigation: Boolean) {
+        if (!fromNavigation) {
+            binding.continueNavBtn.visibility = View.VISIBLE
+            binding.continueNavBtn.setOnClickListener {
+                dismiss()
+            }
+        } else {
+            binding.continueNavBtn.visibility = View.GONE
+        }
     }
 
     private fun initShowMoreClickListener() {

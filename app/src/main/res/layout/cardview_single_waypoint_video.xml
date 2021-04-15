@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/route_cardview"
+    android:id="@+id/video_container"
+    android:visibility="gone"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     card_view:cardCornerRadius="@dimen/cardview_corner_radius"
@@ -40,7 +41,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
                 android:layout_marginTop="10dp"
-                android:visibility="gone"
                 card_view:controller_layout_id="@layout/expo_player_control_view"
                 card_view:resize_mode="fixed_width"
                 card_view:use_controller="true"/>
