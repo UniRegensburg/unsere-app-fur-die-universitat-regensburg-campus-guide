@@ -2,7 +2,6 @@ package de.ur.explure.viewmodel
 
 import android.content.Context
 import android.content.Intent
-import androidx.core.content.ContextCompat.startActivity
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -13,14 +12,15 @@ import de.ur.explure.model.route.Route
 import de.ur.explure.model.waypoint.WayPoint
 import de.ur.explure.navigation.MainAppRouter
 import de.ur.explure.repository.route.RouteRepositoryImpl
+import de.ur.explure.repository.user.UserRepositoryImpl
 import de.ur.explure.utils.DeepLinkUtils
 import de.ur.explure.utils.FirebaseResult
 import kotlinx.coroutines.launch
 import java.util.*
 
-@Suppress("StringLiteralDuplication")
 class SingleRouteViewModel(
     private val routeRepository: RouteRepositoryImpl,
+    private val userRepository: UserRepositoryImpl,
     private val appRouter: MainAppRouter
 ) : ViewModel() {
 
@@ -30,6 +30,7 @@ class SingleRouteViewModel(
     val errorMessage: LiveData<Boolean> = mutableErrorMessage
     private val mutableSuccessMessage: MutableLiveData<Boolean> = MutableLiveData()
     val successMessage: LiveData<Boolean> = mutableSuccessMessage
+    private var userName: String = DEFAULT_USERNAME
 
     fun getRouteData(routeId: String) {
         viewModelScope.launch {
@@ -47,9 +48,20 @@ class SingleRouteViewModel(
         }
     }
 
+    fun getUserName() {
+        viewModelScope.launch {
+            val userData = userRepository.getUserInfo()
+            userName = if (userData is FirebaseResult.Success) {
+                userData.data.name
+            } else {
+                DEFAULT_USERNAME
+            }
+        }
+    }
+
     fun addComment(comment: String) {
         viewModelScope.launch {
-            val commentDto = CommentDTO(comment)
+            val commentDto = CommentDTO(comment, userName)
             val routeId = route.value?.id ?: return@launch
             if (routeRepository.addComment(routeId, commentDto) is FirebaseResult.Success) {
                 getRouteData(routeId)
@@ -61,7 +73,7 @@ class SingleRouteViewModel(
 
     fun addAnswer(commentId: String, answerText: String) {
         viewModelScope.launch {
-            val commentDto = CommentDTO(answerText)
+            val commentDto = CommentDTO(answerText, userName)
             val routeId = route.value?.id ?: return@launch
             if (routeRepository.addAnswer(
                     routeId,
@@ -114,22 +126,30 @@ class SingleRouteViewModel(
     }
 
     fun shareRoute(context: Context) {
-            val route = route.value ?: return
-            val shareLink = DeepLinkUtils.getURLforRouteId(route.id)
-            val intent = Intent()
-            intent.action = Intent.ACTION_SEND
-            intent.putExtra(Intent.EXTRA_TEXT, context.getString(R.string.share_text,
+        val route = route.value ?: return
+        val shareLink = DeepLinkUtils.getURLforRouteId(route.id)
+        val intent = Intent()
+        intent.action = Intent.ACTION_SEND
+        intent.putExtra(
+            Intent.EXTRA_TEXT, context.getString(
+                R.string.share_text,
                 route.title,
                 route.wayPointCount,
                 route.duration.toInt(),
                 route.distance.toInt(),
-                shareLink))
-            intent.type = "text/plain"
-            context.startActivity(
-                Intent.createChooser(
-                    intent,
-                    context.getString(R.string.share_option)
-                )
+                shareLink
             )
+        )
+        intent.type = "text/plain"
+        context.startActivity(
+            Intent.createChooser(
+                intent,
+                context.getString(R.string.share_option)
+            )
+        )
+    }
+
+    companion object {
+        private const val DEFAULT_USERNAME = "Anonymous"
     }
 }

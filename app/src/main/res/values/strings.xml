@@ -39,7 +39,6 @@
     <string name="ratings_value">0</string>
 
     <!-- Logout Button (Profile) -->
-
     <string name="logout">Logout</string>
 
     <!-- Statistics Page -->
@@ -166,7 +165,7 @@
     <string name="sign_up_button">Register?</string>
     <string name="new_email">Email</string>
 
-	<string name="new_password">Password</string>
+    <string name="new_password">Password</string>
     <string name="confirm_password">Confirm password</string>
     <string name="register_button">Register</string>
     <string name="already_account">Already have an account?</string>
@@ -271,6 +270,11 @@
     <string name="create_button">Create profile</string>
     <string name="empty_username">Please enter a username</string>
     <string name="user_data_error">Something went wrong while creating your profile. Please try again later.</string>
+    <string name="rating_text">Please leave a rating if you liked the route</string>
+    <string name="rating_button">Submit</string>
+    <string name="rating_error">Something went wrong. Please try again later</string>
+    <string name="anonymous_user_error">Unfortunately, you can\'t use this feature without an account. Create one and try again.</string>
+    <string name="anonymous_user_name">Anonymous user</string>
     <string name="waypoint_empty_description">No description available</string>
     <string name="waypoint_show_more">Show more</string>
     <string name="waypoint_show_less">Show less</string>

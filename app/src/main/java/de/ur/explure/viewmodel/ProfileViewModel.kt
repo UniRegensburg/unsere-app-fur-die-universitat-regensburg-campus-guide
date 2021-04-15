@@ -18,6 +18,7 @@ class ProfileViewModel(
 ) : ViewModel() {
 
     var user: MutableLiveData<User> = MutableLiveData()
+    var anonymousUser: Boolean? = authService.isAnonymousUser()
 
     fun getUserInfo() {
         viewModelScope.launch {

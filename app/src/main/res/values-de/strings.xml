@@ -272,6 +272,11 @@
     <string name="create_button">Profil erstellen</string>
     <string name="empty_username">Bitte Benutzernamen eingeben</string>
     <string name="user_data_error">Beim Erstellen deines Profiles ist etwas schief gelaufen, bitte versuche es später wieder.</string>
+    <string name="rating_text">Bitte hinterlasse eine Bewertung, wenn dir die Route gefallen hat</string>
+    <string name="rating_button">Abschicken</string>
+    <string name="rating_error">Etwas ist schiefgelaufen, bitte versuche es später wieder</string>
+    <string name="anonymous_user_error">Leider kannst du diese Funktion ohne Account nicht nutzen. Erstelle einen und versuchen es dann noch mal.</string>
+    <string name="anonymous_user_name">Anonymer Nutzer</string>
     <string name="waypoint_empty_description">Keine Beschreibung vorhanden</string>
     <string name="waypoint_show_more">Mehr anzeigen</string>
     <string name="waypoint_show_less">Weniger anzeigen</string>
