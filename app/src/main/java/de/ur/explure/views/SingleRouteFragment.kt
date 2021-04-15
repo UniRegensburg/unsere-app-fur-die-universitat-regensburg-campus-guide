@@ -9,6 +9,7 @@ import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.crazylegend.viewbinding.viewBinding
+import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.storage.FirebaseStorage
 import de.ur.explure.GlideApp
 import de.ur.explure.adapter.CommentInterface
@@ -17,6 +18,7 @@ import de.ur.explure.adapter.CommentAdapter
 import de.ur.explure.adapter.WayPointAdapter
 import de.ur.explure.databinding.FragmentSingleRouteBinding
 import de.ur.explure.model.route.Route
+import de.ur.explure.utils.showSnackbar
 import de.ur.explure.viewmodel.SingleRouteViewModel
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.component.KoinComponent
@@ -32,6 +34,8 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinCompon
 
     private lateinit var wayPointAdapter: WayPointAdapter
     private lateinit var commentAdapter: CommentAdapter
+
+    private var routeAddedSnackbar: Snackbar? = null
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -111,7 +115,13 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinCompon
         }
         binding.favorRouteButton.setOnClickListener {
             singleRouteViewModel.favorRoute(args.routeID)
-            Toast.makeText(context, getString(R.string.add_route_to_favorites), Toast.LENGTH_LONG).show()
+            routeAddedSnackbar = showSnackbar(
+                requireActivity(),
+                R.string.add_route_to_favorites,
+                binding.mapButtonContainer,
+                Snackbar.LENGTH_SHORT,
+                colorRes = R.color.themeColor
+            )
         }
         /*binding.shareRouteButton.setOnClickListener {
             singleRouteViewModel.shareRoute(requireContext())
