@@ -115,9 +115,6 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
                 isAnonymousUserError()
             }
         }
-        binding.logOutButton.setOnClickListener {
-            viewModel.signOut()
-        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -125,9 +122,12 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return if (item.itemId == R.id.changeUserName && viewModel.anonymousUser == false) {
-                showDialog()
-                true
+        return if (item.itemId == R.id.changeUserName) {
+            showDialog()
+            true
+        } else if (item.itemId == R.id.logOut) {
+            viewModel.signOut()
+            true
         } else {
             isAnonymousUserError()
             super.onOptionsItemSelected(item)

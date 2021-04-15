@@ -13,5 +13,9 @@ data class User(
     var profilePictureUrl: String = "",
     var createdRoutes: List<String> = emptyList(),
     var favouriteRoutes: List<String> = emptyList(),
-    var finishedRoutes: List<String> = emptyList()
+    var finishedRoutes: List<String> = emptyList(),
+    var startedRoutes: Int = 0,
+    var endedRoutes: Int = 0,
+    var commentCount: Int = 0,
+    var ratingCount: Int = 0
 ) : Parcelable

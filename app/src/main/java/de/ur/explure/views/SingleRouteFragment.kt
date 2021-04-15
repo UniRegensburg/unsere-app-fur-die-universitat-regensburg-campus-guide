@@ -41,10 +41,13 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinCompon
 
     private var shareButton: MenuItem? = null
 
+    private var routeAddedSnackbar: Snackbar? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         singleRouteViewModel.getRouteData(args.routeID)
     }
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -235,9 +238,19 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinCompon
         binding.startRouteButton.setOnClickListener {
             singleRouteViewModel.startNavigation()
         }
-        binding.shareRouteButton.setOnClickListener {
-            singleRouteViewModel.shareRoute(requireContext())
+        binding.favorRouteButton.setOnClickListener {
+            singleRouteViewModel.favorRoute(args.routeID)
+            routeAddedSnackbar = showSnackbar(
+                requireActivity(),
+                R.string.add_route_to_favorites,
+                R.id.scrollview,
+                Snackbar.LENGTH_SHORT,
+                colorRes = R.color.themeColor
+            )
         }
+        /*binding.shareRouteButton.setOnClickListener {
+            singleRouteViewModel.shareRoute(requireContext())
+        }*/
         binding.addCommentButton.setOnClickListener {
             addComment()
         }

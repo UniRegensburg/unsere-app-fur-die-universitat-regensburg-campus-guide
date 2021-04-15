@@ -20,6 +20,7 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.util.*
 
+@Suppress("StringLiteralDuplication")
 class SingleRouteViewModel(
     private val routeRepository: RouteRepositoryImpl,
     private val userRepository: UserRepositoryImpl,
@@ -164,6 +165,18 @@ class SingleRouteViewModel(
             routeTitle = route.title
         )
         appRouter.getNavController()?.navigate(action)
+    }
+
+    fun favorRoute(routeId: String) {
+        viewModelScope.launch {
+            when (val userInfo = userRepository.getUserInfo()) {
+                is FirebaseResult.Success -> {
+                    if (!userInfo.data.favouriteRoutes.contains(routeId)) {
+                        userRepository.addRouteToFavouriteRoutes(routeId)
+                    }
+                }
+            }
+        }
     }
 
     fun setFlipperView(descriptionViewId: Int) {
