@@ -6,14 +6,16 @@ import de.ur.explure.config.ErrorConfig
 import de.ur.explure.config.RatingDocumentConfig.DATE_FIELD
 import de.ur.explure.config.RatingDocumentConfig.RATING_FIELD
 import de.ur.explure.config.UserDocumentConfig
+import de.ur.explure.config.RouteDocumentConfig.RATING_LIST_FIELD
 import de.ur.explure.extensions.await
 import de.ur.explure.model.rating.Rating
 import de.ur.explure.model.rating.RatingDTO
 import de.ur.explure.services.FireStoreInstance
 import de.ur.explure.services.FirebaseAuthService
 import de.ur.explure.utils.FirebaseResult
+import timber.log.Timber
 
-@Suppress("TooGenericExceptionCaught")
+@Suppress("TooGenericExceptionCaught", "ReturnCount", "UnnecessaryParentheses")
 class RatingRepositoryImpl(
     private val firebaseAuth: FirebaseAuthService,
     private val fireStore: FireStoreInstance
@@ -32,9 +34,16 @@ class RatingRepositoryImpl(
     override suspend fun addRatingToFireStore(ratingDTO: RatingDTO): FirebaseResult<Void> {
         return try {
             val userId = firebaseAuth.getCurrentUserId() ?: return ErrorConfig.NO_USER_RESULT
-            fireStore.ratingCollection.document().set(ratingDTO.toMap(userId)).await()
-            fireStore.userCollection.document()
-                    .update(UserDocumentConfig.RATING_COUNT_KEY, FieldValue.increment(1)).await()
+            val document = fireStore.ratingCollection.document()
+            when (val ratingCall =
+                    document.set(ratingDTO.toMap(userId)).await()) {
+                is FirebaseResult.Success -> {
+                    addRatingToRoute(document.id, ratingDTO.routeId)
+                    return ratingCall
+                }
+                is FirebaseResult.Error -> FirebaseResult.Error(ratingCall.exception)
+                is FirebaseResult.Canceled -> FirebaseResult.Canceled(ratingCall.exception)
+            }
         } catch (exception: Exception) {
             FirebaseResult.Error(exception)
         }
@@ -134,6 +143,18 @@ class RatingRepositoryImpl(
             fireStore.ratingCollection.document(ratingId).delete()
                 .await()
         } catch (exception: Exception) {
+            FirebaseResult.Error(exception)
+        }
+    }
+
+    private suspend fun addRatingToRoute(ratingId: String, routeId: String) {
+        try {
+            fireStore.routeCollection.document(routeId)
+                .update(RATING_LIST_FIELD, (FieldValue.arrayUnion(ratingId))).await()
+            fireStore.userCollection.document()
+                .update(UserDocumentConfig.RATING_COUNT_KEY, FieldValue.increment(1)).await()
+        } catch (exception: Exception) {
+            Timber.d("Failed to add rating with $exception")
             FirebaseResult.Error(exception)
         }
     }
