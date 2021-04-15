@@ -232,6 +232,7 @@
                 <RelativeLayout
                     android:id="@+id/comment_section"
                     android:layout_width="match_parent"
+                    android:layout_marginHorizontal="10dp"
                     android:layout_height="wrap_content">
 
                     <EditText
@@ -240,11 +241,12 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentStart="true"
                         android:layout_marginStart="4dp"
+                        android:layout_marginTop="8dp"
                         android:layout_toStartOf="@+id/add_comment_button"
                         android:autofillHints="@string/comment_input"
                         android:hint="@string/comment_input"
                         android:inputType="text"
-                        android:textSize="12sp"
+                        android:textSize="16sp"
                         tools:ignore="LabelFor" />
 
                     <Button
@@ -256,13 +258,14 @@
                         android:layout_alignParentEnd="true"
                         android:layout_marginEnd="4dp"
                         android:text="@string/add_comment"
+                        android:lines="1"
                         android:textAllCaps="false"
-                        android:textSize="10sp"
-                        tools:ignore="SmallSp" />
+                        android:textSize="12sp" />
 
 
                     <androidx.recyclerview.widget.RecyclerView
                         android:id="@+id/comments"
+                        android:layout_marginTop="15dp"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_below="@id/comment_input"

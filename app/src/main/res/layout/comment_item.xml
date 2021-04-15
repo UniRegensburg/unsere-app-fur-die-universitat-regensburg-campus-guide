@@ -1,117 +1,131 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="horizontal"
     android:padding="8dp">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/comment_item"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-    <TextView
-        android:id="@+id/comment_author"
+    <androidx.cardview.widget.CardView xmlns:card_view="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/comment_card_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginBottom="8dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintBottom_toTopOf="@+id/comment_text"
-        android:text="@string/comment_author"
-        android:textStyle="bold"
-        android:textColor="@color/textColorGrey" />
+        app:cardBackgroundColor="@android:color/white"
+        card_view:cardCornerRadius="@dimen/cardview_corner_radius"
+        card_view:cardElevation="@dimen/cardview_default_elevation">
 
-    <TextView
-        android:id="@+id/comment_text"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_marginStart="8dp"
-        app:layout_constraintTop_toBottomOf="@+id/comment_author"
-        app:layout_constraintStart_toStartOf="parent"
-        android:text="@string/comment_text"
-        android:textColor="@color/textColorGrey"/>
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/comment_item"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="5dp"
+            android:paddingVertical="10dp">
 
-    <TextView
-        android:id="@+id/comment_date"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_marginStart="8dp"
-        app:layout_constraintTop_toBottomOf="@+id/comment_text"
-        app:layout_constraintStart_toStartOf="parent"
-        android:text="@string/comment_text"
-        android:textSize="12sp"
-        android:textColor="@color/textColorGrey"
-        android:textStyle="italic"/>
+            <TextView
+                android:id="@+id/comment_author"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="8dp"
+                android:text="@string/comment_author"
+                android:textColor="@color/textColorGrey"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toTopOf="@+id/comment_text"
+                app:layout_constraintStart_toStartOf="parent" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <TextView
+                android:id="@+id/comment_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:text="@string/comment_text"
+                android:textColor="@color/textColorGrey"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/comment_author" />
+
+            <TextView
+                android:id="@+id/comment_date"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:text="@string/comment_text"
+                android:textColor="@color/textColorGrey"
+                android:textSize="12sp"
+                android:textStyle="italic"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/comment_text" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.cardview.widget.CardView>
 
     <EditText
         android:id="@+id/answer_input"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="8dp"
-        android:hint="@string/answer_input"
-        android:layout_below="@+id/comment_item"
-        android:inputType="text"
-        android:textSize="12sp"
+        android:layout_below="@+id/comment_card_view"
         android:layout_alignParentStart="true"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="16dp"
         android:layout_toStartOf="@+id/add_answer_button"
         android:autofillHints="@string/comment_input"
+        android:hint="@string/answer_input"
+        android:inputType="text"
+        android:textSize="14sp"
         tools:ignore="LabelFor" />
 
     <Button
         android:id="@+id/add_answer_button"
+        style="?android:attr/buttonStyleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="24dp"
-        android:layout_marginTop="8dp"
-        style="?android:attr/buttonStyleSmall"
-        android:text="@string/add_comment"
-        android:textSize="8sp"
-        android:textAllCaps="false"
+        android:layout_below="@id/comment_card_view"
         android:layout_alignParentEnd="true"
-        android:layout_below="@id/comment_item"
+        android:layout_marginStart="5dp"
+        android:layout_marginTop="8dp"
+        android:lines="1"
+        android:text="@string/add_comment"
+        android:textAllCaps="false"
+        android:textSize="10sp"
         tools:ignore="SmallSp" />
 
     <TextView
         android:id="@+id/show_answers"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:text="@string/show_answers"
-        android:textSize="12sp"
-        android:textColor="@color/themeColor"
-        android:layout_centerHorizontal="true"
         android:layout_below="@+id/answer_input"
-        android:visibility="gone"/>
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="15dp"
+        android:text="@string/show_answers"
+        android:textColor="@color/themeColor"
+        android:textStyle="bold"
+        android:textSize="13sp"
+        android:visibility="gone" />
 
     <TextView
         android:id="@+id/hide_answers"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/answer_input"
+        android:layout_centerHorizontal="true"
         android:layout_marginTop="24dp"
         android:text="@string/hide_answers"
-        android:textSize="12sp"
         android:textColor="@color/themeColor"
-        android:layout_centerHorizontal="true"
-        android:layout_below="@+id/answer_input"
-        android:visibility="gone"/>
+        android:textSize="12sp"
+        android:visibility="gone" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/answer_item"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
         android:layout_below="@id/hide_answers"
-        android:visibility="gone"/>
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="5dp"
+        android:visibility="gone" />
 
 </RelativeLayout>
