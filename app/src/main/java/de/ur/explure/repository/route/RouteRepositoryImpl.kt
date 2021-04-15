@@ -170,7 +170,7 @@ class RouteRepositoryImpl(
     override suspend fun addComment(routeId: String, commentDTO: CommentDTO): FirebaseResult<Void> {
         return try {
             val userId = authService.getCurrentUserId() ?: return ErrorConfig.NO_USER_RESULT
-            fireStore.userCollection.document()
+            fireStore.userCollection.document(userId)
                     .update(UserDocumentConfig.COMMENT_COUNT_KEY, FieldValue.increment(1)).await()
             return fireStore.routeCollection.document(routeId)
                 .collection(COMMENT_COLLECTION_NAME)
@@ -220,7 +220,7 @@ class RouteRepositoryImpl(
     ): FirebaseResult<Void> {
         return try {
             val userId = authService.getCurrentUserId() ?: return ErrorConfig.NO_USER_RESULT
-            fireStore.userCollection.document()
+            fireStore.userCollection.document(userId)
                     .update(UserDocumentConfig.COMMENT_COUNT_KEY, FieldValue.increment(1)).await()
             return fireStore.routeCollection.document(routeId)
                 .collection(COMMENT_COLLECTION_NAME)
