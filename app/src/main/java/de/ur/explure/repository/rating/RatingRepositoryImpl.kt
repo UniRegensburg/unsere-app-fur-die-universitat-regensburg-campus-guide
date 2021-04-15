@@ -5,6 +5,7 @@ import com.google.firebase.firestore.FieldValue
 import de.ur.explure.config.ErrorConfig
 import de.ur.explure.config.RatingDocumentConfig.DATE_FIELD
 import de.ur.explure.config.RatingDocumentConfig.RATING_FIELD
+import de.ur.explure.config.UserDocumentConfig
 import de.ur.explure.config.RouteDocumentConfig.RATING_LIST_FIELD
 import de.ur.explure.extensions.await
 import de.ur.explure.model.rating.Rating
@@ -150,6 +151,8 @@ class RatingRepositoryImpl(
         try {
             fireStore.routeCollection.document(routeId)
                 .update(RATING_LIST_FIELD, (FieldValue.arrayUnion(ratingId))).await()
+            fireStore.userCollection.document()
+                .update(UserDocumentConfig.RATING_COUNT_KEY, FieldValue.increment(1)).await()
         } catch (exception: Exception) {
             Timber.d("Failed to add rating with $exception")
             FirebaseResult.Error(exception)

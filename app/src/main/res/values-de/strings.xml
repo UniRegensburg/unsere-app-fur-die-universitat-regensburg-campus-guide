@@ -16,7 +16,7 @@
     <string name="test_route_timestamp">14.01.2021 15:15</string>
 
     <!-- Statistics Page -->
-    <string name="statistics">Statistiken</string>
+    <string name="statistics">Statistik Überblick</string>
     <string name="distance">Distanz</string>
     <string name="covered_track">Zurückgelegte Strecke</string>
     <string name="covered_track_value">0m</string>
@@ -181,6 +181,7 @@
     <string name="email_sent">Email wurde gesendet</string>
     <string name="registration_failed">Registrierung fehlgeschlagen</string>
     <string name="changeUserName">Benutzernamen ändern</string>
+    <string name="deleteAccount">Account löschen</string>
 
     <!-- Single Route -->
     <string name="route_name">Route</string>
@@ -279,6 +280,7 @@
     <string name="create_button">Profil erstellen</string>
     <string name="empty_username">Bitte Benutzernamen eingeben</string>
     <string name="user_data_error">Beim Erstellen deines Profiles ist etwas schief gelaufen, bitte versuche es später wieder.</string>
+    <string name="add_route_to_favorites">Route zu Favoriten hinzugefügt</string>
     <string name="rating_text">Bitte hinterlasse eine Bewertung, wenn dir die Route gefallen hat</string>
     <string name="rating_button">Abschicken</string>
     <string name="rating_error">Etwas ist schiefgelaufen, bitte versuche es später wieder</string>

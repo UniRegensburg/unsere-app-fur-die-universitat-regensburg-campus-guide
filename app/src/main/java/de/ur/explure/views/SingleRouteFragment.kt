@@ -35,6 +35,8 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinCompon
     private lateinit var wayPointAdapter: WayPointAdapter
     private lateinit var commentAdapter: CommentAdapter
 
+    private var routeAddedSnackbar: Snackbar? = null
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         observeRouteInformation()
@@ -116,9 +118,19 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinCompon
         binding.startRouteButton.setOnClickListener {
             singleRouteViewModel.startNavigation()
         }
-        binding.shareRouteButton.setOnClickListener {
-            singleRouteViewModel.shareRoute(requireContext())
+        binding.favorRouteButton.setOnClickListener {
+            singleRouteViewModel.favorRoute(args.routeID)
+            routeAddedSnackbar = showSnackbar(
+                requireActivity(),
+                R.string.add_route_to_favorites,
+                R.id.scrollview,
+                Snackbar.LENGTH_SHORT,
+                colorRes = R.color.themeColor
+            )
         }
+        /*binding.shareRouteButton.setOnClickListener {
+            singleRouteViewModel.shareRoute(requireContext())
+        }*/
         binding.addCommentButton.setOnClickListener {
             addComment()
         }
