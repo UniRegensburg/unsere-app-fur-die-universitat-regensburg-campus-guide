@@ -58,52 +58,15 @@
             app:layout_constraintTop_toBottomOf="@+id/card_description_view" />
 
 
-
-        <TextView
-            android:id="@+id/tv_video_title"
+        <include layout="@layout/cardview_single_waypoint_video"
             android:layout_width="match_parent"
+            android:id="@+id/card_video_view"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:text="@string/waypoint_video_title"
-            android:textColor="@color/textColorGrey"
-            android:textSize="16sp"
-            android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/card_description_view" />
+            app:layout_constraintTop_toBottomOf="@+id/card_image_view" />
 
-        <View
-            android:id="@+id/vertical_video_view"
-            android:layout_width="match_parent"
-            android:layout_height="2dp"
-            android:layout_marginTop="1dp"
-            android:background="@color/themeColor"
-            android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tv_video_title" />
-
-        <FrameLayout
-            android:id="@+id/main_media_frame"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="10dp"
-            android:background="#000000"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/vertical_video_view">
-
-            <com.google.android.exoplayer2.ui.PlayerView
-                android:id="@+id/iv_video_preview"
-                android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:layout_marginTop="10dp"
-                android:visibility="gone"
-                app:controller_layout_id="@layout/expo_player_control_view"
-                app:resize_mode="fixed_width"
-                app:use_controller="true"/>
-
-        </FrameLayout>
 
         <TextView
             android:id="@+id/tv_audio_title"
@@ -115,9 +78,8 @@
             android:textSize="16sp"
             android:visibility="gone"
             app:layout_constraintEnd_toEndOf="parent"
-
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/main_media_frame" />
+            app:layout_constraintTop_toBottomOf="@+id/card_video_view" />
 
         <View
             android:id="@+id/vertical_audio_view"

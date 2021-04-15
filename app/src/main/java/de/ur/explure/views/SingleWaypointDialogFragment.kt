@@ -20,8 +20,6 @@ import com.google.android.exoplayer2.SimpleExoPlayer
 import com.google.android.material.snackbar.Snackbar
 import de.ur.explure.GlideApp
 import de.ur.explure.R
-import de.ur.explure.databinding.CardviewSingleWaypointDescrBinding
-import de.ur.explure.databinding.CardviewSingleWaypointImageBinding
 import de.ur.explure.databinding.DialogSingleWaypointBinding
 import de.ur.explure.extensions.isEllipsized
 import de.ur.explure.model.waypoint.WayPoint
@@ -36,8 +34,6 @@ class SingleWaypointDialogFragment : DialogFragment(R.layout.dialog_single_waypo
     private val viewModel: SingleWaypointViewModel by viewModel()
     private val navArgs: SingleWaypointDialogFragmentArgs by navArgs()
     private val binding by viewBinding(DialogSingleWaypointBinding::bind)
-    private val descriptionBinding by viewBinding(CardviewSingleWaypointDescrBinding::bind)
-    private val imageBinding by viewBinding(CardviewSingleWaypointImageBinding::bind)
 
     private var fullScreenButton: FrameLayout? = null
     private var fullScreenIcon: ImageView? = null
@@ -179,9 +175,9 @@ class SingleWaypointDialogFragment : DialogFragment(R.layout.dialog_single_waypo
     private fun openFullscreenDialog() {
         try {
             fullScreenIcon?.setImageResource(R.drawable.ic_fullscreen_shrink)
-            (binding.ivVideoPreview.parent as ViewGroup).removeView(binding.ivVideoPreview)
+            (binding.cardVideoView.ivVideoPreview.parent as ViewGroup).removeView(binding.cardVideoView.ivVideoPreview)
             fullscreenDialog?.addContentView(
-                binding.ivVideoPreview,
+                binding.cardVideoView.ivVideoPreview,
                 ViewGroup.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,
                     ViewGroup.LayoutParams.MATCH_PARENT
@@ -196,9 +192,9 @@ class SingleWaypointDialogFragment : DialogFragment(R.layout.dialog_single_waypo
 
     private fun closeFullscreenDialog() {
         try {
-            (binding.ivVideoPreview.parent as ViewGroup).removeView(binding.ivVideoPreview)
-            binding.mainMediaFrame.addView(
-                binding.ivVideoPreview, ViewGroup.LayoutParams(
+            (binding.cardVideoView.ivVideoPreview.parent as ViewGroup).removeView(binding.cardVideoView.ivVideoPreview)
+            binding.cardVideoView.mainMediaFrame.addView(
+                binding.cardVideoView.ivVideoPreview, ViewGroup.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT,
                     VIDEO_PLAYER_RESTORE_HEIGHT
                 )
@@ -234,7 +230,7 @@ class SingleWaypointDialogFragment : DialogFragment(R.layout.dialog_single_waypo
 
     private fun setupMediaController() {
         exoPlayer = SimpleExoPlayer.Builder(requireContext()).build()
-        binding.ivVideoPreview.player = exoPlayer
+        binding.cardVideoView.ivVideoPreview.player = exoPlayer
         if (isFullscreen) {
             openFullscreenDialog()
         }
@@ -349,9 +345,8 @@ class SingleWaypointDialogFragment : DialogFragment(R.layout.dialog_single_waypo
     }
 
     private fun showVideoView() {
-        binding.tvVideoTitle.visibility = View.VISIBLE
-        binding.verticalVideoView.visibility = View.VISIBLE
-        binding.ivVideoPreview.visibility = View.VISIBLE
+        binding.cardVideoView.tvVideoTitle.visibility = View.VISIBLE
+        binding.cardVideoView.ivVideoPreview.visibility = View.VISIBLE
     }
 
     private fun showAudioView() {
