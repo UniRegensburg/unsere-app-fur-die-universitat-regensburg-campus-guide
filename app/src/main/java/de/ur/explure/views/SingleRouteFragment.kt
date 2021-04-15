@@ -2,6 +2,9 @@ package de.ur.explure.views
 
 import android.app.AlertDialog
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
@@ -36,6 +39,8 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinCompon
     private lateinit var wayPointAdapter: WayPointAdapter
     private lateinit var commentAdapter: CommentAdapter
 
+    private var shareButton: MenuItem? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         singleRouteViewModel.getRouteData(args.routeID)
@@ -43,11 +48,31 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinCompon
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setHasOptionsMenu(true)
         observeRouteInformation()
         setOnClickListener()
         setErrorObserver()
         setViewFlipperObserver()
         singleRouteViewModel.getUserName()
+    }
+
+    /**
+     * Menu
+     *
+     */
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.menu_single_route, menu)
+        shareButton = menu.findItem(R.id.shareSingleRoute)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return if (item.itemId == R.id.shareSingleRoute) {
+            singleRouteViewModel.shareRoute(requireContext())
+            true
+        } else {
+            super.onOptionsItemSelected(item)
+        }
     }
 
     private fun setViewFlipperObserver() {
