@@ -89,7 +89,7 @@ val mainModule = module {
 
     // repositories
     single { RouteRepositoryImpl(get(), get(), get(), get()) }
-    single { RatingRepositoryImpl(get(), get(), get()) }
+    single { RatingRepositoryImpl(get(), get()) }
     single { UserRepositoryImpl(get(), get(), get()) }
     single { CategoryRepositoryImpl(get(), get()) }
     single { StorageRepositoryImpl(get()) }

@@ -5,20 +5,19 @@ import com.google.firebase.firestore.FieldValue
 import de.ur.explure.config.ErrorConfig
 import de.ur.explure.config.RatingDocumentConfig.DATE_FIELD
 import de.ur.explure.config.RatingDocumentConfig.RATING_FIELD
-import de.ur.explure.config.RouteDocumentConfig.CURRENT_RATING_FIELD
+import de.ur.explure.config.RouteDocumentConfig.RATING_LIST_FIELD
 import de.ur.explure.extensions.await
 import de.ur.explure.model.rating.Rating
 import de.ur.explure.model.rating.RatingDTO
-import de.ur.explure.repository.route.RouteRepositoryImpl
 import de.ur.explure.services.FireStoreInstance
 import de.ur.explure.services.FirebaseAuthService
 import de.ur.explure.utils.FirebaseResult
+import timber.log.Timber
 
-@Suppress("TooGenericExceptionCaught")
+@Suppress("TooGenericExceptionCaught", "ReturnCount", "UnnecessaryParentheses")
 class RatingRepositoryImpl(
     private val firebaseAuth: FirebaseAuthService,
-    private val fireStore: FireStoreInstance,
-    private val routeRepository: RouteRepositoryImpl
+    private val fireStore: FireStoreInstance
 ) : RatingRepository {
 
     /**
@@ -147,10 +146,12 @@ class RatingRepositoryImpl(
         }
     }
 
-    suspend fun addRatingToRoute(ratingId: String, routeId: String) {
+    private suspend fun addRatingToRoute(ratingId: String, routeId: String) {
         try {
-            fireStore.routeCollection.document(routeId).update(CURRENT_RATING_FIELD, (FieldValue.arrayUnion(ratingId))).await()
+            fireStore.routeCollection.document(routeId)
+                .update(RATING_LIST_FIELD, (FieldValue.arrayUnion(ratingId))).await()
         } catch (exception: Exception) {
+            Timber.d("Failed to add rating with $exception")
             FirebaseResult.Error(exception)
         }
     }

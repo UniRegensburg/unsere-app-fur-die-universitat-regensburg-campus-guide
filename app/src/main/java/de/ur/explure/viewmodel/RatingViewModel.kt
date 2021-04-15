@@ -14,11 +14,11 @@ class RatingViewModel(private val ratingRepository: RatingRepositoryImpl) : View
     private val mutableErrorMessage: MutableLiveData<Boolean> = MutableLiveData()
     val errorMessage: LiveData<Boolean> = mutableErrorMessage
 
-    fun setRating(rating: Int, routeId: String) {
+    fun setRating(rating: Int, routeId: String, callback: () -> Unit) {
         val ratingDTO = RatingDTO(rating, routeId)
         viewModelScope.launch {
             if (ratingRepository.addRatingToFireStore(ratingDTO) is FirebaseResult.Success) {
-                // do nothing
+                callback()
             } else {
                 mutableErrorMessage.postValue(true)
             }
