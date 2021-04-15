@@ -15,7 +15,9 @@ import de.ur.explure.repository.route.RouteRepositoryImpl
 import de.ur.explure.repository.user.UserRepositoryImpl
 import de.ur.explure.utils.DeepLinkUtils
 import de.ur.explure.utils.FirebaseResult
+import de.ur.explure.views.SingleRouteFragmentDirections
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import java.util.*
 
 class SingleRouteViewModel(
@@ -147,6 +149,19 @@ class SingleRouteViewModel(
                 context.getString(R.string.share_option)
             )
         )
+    }
+
+    fun startNavigation() {
+        val route = mutableRoute.value
+        if (route == null) {
+            Timber.e("Navigation start failed because route object was null!")
+            return
+        }
+        val action = SingleRouteFragmentDirections.actionSingleRouteFragmentToNavigationFragment(
+            route = route,
+            routeTitle = route.title
+        )
+        appRouter.getNavController()?.navigate(action)
     }
 
     companion object {

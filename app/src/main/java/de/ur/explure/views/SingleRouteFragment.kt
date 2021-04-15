@@ -114,7 +114,7 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinCompon
             binding.viewFlipper.displayedChild = 2
         }
         binding.startRouteButton.setOnClickListener {
-            // start route
+            singleRouteViewModel.startNavigation()
         }
         binding.shareRouteButton.setOnClickListener {
             singleRouteViewModel.shareRoute(requireContext())

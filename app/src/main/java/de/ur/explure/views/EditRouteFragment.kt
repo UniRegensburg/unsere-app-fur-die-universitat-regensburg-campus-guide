@@ -47,7 +47,6 @@ import de.ur.explure.extensions.toLatLng
 import de.ur.explure.map.InfoWindowGenerator
 import de.ur.explure.map.MapHelper
 import de.ur.explure.map.MarkerManager
-import de.ur.explure.map.MarkerManager.Companion.DESTINATION_ICON
 import de.ur.explure.map.MarkerManager.Companion.selectedMarkerZoom
 import de.ur.explure.model.waypoint.WayPointDTO
 import de.ur.explure.utils.SharedPreferencesManager
@@ -214,12 +213,6 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route),
     override fun onMapStyleLoaded(mapStyle: Style) {
         setupMapData(mapStyle)
         setupListeners()
-
-        // add a marker to the route destination
-        // TODO overlaps with marker if route was created manually!
-        val routeCoordinates = editRouteViewModel.getRouteCoordinates()
-        val lastRoutePoint = routeCoordinates?.last() ?: return
-        mapHelper.markerManager.addMarker(lastRoutePoint.toLatLng(), DESTINATION_ICON)
 
         // show bottom sheet panel
         slidingBottomPanel.panelState = SlidingUpPanelLayout.PanelState.COLLAPSED
@@ -561,7 +554,6 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route),
         }
     }
 
-    // TODO almost identical to the code in the saveRouteFragment
     private fun initWayPointEditObserver() {
         val navBackStackEntry = findNavController().getBackStackEntry(R.id.editRouteFragment)
 
@@ -625,9 +617,9 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route),
         val routeCoordinates = editRouteViewModel.getRouteCoordinates()?.map { it.toLatLng() }
         if (routeCoordinates != null) {
             val latLngBounds = LatLngBounds.Builder()
-                // .includes(routeCoordinates)
-                .include(routeCoordinates.first())
-                .include(routeCoordinates.last())
+                .includes(routeCoordinates)
+                // .include(routeCoordinates.first())
+                // .include(routeCoordinates.last())
                 .build()
             mapHelper.map.moveCamera(CameraUpdateFactory.newLatLngBounds(latLngBounds, 0))
         }
@@ -746,10 +738,6 @@ class EditRouteFragment : Fragment(R.layout.fragment_edit_route),
     }
 
     companion object {
-        // in m/s, see https://en.wikipedia.org/wiki/Preferred_walking_speed
-        private const val WALKING_SPEED = 1.4
-        // private const val WALKING_SPEED = 0.83 // Spaziergang
-
         private const val CALLOUT_SOURCE_ID = "mapbox.poi.callout_source"
         private const val CALLOUT_LAYER_ID = "mapbox.poi.callout_layer"
         const val PROPERTY_SELECTED = "selectedStatus"

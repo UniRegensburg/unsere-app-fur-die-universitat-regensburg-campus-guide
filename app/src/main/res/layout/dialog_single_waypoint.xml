@@ -27,7 +27,8 @@
             android:src="@drawable/ic_cross"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:tint="@color/themeColor" />
+            app:tint="@color/themeColor"
+            tools:ignore="ContentDescription" />
 
         <TextView
             android:id="@+id/tv_waypoint_title"

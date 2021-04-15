@@ -92,11 +92,8 @@
     <fragment
         android:id="@+id/mapFragment"
         android:name="de.ur.explure.views.MapFragment"
-        android:label="Map"
+        android:label="Karte"
         tools:layout="@layout/fragment_map">
-        <action
-            android:id="@+id/action_mapFragment_to_navigationFragment"
-            app:destination="@id/navigationFragment" />
         <action
             android:id="@+id/action_mapFragment_to_editRouteFragment"
             app:destination="@id/editRouteFragment" />
@@ -104,13 +101,25 @@
 
     <fragment
         android:id="@+id/navigationFragment"
-        android:name="de.ur.explure.views.NavigationUIFragment"
-        android:label="Navigation"
-        tools:layout="@layout/fragment_navigation_ui">
+        android:name="de.ur.explure.views.NavigationFragment"
+        android:label="{routeTitle}"
+        tools:layout="@layout/fragment_navigation">
         <argument
             android:name="route"
+            app:argType="de.ur.explure.model.route.Route"
+            app:nullable="false" />
+        <argument
+            android:name="routeTitle"
             app:argType="string"
             app:nullable="false" />
+
+        <action
+            android:id="@+id/action_navigationFragment_to_singleWaypointDialogFragment"
+            app:destination="@id/singleWaypointDialogFragment" />
+
+        <action
+            android:id="@+id/action_navigationFragment_to_rateRouteDialog"
+            app:destination="@id/rateRouteDialog" />
     </fragment>
 
     <fragment
@@ -124,6 +133,9 @@
         <deepLink
             android:id="@+id/singleRouteDeepLink"
             app:uri="explure://route_preview?id={routeID}" />
+        <action
+            android:id="@+id/action_singleRouteFragment_to_navigationFragment"
+            app:destination="@id/navigationFragment" />
         <action
             android:id="@+id/action_singleRouteFragment_to_singleWaypointDialogFragment"
             app:destination="@id/singleWaypointDialogFragment" />
@@ -186,7 +198,8 @@
     <dialog
         android:id="@+id/createWayPointDialog"
         android:name="de.ur.explure.views.CreateWayPointDialogFragment"
-        android:label="CreateWayPointDialogFragment">
+        android:label="CreateWayPointDialogFragment"
+        tools:layout="@layout/dialog_create_waypoint">
         <argument
             android:name="wayPointDTO"
             android:defaultValue="@null"
@@ -201,6 +214,18 @@
             android:defaultValue="0L"
             app:argType="long" />
     </dialog>
+
+    <dialog
+        android:id="@+id/rateRouteDialog"
+        android:name="de.ur.explure.views.RatingDialogFragment"
+        android:label="Routenbewertung"
+        tools:layout="@layout/fragment_rating_dialog">
+        <argument
+            android:name="routeID"
+            app:argType="string"
+            app:nullable="false" />
+    </dialog>
+
     <dialog
         android:id="@+id/singleWaypointDialogFragment"
         android:name="de.ur.explure.views.SingleWaypointDialogFragment"

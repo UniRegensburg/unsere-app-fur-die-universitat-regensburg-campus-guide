@@ -23,7 +23,6 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.mapbox.android.core.permissions.PermissionsManager
-import com.mapbox.api.directions.v5.models.DirectionsRoute
 import com.mapbox.api.matching.v5.models.MapMatchingMatching
 import com.mapbox.core.constants.Constants.PRECISION_6
 import com.mapbox.geojson.Feature
@@ -91,7 +90,6 @@ class MapFragment : Fragment(R.layout.fragment_map), MapMatchingClient.MapMatchi
     // route creation
     private val waypointsController: WaypointsController by inject()
     private val mapMatchingClient: MapMatchingClient by inject()
-    private var directionsRoute: DirectionsRoute? = null // TODO not used at the moment!
     private var routeCreationMapClickListenerBehavior: MapboxMap.OnMapClickListener? = null
 
     // location tracking
@@ -925,11 +923,11 @@ class MapFragment : Fragment(R.layout.fragment_map), MapMatchingClient.MapMatchi
         Timber.d("MapMatch Duration: ${bestMatching.duration() / 60} minutes")
         Timber.d("MapMatch Length: ${bestMatching.distance()} meters")
 
+        // TODO save this as well in firestore for the route so we have it in the navigation?
+        // bestMatching.toDirectionRoute().geometry()
+
         // draw the best route match on the map
         showMapMatchedRoute(bestMatching)
-
-        // convert map matching to a route that can be processed by the mapbox navigation api
-        directionsRoute = bestMatching.toDirectionRoute()
     }
 
     private fun showMapMatchedRoute(matchedRoute: MapMatchingMatching) {
