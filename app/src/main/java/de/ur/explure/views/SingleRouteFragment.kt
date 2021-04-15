@@ -39,9 +39,10 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinCompon
         super.onViewCreated(view, savedInstanceState)
         observeRouteInformation()
         val routeId = args.routeID
-        singleRouteViewModel.getRouteData(routeId)
         setOnClickListener()
         setErrorObserver()
+        singleRouteViewModel.getRouteData(routeId)
+        singleRouteViewModel.getUserName()
     }
 
     private fun initAdapters() {

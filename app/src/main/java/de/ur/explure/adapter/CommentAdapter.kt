@@ -45,7 +45,7 @@ class CommentAdapter(private val listener: CommentInterface) :
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val currentItem = commentList[position]
-        holder.commentAuthor.text = currentItem.authorId
+        holder.commentAuthor.text = currentItem.userName
         holder.commentText.text = currentItem.message
         val date = dateFormat.format(currentItem.createdAt)
         holder.commentDate.text = date.toString()

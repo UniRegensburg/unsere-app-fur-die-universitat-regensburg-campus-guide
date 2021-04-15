@@ -12,6 +12,7 @@ data class Comment(
     val message: String = "",
     val createdAt: Date = Date(),
     val authorId: String = "",
+    val userName: String = "",
     val answers: LinkedList<Comment> = LinkedList(),
 ) : Parcelable {
 

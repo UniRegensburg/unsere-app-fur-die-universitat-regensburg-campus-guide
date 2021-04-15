@@ -24,6 +24,7 @@ import de.ur.explure.repository.route.RouteRepositoryImpl
 import de.ur.explure.repository.user.UserRepositoryImpl
 import de.ur.explure.services.FireStoreInstance
 import de.ur.explure.services.FirebaseAuthService
+import de.ur.explure.services.AlgoliaService
 import de.ur.explure.utils.SharedPreferencesManager
 import de.ur.explure.viewmodel.AuthenticationViewModel
 import de.ur.explure.viewmodel.CategoryViewModel
@@ -42,6 +43,7 @@ import de.ur.explure.viewmodel.StatisticsViewModel
 import de.ur.explure.viewmodel.WordSearchViewModel
 import org.koin.android.ext.koin.androidApplication
 import de.ur.explure.viewmodel.UserDataViewModel
+import de.ur.explure.viewmodel.RatingViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
@@ -80,9 +82,12 @@ val mainModule = module {
     factory { FireStoreInstance(get()) }
     single { FirebaseAuthService(get()) }
 
+    // algolia
+    single { AlgoliaService() }
+
     // repositories
     single { RatingRepositoryImpl(get(), get()) }
-    single { RouteRepositoryImpl(get(), get(), get()) }
+    single { RouteRepositoryImpl(get(), get(), get(), get()) }
     single { UserRepositoryImpl(get(), get(), get()) }
     single { CategoryRepositoryImpl(get(), get()) }
 
@@ -92,7 +97,7 @@ val mainModule = module {
     viewModel { CategoryViewModel(get(), get()) }
     viewModel { DiscoverViewModel(get(), get(), get()) }
     viewModel { MainViewModel(get(), get(), get()) }
-    viewModel { MapViewModel(get(), get()) }
+    viewModel { MapViewModel(get(), get(), get()) }
     viewModel { EditRouteViewModel(get(), get()) }
     viewModel { SaveRouteViewModel(get(), get(), get(), get()) }
     viewModel { CreateWayPointViewModel(get()) }
@@ -100,7 +105,8 @@ val mainModule = module {
     viewModel { CreatedRoutesViewModel(get(), get(), get()) }
     viewModel { FavoriteRoutesViewModel(get(), get(), get()) }
     viewModel { StatisticsViewModel(get(), get(), get(), get()) }
-    viewModel { SingleRouteViewModel(get(), get()) }
+    viewModel { SingleRouteViewModel(get(), get(), get()) }
     viewModel { UserDataViewModel(get(), get()) }
     viewModel { NavigationViewModel(get()) }
+    viewModel { RatingViewModel(get()) }
 }

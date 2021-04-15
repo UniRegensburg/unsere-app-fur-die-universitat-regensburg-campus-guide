@@ -160,7 +160,7 @@ class CreateWayPointDialogFragment : DialogFragment(R.layout.dialog_create_waypo
                             else ->
                                 R.string.universal_permission_not_granted
                         }
-                        view?.run{
+                        view?.run {
                             showSnackbar(
                                 requireActivity(),
                                 message,
@@ -396,20 +396,15 @@ class CreateWayPointDialogFragment : DialogFragment(R.layout.dialog_create_waypo
     }
 
     private fun areInputsValid(): Boolean {
-        var inputsAreValid = true
         val title = binding.etWayPointTitle.text.toString()
         if (title.isEmpty()) {
             binding.etWayPointTitle.error = getString(R.string.waypoint_title_error)
-            inputsAreValid = false
+            return false
         }
         val description = binding.etWayPointDescription.text.toString()
-        if (description.isEmpty()) {
-            binding.etWayPointDescription.error = getString(R.string.waypoint_description_error)
-            inputsAreValid = false
-        }
         viewModel.setTitle(title)
         viewModel.setDescription(description)
-        return inputsAreValid
+        return true
     }
 
     private fun startVideoIntent() {

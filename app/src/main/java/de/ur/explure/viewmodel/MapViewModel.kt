@@ -18,6 +18,7 @@ import de.ur.explure.map.RouteLineManager.Companion.ID_PROPERTY_KEY
 import de.ur.explure.model.MapMarker
 import de.ur.explure.model.waypoint.WayPointDTO
 import de.ur.explure.navigation.MainAppRouter
+import de.ur.explure.services.FirebaseAuthService
 import de.ur.explure.utils.Event
 import java.util.*
 
@@ -25,7 +26,13 @@ import java.util.*
  * Map Viewmodel to handle and preserve map state.
  */
 @Suppress("TooManyFunctions")
-class MapViewModel(private val state: SavedStateHandle, private val appRouter: MainAppRouter) : ViewModel() {
+class MapViewModel(
+    private val state: SavedStateHandle,
+    private val appRouter: MainAppRouter,
+    private val authService: FirebaseAuthService
+    ) : ViewModel() {
+
+    var anonymousUser: Boolean? = authService.isAnonymousUser()
 
     private val _mapReady = MutableLiveData<Event<Boolean>>()
     val mapReady: LiveData<Event<Boolean>> = _mapReady
