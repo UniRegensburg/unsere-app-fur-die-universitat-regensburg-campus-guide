@@ -353,7 +353,7 @@ class SingleWaypointDialogFragment : DialogFragment(R.layout.dialog_single_waypo
     }
 
     private fun setContinueNavigationButton(fromNavigation: Boolean) {
-        if (!fromNavigation) {
+        if (fromNavigation) {
             binding.continueNavBtn.visibility = View.VISIBLE
             binding.continueNavBtn.setOnClickListener {
                 dismiss()
