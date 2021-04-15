@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
 import de.ur.explure.databinding.WaypointItemBinding
 import de.ur.explure.model.waypoint.WayPoint
 
-class WayPointAdapter : RecyclerView.Adapter<WayPointAdapter.ViewHolder>() {
+class WayPointAdapter(private val callback: (WayPoint) -> Unit) : RecyclerView.Adapter<WayPointAdapter.ViewHolder>() {
 
     private var wayPointList: MutableList<WayPoint> = mutableListOf()
 
@@ -22,6 +22,7 @@ class WayPointAdapter : RecyclerView.Adapter<WayPointAdapter.ViewHolder>() {
         val hasImage = binding.wayPointHasImage
         val hasVideo = binding.wayPointHasVideo
         val hasAudio = binding.wayPointHasAudio
+        val wayPointItemView = binding.waypointItemView
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -34,6 +35,9 @@ class WayPointAdapter : RecyclerView.Adapter<WayPointAdapter.ViewHolder>() {
         val currentItem = wayPointList[position]
         holder.wayPointTitle.text = currentItem.title
         holder.wayPointDescription.text = currentItem.description
+        holder.wayPointItemView.setOnClickListener {
+            callback(currentItem)
+        }
         setExtras(holder, position)
     }
 

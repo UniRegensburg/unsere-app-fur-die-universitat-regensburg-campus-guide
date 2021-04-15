@@ -247,7 +247,6 @@
     <string name="route_item_duration">%1d min</string>
     <string name="route_item_author">von %1s</string>
 
-
     <!-- Category Strings-->
     <string name="default_title">Kategorie</string>
     <string name="camera_permission_not_granted">Wir benötigen die Berechtigung auf deine Kamera zuzugreifen, um Bilder aufzunehmen.</string>
@@ -278,5 +277,15 @@
     <string name="rating_error">Etwas ist schiefgelaufen, bitte versuche es später wieder</string>
     <string name="anonymous_user_error">Leider kannst du diese Funktion ohne Account nicht nutzen. Erstelle einen und versuchen es dann noch mal.</string>
     <string name="anonymous_user_name">Anonymer Nutzer</string>
+    <string name="waypoint_empty_description">Keine Beschreibung vorhanden</string>
+    <string name="waypoint_show_more">Mehr anzeigen</string>
+    <string name="waypoint_show_less">Weniger anzeigen</string>
+    <string name="waypoint_image_title">Bild</string>
+    <string name="waypoint_video_title">Video</string>
+    <string name="waypoint_audio_title">Audio</string>
+    <string name="waypoint_image_error">Leider konnte das Bild nicht geladen werden, bitte versuche es später wieder.</string>
+    <string name="waypoint_video_error">Leider konnte das Video nicht geladen werden, bitte versuche es später wieder.</string>
+    <string name="waypoint_audio_error">Leider konnte die Audiodatei nicht geladen werden, bitte versuche es später wieder.</string>
+    <string name="continue_navigation">Navigation fortsetzen</string>
 
 </resources>

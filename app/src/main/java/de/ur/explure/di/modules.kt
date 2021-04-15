@@ -25,6 +25,7 @@ import de.ur.explure.services.FireStoreInstance
 import de.ur.explure.services.FirebaseAuthService
 import de.ur.explure.map.InfoWindowGenerator
 import de.ur.explure.map.MapHelper
+import de.ur.explure.repository.storage.StorageRepositoryImpl
 import de.ur.explure.services.AlgoliaService
 import de.ur.explure.utils.SharedPreferencesManager
 import de.ur.explure.viewmodel.AuthenticationViewModel
@@ -39,6 +40,7 @@ import de.ur.explure.viewmodel.MapViewModel
 import de.ur.explure.viewmodel.ProfileViewModel
 import de.ur.explure.viewmodel.SaveRouteViewModel
 import de.ur.explure.viewmodel.SingleRouteViewModel
+import de.ur.explure.viewmodel.SingleWaypointViewModel
 import de.ur.explure.viewmodel.StatisticsViewModel
 import de.ur.explure.viewmodel.WordSearchViewModel
 import org.koin.android.ext.koin.androidApplication
@@ -93,6 +95,7 @@ val mainModule = module {
     single { RouteRepositoryImpl(get(), get(), get(), get()) }
     single { UserRepositoryImpl(get(), get(), get()) }
     single { CategoryRepositoryImpl(get(), get()) }
+    single { StorageRepositoryImpl(get()) }
 
     // viewmodels
     viewModel { AuthenticationViewModel(get(), get()) }
@@ -111,4 +114,5 @@ val mainModule = module {
     viewModel { SingleRouteViewModel(get(), get(), get()) }
     viewModel { UserDataViewModel(get(), get()) }
     viewModel { RatingViewModel(get()) }
+    viewModel { SingleWaypointViewModel(get()) }
 }
