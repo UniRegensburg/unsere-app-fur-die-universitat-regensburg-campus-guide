@@ -3,14 +3,17 @@ package de.ur.explure.utils
 import android.content.Context
 import android.graphics.Bitmap
 import android.location.LocationManager
+import android.os.Bundle
 import android.view.View
 import android.view.animation.Animation
 import android.view.animation.AnimationUtils
 import android.widget.FrameLayout
 import android.widget.ListAdapter
 import androidx.fragment.app.Fragment
+import com.mapbox.api.directions.v5.models.DirectionsRoute
 import com.mapbox.mapboxsdk.Mapbox
 import de.ur.explure.R
+import de.ur.explure.views.NavigationFragment.Companion.ROUTE_BUNDLE_KEY
 import timber.log.Timber
 import java.nio.ByteBuffer
 import java.util.*
@@ -166,4 +169,25 @@ fun <T> reorderList(collection: List<T>, fromPosition: Int, toPosition: Int) {
             Collections.swap(collection, i, i - 1)
         }
     }
+}
+
+/**
+ * Taken from https://github.com/mapbox/mapbox-navigation-android/blob/afdd8587b684cf7b82f44288cc2063444d96cfe5/examples/src/main/java/com/mapbox/navigation/examples/utils/Utils.java
+ *
+ * Used to get a DirectionsRoute from a bundle.
+ *
+ * @param bundle to get the DirectionsRoute from
+ * @return a DirectionsRoute or null
+ */
+@Suppress("TooGenericExceptionCaught")
+fun getRouteFromBundle(bundle: Bundle): DirectionsRoute? {
+    try {
+        if (bundle.containsKey(ROUTE_BUNDLE_KEY)) {
+            val routeAsJson = bundle.getString(ROUTE_BUNDLE_KEY)
+            return DirectionsRoute.fromJson(routeAsJson)
+        }
+    } catch (ex: Exception) {
+        Timber.i(ex)
+    }
+    return null
 }

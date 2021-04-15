@@ -2,16 +2,23 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:clickable="true"
+    android:focusable="true"
+    android:background="?attr/selectableItemBackground"
+    android:id="@+id/waypoint_item_view"
     android:orientation="horizontal"
     android:padding="8dp">
 
     <ImageView
         android:id="@+id/wayPoint_image"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
-        android:contentDescription="@string/waypoint_image"
-        android:background="@drawable/ic_waypoints"/>
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_marginStart="10dp"
+        android:background="@drawable/circular_background"
+        android:backgroundTint="@color/themeColor"
+        android:padding="15dp"
+        android:src="@drawable/ic_waypoints"/>
 
    <TextView
        android:id="@+id/wayPoint_title"
@@ -35,7 +42,6 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
-        android:text="@string/waypoint_description"
         android:textColor="@color/textColorGrey"/>
 
     <ImageView
@@ -45,29 +51,26 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentTop="true"
         android:background="@drawable/ic_image"
-        android:contentDescription="@string/waypoint_title"
         android:visibility="gone"/>
 
     <ImageView
         android:id="@+id/wayPoint_has_video"
-        android:layout_width="10dp"
-        android:layout_height="10dp"
+        android:layout_width="15dp"
+        android:layout_height="15dp"
         android:layout_marginTop="2dp"
         android:layout_alignParentEnd="true"
         android:layout_below="@id/wayPoint_has_image"
-        android:background="@drawable/ic_video"
-        android:contentDescription="@string/waypoint_title"
+        android:src="@drawable/ic_videocam"
         android:visibility="gone"/>
 
     <ImageView
         android:id="@+id/wayPoint_has_audio"
-        android:layout_width="10dp"
-        android:layout_height="10dp"
+        android:layout_width="15dp"
+        android:layout_height="15dp"
         android:layout_marginTop="2dp"
         android:layout_alignParentEnd="true"
         android:layout_below="@id/wayPoint_has_video"
-        android:background="@drawable/ic_audio"
-        android:contentDescription="@string/waypoint_title"
+        android:src="@drawable/ic_mic"
         android:visibility="gone"/>
 
 </RelativeLayout>

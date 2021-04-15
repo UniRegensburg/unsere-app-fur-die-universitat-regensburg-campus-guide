@@ -39,7 +39,6 @@
     <string name="ratings_value">0</string>
 
     <!-- Logout Button (Profile) -->
-
     <string name="logout">Logout</string>
 
     <!-- Statistics Page -->
@@ -79,10 +78,6 @@
     <string name="action_menu_tutorial_title">Actions during route creation</string>
     <string name="action_menu_tutorial_description">You can find useful options during the route creation process here. You can cancel the route creation (x - symbol), try to align your created route and waypoints to existing ways on the campus (magnet symbol) or confirm your route and continue (checkmark symbol).</string>
 
-    <string name="no_routes">No available routes to that destination</string>
-    <string name="steps_in_route">There are %1$d steps in the route</string>
-    <string name="route_request_failed">The route request failed</string>
-
     <!-- Route Creation -->
     <string name="route_creation_options">There are 3 options to create a route:
         \n<ul>
@@ -115,10 +110,19 @@
     <string name="error_saving_route_snapshot">Unfortunately, an error occurred while saving the route!</string>
     <string name="route_edit_instructions">You can add waypoints to your route by clicking on the map and drag markers by long clicking them and moving them to a new place. When you are done, you can click on the "disk" symbol in the top right to save your route.</string>
 
+    <!-- Navigation -->
+    <string name="navigation_intro">Please move to the starting position of the route to start the navigation. Once you are there, click on \"Start Navigation\" at the top.</string>
+    <string name="route_still_loading">The route is still loading. One moment!</string>
+    <string name="direction_route_fetch_error">An error has occurred! Unfortunately, there is no navigation available for this route at the moment!</string>
+    <string name="not_on_campus_error">You must be on the campus to use your location for navigation!</string>
+    <string name="goal_reached">Good job! You have reached the end of this route!</string>
+    <string name="finish_navigation_message">Do you want to leave the navigation?</string>
+
     <!-- Warnings -->
     <string name="attention">Attention!</string>
     <string name="leave_route_creation_warning">Do you want to leave the route creation mode? Your current progress will be lost!</string>
     <string name="leave_route_editing_warning">If you leave now, this route will not be saved and you lose your progress! Do you really want to go back?</string>
+    <string name="leave_navigation_warning">Do you want to leave the navigation? Your current route progress will be lost!</string>
     <string name="change_style_during_route_creation">Unfortunately, it isn\'t possible to change the map style during route creation!</string>
     <string name="delete_waypoint_confirmation">Do you really want to delete this waypoint?</string>
     <string name="delete_marker_confirmation">Do you really want to delete this marker?</string>
@@ -130,6 +134,7 @@
     <string name="too_few_waypoints">There must be at least 2 way points on the map to create a route!</string>
     <string name="too_many_waypoints">Unfortunately, a route with so many waypoints cannot be created! Please try to remove some unnecessary points.</string>
     <string name="no_route_found">No route was found! You have to create a route first before you can continue!</string>
+    <string name="not_yet_implemented">"This feature is unfortunately not yet implemented!"</string>
     <string name="confirm_route_creation_warning">If you go to the next step of route creation and then return, you have to start route creation from the beginning! Continue anyway?</string>
 
     <!-- Buttons and Options -->
@@ -146,17 +151,18 @@
     <string name="route_draw_confirm_option">Do you want to use your own route or the automatically generated route?</string>
     <string name="use_own_route">Own Route</string>
     <string name="use_map_matching">Generated Route</string>
+    <string name="start_navigation">Start Navigation</string>
+    <string name="finish_navigation">Finish Navigation</string>
 
     <!--Test Strings-->
     <string name="lorem_ipsum">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.  </string>
 
     <!-- Category Strings-->
     <string name="default_title">Category</string>
-
     <string name="login_email">Email</string>
     <string name="login_password">Password</string>
     <string name="login_button">Login</string>
-    <string name="login_text">Login</string>
+    <string name="login_text">ExplURe</string>
     <string name="tv_register">Register ?</string>
     <string name="reset_password">Forgot password?</string>
     <string name="or_text">or</string>
@@ -164,11 +170,10 @@
     <string name="enter_email">Please enter your email</string>
     <string name="no_account">Dont have an account?</string>
     <string name="sign_up_button">Register?</string>
-    <string name="register_text">Register</string>
     <string name="new_email">Email</string>
 
     <string name="new_password">Password</string>
-    <string name="confirm_password">Conform password</string>
+    <string name="confirm_password">Confirm password</string>
     <string name="register_button">Register</string>
     <string name="already_account">Already have an account?</string>
     <string name="back_to_login_button">Login</string>
@@ -194,7 +199,7 @@
     <string name="route_item_waypoints">0</string>
     <string name="route_item_distance">%1d m</string>
     <string name="route_item_duration">%1d min</string>
-    <string name="route_item_author">von %1s</string>
+    <string name="route_item_author">from %1s</string>
 
     <string name="discover_new_routes">New Routes</string>
     <string name="discover_popular_routes">Popular Routes</string>
@@ -211,7 +216,7 @@
     <string name="route_duration">Duration</string>
     <string name="route_distance">Distance</string>
     <string name="route_rating">Rating</string>
-    <string name="start_route">Start route</string>
+    <string name="start_route">Show route</string>
     <string name="description_button">Description</string>
     <string name="comments_button">Comments</string>
     <string name="comment_input">Comment</string>
@@ -222,6 +227,7 @@
     <string name="comment_date">Date</string>
     <string name="delete_comment">Delete comment?</string>
     <string name="comment_deleted">Comment has been deleted</string>
+    <string name="delete_comment_failed">Comment couldn\'t be deleted. Please try again later</string>
     <string name="show_answers">Show answers (%1d)</string>
     <string name="hide_answers">Hide answers</string>
     <string name="answer_input">Answer</string>
@@ -230,12 +236,15 @@
     <string name="empty_answer">Please enter answer</string>
     <string name="delete_answer">Delete answer?</string>
     <string name="answer_deleted">Answer has been deleted</string>
+    <string name="delete_answer_failed">Answer couldn\'t be deleted. Please try again later</string>
     <string name="delete_button">Delete</string>
     <string name="back_button">Back</string>
+    <string name="skip_button">Skip</string>
     <string name="waypoints_button">Waypoints</string>
     <string name="waypoint_image">Image</string>
     <string name="waypoint_title">Title</string>
     <string name="waypoint_description">Description</string>
+    <string name="single_route_error">Something went wrong while loading the data. Please try again later.</string>
 
     <string name="category_spinner_header">Set a Category</string>
     <string name="create_route_descr_hint">Description</string>
@@ -249,12 +258,12 @@
     <string name="audio_permission_not_granted">Without this permission the app is not able to record an audio message.</string>
     <string name="external_storage_permission_not_granted">Without this permission the app can\'t access files in your external storage.</string>
     <string name="universal_permission_not_granted">This action is not possible without the permission.</string>
-    <string name="audio_recording_error">An error occured while recording your audio message. Please try again.</string>
+    <string name="audio_recording_error">An error occurred while recording your audio message. Please try again.</string>
     <string name="waypoint_title_error">Please enter a title</string>
     <string name="waypoint_description_error">Please enter a description</string>
     <string name="route_thumbnail_hint">Set a thumbnail for your view</string>
     <string name="no_category_selected_error">Please select a category</string>
-    <string name="route_image_error">An error occured while loading your image, please try again.</string>
+    <string name="route_image_error">An error occurred while loading your image, please try again.</string>
     <string name="route_creation_error">Something went wrong while creating your route. Please try again later</string>
     <string name="category_download_error">Could not get categories. Please try again later</string>
     <string name="default_waypoint_title">No title</string>
@@ -271,5 +280,20 @@
     <string name="empty_username">Please enter a username</string>
     <string name="user_data_error">Something went wrong while creating your profile. Please try again later.</string>
     <string name="add_route_to_favorites">Route added to favorites</string>
+    <string name="rating_text">Please leave a rating if you liked the route</string>
+    <string name="rating_button">Submit</string>
+    <string name="rating_error">Something went wrong. Please try again later</string>
+    <string name="anonymous_user_error">Unfortunately, you can\'t use this feature without an account. Create one and try again.</string>
+    <string name="anonymous_user_name">Anonymous user</string>
+    <string name="waypoint_empty_description">No description available</string>
+    <string name="waypoint_show_more">Show more</string>
+    <string name="waypoint_show_less">Show less</string>
+    <string name="waypoint_image_title">Image</string>
+    <string name="waypoint_video_title">Video</string>
+    <string name="waypoint_audio_title">Audio</string>
+    <string name="waypoint_image_error">An error occured while loading the image of the waypoint.</string>
+    <string name="waypoint_video_error">An error occured while loading the video of the waypoint. Please try again later</string>
+    <string name="waypoint_audio_error">An error occured loading the audio file, please try again later.</string>
+    <string name="continue_navigation">Continue Navigation</string>
 
 </resources>

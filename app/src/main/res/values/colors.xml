@@ -23,14 +23,6 @@
     <color name="colorError">#CA2A2A</color>
     <color name="colorOnError">#FFFFFF</color>
 
-    <!-- Mapbox Navigation UI (taken from Mapbox) -->
-    <color name="mapboxWhite">#ffffff</color>
-    <color name="mapboxBlue">#4264fb</color>
-    <color name="mapboxGrayLight">#c6d2e1</color>
-    <color name="mapboxPink">#ee4e8b</color>
-    <color name="mapboxYellow">#d9d838</color>
-    <color name="mapboxRed">#b43b71</color>
-
     <!-- Other custom colors -->
     <color name="black">#000000</color>
     <color name="white">#FFFFFF</color>

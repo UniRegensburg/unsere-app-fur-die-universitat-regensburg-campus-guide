@@ -66,7 +66,7 @@ class MainActivity : AppCompatActivity(), MapFragment.MapFragmentListener {
 
     private fun setupToolbar() {
         setSupportActionBar(activityMainBinding.toolbar)
-        supportActionBar?.setLogo(R.drawable.ic_home)
+        supportActionBar?.setLogo(R.drawable.ic_launcher_icon_toolbar)
         // link the toolbar with the navigation controller
         activityMainBinding.toolbar.setupWithNavController(navController, appBarConfiguration)
     }
@@ -190,15 +190,17 @@ class MainActivity : AppCompatActivity(), MapFragment.MapFragmentListener {
         // (normal nested views only have the bottom nav hidden but do have an up - button)
         val nestedTopLevelDestinations = setOf(
             R.id.editRouteFragment,
-            R.id.saveRouteFragment
+            R.id.saveRouteFragment,
+            R.id.navigationFragment
         )
 
         val topLevelDestinations = bottomNavDestinations.plus(nestedTopLevelDestinations)
 
-        // The views in the authentication process
+        // The views in the authentication and onboarding process
         val authGraphDestinations = setOf(
             R.id.loginFragment,
-            R.id.registerFragment
+            R.id.registerFragment,
+            R.id.userDataFragment
         )
     }
 }

@@ -13,6 +13,7 @@ import timber.log.Timber
  *
  */
 
+@Suppress("Unused")
 class ExplureApp : Application() {
 
     override fun onCreate() {
@@ -27,6 +28,7 @@ class ExplureApp : Application() {
             Sherlock.init(this)
         }
 
+        // setup dependency injection
         startKoin {
             androidContext(this@ExplureApp)
             modules(mainModule)
@@ -35,13 +37,5 @@ class ExplureApp : Application() {
 
     private fun initMapbox() {
         Mapbox.getInstance(this, getString(R.string.access_token))
-
-        /*
-        MapboxNavigationProvider.create(
-            MapboxNavigation.defaultNavigationOptionsBuilder(
-                this,
-                getString(R.string.access_token)
-            ).build()
-        )*/
     }
 }

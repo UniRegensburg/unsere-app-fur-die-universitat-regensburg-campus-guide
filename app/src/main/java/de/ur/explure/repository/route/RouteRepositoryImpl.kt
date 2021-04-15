@@ -26,6 +26,7 @@ import de.ur.explure.model.route.Route
 import de.ur.explure.model.route.RouteDTO
 import de.ur.explure.model.waypoint.WayPoint
 import de.ur.explure.model.waypoint.WayPointDTO
+import de.ur.explure.services.AlgoliaService
 import de.ur.explure.services.FireStoreInstance
 import de.ur.explure.services.FirebaseAuthService
 import de.ur.explure.utils.CachedFileUtils
@@ -38,7 +39,8 @@ import java.util.*
 class RouteRepositoryImpl(
     private val authService: FirebaseAuthService,
     private val fireStore: FireStoreInstance,
-    private val fireStorage: FirebaseStorage
+    private val fireStorage: FirebaseStorage,
+    private val algoliaService: AlgoliaService
 ) : RouteRepository {
 
     /**
@@ -50,13 +52,18 @@ class RouteRepositoryImpl(
      * On Cancellation: Returns [FirebaseResult.Canceled] with exception
      */
 
-    override suspend fun createRouteInFireStore(routeDTO: RouteDTO): FirebaseResult<String> {
+    override suspend fun createRouteInFireStore(
+        routeDTO: RouteDTO,
+        routeTitle: String,
+        routeDescr: String
+    ): FirebaseResult<String> {
         return try {
             val userId = authService.getCurrentUserId() ?: return ErrorConfig.NO_USER_RESULT
             val routeDocument = fireStore.routeCollection.document()
             val routeCreationBatch = createRouteWriteBatch(userId, routeDTO, routeDocument)
             when (val routeBatch = routeCreationBatch.commit().await()) {
                 is FirebaseResult.Success -> {
+                    algoliaService.addRouteInfoToAlgolia(routeDocument.id, routeTitle, routeDescr)
                     return FirebaseResult.Success(routeDocument.id)
                 }
                 is FirebaseResult.Error -> FirebaseResult.Error(routeBatch.exception)
@@ -187,9 +194,9 @@ class RouteRepositoryImpl(
     override suspend fun deleteComment(commentId: String, routeId: String): FirebaseResult<Void> {
         return try {
             return fireStore.routeCollection.document(routeId)
-                    .collection(COMMENT_COLLECTION_NAME)
-                    .document(commentId)
-                    .delete().await()
+                .collection(COMMENT_COLLECTION_NAME)
+                .document(commentId)
+                .delete().await()
         } catch (exception: Exception) {
             FirebaseResult.Error(exception)
         }
@@ -237,14 +244,18 @@ class RouteRepositoryImpl(
      * On Cancellation: Returns [FirebaseResult.Canceled] with exception
      */
 
-    override suspend fun deleteAnswer(answerId: String, commentId: String, routeId: String): FirebaseResult<Void> {
+    override suspend fun deleteAnswer(
+        answerId: String,
+        commentId: String,
+        routeId: String
+    ): FirebaseResult<Void> {
         return try {
             return fireStore.routeCollection.document(routeId)
-                    .collection(COMMENT_COLLECTION_NAME)
-                    .document(commentId)
-                    .collection(ANSWER_COLLECTION_NAME)
-                    .document(answerId)
-                    .delete().await()
+                .collection(COMMENT_COLLECTION_NAME)
+                .document(commentId)
+                .collection(ANSWER_COLLECTION_NAME)
+                .document(answerId)
+                .delete().await()
         } catch (exception: Exception) {
             FirebaseResult.Error(exception)
         }
@@ -439,20 +450,20 @@ class RouteRepositoryImpl(
     }
 
     override suspend fun uploadRouteThumbnail(routeId: String, uri: Uri): String? {
-        try {
+        return try {
             val secretId = UUID.randomUUID().toString()
             val storageRef =
                 fireStorage.reference
                     .child(FirestoreStorageDirectories.ROUTE_THUMBNAILS_DIRECTORY)
                     .child("$routeId-$secretId$IMAGE_FILE_SUFFIX")
-            return if (storageRef.putFile(uri).await() is FirebaseResult.Success) {
+            if (storageRef.putFile(uri).await() is FirebaseResult.Success) {
                 storageRef.toString()
             } else {
                 null
             }
         } catch (exception: Exception) {
             Timber.d("Failed to upload image with $exception")
-            return null
+            null
         }
     }
 }

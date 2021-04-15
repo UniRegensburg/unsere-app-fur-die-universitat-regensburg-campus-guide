@@ -5,6 +5,7 @@ import android.media.MediaPlayer
 import android.media.MediaRecorder
 import android.net.Uri
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import com.google.firebase.firestore.GeoPoint
 import de.ur.explure.model.view.WayPointAudioItem
@@ -17,9 +18,9 @@ import timber.log.Timber
 import java.io.File
 
 @Suppress("TooGenericExceptionCaught", "SwallowedException")
-class CreateWayPointViewModel : ViewModel() {
+class CreateWayPointViewModel(private val state: SavedStateHandle) : ViewModel() {
 
-    private lateinit var newWayPointDTO: WayPointDTO
+    private var newWayPointDTO: WayPointDTO? = state[WAYPOINT_KEY]
 
     val oldWayPointDTO: MutableLiveData<WayPointDTO> = MutableLiveData()
 
@@ -39,19 +40,21 @@ class CreateWayPointViewModel : ViewModel() {
     private var audioPlayer: MediaPlayer? = null
 
     fun initWayPointDTOEdit(wayPointDTO: WayPointDTO) {
-        newWayPointDTO = wayPointDTO
-        oldWayPointDTO.postValue(wayPointDTO)
-        wayPointDTO.audioUri?.run {
-            val mediaItem = WayPointAudioItem(this)
-            addMediaItem(mediaItem)
+        if (newWayPointDTO == null) {
+            newWayPointDTO = wayPointDTO
+            oldWayPointDTO.postValue(wayPointDTO)
+            wayPointDTO.audioUri?.run {
+                val mediaItem = WayPointAudioItem(this)
+                addMediaItem(mediaItem)
+            }
+            wayPointDTO.videoUri?.run {
+                setVideoMedia(this)
+            }
+            wayPointDTO.imageUri?.run {
+                setImageMedia(this)
+            }
+            Timber.d("Editing Waypoint: %s", wayPointDTO.toString())
         }
-        wayPointDTO.videoUri?.run {
-            setVideoMedia(this)
-        }
-        wayPointDTO.imageUri?.run {
-            setImageMedia(this)
-        }
-        Timber.d("Editing Waypoint: %s", wayPointDTO.toString())
     }
 
     fun initNewWayPointDTO(longitude: Double, latitude: Double, defaultTitle: String) {
@@ -60,18 +63,18 @@ class CreateWayPointViewModel : ViewModel() {
         newWayPointDTO = wayPointDTO
     }
 
-    fun getEditedWayPointDTO(): WayPointDTO {
+    fun getEditedWayPointDTO(): WayPointDTO? {
         mediaList.value?.run {
             this.forEach { mediaItem ->
                 when (mediaItem) {
                     is WayPointAudioItem -> {
-                        newWayPointDTO.audioUri = mediaItem.uri
+                        newWayPointDTO?.audioUri = mediaItem.uri
                     }
                     is WayPointVideoItem -> {
-                        newWayPointDTO.videoUri = mediaItem.uri
+                        newWayPointDTO?.videoUri = mediaItem.uri
                     }
                     is WayPointImageItem -> {
-                        newWayPointDTO.imageUri = mediaItem.uri
+                        newWayPointDTO?.imageUri = mediaItem.uri
                     }
                 }
             }
@@ -80,11 +83,13 @@ class CreateWayPointViewModel : ViewModel() {
     }
 
     fun setTitle(title: String) {
-        newWayPointDTO.title = title
+        newWayPointDTO?.title = title
+        state[WAYPOINT_KEY] = newWayPointDTO
     }
 
     fun setDescription(description: String) {
-        newWayPointDTO.description = description
+        newWayPointDTO?.description = description
+        state[WAYPOINT_KEY] = newWayPointDTO
     }
 
     fun setImageMedia(uri: Uri) {
@@ -109,13 +114,13 @@ class CreateWayPointViewModel : ViewModel() {
         mediaList.postValue(list)
         when (item) {
             is WayPointAudioItem -> {
-                newWayPointDTO.audioUri = null
+                newWayPointDTO?.audioUri = null
             }
             is WayPointVideoItem -> {
-                newWayPointDTO.videoUri = null
+                newWayPointDTO?.videoUri = null
             }
             is WayPointImageItem -> {
-                newWayPointDTO.imageUri = null
+                newWayPointDTO?.imageUri = null
             }
         }
     }
@@ -223,5 +228,6 @@ class CreateWayPointViewModel : ViewModel() {
 
     companion object {
         const val MAX_AUDIO_DURATION = 300000
+        private const val WAYPOINT_KEY = "waypointTitle"
     }
 }

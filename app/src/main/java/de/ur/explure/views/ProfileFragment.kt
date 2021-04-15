@@ -19,6 +19,7 @@ import androidx.fragment.app.Fragment
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.crazylegend.viewbinding.viewBinding
+import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.google.firebase.storage.FirebaseStorage
@@ -26,6 +27,7 @@ import de.ur.explure.GlideApp
 import de.ur.explure.R
 import de.ur.explure.databinding.FragmentProfileBinding
 import de.ur.explure.extensions.toDp
+import de.ur.explure.utils.showSnackbar
 import de.ur.explure.viewmodel.ProfileViewModel
 import org.koin.android.ext.android.inject
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -56,9 +58,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setHasOptionsMenu(true)
-
         setOnClickListeners()
-
         observeUserModel()
         viewModel.getUserInfo()
     }
@@ -85,21 +85,35 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         })
     }
 
+    // checks if user is logged in with account and if not certain features are blocked
     private fun setOnClickListeners() {
         binding.profilePicture.setOnClickListener {
-            pickImages.launch("image/*")
+            if (viewModel.anonymousUser == false) {
+                pickImages.launch("image/*")
+            } else {
+                isAnonymousUserError()
+            }
         }
-
         binding.ownRoutesButton.setOnClickListener {
-            viewModel.showCreatedRoutes()
+            if (viewModel.anonymousUser == false) {
+                viewModel.showCreatedRoutes()
+                    } else {
+                        isAnonymousUserError()
+                    }
         }
-
         binding.favoriteRoutesButton.setOnClickListener {
-            viewModel.showFavoriteRoutes()
-        }
-
+                if (viewModel.anonymousUser == false) {
+                    viewModel.showFavoriteRoutes()
+                    } else {
+                        isAnonymousUserError()
+                    }
+                }
         binding.statisticsButton.setOnClickListener {
-            viewModel.showStatisticsFragment()
+            if (viewModel.anonymousUser == false) {
+                viewModel.showStatisticsFragment()
+            } else {
+                isAnonymousUserError()
+            }
         }
     }
 
@@ -115,18 +129,16 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
             viewModel.signOut()
             true
         } else {
+            isAnonymousUserError()
             super.onOptionsItemSelected(item)
         }
     }
 
     private fun showDialog() {
         val builder = AlertDialog.Builder(this.requireContext())
-
-        builder.setTitle(resources.getString(R.string.change_user_name))
-
+                .setTitle(resources.getString(R.string.change_user_name))
         val constraintLayout = getEditUserNameLayout(this.requireContext())
-        builder.setView(constraintLayout)
-
+            builder.setView(constraintLayout)
         val textInputLayout =
             constraintLayout.findViewWithTag<TextInputLayout>("textInputLayoutTag")
         val textInputEditText =
@@ -200,6 +212,16 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
 
         constraintLayout.addView(textInputLayout)
         return constraintLayout
+    }
+
+    private fun isAnonymousUserError() {
+        showSnackbar(
+            requireActivity(),
+            R.string.anonymous_user_error,
+            R.id.profile_container,
+            Snackbar.LENGTH_LONG,
+            colorRes = R.color.colorError
+        )
     }
 
     companion object {

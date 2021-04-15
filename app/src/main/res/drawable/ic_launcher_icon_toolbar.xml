@@ -1,0 +1,25 @@
+<!-- smaller launcher icon version for usage in toolbar -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="52dp"
+    android:height="52dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <group android:scaleX="0.56341463"
+        android:scaleY="0.56341463"
+        android:translateX="23.57561"
+        android:translateY="23.57561">
+        <path
+            android:pathData="M22.5,82.395L36,77.175L36,24.525L22.5,29.07ZM72,83.475L85.5,78.93L85.5,25.605L72,30.87Z"
+            android:strokeWidth="1"
+            android:fillColor="#ffffff"
+            android:fillAlpha="0.3"/>
+        <path
+            android:pathData="M92.25,13.5L91.53,13.635L67.5,22.95L40.5,13.5L15.12,22.05C14.175,22.365 13.5,23.175 13.5,24.21L13.5,92.25C13.5,93.51 14.49,94.5 15.75,94.5L16.47,94.365L40.5,85.05L67.5,94.5L92.88,85.95C93.825,85.635 94.5,84.825 94.5,83.79L94.5,15.75C94.5,14.49 93.51,13.5 92.25,13.5ZM36,77.175L22.5,82.395L22.5,29.07L36,24.525L36,77.175ZM63,83.385L45,77.085L45,24.615L63,30.915L63,83.385ZM85.5,78.93L72,83.475L72,30.87L85.5,25.65L85.5,78.93Z"
+            android:strokeWidth="1"
+            android:fillColor="#ffffff"/>
+        <path
+            android:pathData="M80.612,71.21L78.412,71.21L77.634,70.459C80.361,67.287 82.003,63.167 82.003,58.686C82.003,48.695 73.904,40.596 63.912,40.596C53.922,40.596 45.823,48.695 45.823,58.686C45.823,68.678 53.922,76.777 63.912,76.777C68.393,76.777 72.513,75.135 75.685,72.407L76.436,73.186L76.436,75.386L90.353,89.274L94.5,85.127L80.612,71.21ZM63.912,71.21C56.983,71.21 51.389,65.616 51.389,58.686C51.389,51.757 56.983,46.163 63.912,46.163C70.843,46.163 76.436,51.757 76.436,58.686C76.436,65.616 70.843,71.21 63.912,71.21Z"
+            android:strokeWidth="1"
+            android:fillColor="#7e013f"/>
+    </group>
+</vector>

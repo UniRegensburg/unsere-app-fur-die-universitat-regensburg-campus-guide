@@ -8,13 +8,16 @@ import com.mapbox.geojson.LineString
 import de.ur.explure.R
 import de.ur.explure.model.MapMarker
 import de.ur.explure.model.category.Category
+import de.ur.explure.model.waypoint.WayPoint
 import de.ur.explure.views.CategoryQueryFragmentDirections
 import de.ur.explure.views.CreatedRoutesFragmentDirections
 import de.ur.explure.views.DiscoverFragmentDirections
 import de.ur.explure.views.FavoriteRoutesFragmentDirections
 import de.ur.explure.views.MapFragmentDirections
+import de.ur.explure.views.NavigationFragmentDirections
 import de.ur.explure.views.ProfileFragmentDirections
 import de.ur.explure.views.SaveRouteFragmentDirections
+import de.ur.explure.views.SingleRouteFragmentDirections
 import de.ur.explure.views.TextQueryFragmentDirections
 
 /**
@@ -174,7 +177,27 @@ class MainAppRouter {
     }
 
     fun navigateToSaveRouteFragment(action: NavDirections) {
-            navController.navigate(action)
+        navController.navigate(action)
+    }
+
+    fun navigateToSingleWayPointDialog(wayPoint: WayPoint) {
+        val actions = SingleRouteFragmentDirections.actionSingleRouteFragmentToSingleWaypointDialogFragment(
+            waypoint = wayPoint,
+            fromNavigation = false
+        )
+        navController.navigate(actions)
+    }
+
+    fun showRouteWayPointDialog(wayPoint: WayPoint) {
+        val actions = NavigationFragmentDirections.actionNavigationFragmentToSingleWaypointDialogFragment(
+            waypoint = wayPoint,
+            fromNavigation = true
+        )
+        navController.navigate(actions)
+    }
+
+    fun popUpToDiscover() {
+        navController.popBackStack(R.id.discoverFragment, false)
     }
 
     companion object {

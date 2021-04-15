@@ -9,7 +9,6 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.widget.ArrayAdapter
-import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.addCallback
 import androidx.appcompat.widget.ListPopupWindow
@@ -24,7 +23,6 @@ import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.mapbox.android.core.permissions.PermissionsManager
-import com.mapbox.api.directions.v5.models.DirectionsRoute
 import com.mapbox.api.matching.v5.models.MapMatchingMatching
 import com.mapbox.core.constants.Constants.PRECISION_6
 import com.mapbox.geojson.Feature
@@ -92,7 +90,6 @@ class MapFragment : Fragment(R.layout.fragment_map), MapMatchingClient.MapMatchi
     // route creation
     private val waypointsController: WaypointsController by inject()
     private val mapMatchingClient: MapMatchingClient by inject()
-    private var directionsRoute: DirectionsRoute? = null // TODO not used at the moment!
     private var routeCreationMapClickListenerBehavior: MapboxMap.OnMapClickListener? = null
 
     // location tracking
@@ -279,8 +276,13 @@ class MapFragment : Fragment(R.layout.fragment_map), MapMatchingClient.MapMatchi
             mapViewModel.getCurrentMapStyle()?.let { style -> startLocationTracking(style) }
         }
 
+        // disables create route function if user is signed in anonymously
         binding.buildRouteButton.setOnClickListener {
-            showEnterRouteCreationDialog()
+            if (mapViewModel.anonymousUser == false) {
+                showEnterRouteCreationDialog()
+            } else {
+                isAnonymousUserError()
+            }
         }
 
         // if location tracking was enabled before, start it again to prevent forcing the user to
@@ -297,6 +299,16 @@ class MapFragment : Fragment(R.layout.fragment_map), MapMatchingClient.MapMatchi
         } else if (mapViewModel.routeDrawModeActive.value == true) {
             setupRouteDrawMode()
         }
+    }
+
+    private fun isAnonymousUserError() {
+        showSnackbar(
+            requireActivity(),
+            R.string.anonymous_user_error,
+            R.id.map_button_container,
+            Snackbar.LENGTH_LONG,
+            colorRes = R.color.colorError
+        )
     }
 
     /**
@@ -352,11 +364,12 @@ class MapFragment : Fragment(R.layout.fragment_map), MapMatchingClient.MapMatchi
                 setupManualRouteCreationMode()
             }
             .setNeutralButton(R.string.route_track_option) { _, _ ->
-                Toast.makeText(
-                    activity,
-                    "Dieses Feature ist leider noch nicht implementiert!",
-                    Toast.LENGTH_SHORT
-                ).show()
+                showSnackbar(
+                        getString(R.string.not_yet_implemented),
+                        binding.mapButtonContainer,
+                        colorRes = R.color.colorError,
+                        length = Snackbar.LENGTH_LONG
+                )
                 // TODO route tracking mode
                 // mapViewModel.getCurrentMapStyle()?.let { style -> startLocationTracking(style) }
                 // setupRouteRecordingMode()
@@ -910,11 +923,11 @@ class MapFragment : Fragment(R.layout.fragment_map), MapMatchingClient.MapMatchi
         Timber.d("MapMatch Duration: ${bestMatching.duration() / 60} minutes")
         Timber.d("MapMatch Length: ${bestMatching.distance()} meters")
 
+        // TODO save this as well in firestore for the route so we have it in the navigation?
+        // bestMatching.toDirectionRoute().geometry()
+
         // draw the best route match on the map
         showMapMatchedRoute(bestMatching)
-
-        // convert map matching to a route that can be processed by the mapbox navigation api
-        directionsRoute = bestMatching.toDirectionRoute()
     }
 
     private fun showMapMatchedRoute(matchedRoute: MapMatchingMatching) {

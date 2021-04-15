@@ -3,12 +3,12 @@ package de.ur.explure.views
 import android.app.AlertDialog
 import android.os.Bundle
 import android.view.View
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.crazylegend.viewbinding.viewBinding
+import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.storage.FirebaseStorage
 import de.ur.explure.GlideApp
@@ -24,13 +24,13 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 
-class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinComponent, CommentInterface {
+class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinComponent,
+    CommentInterface {
 
     private val binding by viewBinding(FragmentSingleRouteBinding::bind)
     private val args: SingleRouteFragmentArgs by navArgs()
     private val singleRouteViewModel: SingleRouteViewModel by viewModel()
     private val fireStorage: FirebaseStorage by inject()
-    private var routeName: String = ""
 
     private lateinit var wayPointAdapter: WayPointAdapter
     private lateinit var commentAdapter: CommentAdapter
@@ -41,8 +41,10 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinCompon
         super.onViewCreated(view, savedInstanceState)
         observeRouteInformation()
         val routeId = args.routeID
-        singleRouteViewModel.getRouteData(routeId)
         setOnClickListener()
+        setErrorObserver()
+        singleRouteViewModel.getRouteData(routeId)
+        singleRouteViewModel.getUserName()
     }
 
     private fun initAdapters() {
@@ -53,11 +55,12 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinCompon
     private fun observeRouteInformation() {
         singleRouteViewModel.route.observe(viewLifecycleOwner, { route ->
             if (route != null) {
-                routeName = route.title
                 binding.routeName.text = route.title
                 binding.routeDescription.text = route.description
-                binding.routeDuration.text = getString(R.string.route_item_duration, route.duration.toInt())
-                binding.routeDistance.text = getString(R.string.route_item_distance, route.distance.toInt())
+                binding.routeDuration.text =
+                    getString(R.string.route_item_duration, route.duration.toInt())
+                binding.routeDistance.text =
+                    getString(R.string.route_item_distance, route.distance.toInt())
                 binding.routeRating.rating = route.currentRating.toFloat()
                 setImage(route.thumbnailUrl)
                 // Initialises Adapter here so that new responses are also displayed immediately
@@ -79,10 +82,10 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinCompon
             try {
                 val gsReference = fireStorage.getReferenceFromUrl(image)
                 GlideApp.with(requireContext())
-                        .load(gsReference)
-                        .error(R.drawable.map_background)
-                        .transition(DrawableTransitionOptions.withCrossFade())
-                        .into(binding.routeImage)
+                    .load(gsReference)
+                    .error(R.drawable.map_background)
+                    .transition(DrawableTransitionOptions.withCrossFade())
+                    .into(binding.routeImage)
             } catch (_: Exception) {
             }
         }
@@ -95,7 +98,9 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinCompon
     }
 
     private fun initWayPointAdapter() {
-        wayPointAdapter = WayPointAdapter()
+        wayPointAdapter = WayPointAdapter {
+            singleRouteViewModel.showWayPointDialog(it)
+        }
         binding.waypoints.adapter = wayPointAdapter
         binding.waypoints.layoutManager = LinearLayoutManager(requireContext())
     }
@@ -111,7 +116,7 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinCompon
             binding.viewFlipper.displayedChild = 2
         }
         binding.startRouteButton.setOnClickListener {
-            // start route
+            singleRouteViewModel.startNavigation()
         }
         binding.favorRouteButton.setOnClickListener {
             singleRouteViewModel.favorRoute(args.routeID)
@@ -137,7 +142,13 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinCompon
             singleRouteViewModel.addComment(commentInput)
             binding.commentInput.text.clear()
         } else {
-            Toast.makeText(context, R.string.empty_comment, Toast.LENGTH_LONG).show()
+            showSnackbar(
+                requireActivity(),
+                R.string.empty_comment,
+                R.id.single_route_container,
+                Snackbar.LENGTH_LONG,
+                colorRes = R.color.colorError
+            )
         }
     }
 
@@ -145,7 +156,13 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinCompon
         if (answerText.isNotEmpty()) {
             singleRouteViewModel.addAnswer(commentId, answerText)
         } else {
-            Toast.makeText(context, R.string.empty_answer, Toast.LENGTH_LONG).show()
+            showSnackbar(
+                requireActivity(),
+                R.string.empty_answer,
+                R.id.single_route_container,
+                Snackbar.LENGTH_LONG,
+                colorRes = R.color.colorError
+            )
         }
     }
 
@@ -154,7 +171,7 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinCompon
             .setTitle(R.string.delete_comment)
             .setPositiveButton(R.string.delete_button) { _, _ ->
                 singleRouteViewModel.deleteComment(commentId)
-                Toast.makeText(context, R.string.comment_deleted, Toast.LENGTH_LONG).show()
+                commentDeleted()
             }
             .setNegativeButton(R.string.back_button) { _, _ -> }
             .show()
@@ -162,12 +179,77 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinCompon
 
     override fun deleteAnswer(answerId: String, commentId: String) {
         AlertDialog.Builder(requireContext())
-                .setTitle(R.string.delete_answer)
-                .setPositiveButton(R.string.delete_button) { _, _ ->
-                    singleRouteViewModel.deleteAnswer(answerId, commentId)
-                    Toast.makeText(context, R.string.answer_deleted, Toast.LENGTH_LONG).show()
+            .setTitle(R.string.delete_answer)
+            .setPositiveButton(R.string.delete_button) { _, _ ->
+                singleRouteViewModel.deleteAnswer(answerId, commentId)
+                answerDeleted()
+            }
+            .setNegativeButton(R.string.back_button) { _, _ -> }
+            .show()
+    }
+
+    private fun setErrorObserver() {
+        singleRouteViewModel.errorMessage.observe(viewLifecycleOwner, { showError ->
+            if (showError == true) {
+                showSnackbar(
+                    requireActivity(),
+                    R.string.single_route_error,
+                    R.id.single_route_container,
+                    Snackbar.LENGTH_LONG,
+                    colorRes = R.color.colorError
+                ) {
+                    this.addCallback(object : BaseTransientBottomBar.BaseCallback<Snackbar>() {
+                        override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
+                            super.onDismissed(transientBottomBar, event)
+                            singleRouteViewModel.popToDiscover()
+                        }
+                    })
                 }
-                .setNegativeButton(R.string.back_button) { _, _ -> }
-                .show()
+            }
+        })
+    }
+
+    private fun commentDeleted() {
+        singleRouteViewModel.successMessage.observe(viewLifecycleOwner, { successMessage ->
+            if (successMessage == true) {
+                showSnackbar(
+                    requireActivity(),
+                    R.string.comment_deleted,
+                    R.id.single_route_container,
+                    Snackbar.LENGTH_LONG,
+                    colorRes = R.color.themeColorDark
+                )
+            } else {
+                showSnackbar(
+                    requireActivity(),
+                    R.string.delete_comment_failed,
+                    R.id.single_route_container,
+                    Snackbar.LENGTH_LONG,
+                    colorRes = R.color.colorError
+                )
+            }
+        })
+    }
+
+    private fun answerDeleted() {
+        singleRouteViewModel.successMessage.observe(viewLifecycleOwner, { successMessage ->
+            if (successMessage == true) {
+                showSnackbar(
+                    requireActivity(),
+                    R.string.answer_deleted,
+                    R.id.single_route_container,
+                    Snackbar.LENGTH_LONG,
+                    colorRes = R.color.themeColorDark
+                )
+            } else {
+                showSnackbar(
+                    requireActivity(),
+                    R.string.delete_answer_failed,
+                    R.id.single_route_container,
+                    Snackbar.LENGTH_LONG,
+                    colorRes = R.color.colorError
+                )
+            }
+        })
     }
 }

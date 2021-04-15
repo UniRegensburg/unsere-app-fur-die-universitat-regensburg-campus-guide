@@ -17,7 +17,7 @@ fun Uri.getRealSize(context: Context): Long? {
                 null,
                 null
             ) ?: return null
-        val columnIndex = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.SIZE) ?: return null
+        val columnIndex = cursor.getColumnIndexOrThrow(MediaStore.Audio.Media.SIZE)
         cursor.moveToFirst()
         val result = cursor.getString(columnIndex)
         result.toLong()
