@@ -123,7 +123,7 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinCompon
             routeAddedSnackbar = showSnackbar(
                 requireActivity(),
                 R.string.add_route_to_favorites,
-                binding.mapButtonContainer,
+                R.id.scrollview,
                 Snackbar.LENGTH_SHORT,
                 colorRes = R.color.themeColor
             )
