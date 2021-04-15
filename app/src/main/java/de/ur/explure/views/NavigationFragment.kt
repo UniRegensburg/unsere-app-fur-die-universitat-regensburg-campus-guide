@@ -498,8 +498,7 @@ class NavigationFragment : Fragment(R.layout.fragment_navigation), MapHelper.Map
         with(MaterialAlertDialogBuilder(requireActivity())) {
             setMessage(R.string.finish_navigation_message)
             setPositiveButton(R.string.yes) { _, _ ->
-                // TODO show dialog fragment and give user the option to rate this route!
-
+                navigationViewModel.showRouteRatingOption(route)
                 navigationViewModel.leaveNavigationMode()
                 // TODO activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR
                 findNavController().navigateUp()

@@ -22,9 +22,9 @@ import de.ur.explure.repository.category.CategoryRepositoryImpl
 import de.ur.explure.repository.rating.RatingRepositoryImpl
 import de.ur.explure.repository.route.RouteRepositoryImpl
 import de.ur.explure.repository.user.UserRepositoryImpl
+import de.ur.explure.services.AlgoliaService
 import de.ur.explure.services.FireStoreInstance
 import de.ur.explure.services.FirebaseAuthService
-import de.ur.explure.services.AlgoliaService
 import de.ur.explure.utils.SharedPreferencesManager
 import de.ur.explure.viewmodel.AuthenticationViewModel
 import de.ur.explure.viewmodel.CategoryViewModel
@@ -37,13 +37,13 @@ import de.ur.explure.viewmodel.MainViewModel
 import de.ur.explure.viewmodel.MapViewModel
 import de.ur.explure.viewmodel.NavigationViewModel
 import de.ur.explure.viewmodel.ProfileViewModel
+import de.ur.explure.viewmodel.RatingViewModel
 import de.ur.explure.viewmodel.SaveRouteViewModel
 import de.ur.explure.viewmodel.SingleRouteViewModel
 import de.ur.explure.viewmodel.StatisticsViewModel
+import de.ur.explure.viewmodel.UserDataViewModel
 import de.ur.explure.viewmodel.WordSearchViewModel
 import org.koin.android.ext.koin.androidApplication
-import de.ur.explure.viewmodel.UserDataViewModel
-import de.ur.explure.viewmodel.RatingViewModel
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
@@ -107,6 +107,6 @@ val mainModule = module {
     viewModel { StatisticsViewModel(get(), get(), get(), get()) }
     viewModel { SingleRouteViewModel(get(), get(), get()) }
     viewModel { UserDataViewModel(get(), get()) }
-    viewModel { NavigationViewModel(get()) }
+    viewModel { NavigationViewModel(get(), get()) }
     viewModel { RatingViewModel(get()) }
 }

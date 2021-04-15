@@ -112,6 +112,10 @@
             android:name="routeTitle"
             app:argType="string"
             app:nullable="false" />
+
+        <action
+            android:id="@+id/action_navigationFragment_to_rateRouteDialog"
+            app:destination="@id/rateRouteDialog" />
     </fragment>
 
     <fragment
@@ -201,6 +205,17 @@
             android:name="latitude"
             android:defaultValue="0L"
             app:argType="long" />
+    </dialog>
+
+    <dialog
+        android:id="@+id/rateRouteDialog"
+        android:name="de.ur.explure.views.RatingDialogFragment"
+        android:label="Routenbewertung"
+        tools:layout="@layout/fragment_rating_dialog">
+        <argument
+            android:name="routeID"
+            app:argType="string"
+            app:nullable="false" />
     </dialog>
 
 </navigation>

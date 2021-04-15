@@ -239,6 +239,7 @@
     <string name="delete_answer_failed">Answer couldn\'t be deleted. Please try again later</string>
     <string name="delete_button">Delete</string>
     <string name="back_button">Back</string>
+    <string name="skip_button">Skip</string>
     <string name="waypoints_button">Waypoints</string>
     <string name="waypoint_image">Image</string>
     <string name="waypoint_title">Title</string>

@@ -6,9 +6,15 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import com.mapbox.api.directions.v5.models.DirectionsRoute
+import de.ur.explure.model.route.Route
+import de.ur.explure.navigation.MainAppRouter
 import de.ur.explure.utils.Event
+import de.ur.explure.views.NavigationFragmentDirections
 
-class NavigationViewModel(private val savedState: SavedStateHandle) : ViewModel() {
+class NavigationViewModel(
+    private val savedState: SavedStateHandle,
+    private var appRouter: MainAppRouter
+) : ViewModel() {
 
     val buildingExtrusionActive by lazy {
         MutableLiveData(
@@ -66,6 +72,13 @@ class NavigationViewModel(private val savedState: SavedStateHandle) : ViewModel(
     fun setLocationPermissionStatus(permissionGiven: Boolean) {
         _locationPermissionGiven.value = permissionGiven
         savedState[LOCATION_PERMISSION_GIVEN] = permissionGiven
+    }
+
+    fun showRouteRatingOption(route: Route) {
+        val action = NavigationFragmentDirections.actionNavigationFragmentToRateRouteDialog(
+            routeID = route.id
+        )
+        appRouter.navigateToSaveRouteFragment(action)
     }
 
     companion object {

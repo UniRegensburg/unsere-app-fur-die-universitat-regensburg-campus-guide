@@ -211,6 +211,7 @@
     <string name="delete_answer_failed">Antwort konnte nicht gelöscht werden, bitte versuche es später noch einmal</string>
     <string name="delete_button">Löschen</string>
     <string name="back_button">Zurück</string>
+    <string name="skip_button">Überspringen</string>
     <string name="waypoints_button">Wegpunkte</string>
     <string name="waypoint_image">Bild</string>
     <string name="waypoint_title">Titel</string>
