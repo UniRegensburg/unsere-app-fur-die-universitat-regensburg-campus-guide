@@ -270,5 +270,6 @@
     <string name="create_button">Create profile</string>
     <string name="empty_username">Please enter a username</string>
     <string name="user_data_error">Something went wrong while creating your profile. Please try again later.</string>
+    <string name="add_route_to_favorites">Route added to favorites</string>
 
 </resources>

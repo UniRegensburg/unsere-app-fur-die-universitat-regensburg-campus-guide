@@ -111,6 +111,7 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinCompon
         }
         binding.favorRouteButton.setOnClickListener {
             singleRouteViewModel.favorRoute(args.routeID)
+            Toast.makeText(context, getString(R.string.add_route_to_favorites), Toast.LENGTH_LONG).show()
         }
         /*binding.shareRouteButton.setOnClickListener {
             singleRouteViewModel.shareRoute(requireContext())
