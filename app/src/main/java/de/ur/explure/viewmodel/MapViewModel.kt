@@ -30,7 +30,7 @@ class MapViewModel(
     private val state: SavedStateHandle,
     private val appRouter: MainAppRouter,
     private val authService: FirebaseAuthService
-    ) : ViewModel() {
+) : ViewModel() {
 
     var anonymousUser: Boolean? = authService.isAnonymousUser()
 
@@ -59,6 +59,7 @@ class MapViewModel(
     private val activeDrawnLines: MutableLiveData<MutableList<Feature>> by lazy {
         MutableLiveData(state[ACTIVE_DRAWN_LINES_KEY] ?: mutableListOf())
     }
+
     /*
     private val currentRouteLinePoints: MutableLiveData<MutableList<Point>> by lazy {
         MutableLiveData(state[ACTIVE_ROUTE_LINE_POINTS_KEY] ?: mutableListOf())

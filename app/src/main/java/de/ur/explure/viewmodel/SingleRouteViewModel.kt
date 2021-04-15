@@ -31,6 +31,8 @@ class SingleRouteViewModel(
     val successMessage: LiveData<Boolean> = mutableSuccessMessage
     private var userName: String = DEFAULT_USERNAME
 
+    val currentFlipperViewId: MutableLiveData<Int> = MutableLiveData()
+
     fun getRouteData(routeId: String) {
         viewModelScope.launch {
             when (val routeData = routeRepository.getRoute(routeId, false)) {
@@ -142,6 +144,10 @@ class SingleRouteViewModel(
                 context.getString(R.string.share_option)
             )
         )
+    }
+
+    fun setFlipperView(descriptionViewId: Int) {
+        currentFlipperViewId.postValue(descriptionViewId)
     }
 
     companion object {
