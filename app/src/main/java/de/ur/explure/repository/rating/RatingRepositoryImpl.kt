@@ -5,6 +5,7 @@ import com.google.firebase.firestore.FieldValue
 import de.ur.explure.config.ErrorConfig
 import de.ur.explure.config.RatingDocumentConfig.DATE_FIELD
 import de.ur.explure.config.RatingDocumentConfig.RATING_FIELD
+import de.ur.explure.config.UserDocumentConfig
 import de.ur.explure.extensions.await
 import de.ur.explure.model.rating.Rating
 import de.ur.explure.model.rating.RatingDTO
@@ -32,6 +33,8 @@ class RatingRepositoryImpl(
         return try {
             val userId = firebaseAuth.getCurrentUserId() ?: return ErrorConfig.NO_USER_RESULT
             fireStore.ratingCollection.document().set(ratingDTO.toMap(userId)).await()
+            fireStore.userCollection.document()
+                    .update(UserDocumentConfig.RATING_COUNT_KEY, FieldValue.increment(1)).await()
         } catch (exception: Exception) {
             FirebaseResult.Error(exception)
         }

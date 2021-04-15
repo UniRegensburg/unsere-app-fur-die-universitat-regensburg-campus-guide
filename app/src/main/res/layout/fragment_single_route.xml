@@ -28,18 +28,17 @@
             android:text="@string/route_name"
             android:textSize="30sp"
             android:textStyle="bold"
-            app:layout_constraintEnd_toStartOf="@id/share_route_button"
+            app:layout_constraintEnd_toStartOf="@id/favor_route_button"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_chainStyle="spread" />
 
         <ImageButton
-            android:id="@+id/share_route_button"
+            android:id="@+id/favor_route_button"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_marginEnd="16dp"
-            android:background="?attr/actionModeShareDrawable"
-            android:contentDescription="@string/share_route"
+            android:background="@drawable/ic_favorite_routes_icon"
             app:layout_constraintBottom_toBottomOf="@id/route_name"
             app:layout_constraintEnd_toEndOf="@id/route_image"
             app:layout_constraintTop_toTopOf="@id/route_name" />
@@ -266,6 +265,7 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     </ScrollView>
+
     <ProgressBar
         android:id="@+id/progress_bar"
         android:layout_width="100dp"
