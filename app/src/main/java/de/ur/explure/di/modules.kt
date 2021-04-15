@@ -88,8 +88,8 @@ val mainModule = module {
     single { AlgoliaService() }
 
     // repositories
-    single { RatingRepositoryImpl(get(), get()) }
     single { RouteRepositoryImpl(get(), get(), get(), get()) }
+    single { RatingRepositoryImpl(get(), get(), get()) }
     single { UserRepositoryImpl(get(), get(), get()) }
     single { CategoryRepositoryImpl(get(), get()) }
     single { StorageRepositoryImpl(get()) }
