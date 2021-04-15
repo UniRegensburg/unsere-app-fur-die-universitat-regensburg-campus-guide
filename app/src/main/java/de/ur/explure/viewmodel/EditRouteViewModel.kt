@@ -16,7 +16,6 @@ import com.mapbox.turf.TurfMeasurement
 import de.ur.explure.extensions.toGeoPoint
 import de.ur.explure.model.waypoint.WayPointDTO
 import de.ur.explure.navigation.MainAppRouter
-import de.ur.explure.repository.route.RouteRepositoryImpl
 import de.ur.explure.utils.CachedFileUtils
 import de.ur.explure.utils.reorderList
 import de.ur.explure.views.EditRouteFragment.Companion.PROPERTY_ID
@@ -25,29 +24,21 @@ import de.ur.explure.views.EditRouteFragmentDirections
 @Suppress("ReturnCount")
 class EditRouteViewModel(
     private val state: SavedStateHandle,
-    private val appRouter: MainAppRouter,
-    private val routeRepository: RouteRepositoryImpl
+    private val appRouter: MainAppRouter
 ) : ViewModel() {
 
     private var route: LineString? = state[ROUTE_KEY]
-    var routeSnapshotUri: String? = state[SNAPSHOT_URI_KEY]
-    // var routeId: String? = null // TODO save the id of the newly created route here!
 
-    // TODO LinkedList ?
     val routeWayPoints: MutableLiveData<MutableList<WayPointDTO>> by lazy {
         MutableLiveData(state[ROUTE_WayPointS_KEY] ?: mutableListOf())
     }
 
     val selectedMarker: MutableLiveData<WayPointDTO> by lazy { MutableLiveData<WayPointDTO>() }
 
-    // TODO schönere lösung hierfür finden, wenn Zeit
     // used to update the map marker symbols when a waypoint is deleted from the bottomsheet
     val deletedWaypoint: MutableLiveData<WayPointDTO> by lazy { MutableLiveData<WayPointDTO>() }
 
     val buildingExtrusionActive by lazy { MutableLiveData(state[BUILDING_KEY] ?: true) }
-
-    private val _snapshotUploadSuccessful: MutableLiveData<Boolean?> by lazy { MutableLiveData() }
-    val snapshotUploadSuccessful = _snapshotUploadSuccessful
 
     private var mapSnapshot: Uri? = null
 
@@ -139,10 +130,6 @@ class EditRouteViewModel(
         appRouter.getNavController()?.navigate(directions)
     }
 
-    fun resetSnapshotUpload() {
-        _snapshotUploadSuccessful.value = null
-    }
-
     fun setBuildingExtrusionStatus(active: Boolean) {
         buildingExtrusionActive.value = active
         state[BUILDING_KEY] = active
@@ -176,8 +163,10 @@ class EditRouteViewModel(
     companion object {
         private const val ROUTE_KEY = "recreatedRoute"
         private const val ROUTE_WayPointS_KEY = "routeWayPoints"
-        private const val SNAPSHOT_URI_KEY = "snapshotUri"
         private const val BUILDING_KEY = "3dBuildingsActive"
+
+        // in m/s, see https://en.wikipedia.org/wiki/Preferred_walking_speed
         private const val WALKING_SPEED = 1.4
+        // private const val WALKING_SPEED = 0.83 // Spaziergang
     }
 }

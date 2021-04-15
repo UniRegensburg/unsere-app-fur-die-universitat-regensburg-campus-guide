@@ -44,8 +44,7 @@
         mapbox:mapbox_cameraTargetLng="12.094922"
         mapbox:mapbox_cameraTilt="0"
         mapbox:mapbox_cameraZoom="14"
-        mapbox:mapbox_cameraZoomMax="20"
-        mapbox:mapbox_cameraZoomMin="14" >
+        mapbox:mapbox_cameraZoomMin="13" >
 
         <RelativeLayout
             android:id="@+id/fab_buttons"

@@ -9,12 +9,15 @@ import androidx.lifecycle.viewModelScope
 import de.ur.explure.R
 import de.ur.explure.model.comment.CommentDTO
 import de.ur.explure.model.route.Route
+import de.ur.explure.model.waypoint.WayPoint
 import de.ur.explure.navigation.MainAppRouter
 import de.ur.explure.repository.route.RouteRepositoryImpl
 import de.ur.explure.repository.user.UserRepositoryImpl
 import de.ur.explure.utils.DeepLinkUtils
 import de.ur.explure.utils.FirebaseResult
+import de.ur.explure.views.SingleRouteFragmentDirections
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import java.util.*
 
 class SingleRouteViewModel(
@@ -122,6 +125,10 @@ class SingleRouteViewModel(
         appRouter.popUpToDiscover()
     }
 
+    fun showWayPointDialog(wayPoint: WayPoint) {
+        appRouter.navigateToSingleWayPointDialog(wayPoint)
+    }
+
     fun shareRoute(context: Context) {
         val route = route.value ?: return
         val shareLink = DeepLinkUtils.getURLforRouteId(route.id)
@@ -144,6 +151,19 @@ class SingleRouteViewModel(
                 context.getString(R.string.share_option)
             )
         )
+    }
+
+    fun startNavigation() {
+        val route = mutableRoute.value
+        if (route == null) {
+            Timber.e("Navigation start failed because route object was null!")
+            return
+        }
+        val action = SingleRouteFragmentDirections.actionSingleRouteFragmentToNavigationFragment(
+            route = route,
+            routeTitle = route.title
+        )
+        appRouter.getNavController()?.navigate(action)
     }
 
     fun setFlipperView(descriptionViewId: Int) {

@@ -11,6 +11,10 @@
     card_view:cardElevation="@dimen/cardview_default_elevation">
 
     <RelativeLayout
+        android:clickable="true"
+        android:focusable="true"
+        android:background="?attr/selectableItemBackground"
+        android:id="@+id/waypoint_item_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"

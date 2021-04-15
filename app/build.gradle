@@ -93,7 +93,7 @@ dependencies {
     implementation 'com.jakewharton.timber:timber:4.7.1'
 
     //Memory Leak Detection
-    debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.5'
+    // debugImplementation 'com.squareup.leakcanary:leakcanary-android:2.5'
 
     //Firebase
     implementation platform('com.google.firebase:firebase-bom:26.2.0')
@@ -120,8 +120,8 @@ dependencies {
     //Mapbox
     // the corresponding sdk version is bundled with the plugin
     implementation "com.mapbox.mapboxsdk:mapbox-android-plugin-annotation-v9:0.9.0"
-    implementation "com.mapbox.mapboxsdk:mapbox-android-telemetry:6.1.0"
-    // implementation "com.mapbox.navigation:core:$mapbox_navigation_version"
+    implementation "com.mapbox.mapboxsdk:mapbox-android-telemetry:6.2.2"
+    implementation "com.mapbox.navigation:core:$mapbox_navigation_version"
     // implementation "com.mapbox.navigation:ui:$mapbox_navigation_version" // already contains maps-sdk and navigation-core
     implementation "com.mapbox.navigation:ui:1.4.0"
     implementation "com.mapbox.mapboxsdk:mapbox-android-core:3.1.1" // Mapbox location & permission helpers
@@ -161,4 +161,11 @@ dependencies {
     implementation 'io.ktor:ktor-client-okhttp:1.5.2'
     implementation "androidx.core:core-ktx:1.3.2"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+
+    //Audio View
+    implementation 'com.4ert:audioview:1.4.12'
+
+    //Video View
+    implementation 'com.google.android.exoplayer:exoplayer:2.13.3'
+
 }

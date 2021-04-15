@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- these two are only used for the route simulation! -->
+    <item
+        android:id="@+id/stopReplayButton"
+        android:icon="@drawable/ic_outline_stop_circle_24"
+        android:title="Stop replay"
+        android:visible="false"
+        app:showAsAction="always"
+        tools:visible="true"
+        tools:ignore="AlwaysShowAction" />
+
+    <item
+        android:id="@+id/resumeReplayButton"
+        android:icon="@drawable/ic_baseline_play_circle_outline_24"
+        android:title="Resume replay"
+        android:visible="false"
+        app:showAsAction="always"
+        tools:visible="true" />
+
+    <item
+        android:id="@+id/show3dBuildings"
+        android:checkable="true"
+        android:checked="true"
+        android:icon="@drawable/ic_baseline_domain_24"
+        android:title="@string/menu_show_buildings_extrusion"
+        android:visible="true"
+        app:showAsAction="never" />
+
+</menu>

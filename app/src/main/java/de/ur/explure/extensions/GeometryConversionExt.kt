@@ -22,6 +22,13 @@ fun Point.toLocation(): Location {
 
 fun Location.toPoint(): Point = Point.fromLngLat(this.longitude, this.latitude)
 
+fun Location.toLatLng(): LatLng =
+    if (this.hasAltitude()) {
+        LatLng(this.latitude, this.longitude, this.altitude)
+    } else {
+        LatLng(this.latitude, this.longitude)
+    }
+
 fun LatLng.toPoint(): Point = Point.fromLngLat(this.longitude, this.latitude)
 
 fun LatLng.toGeoPoint(): GeoPoint = GeoPoint(latitude, longitude)
@@ -55,5 +62,7 @@ fun Feature.toLineString(): LineString = geometry() as LineString
 fun LineString.toFeature(): Feature = Feature.fromGeometry(this)
 
 fun GeoPoint.toLatLng(): LatLng = LatLng(latitude, longitude)
+
+fun GeoPoint.toPoint(): Point = this.toLatLng().toPoint()
 
 fun GeoPoint.toFeature(): Feature = Feature.fromGeometry(this.toLatLng().toPoint())

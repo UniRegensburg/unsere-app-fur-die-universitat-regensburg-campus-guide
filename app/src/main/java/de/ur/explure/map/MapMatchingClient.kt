@@ -11,13 +11,11 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import timber.log.Timber
+import java.util.*
 
 class MapMatchingClient(private val context: Context) {
 
     private var mapMatchingListener: MapMatchingListener? = null
-
-    // Todo: auch aus dem MapMatching response obj könnte man die route instructions bekommen!!
-    // see https://docs.mapbox.com/help/tutorials/get-started-map-matching-api/#display-the-turn-by-turn-directions
 
     @Suppress("SpreadOperator")
     fun requestMapMatchedRoute(coordinates: List<Point>) {
@@ -32,6 +30,7 @@ class MapMatchingClient(private val context: Context) {
         val mapMatchingRequest = MapboxMapMatching.builder()
             .accessToken(getMapboxAccessToken(context))
             .profile(DirectionsCriteria.PROFILE_WALKING)
+            .language(Locale.GERMAN)
             .coordinates(coordinates)
             // set indices for correct navigation instructions with waypoints
             // (otherwise every waypoint would be an end point!)

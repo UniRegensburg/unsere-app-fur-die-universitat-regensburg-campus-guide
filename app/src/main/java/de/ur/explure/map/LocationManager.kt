@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.app.Application
 import android.location.Location
 import android.os.Looper
-import android.widget.Toast
 import androidx.annotation.VisibleForTesting
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
@@ -28,9 +27,10 @@ import timber.log.Timber
  * ```
  * private lateinit var locationManagerInstance: LocationManager
  * ...
- * locationManagerInstance = LocationManager({ location ->
+ * locationManagerInstance = LocationManager(applicationContext, { location ->
  *      // do something with the location
  * })
+ * lifecycleOwner.lifecycle.addObserver(locationManager)
  * ```
  *
  * and enable location updates with
@@ -59,13 +59,14 @@ internal class LocationManager(
 
             override fun onFailure(exception: Exception) {
                 Timber.e(exception.localizedMessage)
-                Toast.makeText(
-                    context,
-                    exception.localizedMessage,
-                    Toast.LENGTH_SHORT
-                ).show()
             }
         }
+
+        locationEngine = LocationEngineProvider.getBestLocationEngine(context)
+    }
+
+    fun getCustomLocationEngine(): LocationEngine {
+        return locationEngine ?: LocationEngineProvider.getBestLocationEngine(context)
     }
 
     @SuppressLint("MissingPermission")
@@ -82,8 +83,8 @@ internal class LocationManager(
                 // thresholds without breaking tracking
                 .trackingGesturesManagement(true)
                 // show a pulsing circle around the user position
-                .pulseEnabled(true)
-                .pulseFadeEnabled(true)
+                .pulseEnabled(false)
+                .pulseFadeEnabled(false)
                 // disable animations to decrease battery and cpu usage
                 .compassAnimationEnabled(false)
                 .accuracyAnimationEnabled(false)
@@ -109,15 +110,14 @@ internal class LocationManager(
         }
 
         if (!useDefaultEngine) {
-            initCustomLocationEngine()
+            startLocationUpdates()
         }
     }
 
     @SuppressLint("MissingPermission")
-    private fun initCustomLocationEngine() {
-        locationEngine = LocationEngineProvider.getBestLocationEngine(context)
-
+    fun startLocationUpdates() {
         val request = LocationEngineRequest.Builder(DEFAULT_INTERVAL_IN_MILLISECONDS)
+            .setFastestInterval(FASTEST_INTERVAL)
             .setPriority(LocationEngineRequest.PRIORITY_BALANCED_POWER_ACCURACY)
             .setMaxWaitTime(DEFAULT_MAX_WAIT_TIME)
             .build()
@@ -127,13 +127,17 @@ internal class LocationManager(
         locationEngine?.getLastLocation(callback)
     }
 
+    fun stopLocationUpdates() {
+        locationUpdatesCallback?.let { locationEngine?.removeLocationUpdates(it) }
+    }
+
     override fun onStop(owner: LifecycleOwner) {
         super.onStop(owner)
         if (enabled) {
             enabled = false
 
             // remove location updates to prevent leaks
-            locationUpdatesCallback?.let { locationEngine?.removeLocationUpdates(it) }
+           stopLocationUpdates()
         }
     }
 
@@ -145,6 +149,7 @@ internal class LocationManager(
     }
 
     companion object {
+        private const val FASTEST_INTERVAL = 500L
         private const val DEFAULT_INTERVAL_IN_MILLISECONDS = 1000L
         private const val DEFAULT_MAX_WAIT_TIME = DEFAULT_INTERVAL_IN_MILLISECONDS * 5
     }
