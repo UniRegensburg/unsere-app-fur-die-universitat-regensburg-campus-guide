@@ -74,6 +74,8 @@ class CreatedRoutesFragment : Fragment(R.layout.fragment_created_routes),
         viewModel.createdRoutes.observe(viewLifecycleOwner, { routes ->
             if (routes != null) {
                 adapter.routeList = routes
+                binding.loadingCircle.visibility = View.GONE
+                binding.page.visibility = View.VISIBLE
             }
         })
     }

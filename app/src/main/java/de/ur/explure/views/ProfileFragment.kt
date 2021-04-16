@@ -81,6 +81,8 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
                     } catch (_: Exception) {
                     }
                 }
+                binding.loadingCircle.visibility = View.GONE
+                binding.page.visibility = View.VISIBLE
             }
         })
     }
