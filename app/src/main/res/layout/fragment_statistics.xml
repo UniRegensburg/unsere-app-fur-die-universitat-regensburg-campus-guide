@@ -18,18 +18,17 @@
             android:layout_height="wrap_content"
             android:background="@color/themeColor">
 
-            <androidx.cardview.widget.CardView
-                android:id="@+id/profilePictureCardView"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_margin="8dp"
-                android:elevation="12dp"
-                android:innerRadius="0dp"
-                app:cardBackgroundColor="@color/themeColor"
-                android:shape="ring"
-                android:thicknessRatio="1.9"
-                android:orientation="vertical"
-                app:cardCornerRadius="80dp">
+        <androidx.cardview.widget.CardView
+            android:id="@+id/profilePictureCardView"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_margin="8dp"
+            android:innerRadius="0dp"
+            android:elevation="@dimen/fab_elevation"
+            app:cardBackgroundColor="@color/themeColor"
+            android:shape="ring"
+            android:orientation="vertical"
+            app:cardCornerRadius="25dp">
 
                 <ImageView
                     android:id="@+id/profilePicture"
@@ -283,15 +282,15 @@
                                 android:padding="8dp"
                                 android:src="@drawable/ic_created_routes_statistic_icon" />
 
-                            <TextView
-                                android:id="@+id/createdRoutesTermTextView"
-                                android:layout_height="wrap_content"
-                                android:layout_width="wrap_content"
-                                android:layout_below="@id/createdRoutesStatisticImageView"
-                                android:layout_margin="5dp"
-                                android:layout_centerHorizontal="true"
-                                android:text="@string/created_routes"
-                                android:textSize="14sp" />
+                        <TextView
+                            android:id="@+id/createdRoutesTermTextView"
+                            android:layout_height="wrap_content"
+                            android:layout_width="wrap_content"
+                            android:layout_below="@id/createdRoutesStatisticImageView"
+                            android:layout_margin="5dp"
+                            android:layout_centerHorizontal="true"
+                            android:text="@string/created_routes"
+                            android:textSize="14sp" />
 
                             <TextView
                                 android:id="@+id/createdRoutesTextView"

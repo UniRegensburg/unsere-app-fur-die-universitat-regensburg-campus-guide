@@ -18,18 +18,17 @@
             android:layout_height="wrap_content"
             android:background="@color/themeColor">
 
-            <androidx.cardview.widget.CardView
-                android:id="@+id/profilePictureCardView"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_margin="8dp"
-                android:elevation="12dp"
-                android:innerRadius="0dp"
-                app:cardBackgroundColor="@color/themeColor"
-                android:shape="ring"
-                android:thicknessRatio="1.9"
-                android:orientation="vertical"
-                app:cardCornerRadius="80dp">
+        <androidx.cardview.widget.CardView
+            android:id="@+id/profilePictureCardView"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_margin="8dp"
+            android:innerRadius="0dp"
+            android:elevation="@dimen/fab_elevation"
+            app:cardBackgroundColor="@color/themeColor"
+            android:shape="ring"
+            android:orientation="vertical"
+            app:cardCornerRadius="25dp">
 
                 <ImageView
                     android:id="@+id/profilePicture"
