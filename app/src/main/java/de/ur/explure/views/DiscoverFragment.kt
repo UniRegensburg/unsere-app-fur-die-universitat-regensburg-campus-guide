@@ -97,6 +97,7 @@ class DiscoverFragment : Fragment(R.layout.fragment_discover) {
         discoverViewModel.latestRouteList.observe(viewLifecycleOwner, { latestRoutes ->
             if (latestRoutes != null) {
                 latestRoutesAdapter.items = latestRoutes
+                latestRoutesAdapter.notifyDataSetChanged()
                 stopShimmerAndVisibilityOfLatestRoutes()
             }
             binding.pullToRefresh.isRefreshing = false
@@ -107,6 +108,7 @@ class DiscoverFragment : Fragment(R.layout.fragment_discover) {
         discoverViewModel.popularRouteList.observe(viewLifecycleOwner, { popularRoutes ->
             if (popularRoutes != null) {
                 popularRoutesAdapter.items = popularRoutes
+                popularRoutesAdapter.notifyDataSetChanged()
                 stopShimmerAndVisibilityOfPopularRoutes()
             }
             binding.pullToRefresh.isRefreshing = false
@@ -130,7 +132,7 @@ class DiscoverFragment : Fragment(R.layout.fragment_discover) {
     }
 
     private fun setOnClickListeners() {
-        binding.tvPopularRouteMore.setOnClickListener {
+        binding.tvNewRouteMore.setOnClickListener {
             discoverViewModel.getLatestRoutes()
         }
         binding.tvPopularRouteMore.setOnClickListener {
