@@ -63,7 +63,9 @@ Da die Verwendung dieser API entsprechende Limits bei der Menge an *LatLng*-Koor
 Für jeden erstellten Wegpunkt einer Route kann jeweils ein Bild, eine Audio- sowie eine Videodatei hochgeladen werden, um diesen Wegpunkt genauer zu beschreiben und so zusätzliche Informationen an beliebigen Punkten der Route hinterlegen zu können.
 
 <div align="middle">
-<img src="./images/route_waypoint.png" alt="Wegpunkte erstellen" height="350" width="187"/> <img src="./images/Route_waypoint_edit.jpg" alt="Wegpunkte bearbeiten" height="350" width="185"/>
+<img src="./images/route_waypoint.png" alt="Wegpunkte erstellen" height="600" width="319"/>
+
+<img src="./images/Route_waypoint_edit.jpg" alt="Wegpunkte bearbeiten" height="600" width="319"/>
 </div>
 
 ### **Navigation entlang erstellter Routen**
