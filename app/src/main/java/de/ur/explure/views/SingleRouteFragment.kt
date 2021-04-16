@@ -12,7 +12,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.crazylegend.viewbinding.viewBinding
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.storage.FirebaseStorage
 import de.ur.explure.GlideApp
@@ -344,14 +343,7 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinCompon
                     R.id.single_route_container,
                     Snackbar.LENGTH_LONG,
                     colorRes = R.color.colorError
-                ) {
-                    this.addCallback(object : BaseTransientBottomBar.BaseCallback<Snackbar>() {
-                        override fun onDismissed(transientBottomBar: Snackbar?, event: Int) {
-                            super.onDismissed(transientBottomBar, event)
-                            singleRouteViewModel.popToDiscover()
-                        }
-                    })
-                }
+                )
             }
         })
     }
