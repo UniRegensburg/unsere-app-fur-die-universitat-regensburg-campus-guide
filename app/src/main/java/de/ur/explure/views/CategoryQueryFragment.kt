@@ -32,11 +32,11 @@ class CategoryQueryFragment : Fragment(R.layout.fragment_category_query) {
         viewModel.categoryRoutes.observe(viewLifecycleOwner, { routes ->
             if (routes != null) {
                 if (routes.isEmpty()) {
-                    binding.progressBar.visibility = View.GONE
+                    binding.loadingCircle.visibility = View.GONE
                     binding.noResults.visibility = View.VISIBLE
                 } else {
                     categoryAdapter.submitList(routes)
-                    binding.progressBar.visibility = View.GONE
+                    binding.loadingCircle.visibility = View.GONE
                 }
             }
         })

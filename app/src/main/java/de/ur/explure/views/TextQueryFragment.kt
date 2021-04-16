@@ -31,11 +31,11 @@ class TextQueryFragment : Fragment(R.layout.fragment_text_query) {
         viewModel.searchedRoutes.observe(viewLifecycleOwner, { routes ->
             if (routes != null) {
                 if (routes.isEmpty()) {
-                    binding.progressBar.visibility = View.GONE
+                    binding.loadingCircle.visibility = View.GONE
                     binding.noResults.visibility = View.VISIBLE
                 } else {
                     searchAdapter.submitList(routes)
-                    binding.progressBar.visibility = View.GONE
+                    binding.loadingCircle.visibility = View.GONE
                     binding.titlePageSearchResult.visibility = View.VISIBLE
                 }
             }
