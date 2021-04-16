@@ -2,7 +2,11 @@ package de.ur.explure.views
 
 import android.app.AlertDialog
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -35,16 +39,131 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinCompon
     private lateinit var wayPointAdapter: WayPointAdapter
     private lateinit var commentAdapter: CommentAdapter
 
+    private var shareButton: MenuItem? = null
+
     private var routeAddedSnackbar: Snackbar? = null
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        singleRouteViewModel.getRouteData(args.routeID)
+    }
+
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setHasOptionsMenu(true)
         observeRouteInformation()
-        val routeId = args.routeID
         setOnClickListener()
         setErrorObserver()
-        singleRouteViewModel.getRouteData(routeId)
+        setViewFlipperObserver()
         singleRouteViewModel.getUserName()
+    }
+
+    /**
+     * Menu
+     *
+     */
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.menu_single_route, menu)
+        shareButton = menu.findItem(R.id.shareSingleRoute)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return if (item.itemId == R.id.shareSingleRoute) {
+            singleRouteViewModel.shareRoute(requireContext())
+            true
+        } else {
+            super.onOptionsItemSelected(item)
+        }
+    }
+
+    private fun setViewFlipperObserver() {
+        singleRouteViewModel.currentFlipperViewId.observe(viewLifecycleOwner, { childID ->
+            binding.descriptionButton.isEnabled = true
+            binding.commentsButton.isEnabled = true
+            binding.waypointsButton.isEnabled = true
+            when (childID) {
+                DESCRIPTION_VIEW_ID -> {
+                    setDescriptionState()
+                }
+                COMMENTS_VIEW_ID -> {
+                    setCommentState()
+                }
+                WAYPOINTS_VIEW_ID -> {
+                    setWayPointState()
+                }
+            }
+        })
+    }
+
+    private fun setWayPointState() {
+        binding.waypointsButton.isEnabled = false
+        binding.commentsButton.setTextColor(
+            ContextCompat.getColor(
+                requireContext(),
+                R.color.textColorGrey
+            )
+        )
+        binding.descriptionButton.setTextColor(
+            ContextCompat.getColor(
+                requireContext(),
+                R.color.textColorGrey
+            )
+        )
+        binding.waypointsButton.setTextColor(
+            ContextCompat.getColor(
+                requireContext(),
+                R.color.themeColor
+            )
+        )
+        binding.viewFlipper.displayedChild = WAYPOINTS_VIEW_ID
+    }
+
+    private fun setDescriptionState() {
+        binding.descriptionButton.isEnabled = false
+        binding.commentsButton.setTextColor(
+            ContextCompat.getColor(
+                requireContext(),
+                R.color.textColorGrey
+            )
+        )
+        binding.descriptionButton.setTextColor(
+            ContextCompat.getColor(
+                requireContext(),
+                R.color.themeColor
+            )
+        )
+        binding.waypointsButton.setTextColor(
+            ContextCompat.getColor(
+                requireContext(),
+                R.color.textColorGrey
+            )
+        )
+        binding.viewFlipper.displayedChild = DESCRIPTION_VIEW_ID
+    }
+
+    private fun setCommentState() {
+        binding.commentsButton.isEnabled = false
+        binding.commentsButton.setTextColor(
+            ContextCompat.getColor(
+                requireContext(),
+                R.color.themeColor
+            )
+        )
+        binding.descriptionButton.setTextColor(
+            ContextCompat.getColor(
+                requireContext(),
+                R.color.textColorGrey
+            )
+        )
+        binding.waypointsButton.setTextColor(
+            ContextCompat.getColor(
+                requireContext(),
+                R.color.textColorGrey
+            )
+        )
+        binding.viewFlipper.displayedChild = COMMENTS_VIEW_ID
     }
 
     private fun initAdapters() {
@@ -56,7 +175,7 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinCompon
         singleRouteViewModel.route.observe(viewLifecycleOwner, { route ->
             if (route != null) {
                 binding.routeName.text = route.title
-                binding.routeDescription.text = route.description
+                binding.routeDescriptionText.text = route.description
                 binding.routeDuration.text =
                     getString(R.string.route_item_duration, route.duration.toInt())
                 binding.routeDistance.text =
@@ -84,6 +203,7 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinCompon
                 GlideApp.with(requireContext())
                     .load(gsReference)
                     .error(R.drawable.map_background)
+                    .fitCenter()
                     .transition(DrawableTransitionOptions.withCrossFade())
                     .into(binding.routeImage)
             } catch (_: Exception) {
@@ -107,13 +227,13 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinCompon
 
     private fun setOnClickListener() {
         binding.descriptionButton.setOnClickListener {
-            binding.viewFlipper.displayedChild = 0
+            singleRouteViewModel.setFlipperView(DESCRIPTION_VIEW_ID)
         }
         binding.commentsButton.setOnClickListener {
-            binding.viewFlipper.displayedChild = 1
+            singleRouteViewModel.setFlipperView(COMMENTS_VIEW_ID)
         }
         binding.waypointsButton.setOnClickListener {
-            binding.viewFlipper.displayedChild = 2
+            singleRouteViewModel.setFlipperView(WAYPOINTS_VIEW_ID)
         }
         binding.startRouteButton.setOnClickListener {
             singleRouteViewModel.startNavigation()
@@ -251,5 +371,11 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinCompon
                 )
             }
         })
+    }
+
+    companion object {
+        private const val DESCRIPTION_VIEW_ID = 0
+        private const val COMMENTS_VIEW_ID = 1
+        private const val WAYPOINTS_VIEW_ID = 2
     }
 }

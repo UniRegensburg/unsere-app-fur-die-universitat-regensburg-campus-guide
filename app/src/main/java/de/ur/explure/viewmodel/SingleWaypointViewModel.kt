@@ -30,33 +30,39 @@ class SingleWaypointViewModel(private val storageRepo: StorageRepositoryImpl) : 
     }
 
     private fun getAudioData(audioURL: String) {
-        viewModelScope.launch {
-            val downloadTask = storageRepo.getDownloadURL(audioURL)
-            if (downloadTask is FirebaseResult.Success) {
-                audioUri.postValue(downloadTask.data)
-            } else {
-                showAudioError.postValue(true)
+        if (audioURL.isNotEmpty()){
+            viewModelScope.launch {
+                val downloadTask = storageRepo.getDownloadURL(audioURL)
+                if (downloadTask is FirebaseResult.Success) {
+                    audioUri.postValue(downloadTask.data)
+                } else {
+                    showAudioError.postValue(true)
+                }
             }
         }
     }
 
     private fun getVideoData(videoURL: String) {
-        viewModelScope.launch {
-            val downloadTask = storageRepo.getDownloadURL(videoURL)
-            if (downloadTask is FirebaseResult.Success) {
-                videoUri.postValue(downloadTask.data)
-            } else {
-                showVideoError.postValue(true)
+        if (videoURL.isNotEmpty()){
+            viewModelScope.launch {
+                val downloadTask = storageRepo.getDownloadURL(videoURL)
+                if (downloadTask is FirebaseResult.Success) {
+                    videoUri.postValue(downloadTask.data)
+                } else {
+                    showVideoError.postValue(true)
+                }
             }
         }
     }
 
     private fun getImageData(imageURL: String) {
-        val storageRef = storageRepo.getStorageRefForURL(imageURL)
-        if (storageRef != null) {
-            imageReference.postValue(storageRef)
-        } else {
-            showImageError.postValue(true)
+        if (imageURL.isNotEmpty()){
+            val storageRef = storageRepo.getStorageRefForURL(imageURL)
+            if (storageRef != null) {
+                imageReference.postValue(storageRef)
+            } else {
+                showImageError.postValue(true)
+            }
         }
     }
 }

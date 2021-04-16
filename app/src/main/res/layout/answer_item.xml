@@ -1,45 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/answer_card_view"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:id="@+id/answer"
-    android:padding="8dp">
+    android:paddingVertical="8dp"
+    card_view:cardBackgroundColor="@android:color/white"
+    card_view:cardCornerRadius="@dimen/cardview_corner_radius"
+    card_view:cardElevation="@dimen/cardview_default_elevation">
 
-    <TextView
-        android:id="@+id/answer_author"
+    <RelativeLayout
+        android:id="@+id/answer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginBottom="8dp"
-        android:layout_alignParentStart="true"
-        android:text="@string/comment_author"
-        android:textStyle="bold"
-        android:textColor="@color/textColorGrey"/>
+        android:orientation="horizontal"
+        android:padding="8dp">
 
-    <TextView
-        android:id="@+id/answer_text"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/answer_author"
-        android:text="@string/comment_text"
-        android:textColor="@color/textColorGrey"/>
+        <TextView
+            android:id="@+id/answer_author"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_marginStart="8dp"
+            android:layout_marginBottom="8dp"
+            android:text="@string/comment_author"
+            android:textColor="@color/textColorGrey"
+            android:textStyle="bold" />
 
-    <TextView
-        android:id="@+id/answer_date"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginBottom="16dp"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/answer_text"
-        android:text="@string/comment_text"
-        android:textColor="@color/textColorGrey"
-        android:textSize="12sp"
-        android:textStyle="italic"/>
+        <TextView
+            android:id="@+id/answer_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/answer_author"
+            android:layout_alignParentStart="true"
+            android:layout_marginStart="8dp"
+            android:text="@string/comment_text"
+            android:textColor="@color/textColorGrey" />
 
-</RelativeLayout>
+        <TextView
+            android:id="@+id/answer_date"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/answer_text"
+            android:layout_alignParentStart="true"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:text="@string/comment_text"
+            android:textColor="@color/textColorGrey"
+            android:textSize="12sp"
+            android:textStyle="italic" />
+
+    </RelativeLayout>
+
+</androidx.cardview.widget.CardView>
