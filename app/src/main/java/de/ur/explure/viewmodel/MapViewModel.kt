@@ -29,7 +29,7 @@ import java.util.*
 class MapViewModel(
     private val state: SavedStateHandle,
     private val appRouter: MainAppRouter,
-    private val authService: FirebaseAuthService
+    authService: FirebaseAuthService
 ) : ViewModel() {
 
     var anonymousUser: Boolean? = authService.isAnonymousUser()

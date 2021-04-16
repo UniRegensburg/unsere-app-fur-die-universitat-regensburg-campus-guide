@@ -41,22 +41,21 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinCompon
 
     private var shareButton: MenuItem? = null
 
-    private var routeAddedSnackbar: Snackbar? = null
+    private var routeFavoriteSnackbar: Snackbar? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         singleRouteViewModel.getRouteData(args.routeID)
     }
 
-
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setHasOptionsMenu(true)
         observeRouteInformation()
+        observeFavoriteRouteStatus()
         setOnClickListener()
         setErrorObserver()
         setViewFlipperObserver()
-        singleRouteViewModel.getUserName()
     }
 
     /**
@@ -191,6 +190,26 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinCompon
         })
     }
 
+    private fun observeFavoriteRouteStatus() {
+        singleRouteViewModel.routeFavorited.observe(viewLifecycleOwner, { status ->
+            setFavoriteRouteIcon(status)
+        })
+    }
+
+    private fun setFavoriteRouteIcon(active: Boolean) {
+        if (active) {
+            binding.favorRouteButton.background = ContextCompat.getDrawable(
+                requireActivity(),
+                R.drawable.ic_baseline_favorite_24
+            )
+        } else {
+            binding.favorRouteButton.background = ContextCompat.getDrawable(
+                requireActivity(),
+                R.drawable.ic_favorite_routes_icon
+            )
+        }
+    }
+
     private fun setAdapters(route: Route) {
         wayPointAdapter.setItems(route.wayPoints)
         commentAdapter.setItems(route.comments)
@@ -239,18 +258,26 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinCompon
             singleRouteViewModel.startNavigation()
         }
         binding.favorRouteButton.setOnClickListener {
-            singleRouteViewModel.favorRoute(args.routeID)
-            routeAddedSnackbar = showSnackbar(
-                requireActivity(),
-                R.string.add_route_to_favorites,
-                R.id.scrollview,
-                Snackbar.LENGTH_SHORT,
-                colorRes = R.color.themeColor
-            )
+            if (singleRouteViewModel.routeFavorited.value == true) {
+                // removed from favorites
+                routeFavoriteSnackbar = showSnackbar(
+                    requireActivity(),
+                    R.string.remove_route_from_favorites,
+                    R.id.scrollview,
+                    colorRes = R.color.themeColor
+                )
+            } else {
+                // added to favorites
+                routeFavoriteSnackbar = showSnackbar(
+                    requireActivity(),
+                    R.string.add_route_to_favorites,
+                    R.id.scrollview,
+                    colorRes = R.color.themeColor
+                )
+            }
+
+            singleRouteViewModel.toggleFavoriteRouteStatus(args.routeID)
         }
-        /*binding.shareRouteButton.setOnClickListener {
-            singleRouteViewModel.shareRoute(requireContext())
-        }*/
         binding.addCommentButton.setOnClickListener {
             addComment()
         }

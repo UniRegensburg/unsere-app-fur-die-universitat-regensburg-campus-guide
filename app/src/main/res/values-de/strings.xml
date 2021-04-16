@@ -281,6 +281,7 @@
     <string name="empty_username">Bitte Benutzernamen eingeben</string>
     <string name="user_data_error">Beim Erstellen deines Profiles ist etwas schief gelaufen, bitte versuche es später wieder.</string>
     <string name="add_route_to_favorites">Route zu Favoriten hinzugefügt</string>
+    <string name="remove_route_from_favorites">Route aus Favoriten entfernt</string>
     <string name="rating_text">Bitte hinterlasse eine Bewertung, wenn dir die Route gefallen hat</string>
     <string name="rating_button">Abschicken</string>
     <string name="rating_error">Etwas ist schiefgelaufen, bitte versuche es später wieder</string>

@@ -7,8 +7,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import de.ur.explure.R
+import de.ur.explure.extensions.combineWith
 import de.ur.explure.model.comment.CommentDTO
 import de.ur.explure.model.route.Route
+import de.ur.explure.model.user.User
 import de.ur.explure.model.waypoint.WayPoint
 import de.ur.explure.navigation.MainAppRouter
 import de.ur.explure.repository.route.RouteRepositoryImpl
@@ -29,13 +31,40 @@ class SingleRouteViewModel(
 
     private val mutableRoute: MutableLiveData<Route> = MutableLiveData()
     val route: LiveData<Route> = mutableRoute
+    private val mutableUserData: MutableLiveData<User> = MutableLiveData()
     private val mutableErrorMessage: MutableLiveData<Boolean> = MutableLiveData()
     val errorMessage: LiveData<Boolean> = mutableErrorMessage
     private val mutableSuccessMessage: MutableLiveData<Boolean> = MutableLiveData()
     val successMessage: LiveData<Boolean> = mutableSuccessMessage
     private var userName: String = DEFAULT_USERNAME
 
+    private val _routeFavorited: MutableLiveData<Boolean> =
+        mutableRoute.combineWith(mutableUserData) { route, userData ->
+            if (userData != null && route != null) {
+                isRouteFavorited(userData, route.id)
+            } else {
+                false
+            }
+        }
+    val routeFavorited: LiveData<Boolean> = _routeFavorited
+
     val currentFlipperViewId: MutableLiveData<Int> = MutableLiveData()
+
+    init {
+        loadUserData()
+    }
+
+    private fun loadUserData() {
+        viewModelScope.launch {
+            val userData = userRepository.getUserInfo()
+            if (userData is FirebaseResult.Success) {
+                mutableUserData.postValue(userData.data)
+                userName = userData.data.name
+            } else {
+                mutableErrorMessage.postValue(true)
+            }
+        }
+    }
 
     fun getRouteData(routeId: String) {
         viewModelScope.launch {
@@ -53,21 +82,14 @@ class SingleRouteViewModel(
         }
     }
 
-    fun getUserName() {
-        viewModelScope.launch {
-            val userData = userRepository.getUserInfo()
-            userName = if (userData is FirebaseResult.Success) {
-                userData.data.name
-            } else {
-                DEFAULT_USERNAME
-            }
-        }
+    private fun isRouteFavorited(userData: User, routeId: String): Boolean {
+        return userData.favouriteRoutes.contains(routeId)
     }
 
     fun addComment(comment: String) {
         viewModelScope.launch {
-            val commentDto = CommentDTO(comment, userName)
             val routeId = route.value?.id ?: return@launch
+            val commentDto = CommentDTO(comment, userName)
             if (routeRepository.addComment(routeId, commentDto) is FirebaseResult.Success) {
                 getRouteData(routeId)
             } else {
@@ -78,8 +100,8 @@ class SingleRouteViewModel(
 
     fun addAnswer(commentId: String, answerText: String) {
         viewModelScope.launch {
-            val commentDto = CommentDTO(answerText, userName)
             val routeId = route.value?.id ?: return@launch
+            val commentDto = CommentDTO(answerText, userName)
             if (routeRepository.addAnswer(
                     routeId,
                     commentId,
@@ -167,14 +189,14 @@ class SingleRouteViewModel(
         appRouter.getNavController()?.navigate(action)
     }
 
-    fun favorRoute(routeId: String) {
+    fun toggleFavoriteRouteStatus(routeId: String) {
         viewModelScope.launch {
-            when (val userInfo = userRepository.getUserInfo()) {
-                is FirebaseResult.Success -> {
-                    if (!userInfo.data.favouriteRoutes.contains(routeId)) {
-                        userRepository.addRouteToFavouriteRoutes(routeId)
-                    }
-                }
+            if (_routeFavorited.value == true) {
+                _routeFavorited.postValue(false)
+                userRepository.removeRouteFromFavouriteRoutes(routeId)
+            } else {
+                _routeFavorited.postValue(true)
+                userRepository.addRouteToFavouriteRoutes(routeId)
             }
         }
     }
