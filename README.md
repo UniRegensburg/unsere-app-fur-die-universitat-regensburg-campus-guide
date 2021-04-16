@@ -39,12 +39,11 @@ Das Erstellen der eigentlichen Routenlinie im ersten Schritt kann aktuell auf 2 
 
 * **durch direktes Einzeichnen auf der Karte**:
 
-![Routenerstellung durch Zeichnen](./images/Route_Draw.png)
-![Routenerstellung durch Zeichnen](./images/Routen_zeichnen.mp4)
+![Routenerstellung durch Zeichnen](./images/route_zeichnen.gif)
 
 * **durch Platzieren von Markern auf der Karte**:
 
-![Routenerstellung durch Marker hinzufügen](./images/Route_Creation_Add_Marker.png)
+![Routenerstellung durch Marker hinzufügen](./images/route_mit_markern_erstellen.gif)
 
 ### **MapMatching**
 
