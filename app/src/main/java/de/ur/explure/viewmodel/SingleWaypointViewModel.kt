@@ -30,7 +30,7 @@ class SingleWaypointViewModel(private val storageRepo: StorageRepositoryImpl) : 
     }
 
     private fun getAudioData(audioURL: String) {
-        if (audioURL.isNotEmpty()){
+        if (audioURL.isNotEmpty()) {
             viewModelScope.launch {
                 val downloadTask = storageRepo.getDownloadURL(audioURL)
                 if (downloadTask is FirebaseResult.Success) {
@@ -43,7 +43,7 @@ class SingleWaypointViewModel(private val storageRepo: StorageRepositoryImpl) : 
     }
 
     private fun getVideoData(videoURL: String) {
-        if (videoURL.isNotEmpty()){
+        if (videoURL.isNotEmpty()) {
             viewModelScope.launch {
                 val downloadTask = storageRepo.getDownloadURL(videoURL)
                 if (downloadTask is FirebaseResult.Success) {
@@ -56,7 +56,7 @@ class SingleWaypointViewModel(private val storageRepo: StorageRepositoryImpl) : 
     }
 
     private fun getImageData(imageURL: String) {
-        if (imageURL.isNotEmpty()){
+        if (imageURL.isNotEmpty()) {
             val storageRef = storageRepo.getStorageRefForURL(imageURL)
             if (storageRef != null) {
                 imageReference.postValue(storageRef)
