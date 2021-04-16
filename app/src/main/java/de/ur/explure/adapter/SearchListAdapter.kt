@@ -9,7 +9,7 @@ import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.google.firebase.storage.FirebaseStorage
 import de.ur.explure.GlideApp
 import de.ur.explure.R
-import de.ur.explure.databinding.SearchItemBinding
+import de.ur.explure.databinding.RouteElementBinding
 import de.ur.explure.model.route.Route
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
@@ -25,7 +25,7 @@ class SearchListAdapter(private val onClick: (Route) -> Unit) :
         holder.bind(getItem(position), onClick)
     }
 
-    class RouteViewHolder private constructor(private val binding: SearchItemBinding) :
+    class RouteViewHolder private constructor(private val binding: RouteElementBinding) :
             RecyclerView.ViewHolder(binding.root), KoinComponent {
 
         private val fireStorage: FirebaseStorage by inject()
@@ -62,7 +62,7 @@ class SearchListAdapter(private val onClick: (Route) -> Unit) :
         companion object {
             fun from(parent: ViewGroup): RouteViewHolder {
                 val binding =
-                        SearchItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+                        RouteElementBinding.inflate(LayoutInflater.from(parent.context), parent, false)
                 return RouteViewHolder(binding)
             }
         }
