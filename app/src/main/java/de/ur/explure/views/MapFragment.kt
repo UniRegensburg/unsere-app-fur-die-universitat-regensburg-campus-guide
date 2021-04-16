@@ -923,7 +923,8 @@ class MapFragment : Fragment(R.layout.fragment_map), MapMatchingClient.MapMatchi
         Timber.d("MapMatch Duration: ${bestMatching.duration() / 60} minutes")
         Timber.d("MapMatch Length: ${bestMatching.distance()} meters")
 
-        // TODO save this as well in firestore for the route so we have it in the navigation?
+        // TODO save this as well in firestore for the route so we don't have to fetch it again for
+        //  navigation?
         // bestMatching.toDirectionRoute().geometry()
 
         // draw the best route match on the map

@@ -88,7 +88,7 @@ import java.util.*
 class NavigationFragment : Fragment(R.layout.fragment_navigation), MapHelper.MapHelperListener,
     OnWayNameChangedListener, MapMatchingClient.MapMatchingListener {
 
-    private var shouldSimulateRoute: Boolean = true // TODO true for debugging and demo only
+    private var shouldSimulateRoute: Boolean = true // ! true for debugging and demo only
 
     private val binding by viewBinding(FragmentNavigationBinding::bind)
     private val navigationViewModel: NavigationViewModel by viewModel(state = emptyState())
@@ -270,9 +270,6 @@ class NavigationFragment : Fragment(R.layout.fragment_navigation), MapHelper.Map
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        // TODO lock the screen rotation ??
-        // activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_NOSENSOR
-        // TODO unlock with: activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR
 
         setHasOptionsMenu(true)
 
@@ -283,6 +280,13 @@ class NavigationFragment : Fragment(R.layout.fragment_navigation), MapHelper.Map
 
         setupViewModelObservers()
         setupBackButtonClickObserver()
+
+        navIntroSnackbar = showSnackbar(
+            requireActivity(),
+            R.string.navigation_intro,
+            colorRes = R.color.colorInfo,
+            length = Snackbar.LENGTH_INDEFINITE
+        )
 
         // init map
         mapView = binding.mapView
@@ -373,13 +377,6 @@ class NavigationFragment : Fragment(R.layout.fragment_navigation), MapHelper.Map
         binding.navigationProgressBar.visibility = View.VISIBLE
 
         mapMatchingClient.setMapMatchingListener(this)
-
-        navIntroSnackbar = showSnackbar(
-            requireActivity(),
-            R.string.navigation_intro,
-            colorRes = R.color.colorInfo,
-            length = Snackbar.LENGTH_INDEFINITE
-        )
 
         binding.startNavigationButton.setOnClickListener {
             // check if we have a route first!
@@ -497,7 +494,6 @@ class NavigationFragment : Fragment(R.layout.fragment_navigation), MapHelper.Map
             setCancelable(false)
             setPositiveButton(R.string.yes) { _, _ ->
                 navigationViewModel.leaveNavigationMode()
-                // TODO activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR
                 findNavController().navigateUp()
             }
             setNegativeButton(R.string.no) { _, _ ->
@@ -513,7 +509,6 @@ class NavigationFragment : Fragment(R.layout.fragment_navigation), MapHelper.Map
             setPositiveButton(R.string.yes) { _, _ ->
                 navigationViewModel.showRouteRatingOption(route)
                 navigationViewModel.leaveNavigationMode()
-                // TODO activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR
                 findNavController().navigateUp()
             }
             setNegativeButton(R.string.no) { _, _ -> }
@@ -672,49 +667,6 @@ class NavigationFragment : Fragment(R.layout.fragment_navigation), MapHelper.Map
         }
 
         mapMatchingClient.requestMapMatchedRoute(coordinateList)
-        /*
-        val token = getMapboxAccessToken(requireActivity().applicationContext)
-        val routeOptions = RouteOptions.builder()
-            .applyDefaultParams()
-            .accessToken(token)
-            .coordinates(coordinateList)
-            // .waypointTargetsList(...)
-            .alternatives(false) // we don't need any alternative routes
-            .steps(true)
-            .bannerInstructions(true)
-            .voiceInstructions(false)
-            .profile(DirectionsCriteria.PROFILE_WALKING)
-            .overview(DirectionsCriteria.OVERVIEW_FULL)
-            .annotationsList(
-                listOf(
-                    DirectionsCriteria.ANNOTATION_DURATION,
-                    DirectionsCriteria.ANNOTATION_DISTANCE,
-                )
-            )
-            .build()
-
-        mapboxNavigation.requestRoutes(
-            routeOptions,
-            object : RoutesRequestCallback {
-                override fun onRoutesReady(routes: List<DirectionsRoute>) {
-                    binding.navigationProgressBar.visibility = View.GONE
-                    navigationViewModel.directionsRoute = routes[0]
-                    // navigationMapboxMap?.drawRoutes(routes)
-                    mapboxNavigation.setRoutes(routes)
-                }
-
-                override fun onRoutesRequestFailure(
-                    throwable: Throwable,
-                    routeOptions: RouteOptions
-                ) {
-                    Timber.e("route request failure %s", throwable.toString())
-                }
-
-                override fun onRoutesRequestCanceled(routeOptions: RouteOptions) {
-                    Timber.d("route request canceled")
-                }
-            }
-        )*/
     }
 
     private fun cleanCoordinates(): MutableList<Point> {
@@ -895,12 +847,13 @@ class NavigationFragment : Fragment(R.layout.fragment_navigation), MapHelper.Map
      * Lifecycle
      */
 
+    /*
     override fun onStop() {
         super.onStop()
         // TODO save current navigation state and progress!
         // -> bottom sheet and instructionView as well as waypointName! And user position!!
         //  -> is saving the camera position necessary too?
-    }
+    }*/
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
@@ -935,7 +888,7 @@ class NavigationFragment : Fragment(R.layout.fragment_navigation), MapHelper.Map
             unregisterTripSessionStateObserver(tripSessionStateObserver)
             unregisterRouteProgressObserver(routeProgressObserver)
             unregisterBannerInstructionsObserver(bannerInstructionObserver)
-            stopTripSession() // TODO causes crash in updateCameraOnNavigationStateChange sometimes?
+            stopTripSession()
             onDestroy()
         }
 

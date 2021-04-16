@@ -17,7 +17,7 @@ import androidx.lifecycle.MediatorLiveData
 fun <T, K, R> LiveData<T>.combineWith(
     liveData: LiveData<K>,
     block: (T?, K?) -> R
-): LiveData<R> {
+): MediatorLiveData<R> {
     val result = MediatorLiveData<R>()
     result.addSource(this) {
         result.value = block(this.value, liveData.value)

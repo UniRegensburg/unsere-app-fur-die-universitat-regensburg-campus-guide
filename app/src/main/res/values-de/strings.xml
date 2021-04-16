@@ -1,15 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <!-- Screen Titles -->
+    <string name="title_discover">Entdecken</string>
+    <string name="title_search_results">Suchergebnisse</string>
+    <string name="title_profile">Profil</string>
+    <string name="title_created_routes">Erstellte Routen</string>
+    <string name="title_favorite_routes">Favorisierte Routen</string>
+    <string name="title_statistics">Statistiken</string>
+    <string name="title_map">Karte</string>
+    <string name="title_route_detail">Routenansicht</string>
+    <string name="title_edit_route">Route bearbeiten</string>
+    <string name="title_save_route">Route speichern</string>
+    <string name="title_create_waypoint">Wegpunkt erstellen</string>
+    <string name="title_rate_route">Routenbewertung</string>
+    <string name="title_waypoint_detail">Wegpunkt-Informationen</string>
+    <string name="title_create_profile">Profil einrichten</string>
+    <string name="title_login">Anmelden</string>
+    <string name="title_register">Registrieren</string>
+    <string name="title_loading_screen">Ladebildschirm</string>
+
     <!-- Created Routes -->
     <string name="own_routes">Eigene Routen</string>
     <string name="delete_route">ROUTE LÖSCHEN</string>
-    <string name="delete_route_message">"Sind Sie sicher, dass Sie die Route %1$s entfernen möchten?"</string>
+    <string name="delete_route_message">"Sind Sie sicher, dass Sie die Route \"%1$s\" entfernen möchten?"</string>
 
     <!-- Favorite Routes -->
     <string name="favorite_routes">Favorisierte Routen</string>
     <string name="remove_favorite">FAVORISIERUNG AUFHEBEN</string>
-    <string name="remove_favorite_message">Sind Sie sicher, dass Sie die Route %1$s aus Ihren Favoriten entfernen möchten?</string>
+    <string name="remove_favorite_message">Sind Sie sicher, dass Sie die Route \"%1$s\" aus Ihren Favoriten entfernen möchten?</string>
 
     <!-- Example Route Information (Placeholder) -->
     <string name="test_route_example">Meine Route 001</string>
@@ -133,6 +152,8 @@
     <string name="no_route_found">Es wurde keine Route gefunden! Du musst erst eine Route erstellen bevor du fortfahren kannst!</string>
     <string name="not_yet_implemented">"Dieses Feature ist leider noch nicht implementiert!"</string>
     <string name="confirm_route_creation_warning">Wenn du zum nächsten Schritt der Routenerstellung übergehst und dann wieder zurückkehrst, musst du von vorne mit der Routenerstellung beginnen! Trotzdem fortfahren?</string>
+    <string name="not_comment_creator">Nur der Ersteller dieses Kommentars kann ihn löschen!</string>
+    <string name="not_answer_creator">Nur der Ersteller dieser Antwort kann sie löschen!</string>
 
     <!-- Buttons and Options -->
     <string name="try_again">Erneut versuchen</string>
@@ -229,9 +250,6 @@
     <string name="share_text">Hey, ich habe diese Route auf ExplURe gefunden: \n \n%1$s \n%2$d Wegpunkte \nDauer: %3$d min \nLänge: %4$d m \n \n%5$s \n \nKlicke auf den Link, um sie in deiner ExplURe App anzusehen. &#128506;</string>
     <string name="share_option">Senden mit:</string>
 
-    <!--Test Strings-->
-    <string name="lorem_ipsum">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.  </string>
-
     <!--Create Route Strings-->
     <string name="category_spinner_header">Wähle eine Kategorie</string>
     <string name="create_route_descr_hint">Beschreibung</string>
@@ -281,6 +299,7 @@
     <string name="empty_username">Bitte Benutzernamen eingeben</string>
     <string name="user_data_error">Beim Erstellen deines Profiles ist etwas schief gelaufen, bitte versuche es später wieder.</string>
     <string name="add_route_to_favorites">Route zu Favoriten hinzugefügt</string>
+    <string name="remove_route_from_favorites">Route aus Favoriten entfernt</string>
     <string name="rating_text">Bitte hinterlasse eine Bewertung, wenn dir die Route gefallen hat</string>
     <string name="rating_button">Abschicken</string>
     <string name="rating_error">Etwas ist schiefgelaufen, bitte versuche es später wieder</string>

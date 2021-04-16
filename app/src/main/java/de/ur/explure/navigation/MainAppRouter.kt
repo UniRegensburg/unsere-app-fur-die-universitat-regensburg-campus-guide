@@ -126,7 +126,10 @@ class MainAppRouter {
     }
 
     fun navigateToCategoryQuery(categoryQueryKey: Category) {
-        val action = DiscoverFragmentDirections.actionDiscoverFragmentToCategoryQueryFragment(categoryQueryKey)
+        val action = DiscoverFragmentDirections.actionDiscoverFragmentToCategoryQueryFragment(
+            categoryQueryKey,
+            categoryQueryKey.name
+        )
         navController.navigate(action)
     }
 

@@ -4,16 +4,22 @@ import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import de.ur.explure.R
 import de.ur.explure.databinding.CommentItemBinding
 import de.ur.explure.model.comment.Comment
+import de.ur.explure.services.FirebaseAuthService
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import java.text.SimpleDateFormat
 
 @SuppressLint("SimpleDateFormat")
 class CommentAdapter(private val listener: CommentInterface) :
-        RecyclerView.Adapter<CommentAdapter.ViewHolder>() {
+    RecyclerView.Adapter<CommentAdapter.ViewHolder>(), KoinComponent {
+
+    private val authService: FirebaseAuthService by inject()
 
     private var commentList: MutableList<Comment> = mutableListOf()
     private val viewPool = RecyclerView.RecycledViewPool()
@@ -75,6 +81,12 @@ class CommentAdapter(private val listener: CommentInterface) :
 
     private fun deleteComment(holder: ViewHolder, position: Int) {
         holder.commentItem.setOnLongClickListener {
+            if (authService.getCurrentUserId() != commentList[position].authorId) {
+                // only the creator of this comment is allowed to delete it !!
+                Toast.makeText(holder.itemView.context, R.string.not_comment_creator, Toast.LENGTH_SHORT).show()
+                return@setOnLongClickListener true
+            }
+
             holder.commentItem.isLongClickable = true
             listener.deleteComment(commentList[position].id)
             true
