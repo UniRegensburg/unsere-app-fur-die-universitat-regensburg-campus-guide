@@ -66,7 +66,7 @@ class FavoriteRoutesFragment : Fragment(R.layout.fragment_favorite_routes),
                     } catch (_: Exception) {
                     }
                 }
-            }
+            } else {}
         })
     }
 

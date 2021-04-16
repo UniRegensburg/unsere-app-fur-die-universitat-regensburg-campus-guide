@@ -59,32 +59,37 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
         super.onViewCreated(view, savedInstanceState)
         setHasOptionsMenu(true)
         setOnClickListeners()
-        observeUserModel()
         viewModel.getUserInfo()
+        observeUserModel()
     }
 
     private fun observeUserModel() {
-        viewModel.user.observe(viewLifecycleOwner, { user ->
-            if (user != null) {
-                binding.userNameTextView.text = user.name
-                if (user.profilePictureUrl.isNotEmpty()) {
-                    try {
-                        val gsReference =
-                                fireStorage.getReferenceFromUrl(user.profilePictureUrl)
-                        GlideApp.with(requireContext())
-                                .load(gsReference)
-                                .skipMemoryCache(true)
-                                .diskCacheStrategy(DiskCacheStrategy.NONE)
-                                .error(R.drawable.user_profile_picture)
-                                .transition(DrawableTransitionOptions.withCrossFade())
-                                .into(binding.profilePicture)
-                    } catch (_: Exception) {
+        if (viewModel.anonymousUser == true) {
+            binding.loadingCircle.visibility = View.GONE
+            binding.page.visibility = View.VISIBLE
+        } else {
+            viewModel.user.observe(viewLifecycleOwner, { user ->
+                if (user != null) {
+                    binding.userNameTextView.text = user.name
+                    if (user.profilePictureUrl.isNotEmpty()) {
+                        try {
+                            val gsReference =
+                                    fireStorage.getReferenceFromUrl(user.profilePictureUrl)
+                            GlideApp.with(requireContext())
+                                    .load(gsReference)
+                                    .skipMemoryCache(true)
+                                    .diskCacheStrategy(DiskCacheStrategy.NONE)
+                                    .error(R.drawable.user_profile_picture)
+                                    .transition(DrawableTransitionOptions.withCrossFade())
+                                    .into(binding.profilePicture)
+                        } catch (_: Exception) {
+                        }
                     }
+                    binding.loadingCircle.visibility = View.GONE
+                    binding.page.visibility = View.VISIBLE
                 }
-                binding.loadingCircle.visibility = View.GONE
-                binding.page.visibility = View.VISIBLE
-            }
-        })
+            })
+        }
     }
 
     // checks if user is logged in with account and if not certain features are blocked
