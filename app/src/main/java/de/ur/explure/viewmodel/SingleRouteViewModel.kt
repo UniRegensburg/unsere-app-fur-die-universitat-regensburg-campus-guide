@@ -15,6 +15,7 @@ import de.ur.explure.model.waypoint.WayPoint
 import de.ur.explure.navigation.MainAppRouter
 import de.ur.explure.repository.route.RouteRepositoryImpl
 import de.ur.explure.repository.user.UserRepositoryImpl
+import de.ur.explure.services.FirebaseAuthService
 import de.ur.explure.utils.DeepLinkUtils
 import de.ur.explure.utils.FirebaseResult
 import de.ur.explure.views.SingleRouteFragmentDirections
@@ -26,6 +27,7 @@ import java.util.*
 class SingleRouteViewModel(
     private val routeRepository: RouteRepositoryImpl,
     private val userRepository: UserRepositoryImpl,
+    private val authService: FirebaseAuthService,
     private val appRouter: MainAppRouter
 ) : ViewModel() {
 
@@ -56,12 +58,15 @@ class SingleRouteViewModel(
 
     private fun loadUserData() {
         viewModelScope.launch {
-            val userData = userRepository.getUserInfo()
-            if (userData is FirebaseResult.Success) {
-                mutableUserData.postValue(userData.data)
-                userName = userData.data.name
-            } else {
-                mutableErrorMessage.postValue(true)
+            val isAnonymous = authService.isAnonymousUser() ?: true
+            if (!isAnonymous) {
+                val userData = userRepository.getUserInfo()
+                if (userData is FirebaseResult.Success) {
+                    mutableUserData.postValue(userData.data)
+                    userName = userData.data.name
+                } else {
+                    mutableErrorMessage.postValue(true)
+                }
             }
         }
     }
