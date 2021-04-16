@@ -43,7 +43,6 @@ class TextQueryFragment : Fragment(R.layout.fragment_text_query) {
     }
 
     private fun initializeAdapter() {
-        // viewModel.setupAlgolia()
         searchAdapter = SearchListAdapter {
             viewModel.showRouteDetails(it.id)
         }

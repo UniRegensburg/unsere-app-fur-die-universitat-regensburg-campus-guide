@@ -17,18 +17,18 @@
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_margin="8dp"
+            android:innerRadius="0dp"
             android:elevation="@dimen/fab_elevation"
             app:cardBackgroundColor="@color/themeColor"
             android:shape="ring"
-            android:thicknessRatio="1.0"
             android:orientation="vertical"
-            app:cardCornerRadius="60dp">
+            app:cardCornerRadius="25dp">
 
             <ImageView
                 android:id="@+id/profilePicture"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:scaleType="fitCenter"
+                android:scaleType="centerCrop"
                 app:srcCompat="@drawable/user_profile_picture" />
 
         </androidx.cardview.widget.CardView>

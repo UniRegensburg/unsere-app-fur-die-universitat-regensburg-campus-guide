@@ -43,7 +43,6 @@ class CategoryQueryFragment : Fragment(R.layout.fragment_category_query) {
     }
 
     private fun initializeAdapter() {
-        // viewModel.setupAlgolia()
         categoryAdapter = SearchListAdapter {
             viewModel.showRouteDetails(it.id)
         }
