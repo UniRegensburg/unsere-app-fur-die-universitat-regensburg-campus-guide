@@ -3,7 +3,7 @@
 ## Überblick
 
 *ExplURe* ist eine mobile Android-Anwendung zur Erstellung und Nutzung interaktiver
-Entdeckungstouren am Campus der Universität Regensburg. NutzerInnen können über die App Routen aus POIs erstellen, die durch Text-, Bild-, Audio- oder Videoinformationen beschrieben werden. Routen können durch Begleitinformationen thematisch beschrieben und von anderen NutzerInnen recherchiert und gestartet werden. Dabei führt die Anwendung die NutzerInnen entlang der Route über den Campus und erlaubt das Kommentieren der Strecken bzw. Orte und das Teilen eigener Eindrücke.  
+Entdeckungstouren am Campus der Universität Regensburg. NutzerInnen können über die App Routen aus POIs erstellen, die durch Text-, Bild-, Audio- und Videoinformationen beschrieben werden. Routen können durch Begleitinformationen thematisch beschrieben und von anderen NutzerInnen recherchiert und gestartet werden. Dabei führt die Anwendung die NutzerInnen entlang der Route über den Campus und erlaubt das Kommentieren und Bewerten der Strecken.
 
 <!--
 <p float="left">
@@ -39,34 +39,42 @@ Das Erstellen der eigentlichen Routenlinie im ersten Schritt kann aktuell auf 2 
 
 * **durch direktes Einzeichnen auf der Karte**:
 
-![Routenerstellung durch Zeichnen](./images/route_zeichnen.gif)
+<div align="middle">
+    <img src="./images/route_zeichnen.gif" alt="Routenerstellung durch Zeichnen" height="600" width="320"/>
+</div>
 
 * **durch Platzieren von Markern auf der Karte**:
 
-![Routenerstellung durch Marker hinzufügen](./images/route_mit_markern_erstellen.gif)
+<div align="middle">
+    <img src="./images/route_mit_markern_erstellen.gif" alt="Routenerstellung durch Marker hinzufügen" height="600" width="320"/>
+</div>
 
 ### **MapMatching**
 
-Sowohl beim Zeichnen als auch beim Platzieren der Marker wird [*MapMatching*](https://docs.mapbox.com/help/glossary/map-matching-api/) verwendet, um die vom Nutzer erstellten Routenpunkte auf in [OpenStreetMap](https://www.openstreetmap.org/) bekannte Wege auf dem Campusgelände zu "mappen". Dabei wird jeder dieser Routenpunkte dem nächstgelegenen Punkt auf einem bekannten Weg zugeordnet. Da aber nur Fußwege benutzt werden können, können auch nur Routen im Außenbereich der Universität gefunden werden, wodurch sich teilweise Probleme ergeben, wenn die erstellte Route durch ein Gebäude führt. Um dieses Problem etwas abzuschwächen, wurde der Radius für das MapMatching für jeden Wegpunkt etwas erhöht (von standardmäßig 5 auf 15 Meter). Dadurch können auch in Punkte, die in Gebäuden platziert werden (zumindest wenn sie nicht zu weit innen liegen) trotzdem dem nächstgelegen Punkt außerhalb zugeordnet werden, auch wenn ein höherer Radius in der Regel zu etwas mehr Ungenauigkeiten führen kann. Beim Zeichnen der Route ist es jedoch auch möglich, seine eigene Route der automatisch durch *MapMatching* generierten vorzuziehen.
-Da die Verwendung dieser API entsprechende Limits bei der Menge an gegebenen *LatLng*-Koordinaten mit sich bringt (100 Koordinaten-Paare), gerade beim freien Zeichnen einer Route auf der Karte aber in der Regel sehr viel mehr Koordinaten- Punkte erzeugt werden, wurde der im [Mapbox Geojson](https://docs.mapbox.com/android/java/guides/geojson/) - Modul bereits enthaltene [Ramer-Douglas-Peucker-Algorithmus](https://en.wikipedia.org/wiki/Ramer%E2%80%93Douglas%E2%80%93Peucker_algorithm) verwendet, um die Route zu vereinfachen und so die Menge an Routenpunkten zu reduzieren ohne die Geometrie (und damit den Verlauf) der Route großartig zu verändern.
+Sowohl beim Zeichnen als auch beim Platzieren der Marker wird [*MapMatching*](https://docs.mapbox.com/help/glossary/map-matching-api/) verwendet, um die vom Nutzer erstellten Routenpunkte auf in [OpenStreetMap](https://www.openstreetmap.org/) bekannte Wege auf dem Campusgelände zu "mappen". Dabei wird jeder dieser Routenpunkte dem nächstgelegenen Punkt auf einem bekannten Weg zugeordnet. Da aber nur Fußwege benutzt werden können, können auch nur Routen im Außenbereich der Universität gefunden werden, wodurch sich teilweise Probleme ergeben, wenn die erstellte Route durch ein Gebäude führt. Um dieses Problem etwas abzuschwächen, wurde der Radius für das MapMatching für jeden Wegpunkt leicht erhöht (von standardmäßig 5 auf 15 Meter), auch wenn ein höherer Radius in der Regel zu etwas mehr Ungenauigkeiten führen kann. Dadurch können auch in Punkte, die in Gebäuden platziert werden (zumindest wenn sie nicht zu weit innen liegen) trotzdem dem nächstgelegen Punkt außerhalb zugeordnet werden. Beim Zeichnen der Route ist es jedoch auch möglich, seine eigene Route der automatisch durch *MapMatching* generierten vorzuziehen.
+Da die Verwendung dieser API entsprechende Limits bei der Menge an *LatLng*-Koordinaten mit sich bringt (100 Koordinaten), gerade beim freien Zeichnen einer Route auf der Karte aber in der Regel sehr viel mehr Koordinaten- Punkte erzeugt werden, wurde der im [Mapbox Geojson](https://docs.mapbox.com/android/java/guides/geojson/) - Modul bereits enthaltene [Ramer-Douglas-Peucker-Algorithmus](https://en.wikipedia.org/wiki/Ramer%E2%80%93Douglas%E2%80%93Peucker_algorithm) verwendet, um die Route zu vereinfachen und so die Menge an Routenpunkten zu reduzieren ohne die Geometrie (und damit den Verlauf) der Route großartig zu verändern.
 
-<img src="./images/MapMatching.png" alt="MapMatching-Beispiel" height="500" width="266"/>
+<div align="middle">
+    <img src="./images/MapMatching.png" alt="MapMatching-Beispiel" height="600" width="320"/>
+</div>
 
 ### **Hinzufügen verschiedener Medien**
 
 Für jeden erstellten Wegpunkt einer Route kann jeweils ein Bild, eine Audio- sowie eine Videodatei hochgeladen werden, um diesen Wegpunkt genauer zu beschreiben und so zusätzliche Informationen an beliebigen Punkten der Route hinterlegen zu können.
 
-| Wegpunkte erstellen      | Wegpunkte bearbeiten
-:-------------------------:|:-------------------------:
-<img src="./images/route_waypoint.png" alt="Wegpunkte erstellen" height="350" width="187"/>| <img src="./images/Route_waypoint_edit.jpg" alt="Wegpunkte bearbeiten" height="350" width="185"/>
+<div align="middle">
+<img src="./images/route_waypoint.png" alt="Wegpunkte erstellen" height="350" width="187"/> <img src="./images/Route_waypoint_edit.jpg" alt="Wegpunkte bearbeiten" height="350" width="185"/>
+</div>
 
 ### **Navigation entlang erstellter Routen**
 
 Jede erstellte Route ist auf der *"Entdecken"*-Seite oder durch die Volltextsuche von allen Nutzern (auch für die, die keinen eigenen Account angelegt haben) mit zusätzlichen Informationen wie einer Beschreibung, ihren Wegpunkten und Kommentaren, der geschätzten Dauer und Länge sowie einem Routenbild einsehbar. Die Route kann dort ebenfalls nochmal auf der Karte angezeigt und eine Navigation entlang dieser gestartet werden. Dafür wird die Position des Nutzers benötigt. Während der Navigation erscheinen naheliegende Wegpunkte, die auch in einer Detailansicht mit den bereitgestellten Medien (wie Video oder Audio) angezeigt werden können.
 
-![Navigation](./images/navigation.gif)
+<div align="middle">
+<img src="./images/navigation.gif" alt="Navigation" height="600" width="319"/>
 
-![Wegpunkte während der Navigation](./images/Navigation_Waypoint.png)
+<img src="./images/Navigation_Waypoint.png" alt="Wegpunkte während der Navigation" height="600" width="319"/>
+</div>
 
 ## Technische Umsetzung
 
