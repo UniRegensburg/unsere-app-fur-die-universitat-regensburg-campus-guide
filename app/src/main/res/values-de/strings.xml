@@ -1,15 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <!-- Screen Titles -->
+    <string name="title_discover">Entdecken</string>
+    <string name="title_search_results">Suchergebnisse</string>
+    <string name="title_profile">Profil</string>
+    <string name="title_created_routes">Erstellte Routen</string>
+    <string name="title_favorite_routes">Favorisierte Routen</string>
+    <string name="title_statistics">Statistiken</string>
+    <string name="title_map">Karte</string>
+    <string name="title_route_detail">Routenansicht</string>
+    <string name="title_edit_route">Route bearbeiten</string>
+    <string name="title_save_route">Route speichern</string>
+    <string name="title_create_waypoint">Wegpunkt erstellen</string>
+    <string name="title_rate_route">Routenbewertung</string>
+    <string name="title_waypoint_detail">Wegpunkt-Informationen</string>
+    <string name="title_create_profile">Profil einrichten</string>
+    <string name="title_login">Anmelden</string>
+    <string name="title_register">Registrieren</string>
+    <string name="title_loading_screen">Ladebildschirm</string>
+
     <!-- Created Routes -->
     <string name="own_routes">Eigene Routen</string>
     <string name="delete_route">ROUTE LÖSCHEN</string>
-    <string name="delete_route_message">"Sind Sie sicher, dass Sie die Route %1$s entfernen möchten?"</string>
+    <string name="delete_route_message">"Sind Sie sicher, dass Sie die Route \"%1$s\" entfernen möchten?"</string>
 
     <!-- Favorite Routes -->
     <string name="favorite_routes">Favorisierte Routen</string>
     <string name="remove_favorite">FAVORISIERUNG AUFHEBEN</string>
-    <string name="remove_favorite_message">Sind Sie sicher, dass Sie die Route %1$s aus Ihren Favoriten entfernen möchten?</string>
+    <string name="remove_favorite_message">Sind Sie sicher, dass Sie die Route \"%1$s\" aus Ihren Favoriten entfernen möchten?</string>
 
     <!-- Example Route Information (Placeholder) -->
     <string name="test_route_example">Meine Route 001</string>
@@ -230,9 +249,6 @@
     <string name="route_search_hint">Suche</string>
     <string name="share_text">Hey, ich habe diese Route auf ExplURe gefunden: \n \n%1$s \n%2$d Wegpunkte \nDauer: %3$d min \nLänge: %4$d m \n \n%5$s \n \nKlicke auf den Link, um sie in deiner ExplURe App anzusehen. &#128506;</string>
     <string name="share_option">Senden mit:</string>
-
-    <!--Test Strings-->
-    <string name="lorem_ipsum">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.  </string>
 
     <!--Create Route Strings-->
     <string name="category_spinner_header">Wähle eine Kategorie</string>

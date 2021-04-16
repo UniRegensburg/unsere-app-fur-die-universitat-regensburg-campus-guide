@@ -8,7 +8,7 @@
     <fragment
         android:id="@+id/hostFragment"
         android:name="de.ur.explure.views.HostFragment"
-        android:label="Ladebildschirm"
+        android:label="@string/title_loading_screen"
         tools:layout="@layout/fragment_host">
         <action
             android:id="@+id/action_mainFragment_to_auth_graph"

@@ -1,18 +1,36 @@
 <resources>
     <string name="app_name" translatable="false">ExplURe</string>
 
+    <string name="title_discover">Discover</string>
+    <string name="title_search_results">Search Results</string>
+    <string name="title_profile">Profile</string>
+    <string name="title_created_routes">Created Routes</string>
+    <string name="title_favorite_routes">Favorite Routes</string>
+    <string name="title_statistics">Statistics</string>
+    <string name="title_map">Map</string>
+    <string name="title_route_detail">Route Information</string>
+    <string name="title_edit_route">Edit route</string>
+    <string name="title_save_route">Save route</string>
+    <string name="title_create_waypoint">Create waypoint</string>
+    <string name="title_rate_route">Rate route</string>
+    <string name="title_waypoint_detail">Waypoint Information</string>
+    <string name="title_create_profile">Create profile</string>
+    <string name="title_login">Login</string>
+    <string name="title_register">Register</string>
+    <string name="title_loading_screen">Loading screen</string>
+
     <!-- Profile Information -->
     <string name="user_name" translatable="false">Max Mustermann</string>
 
     <!-- Created Routes -->
     <string name="own_routes">Created Routes</string>
     <string name="delete_route">DELETE ROUTE</string>
-    <string name="delete_route_message">"Are you sure that your route %1$s should be deleted?"</string>
+    <string name="delete_route_message">"Are you sure that your route \"%1$s\" should be deleted?"</string>
 
     <!-- Favorite Routes -->
     <string name="favorite_routes">Favorite Routes</string>
     <string name="remove_favorite">REMOVE FAVORITE</string>
-    <string name="remove_favorite_message"> Are you sure that the route %1$s should be removed from your favorites?</string>
+    <string name="remove_favorite_message"> Are you sure that the route \"%1$s\" should be removed from your favorites?</string>
 
     <!-- Example Route Information (Placeholder) -->
     <string name="test_route_example">My Route 001</string>
@@ -156,9 +174,6 @@
     <string name="start_navigation">Start Navigation</string>
     <string name="finish_navigation">Finish Navigation</string>
 
-    <!--Test Strings-->
-    <string name="lorem_ipsum">Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua.  </string>
-
     <!-- Category Strings-->
     <string name="default_title">Category</string>
     <string name="login_email">Email</string>
@@ -294,9 +309,9 @@
     <string name="waypoint_image_title">Image</string>
     <string name="waypoint_video_title">Video</string>
     <string name="waypoint_audio_title">Audio</string>
-    <string name="waypoint_image_error">An error occured while loading the image of the waypoint.</string>
-    <string name="waypoint_video_error">An error occured while loading the video of the waypoint. Please try again later</string>
-    <string name="waypoint_audio_error">An error occured loading the audio file, please try again later.</string>
+    <string name="waypoint_image_error">An error occurred while loading the image of the waypoint.</string>
+    <string name="waypoint_video_error">An error occurred while loading the video of the waypoint. Please try again later</string>
+    <string name="waypoint_audio_error">An error occurred loading the audio file, please try again later.</string>
     <string name="continue_navigation">Continue Navigation</string>
 
 </resources>
