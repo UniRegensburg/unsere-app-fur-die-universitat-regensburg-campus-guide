@@ -1,6 +1,5 @@
 package de.ur.explure.views
 
-import android.app.AlertDialog
 import android.content.Context
 import android.content.pm.ActivityInfo
 import android.os.Bundle
@@ -9,6 +8,7 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.fragment.app.Fragment
 import com.crazylegend.viewbinding.viewBinding
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
 import de.ur.explure.R
@@ -81,7 +81,7 @@ class LoginFragment : Fragment(R.layout.fragment_login) {
 
     private fun resetPassword() {
         val resetPasswordView = layoutInflater.inflate(R.layout.reset_password, null)
-        AlertDialog.Builder(requireContext())
+        MaterialAlertDialogBuilder(requireContext())
             .setTitle(R.string.builder_text)
             .setView(resetPasswordView)
             .setPositiveButton(R.string.positive_button) { _, _ ->

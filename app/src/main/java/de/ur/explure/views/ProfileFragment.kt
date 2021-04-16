@@ -19,6 +19,7 @@ import androidx.fragment.app.Fragment
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.crazylegend.viewbinding.viewBinding
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
@@ -122,20 +123,24 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return if (item.itemId == R.id.changeUserName) {
-            showDialog()
-            true
-        } else if (item.itemId == R.id.logOut) {
-            viewModel.signOut()
-            true
-        } else {
-            isAnonymousUserError()
-            super.onOptionsItemSelected(item)
+        return when (item.itemId) {
+            R.id.changeUserName -> {
+                showDialog()
+                true
+            }
+            R.id.logOut -> {
+                viewModel.signOut()
+                true
+            }
+            else -> {
+                isAnonymousUserError()
+                super.onOptionsItemSelected(item)
+            }
         }
     }
 
     private fun showDialog() {
-        val builder = AlertDialog.Builder(this.requireContext())
+        val builder = MaterialAlertDialogBuilder(this.requireContext())
                 .setTitle(resources.getString(R.string.change_user_name))
         val constraintLayout = getEditUserNameLayout(this.requireContext())
             builder.setView(constraintLayout)

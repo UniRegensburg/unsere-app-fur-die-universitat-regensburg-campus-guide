@@ -1,6 +1,5 @@
 package de.ur.explure.views
 
-import android.app.AlertDialog
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuInflater
@@ -12,13 +11,14 @@ import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.crazylegend.viewbinding.viewBinding
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.BaseTransientBottomBar
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.storage.FirebaseStorage
 import de.ur.explure.GlideApp
-import de.ur.explure.adapter.CommentInterface
 import de.ur.explure.R
 import de.ur.explure.adapter.CommentAdapter
+import de.ur.explure.adapter.CommentInterface
 import de.ur.explure.adapter.WayPointAdapter
 import de.ur.explure.databinding.FragmentSingleRouteBinding
 import de.ur.explure.model.route.Route
@@ -314,7 +314,7 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinCompon
     }
 
     override fun deleteComment(commentId: String) {
-        AlertDialog.Builder(requireContext())
+        MaterialAlertDialogBuilder(requireContext())
             .setTitle(R.string.delete_comment)
             .setPositiveButton(R.string.delete_button) { _, _ ->
                 singleRouteViewModel.deleteComment(commentId)
@@ -325,7 +325,7 @@ class SingleRouteFragment : Fragment(R.layout.fragment_single_route), KoinCompon
     }
 
     override fun deleteAnswer(answerId: String, commentId: String) {
-        AlertDialog.Builder(requireContext())
+        MaterialAlertDialogBuilder(requireContext())
             .setTitle(R.string.delete_answer)
             .setPositiveButton(R.string.delete_button) { _, _ ->
                 singleRouteViewModel.deleteAnswer(answerId, commentId)
