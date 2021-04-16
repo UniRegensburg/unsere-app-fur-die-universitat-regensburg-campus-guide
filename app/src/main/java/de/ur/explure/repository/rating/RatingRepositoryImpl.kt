@@ -39,6 +39,8 @@ class RatingRepositoryImpl(
                     document.set(ratingDTO.toMap(userId)).await()) {
                 is FirebaseResult.Success -> {
                     addRatingToRoute(document.id, ratingDTO.routeId)
+                    fireStore.userCollection.document(userId)
+                        .update(UserDocumentConfig.RATING_COUNT_KEY, FieldValue.increment(1)).await()
                     return ratingCall
                 }
                 is FirebaseResult.Error -> FirebaseResult.Error(ratingCall.exception)
