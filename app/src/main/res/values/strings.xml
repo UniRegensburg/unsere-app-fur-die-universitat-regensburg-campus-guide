@@ -136,6 +136,8 @@
     <string name="no_route_found">No route was found! You have to create a route first before you can continue!</string>
     <string name="not_yet_implemented">"This feature is unfortunately not yet implemented!"</string>
     <string name="confirm_route_creation_warning">If you go to the next step of route creation and then return, you have to start route creation from the beginning! Continue anyway?</string>
+    <string name="not_comment_creator">Only the creator of this comment can delete it!</string>
+    <string name="not_answer_creator">Only the creator of this answer can delete it!</string>
 
     <!-- Buttons and Options -->
     <string name="try_again">Try again</string>

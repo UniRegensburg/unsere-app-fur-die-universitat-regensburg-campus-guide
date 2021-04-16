@@ -133,6 +133,8 @@
     <string name="no_route_found">Es wurde keine Route gefunden! Du musst erst eine Route erstellen bevor du fortfahren kannst!</string>
     <string name="not_yet_implemented">"Dieses Feature ist leider noch nicht implementiert!"</string>
     <string name="confirm_route_creation_warning">Wenn du zum nächsten Schritt der Routenerstellung übergehst und dann wieder zurückkehrst, musst du von vorne mit der Routenerstellung beginnen! Trotzdem fortfahren?</string>
+    <string name="not_comment_creator">Nur der Ersteller dieses Kommentars kann ihn löschen!</string>
+    <string name="not_answer_creator">Nur der Ersteller dieser Antwort kann sie löschen!</string>
 
     <!-- Buttons and Options -->
     <string name="try_again">Erneut versuchen</string>

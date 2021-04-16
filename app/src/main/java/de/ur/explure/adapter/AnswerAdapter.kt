@@ -3,13 +3,21 @@ package de.ur.explure.adapter
 import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
+import de.ur.explure.R
 import de.ur.explure.databinding.AnswerItemBinding
 import de.ur.explure.model.comment.Comment
+import de.ur.explure.services.FirebaseAuthService
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import java.text.SimpleDateFormat
 
 @SuppressLint("SimpleDateFormat")
-class AnswerAdapter(private val listener: (String) -> Unit) : RecyclerView.Adapter<AnswerAdapter.ViewHolder>() {
+class AnswerAdapter(private val listener: (String) -> Unit) :
+    RecyclerView.Adapter<AnswerAdapter.ViewHolder>(), KoinComponent {
+
+    private val authService: FirebaseAuthService by inject()
 
     private var answerList: MutableList<Comment> = mutableListOf()
     private val dateFormat: SimpleDateFormat = SimpleDateFormat("dd. MMM yyyy  HH:mm")
@@ -44,6 +52,12 @@ class AnswerAdapter(private val listener: (String) -> Unit) : RecyclerView.Adapt
 
     private fun deleteAnswer(holder: ViewHolder, position: Int) {
         holder.answerItem.setOnLongClickListener {
+            if (authService.getCurrentUserId() != answerList[position].authorId) {
+                // only the creator of this answer is allowed to delete it !!
+                Toast.makeText(holder.itemView.context, R.string.not_answer_creator, Toast.LENGTH_SHORT).show()
+                return@setOnLongClickListener true
+            }
+
             listener(answerList[position].id)
             return@setOnLongClickListener true
         }
