@@ -74,6 +74,8 @@ class FavoriteRoutesFragment : Fragment(R.layout.fragment_favorite_routes),
         viewModel.favoriteRoutes.observe(viewLifecycleOwner, { routes ->
             if (routes != null) {
                 adapter.routeList = routes
+                binding.loadingCircle.visibility = View.GONE
+                binding.page.visibility = View.VISIBLE
             }
         })
     }
