@@ -58,6 +58,8 @@ class StatisticsFragment : Fragment(R.layout.fragment_statistics) {
                 binding.createdRoutesTextView.text = user.createdRoutes.size.toString()
                 binding.createdCommentsTextView.text = user.commentCount.toString()
                 binding.createdRatingsTextView.text = user.ratingCount.toString()
+                binding.loadingCircle.visibility = View.GONE
+                binding.page.visibility = View.VISIBLE
             }
         })
     }
