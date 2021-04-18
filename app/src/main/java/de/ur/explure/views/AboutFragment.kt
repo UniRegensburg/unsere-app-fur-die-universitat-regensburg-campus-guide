@@ -101,10 +101,6 @@ class AboutFragment : Fragment(R.layout.fragment_about) {
                 "Icon made by \"phatplus\" from www.flaticon.com"
             ),
             AttributionItem(
-                R.drawable.user_profile_picture,
-                "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSvdgoD2X2IRxDvjN2cWTigr0pXX-g7j2ylqw&usqp=CAU"
-            ), // TODO replace this icon with the default android material icon!!
-            AttributionItem(
                 R.drawable.ic_audio,
                 "Icon made by \"Pixel perfect\" from https://www.flaticon.com/"
             ),
