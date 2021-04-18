@@ -1,5 +1,6 @@
 <resources>
     <string name="app_name" translatable="false">ExplURe</string>
+    <string name="app_version" translatable="false">Version %1s</string>
 
     <string name="title_discover">Discover</string>
     <string name="title_search_results">Search Results</string>
@@ -18,6 +19,7 @@
     <string name="title_login">Login</string>
     <string name="title_register">Register</string>
     <string name="title_loading_screen">Loading screen</string>
+    <string name="title_about">About this app</string>
 
     <!-- Profile Information -->
     <string name="user_name" translatable="false">Max Mustermann</string>
@@ -313,5 +315,6 @@
     <string name="waypoint_video_error">An error occurred while loading the video of the waypoint. Please try again later</string>
     <string name="waypoint_audio_error">An error occurred loading the audio file, please try again later.</string>
     <string name="continue_navigation">Continue Navigation</string>
+    <string name="about_icon_list_title">Used Icons</string>
 
 </resources>
