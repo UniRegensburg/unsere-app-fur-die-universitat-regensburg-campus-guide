@@ -6,6 +6,8 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.view.Menu
+import android.view.MenuInflater
 import android.view.View
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -52,6 +54,8 @@ class SaveRouteFragment : Fragment(R.layout.fragment_save_route) {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setHasOptionsMenu(true)
+
         initAdapters()
         initObservers()
         initClickListeners()
@@ -368,6 +372,11 @@ class SaveRouteFragment : Fragment(R.layout.fragment_save_route) {
         val intentArray = arrayOf(cameraIntent)
         chooser.putExtra(Intent.EXTRA_INITIAL_INTENTS, intentArray)
         imageResultLauncher.launch(chooser)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        super.onCreateOptionsMenu(menu, inflater)
+        menu.clear()
     }
 
     override fun onDestroyView() {

@@ -80,7 +80,7 @@ class ProfileFragment : Fragment(R.layout.fragment_profile) {
                                     .load(gsReference)
                                     .skipMemoryCache(true)
                                     .diskCacheStrategy(DiskCacheStrategy.NONE)
-                                    .error(R.drawable.user_profile_picture)
+                                    .error(R.drawable.ic_baseline_account_circle_24)
                                     .transition(DrawableTransitionOptions.withCrossFade())
                                     .into(binding.profilePicture)
                         } catch (_: Exception) {

@@ -19,6 +19,7 @@
     <string name="title_login">Anmelden</string>
     <string name="title_register">Registrieren</string>
     <string name="title_loading_screen">Ladebildschirm</string>
+    <string name="title_about">Über diese App</string>
 
     <!-- Created Routes -->
     <string name="own_routes">Eigene Routen</string>
@@ -315,5 +316,6 @@
     <string name="waypoint_video_error">Leider konnte das Video nicht geladen werden, bitte versuche es später wieder.</string>
     <string name="waypoint_audio_error">Leider konnte die Audiodatei nicht geladen werden, bitte versuche es später wieder.</string>
     <string name="continue_navigation">Navigation fortsetzen</string>
+    <string name="about_icon_list_title">Verwendete Icons</string>
 
 </resources>

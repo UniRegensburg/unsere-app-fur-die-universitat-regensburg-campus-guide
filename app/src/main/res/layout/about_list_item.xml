@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/about_card_view"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    card_view:cardCornerRadius="@dimen/cardview_corner_radius"
+    card_view:cardElevation="4dp"
+    card_view:cardUseCompatPadding="true">
+
+    <RelativeLayout
+        android:id="@+id/about_item"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="4dp">
+
+        <ImageView
+            android:id="@+id/about_image"
+            android:layout_width="wrap_content"
+            android:layout_height="50dp"
+            android:layout_centerHorizontal="true"
+            android:adjustViewBounds="true"
+            android:scaleType="fitCenter"
+            tools:ignore="ContentDescription" />
+
+        <TextView
+            android:id="@+id/about_caption"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/about_image"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="@dimen/margin_small"
+            android:autoLink="web"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
+            tools:text="Icon made by Freepik from https://www.flaticon.com/" />
+
+    </RelativeLayout>
+
+</androidx.cardview.widget.CardView>

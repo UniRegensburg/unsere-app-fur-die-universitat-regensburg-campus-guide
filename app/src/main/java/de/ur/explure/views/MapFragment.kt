@@ -1109,6 +1109,7 @@ class MapFragment : Fragment(R.layout.fragment_map), MapMatchingClient.MapMatchi
      */
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        menu.clear()
         inflater.inflate(R.menu.menu_map, menu)
         cancelRouteCreationButton = menu.findItem(R.id.cancelRouteCreationButton)
         showMapMatchingButton = menu.findItem(R.id.showMapMatchedButton)
